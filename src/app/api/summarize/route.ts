@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     const worksData = await worksRes.json();
     // Only keep papers where this professor is first or last (senior) author
     const allWorks = worksData.results ?? [];
-    const works = allWorks
+    const firstLastWorks = allWorks
       .filter((w: any) =>
         w.authorships?.some(
           (a: any) =>
@@ -28,8 +28,12 @@ export async function POST(req: NextRequest) {
       )
       .slice(0, 8);
 
+    // Fallback to all papers if no first/last author papers found
+    const isCollaborative = firstLastWorks.length === 0 && allWorks.length > 0;
+    const works = firstLastWorks.length > 0 ? firstLastWorks : allWorks.slice(0, 8);
+
     if (works.length === 0) {
-      return NextResponse.json({ summary: "No recent papers found for this researcher.", highlights: [] });
+      return NextResponse.json({ summary: "No recent papers found for this researcher.", highlights: [], isCollaborative: false });
     }
 
     // Reconstruct abstracts from inverted index
@@ -89,6 +93,7 @@ Return only valid JSON, no markdown, no explanation.`;
       summary: parsed.summary ?? "",
       highlights: parsed.highlights ?? [],
       questions: parsed.questions ?? [],
+      isCollaborative,
     });
   } catch (err) {
     console.error("summarize error:", err);
