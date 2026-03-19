@@ -89,7 +89,26 @@ export default function Home() {
         const fullInstId = `https://openalex.org/${institutionId}`;
         authors = authors.filter((a) => a.last_known_institutions?.[0]?.id === fullInstId);
       }
-      if (authors.length === 0) setError(`No professors found for "${topicName}"${institutionName ? ` at ${institutionName}` : ""}.`);
+      // If no results, try a broader keyword-based search on OpenAlex topics
+      if (authors.length === 0 && institutionId) {
+        const broadRes = await fetch(`https://api.openalex.org/topics?search=${encodeURIComponent(query)}&per_page=10`);
+        const broadData = await broadRes.json();
+        const allTopicIds = (broadData.results ?? []).map((t: any) => t.id.split("/").pop()).filter((id: string) => id !== topicId);
+        for (const altId of allTopicIds.slice(0, 5)) {
+          const altRes = await fetch(`https://api.openalex.org/authors?filter=topics.id:${altId},last_known_institutions.id:${institutionId}&per_page=20&sort=cited_by_count:desc`);
+          const altData = await altRes.json();
+          let altAuthors: Author[] = altData.results || [];
+          const fullInstId = `https://openalex.org/${institutionId}`;
+          altAuthors = altAuthors.filter((a) => a.last_known_institutions?.[0]?.id === fullInstId);
+          if (altAuthors.length > 0) {
+            const altTopic = (broadData.results ?? []).find((t: any) => t.id.split("/").pop() === altId);
+            if (altTopic) setResolvedTopic(altTopic.display_name);
+            authors = altAuthors;
+            break;
+          }
+        }
+      }
+      if (authors.length === 0) setError(`No professors found for "${topicName}"${institutionName ? ` at ${institutionName}` : ""}. Try a more specific topic like "machine learning" or "quantum computing".`);
       setResults(authors);
     } catch { setError("Something went wrong. Please try again."); }
     finally { setLoading(false); }
