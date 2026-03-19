@@ -23,8 +23,10 @@ interface EmailFlag {
 }
 
 export default function Home() {
+  const [searchMode, setSearchMode] = useState<"interest" | "name">("interest");
   const [query, setQuery] = useState("");
   const [university, setUniversity] = useState("");
+  const [profName, setProfName] = useState("");
   const [results, setResults] = useState<Author[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -114,6 +116,30 @@ export default function Home() {
     finally { setLoading(false); }
   }
 
+  async function searchByName() {
+    if (!profName.trim()) return;
+    setLoading(true);
+    setError("");
+    setResults([]);
+    setSummaries({});
+    setResolvedTopic("");
+    setResolvedInstitution("");
+    setShowSaved(false);
+    try {
+      const res = await fetch(`https://api.openalex.org/authors?search=${encodeURIComponent(profName.trim())}&per_page=10&sort=cited_by_count:desc`);
+      const data = await res.json();
+      const authors: Author[] = data.results || [];
+      if (authors.length === 0) setError(`No professors found matching "${profName}".`);
+      setResults(authors);
+    } catch { setError("Something went wrong. Please try again."); }
+    finally { setLoading(false); }
+  }
+
+  function handleSearch() {
+    if (searchMode === "name") searchByName();
+    else search();
+  }
+
   async function loadSummary(author: Author) {
     const id = author.id.split("/").pop()!;
     if (summaries[id] || loadingSummary[id]) return;
@@ -175,8 +201,44 @@ export default function Home() {
           )}
         </div>
 
-        {/* SEARCH */}
+        {/* SEARCH MODE TOGGLE */}
         {!showSaved && (
+          <div style={{ display: "flex", gap: "0", marginBottom: "20px" }}>
+            <button
+              onClick={() => setSearchMode("interest")}
+              style={{
+                padding: "10px 24px", fontSize: "0.9rem", fontWeight: 600,
+                fontFamily: "'Playfair Display', Georgia, serif",
+                border: "1.5px solid rgba(99,107,47,0.2)",
+                borderRight: "none",
+                borderRadius: "999px 0 0 999px",
+                background: searchMode === "interest" ? "#2d5a3d" : "rgba(255,255,255,0.5)",
+                color: searchMode === "interest" ? "#fff" : "#636B2F",
+                cursor: "pointer", transition: "all 0.2s",
+              }}
+            >
+              By Interest
+            </button>
+            <button
+              onClick={() => setSearchMode("name")}
+              style={{
+                padding: "10px 24px", fontSize: "0.9rem", fontWeight: 600,
+                fontFamily: "'Playfair Display', Georgia, serif",
+                border: "1.5px solid rgba(99,107,47,0.2)",
+                borderLeft: "none",
+                borderRadius: "0 999px 999px 0",
+                background: searchMode === "name" ? "#2d5a3d" : "rgba(255,255,255,0.5)",
+                color: searchMode === "name" ? "#fff" : "#636B2F",
+                cursor: "pointer", transition: "all 0.2s",
+              }}
+            >
+              By Name
+            </button>
+          </div>
+        )}
+
+        {/* SEARCH */}
+        {!showSaved && searchMode === "interest" && (
           <div className="glass-search rm-search">
             <div className="rm-search-input-wrap">
               <label className="rm-search-label">Research Interest</label>
@@ -188,6 +250,15 @@ export default function Home() {
               <input value={university} onChange={(e) => setUniversity(e.target.value)} onKeyDown={(e) => e.key === "Enter" && search()} placeholder="e.g. MIT, Stanford..." className="rm-search-input" />
             </div>
             <button onClick={search} className="btn-cta rm-search-btn">Search</button>
+          </div>
+        )}
+        {!showSaved && searchMode === "name" && (
+          <div className="glass-search rm-search">
+            <div className="rm-search-input-wrap" style={{ flex: 1 }}>
+              <label className="rm-search-label">Professor Name</label>
+              <input value={profName} onChange={(e) => setProfName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && searchByName()} placeholder="e.g. Geoffrey Hinton, Fei-Fei Li..." className="rm-search-input" />
+            </div>
+            <button onClick={searchByName} className="btn-cta rm-search-btn">Search</button>
           </div>
         )}
 
