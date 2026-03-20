@@ -1,5 +1,18 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+
+const RESEARCH_SUGGESTIONS = [
+  "Machine Learning", "Artificial Intelligence", "Computer Vision", "Natural Language Processing",
+  "Robotics", "Quantum Computing", "Cybersecurity", "Data Science",
+  "Neuroscience", "Cognitive Science", "Psychology", "Behavioral Economics",
+  "Molecular Biology", "Genetics", "Genomics", "Biochemistry",
+  "Organic Chemistry", "Inorganic Chemistry", "Materials Science", "Nanotechnology",
+  "Astrophysics", "Particle Physics", "Condensed Matter Physics", "Climate Science",
+  "Environmental Science", "Ecology", "Evolutionary Biology", "Immunology",
+  "Cancer Biology", "Biomedical Engineering", "Public Health", "Epidemiology",
+  "Economics", "Political Science", "Sociology", "Philosophy",
+  "Mechanical Engineering", "Electrical Engineering", "Chemical Engineering", "Aerospace Engineering",
+];
 
 interface Author {
   id: string;
@@ -37,6 +50,9 @@ export default function Home() {
   const [saved, setSaved] = useState<Author[]>([]);
   const [showSaved, setShowSaved] = useState(false);
 
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+
   const [emailTarget, setEmailTarget] = useState<Author | null>(null);
   const [emailDraft, setEmailDraft] = useState("");
   const [emailFlags, setEmailFlags] = useState<EmailFlag[]>([]);
@@ -48,6 +64,16 @@ export default function Home() {
     if (stored) {
       try { setSaved(JSON.parse(stored)); } catch { /* ignore */ }
     }
+  }, []);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   function toggleSave(author: Author) {
@@ -171,6 +197,10 @@ export default function Home() {
     finally { setCheckingEmail(false); }
   }
 
+  const filteredSuggestions = query.trim()
+    ? RESEARCH_SUGGESTIONS.filter((s) => s.toLowerCase().includes(query.toLowerCase()))
+    : RESEARCH_SUGGESTIONS;
+
   const profileUrl = (author: Author) => `https://openalex.org/authors/${author.id.split("/").pop()}`;
   const displayList = showSaved ? saved : results;
   const wordCount = emailDraft.trim().split(/\s+/).filter(Boolean).length;
@@ -240,9 +270,29 @@ export default function Home() {
         {/* SEARCH */}
         {!showSaved && searchMode === "interest" && (
           <div className="glass-search rm-search">
-            <div className="rm-search-input-wrap">
+            <div className="rm-search-input-wrap" ref={suggestionsRef} style={{ position: "relative" }}>
               <label className="rm-search-label">Research Interest</label>
-              <input value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={(e) => e.key === "Enter" && search()} placeholder="e.g. machine learning, quantum computing..." className="rm-search-input" />
+              <input
+                value={query}
+                onChange={(e) => { setQuery(e.target.value); setShowSuggestions(true); }}
+                onFocus={() => setShowSuggestions(true)}
+                onKeyDown={(e) => { if (e.key === "Enter") { setShowSuggestions(false); search(); } }}
+                placeholder="e.g. machine learning, quantum computing..."
+                className="rm-search-input"
+              />
+              {showSuggestions && filteredSuggestions.length > 0 && (
+                <div className="suggestions-dropdown">
+                  {filteredSuggestions.slice(0, 8).map((s, i) => (
+                    <button
+                      key={i}
+                      className="suggestion-item"
+                      onClick={() => { setQuery(s); setShowSuggestions(false); }}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="rm-search-divider" />
             <div className="rm-uni-field">
@@ -349,7 +399,14 @@ export default function Home() {
                         ))}
                       </div>
                     )}
-                    <button onClick={() => openEmailDraft(author)} className="btn-secondary" style={{ marginTop: "24px", padding: "12px 28px", fontSize: "0.95rem" }}>
+                    {/* Closing tip */}
+                    <div style={{ marginTop: "24px", padding: "16px 20px", background: "rgba(212,222,149,0.15)", border: "1px solid rgba(186,192,149,0.3)", borderRadius: "14px" }}>
+                      <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "#636B2F", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "6px" }}>Closing Tip</p>
+                      <p style={{ fontSize: "0.9rem", color: "#5A5D45", lineHeight: 1.6 }}>
+                        End your email with: &ldquo;If you&apos;re not currently taking students, is there someone in your group you&apos;d recommend I reach out to?&rdquo;
+                      </p>
+                    </div>
+                    <button onClick={() => openEmailDraft(author)} className="btn-secondary" style={{ marginTop: "16px", padding: "12px 28px", fontSize: "0.95rem" }}>
                       Draft email to professor &rarr;
                     </button>
                   </div>
@@ -372,10 +429,26 @@ export default function Home() {
             <div className="modal-bg rm-modal-overlay">
               <div className="modal-glass rm-modal">
                 <div className="rm-modal-left">
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "28px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
                     <h2 className="rm-modal-title">Email to {emailTarget.display_name}</h2>
                     <button onClick={() => { setEmailTarget(null); setEmailDraft(""); setEmailFlags([]); setHasChecked(false); }} style={{ fontSize: "1.5rem", color: "#A8AB92", background: "none", border: "none", cursor: "pointer" }}>&times;</button>
                   </div>
+
+                  {/* Check their website banner */}
+                  <div style={{ padding: "14px 18px", background: "rgba(45,90,61,0.08)", border: "1.5px solid rgba(45,90,61,0.18)", borderRadius: "14px", marginBottom: "16px", display: "flex", alignItems: "flex-start", gap: "10px" }}>
+                    <span style={{ fontSize: "1.1rem", flexShrink: 0 }}>&#128161;</span>
+                    <p style={{ fontSize: "0.85rem", color: "#2d5a3d", lineHeight: 1.6 }}>
+                      <strong>Before emailing</strong>, check the professor&apos;s faculty page for specific contact instructions. Less than 5% of students do this and it instantly sets you apart.
+                    </p>
+                  </div>
+
+                  {/* Volunteer framing tip */}
+                  <div style={{ padding: "12px 18px", background: "rgba(212,222,149,0.12)", border: "1px solid rgba(186,192,149,0.25)", borderRadius: "14px", marginBottom: "20px" }}>
+                    <p style={{ fontSize: "0.82rem", color: "#636B2F", lineHeight: 1.6 }}>
+                      <strong>Tip:</strong> Consider saying you&apos;d like to <em>volunteer</em> rather than asking for a position. It lowers the commitment for professors and makes them more likely to say yes.
+                    </p>
+                  </div>
+
                   <textarea value={emailDraft} onChange={(e) => { setEmailDraft(e.target.value); setHasChecked(false); }} placeholder={`Dear Professor ${emailTarget.display_name},\n\nI'm a [year] [major] student at [your university]...\n\nUse the reference panel to mention specific papers and research.`} className="modal-textarea" style={{ flex: 1, padding: "24px", lineHeight: 1.7 }} />
                   <div className="rm-modal-actions">
                     <button onClick={checkEmail} disabled={checkingEmail || !emailDraft.trim()} className="btn-cta" style={{ padding: "14px 36px", fontSize: "1rem" }}>

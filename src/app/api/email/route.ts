@@ -45,6 +45,7 @@ For each check below, first look for evidence in the email, then decide whether 
 6. TOO MUCH FLATTERY — flag ONLY if it uses words like "groundbreaking," "deeply inspired," "incredible," "revolutionary."
 7. ASKING FOR TOO MUCH — flag if asking for paid work, funding, or admission in a first email.
 8. NO INTRODUCTION — flag ONLY if the student never states their name, school, or year.
+9. SYCOPHANTIC TONE — flag if the email contains excessive flattery, offers to do anything the professor wants, or uses phrases like "groundbreaking work", "it would be an honor", "deeply inspired", "incredible contributions", "I am willing to do whatever you ask", "I would love to research anything you need." This tone screams AI-generated and signals no real interests.
 
 Return JSON: { "flags": [ { "type": "error" or "warning", "issue": "FLAG_NAME", "suggestion": "one sentence explanation" } ] }
 Only flag real problems. If the email is solid, return { "flags": [] }. Max 4 flags.`;

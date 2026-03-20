@@ -61,7 +61,7 @@ Return a JSON object with two fields:
 2. "highlights": an array of 3 objects, each with:
    - "paper": the exact paper title
    - "detail": one specific finding, method, or result from that paper. Focus on what they actually discovered or built — a number, a comparison, a technique. Never just restate the title or topic. Explain the concrete outcome in one sentence, plain English.
-3. "questions": an array of 3 strings. Questions should engage with specific findings or methods from the papers. Never compliment the research. Never use phrases like "I found your work fascinating." Frame questions as genuine curiosity about the substance, like "how did you control for X in your study" or "do you think Y could apply to Z." Questions should sound like a smart student trying to understand, not a student trying to impress.
+3. "questions": an array of 3 strings. Based on this professor's recent work, generate questions a curious student might ask about where this research is heading next, what problems remain unsolved, or how the methods could apply to other areas. Don't summarize the papers back at them. Never compliment the research. Never use phrases like "I found your work fascinating" or "Can you discuss" or "What are the implications of." Frame questions as genuine curiosity, like "how did you control for X in your study" or "do you think Y could apply to Z." Sound genuinely curious, not formal.
 
 Return only valid JSON, no markdown, no explanation.`;
 
