@@ -12,7 +12,7 @@ interface Author {
 
 interface SummaryData {
   summary: string;
-  highlights: { paper: string; detail: string }[];
+  highlights: { paper: string; detail: string; authorPosition?: string }[];
   questions: string[];
 }
 
@@ -313,11 +313,21 @@ export default function Home() {
                     <p style={{ fontSize: "1.05rem", lineHeight: 1.7, color: "#5A5D45" }}>{summary.summary}</p>
                     {summary.highlights.length > 0 && (
                       <div style={{ marginTop: "24px" }}>
-                        <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "14px" }}>Key Findings</p>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
+                          <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em" }}>Key Findings</p>
+                          <span title="In most lab sciences, first author did the work and last author runs the lab. In math/CS, author order may be alphabetical." style={{ fontSize: "0.75rem", color: "#A8AB92", cursor: "help", border: "1px solid #BAC095", borderRadius: "999px", width: "16px", height: "16px", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>?</span>
+                        </div>
                         {summary.highlights.map((h, i) => (
                           <div key={i} style={{ paddingLeft: "20px", borderLeft: "3px solid #BAC095", marginBottom: "16px" }}>
                             <p style={{ fontSize: "1rem", color: "#5A5D45", lineHeight: 1.6 }}>{h.detail}</p>
-                            <p style={{ fontSize: "0.85rem", color: "#A8AB92", fontStyle: "italic", marginTop: "4px" }}>{h.paper}</p>
+                            <p style={{ fontSize: "0.85rem", color: "#A8AB92", fontStyle: "italic", marginTop: "4px" }}>
+                              {h.paper}
+                              {h.authorPosition && h.authorPosition !== "unknown" && (
+                                <span style={{ fontStyle: "normal", fontSize: "0.75rem", marginLeft: "8px", padding: "2px 8px", borderRadius: "999px", background: h.authorPosition === "first" ? "rgba(45,90,61,0.1)" : h.authorPosition === "last" ? "rgba(139,105,20,0.1)" : "rgba(138,141,114,0.1)", color: h.authorPosition === "first" ? "#2d5a3d" : h.authorPosition === "last" ? "#8B6914" : "#8A8D72" }}>
+                                  {h.authorPosition === "first" ? "1st author" : h.authorPosition === "last" ? "last author" : "middle author"}
+                                </span>
+                              )}
+                            </p>
                           </div>
                         ))}
                       </div>

@@ -16,24 +16,22 @@ export async function POST(req: NextRequest) {
       `https://api.openalex.org/works?filter=author.id:${authorId},publication_year:>${fromYear}&sort=cited_by_count:desc&per_page=20&select=title,abstract_inverted_index,cited_by_count,publication_year,authorships`
     );
     const worksData = await worksRes.json();
-    // Only keep papers where this professor is first or last (senior) author
     const allWorks = worksData.results ?? [];
-    const firstLastWorks = allWorks
-      .filter((w: any) =>
-        w.authorships?.some(
-          (a: any) =>
-            a.author?.id === `https://openalex.org/${authorId}` &&
-            (a.author_position === "first" || a.author_position === "last")
-        )
-      )
-      .slice(0, 8);
-
-    // Fallback to all papers if no first/last author papers found
-    const isCollaborative = firstLastWorks.length === 0 && allWorks.length > 0;
-    const works = firstLastWorks.length > 0 ? firstLastWorks : allWorks.slice(0, 8);
+    const works = allWorks.slice(0, 8);
 
     if (works.length === 0) {
-      return NextResponse.json({ summary: "No recent papers found for this researcher.", highlights: [], isCollaborative: false });
+      return NextResponse.json({ summary: "No recent papers found for this researcher.", highlights: [] });
+    }
+
+    // Get author position for each paper
+    const authorPositions: Record<string, string> = {};
+    for (const w of works) {
+      const authorship = w.authorships?.find(
+        (a: any) => a.author?.id === `https://openalex.org/${authorId}`
+      );
+      if (authorship && w.title) {
+        authorPositions[w.title] = authorship.author_position ?? "unknown";
+      }
     }
 
     // Reconstruct abstracts from inverted index
@@ -89,11 +87,16 @@ Return only valid JSON, no markdown, no explanation.`;
       parsed = { summary: raw, highlights: [] };
     }
 
+    // Attach author position to each highlight
+    const highlightsWithPosition = (parsed.highlights ?? []).map((h) => ({
+      ...h,
+      authorPosition: authorPositions[h.paper] ?? "unknown",
+    }));
+
     return NextResponse.json({
       summary: parsed.summary ?? "",
-      highlights: parsed.highlights ?? [],
+      highlights: highlightsWithPosition,
       questions: parsed.questions ?? [],
-      isCollaborative,
     });
   } catch (err) {
     console.error("summarize error:", err);
