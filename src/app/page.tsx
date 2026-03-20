@@ -315,7 +315,16 @@ export default function Home() {
                       <div style={{ marginTop: "24px" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
                           <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em" }}>Key Findings</p>
-                          <span title="In most lab sciences, first author did the work and last author runs the lab. In math/CS, author order may be alphabetical." style={{ fontSize: "0.75rem", color: "#A8AB92", cursor: "help", border: "1px solid #BAC095", borderRadius: "999px", width: "16px", height: "16px", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>?</span>
+                          <button
+                            onClick={(e) => {
+                              const el = e.currentTarget.nextElementSibling as HTMLElement;
+                              if (el) el.style.display = el.style.display === "none" ? "block" : "none";
+                            }}
+                            style={{ fontSize: "0.7rem", fontWeight: 700, color: "#A8AB92", cursor: "pointer", background: "rgba(186,192,149,0.15)", border: "1px solid #BAC095", borderRadius: "999px", width: "18px", height: "18px", display: "inline-flex", alignItems: "center", justifyContent: "center", fontFamily: "'Playfair Display', Georgia, serif" }}
+                          >?</button>
+                          <div style={{ display: "none", padding: "14px 18px", background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)", border: "1px solid rgba(186,192,149,0.3)", borderRadius: "12px", fontSize: "0.85rem", color: "#5A5D45", lineHeight: 1.6, marginTop: "4px", marginBottom: "8px" }}>
+                            In most lab sciences, <strong>1st author</strong> did the hands-on work and <strong>last author</strong> runs the lab. In math and CS, author order is often alphabetical and doesn&apos;t indicate contribution level.
+                          </div>
                         </div>
                         {summary.highlights.map((h, i) => (
                           <div key={i} style={{ paddingLeft: "20px", borderLeft: "3px solid #BAC095", marginBottom: "16px" }}>
