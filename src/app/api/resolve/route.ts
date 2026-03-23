@@ -17,11 +17,11 @@ async function pickBestMatch(
     messages: [
       {
         role: "system",
-        content: "You pick the best matching item from a list. Reply with only a single number — no explanation, no punctuation. If none of the candidates are a strong, direct match for the query, return -1 instead of forcing a bad match.",
+        content: "You pick the best matching item from a list. Reply with only a single digit index number — no explanation, no punctuation.",
       },
       {
         role: "user",
-        content: `Query: "${query}"\n\nCandidates:\n${list}\n\nWhich index is the broadest, most general match for the ${entityType}? Avoid niche subfields unless the query is specific. If nothing is a good match, return -1.`,
+        content: `Query: "${query}"\n\nCandidates:\n${list}\n\nWhich index is the broadest, most general match? Avoid niche subfields unless the query is specific.`,
       },
     ],
     max_tokens: 5,
@@ -30,7 +30,6 @@ async function pickBestMatch(
 
   const raw = chat.choices[0]?.message?.content?.trim() ?? "0";
   const idx = parseInt(raw, 10);
-  if (idx === -1) return -1;
   return isNaN(idx) || idx < 0 || idx >= candidates.length ? 0 : idx;
 }
 
@@ -50,35 +49,6 @@ export async function POST(req: NextRequest) {
     }
 
     const topicIdx = await pickBestMatch(topic, topics, "research topic");
-
-    // If no good topic match, return null topicId so frontend can do keyword fallback
-    if (topicIdx === -1) {
-      // Still resolve institution if provided
-      let institutionId: string | null = null;
-      let institutionName: string | null = null;
-      if (university) {
-        const instRes = await fetch(
-          `https://api.openalex.org/institutions?search=${encodeURIComponent(university)}&per_page=5`
-        );
-        const instData = await instRes.json();
-        const institutions: { id: string; display_name: string }[] = instData.results ?? [];
-        if (institutions.length > 0) {
-          const instIdx = await pickBestMatch(university, institutions, "university");
-          if (instIdx !== -1) {
-            const bestInst = institutions[instIdx];
-            institutionId = bestInst.id.split("/").pop() ?? null;
-            institutionName = bestInst.display_name;
-          }
-        }
-      }
-      return NextResponse.json({
-        topicId: null,
-        topicName: topic,
-        institutionId,
-        institutionName,
-      });
-    }
-
     const bestTopic = topics[topicIdx];
     const topicId = bestTopic.id.split("/").pop();
 
