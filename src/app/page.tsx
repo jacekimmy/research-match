@@ -2,17 +2,74 @@
 import { useState, useEffect, useRef } from "react";
 
 const RESEARCH_SUGGESTIONS = [
-  "Machine Learning", "Artificial Intelligence", "Computer Vision", "Natural Language Processing",
-  "Robotics", "Quantum Computing", "Cybersecurity", "Data Science",
-  "Neuroscience", "Cognitive Science", "Psychology", "Behavioral Economics",
-  "Molecular Biology", "Genetics", "Genomics", "Biochemistry",
-  "Organic Chemistry", "Inorganic Chemistry", "Materials Science", "Nanotechnology",
-  "Astrophysics", "Particle Physics", "Condensed Matter Physics", "Climate Science",
-  "Environmental Science", "Ecology", "Evolutionary Biology", "Immunology",
-  "Cancer Biology", "Biomedical Engineering", "Public Health", "Epidemiology",
-  "Economics", "Political Science", "Sociology", "Philosophy",
-  "Mechanical Engineering", "Electrical Engineering", "Chemical Engineering", "Aerospace Engineering",
-];
+  // Medicine & Health
+  "Cardiology", "Oncology", "Immunology", "Neurology", "Pediatrics", "Surgery",
+  "Anesthesiology", "Dermatology", "Psychiatry", "Epidemiology", "Public Health",
+  "Clinical Trials", "Pharmacology", "Pathology", "Radiology", "Emergency Medicine",
+  "Family Medicine", "Internal Medicine", "Orthopedics", "Ophthalmology",
+  "Gastroenterology", "Endocrinology", "Infectious Disease", "Physical Therapy",
+  "Occupational Therapy", "Speech Pathology", "Nursing Research", "Nutrition Science",
+  "Kinesiology", "Global Health", "Mental Health", "Genetics", "Genomics",
+  "Biomedical Engineering",
+  // Biology & Life Sciences
+  "Molecular Biology", "Cell Biology", "Microbiology", "Biochemistry", "Ecology",
+  "Evolutionary Biology", "Marine Biology", "Zoology", "Botany", "Entomology",
+  "Neuroscience", "Bioinformatics", "Biotechnology", "Developmental Biology",
+  "Structural Biology", "Virology", "Parasitology", "Conservation Biology",
+  "Wildlife Biology", "Plant Science", "Toxicology", "Biophysics",
+  // Chemistry
+  "Organic Chemistry", "Inorganic Chemistry", "Analytical Chemistry",
+  "Physical Chemistry", "Medicinal Chemistry", "Computational Chemistry",
+  "Materials Chemistry", "Polymer Chemistry", "Environmental Chemistry",
+  "Electrochemistry", "Photochemistry",
+  // Physics & Astronomy
+  "Astrophysics", "Quantum Physics", "Condensed Matter Physics", "Particle Physics",
+  "Nuclear Physics", "Optics", "Plasma Physics", "Cosmology", "Planetary Science",
+  "Gravitational Physics", "Computational Physics", "Thermodynamics", "Fluid Dynamics",
+  // Engineering
+  "Mechanical Engineering", "Electrical Engineering", "Chemical Engineering",
+  "Civil Engineering", "Aerospace Engineering", "Environmental Engineering",
+  "Computer Engineering", "Industrial Engineering", "Nuclear Engineering",
+  "Materials Science", "Robotics", "Control Systems", "Signal Processing",
+  "VLSI Design", "Nanotechnology", "Renewable Energy",
+  // Computer Science & Math
+  "Machine Learning", "Artificial Intelligence", "Computer Vision",
+  "Natural Language Processing", "Cybersecurity", "Data Science", "Algorithms",
+  "Software Engineering", "Human Computer Interaction", "Computer Graphics",
+  "Distributed Systems", "Operating Systems", "Database Systems",
+  "Quantum Computing", "Mathematics", "Statistics", "Applied Mathematics",
+  "Number Theory", "Topology", "Combinatorics", "Cryptography",
+  // Social Sciences
+  "Psychology", "Sociology", "Political Science", "Economics", "Anthropology",
+  "Linguistics", "Geography", "Criminology", "Social Work", "Urban Planning",
+  "International Relations", "Public Policy", "Behavioral Economics",
+  "Cognitive Science", "Developmental Psychology", "Clinical Psychology",
+  "Organizational Psychology",
+  // Humanities
+  "History", "Philosophy", "English Literature", "Comparative Literature",
+  "Religious Studies", "Art History", "Classics", "Ethics", "Cultural Studies",
+  "Gender Studies", "African American Studies", "Asian Studies",
+  "Latin American Studies", "Film Studies", "Music Theory", "Theater Studies",
+  // Business & Law
+  "Finance", "Accounting", "Marketing", "Management", "Entrepreneurship",
+  "Supply Chain", "Business Analytics", "Health Economics", "Law",
+  "Constitutional Law", "International Law", "Environmental Law",
+  "Intellectual Property",
+  // Education
+  "Curriculum Development", "Educational Psychology", "Special Education",
+  "STEM Education", "Higher Education", "Literacy Studies", "Educational Technology",
+  // Environmental & Earth Sciences
+  "Climate Science", "Geology", "Oceanography", "Atmospheric Science", "Hydrology",
+  "Seismology", "Soil Science", "Forestry", "Sustainability", "Environmental Policy",
+  "Remote Sensing", "GIS",
+  // Agriculture & Food
+  "Agricultural Science", "Food Science", "Animal Science", "Crop Science",
+  "Horticulture", "Aquaculture", "Food Safety", "Agricultural Economics",
+  // Interdisciplinary
+  "Bioethics", "Science Communication", "Digital Humanities",
+  "Computational Social Science", "Neuroeconomics", "Astrobiology",
+  "Science Policy", "Health Informatics", "Medical Anthropology",
+].sort();
 
 interface Author {
   id: string;
@@ -51,6 +108,13 @@ export default function Home() {
   const [showSaved, setShowSaved] = useState(false);
 
   const [showSuggestions, setShowSuggestions] = useState(false);
+
+  const PLACEHOLDER_EXAMPLES = [
+    "e.g. neuroscience", "e.g. organic chemistry", "e.g. political science",
+    "e.g. machine learning", "e.g. cardiology", "e.g. astrophysics",
+    "e.g. behavioral economics", "e.g. robotics", "e.g. immunology",
+  ];
+  const [placeholderIdx, setPlaceholderIdx] = useState(0);
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
   const [emailTarget, setEmailTarget] = useState<Author | null>(null);
@@ -65,6 +129,13 @@ export default function Home() {
       try { setSaved(JSON.parse(stored)); } catch { /* ignore */ }
     }
   }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPlaceholderIdx((i) => (i + 1) % PLACEHOLDER_EXAMPLES.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -109,30 +180,58 @@ export default function Home() {
       const { topicId, topicName, institutionId, institutionName } = resolved;
       setResolvedTopic(topicName);
       if (institutionName) setResolvedInstitution(institutionName);
-      const institutionFilter = institutionId ? `,last_known_institutions.id:${institutionId}` : "";
-      const res = await fetch(`https://api.openalex.org/authors?filter=topics.id:${topicId}${institutionFilter}&per_page=20&sort=cited_by_count:desc`);
-      const data = await res.json();
-      let authors: Author[] = data.results || [];
-      if (institutionId) {
-        const fullInstId = `https://openalex.org/${institutionId}`;
-        authors = authors.filter((a) => a.last_known_institutions?.[0]?.id === fullInstId);
-      }
-      // If no results, try a broader keyword-based search on OpenAlex topics
-      if (authors.length === 0 && institutionId) {
-        const broadRes = await fetch(`https://api.openalex.org/topics?search=${encodeURIComponent(query)}&per_page=10`);
-        const broadData = await broadRes.json();
-        const allTopicIds = (broadData.results ?? []).map((t: any) => t.id.split("/").pop()).filter((id: string) => id !== topicId);
-        for (const altId of allTopicIds.slice(0, 5)) {
-          const altRes = await fetch(`https://api.openalex.org/authors?filter=topics.id:${altId},last_known_institutions.id:${institutionId}&per_page=20&sort=cited_by_count:desc`);
-          const altData = await altRes.json();
-          let altAuthors: Author[] = altData.results || [];
+
+      let authors: Author[] = [];
+
+      if (!topicId) {
+        // No good topic match — fallback to keyword search on works
+        const instFilter = institutionId ? `&filter=authorships.institutions.id:${institutionId}` : "";
+        const worksRes = await fetch(`https://api.openalex.org/works?search=${encodeURIComponent(query)}${instFilter}&sort=publication_date:desc&per_page=20&select=authorships`);
+        const worksData = await worksRes.json();
+        const works = worksData.results ?? [];
+        const authorMap = new Map<string, Author>();
+        for (const work of works) {
+          for (const authorship of (work.authorships ?? [])) {
+            const authorId = authorship.author?.id;
+            if (!authorId || authorMap.has(authorId)) continue;
+            if (institutionId && authorship.institutions?.[0]?.id !== `https://openalex.org/${institutionId}`) continue;
+            const authorRes = await fetch(`https://api.openalex.org/authors/${authorId.split("/").pop()}?select=id,display_name,last_known_institutions,works_count,cited_by_count,topics`);
+            if (authorRes.ok) {
+              const authorData = await authorRes.json();
+              if (institutionId && authorData.last_known_institutions?.[0]?.id !== `https://openalex.org/${institutionId}`) continue;
+              authorMap.set(authorId, authorData);
+            }
+            if (authorMap.size >= 10) break;
+          }
+          if (authorMap.size >= 10) break;
+        }
+        authors = Array.from(authorMap.values()).sort((a, b) => b.cited_by_count - a.cited_by_count);
+      } else {
+        // Normal topic-based search
+        const institutionFilter = institutionId ? `,last_known_institutions.id:${institutionId}` : "";
+        const res = await fetch(`https://api.openalex.org/authors?filter=topics.id:${topicId}${institutionFilter}&per_page=20&sort=cited_by_count:desc`);
+        const data = await res.json();
+        authors = data.results || [];
+        if (institutionId) {
           const fullInstId = `https://openalex.org/${institutionId}`;
-          altAuthors = altAuthors.filter((a) => a.last_known_institutions?.[0]?.id === fullInstId);
-          if (altAuthors.length > 0) {
-            const altTopic = (broadData.results ?? []).find((t: any) => t.id.split("/").pop() === altId);
-            if (altTopic) setResolvedTopic(altTopic.display_name);
-            authors = altAuthors;
-            break;
+          authors = authors.filter((a) => a.last_known_institutions?.[0]?.id === fullInstId);
+        }
+        if (authors.length === 0 && institutionId) {
+          const broadRes = await fetch(`https://api.openalex.org/topics?search=${encodeURIComponent(query)}&per_page=10`);
+          const broadData = await broadRes.json();
+          const allTopicIds = (broadData.results ?? []).map((t: any) => t.id.split("/").pop()).filter((id: string) => id !== topicId);
+          for (const altId of allTopicIds.slice(0, 5)) {
+            const altRes = await fetch(`https://api.openalex.org/authors?filter=topics.id:${altId},last_known_institutions.id:${institutionId}&per_page=20&sort=cited_by_count:desc`);
+            const altData = await altRes.json();
+            let altAuthors: Author[] = altData.results || [];
+            const fullInstId = `https://openalex.org/${institutionId}`;
+            altAuthors = altAuthors.filter((a) => a.last_known_institutions?.[0]?.id === fullInstId);
+            if (altAuthors.length > 0) {
+              const altTopic = (broadData.results ?? []).find((t: any) => t.id.split("/").pop() === altId);
+              if (altTopic) setResolvedTopic(altTopic.display_name);
+              authors = altAuthors;
+              break;
+            }
           }
         }
       }
@@ -277,7 +376,7 @@ export default function Home() {
                 onChange={(e) => { setQuery(e.target.value); setShowSuggestions(true); }}
                 onFocus={() => setShowSuggestions(true)}
                 onKeyDown={(e) => { if (e.key === "Enter") { setShowSuggestions(false); search(); } }}
-                placeholder="e.g. machine learning, quantum computing..."
+                placeholder={PLACEHOLDER_EXAMPLES[placeholderIdx]}
                 className="rm-search-input"
               />
               {showSuggestions && filteredSuggestions.length > 0 && (
