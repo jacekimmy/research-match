@@ -1,5 +1,6 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import confetti from "canvas-confetti";
 
 const RESEARCH_SUGGESTIONS = [
   // Medicine & Health
@@ -106,8 +107,10 @@ export default function Home() {
   const [loadingSummary, setLoadingSummary] = useState<Record<string, boolean>>({});
   const [saved, setSaved] = useState<Author[]>([]);
   const [showSaved, setShowSaved] = useState(false);
-
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+  const [starBounce, setStarBounce] = useState<string | null>(null);
 
   const PLACEHOLDER_EXAMPLES = [
     "e.g. neuroscience", "e.g. organic chemistry", "e.g. political science",
@@ -122,6 +125,16 @@ export default function Home() {
   const [emailFlags, setEmailFlags] = useState<EmailFlag[]>([]);
   const [checkingEmail, setCheckingEmail] = useState(false);
   const [hasChecked, setHasChecked] = useState(false);
+
+  // Welcome moment on first visit
+  useEffect(() => {
+    const hasVisited = localStorage.getItem("research-match-visited");
+    if (!hasVisited) {
+      setShowWelcome(true);
+      localStorage.setItem("research-match-visited", "true");
+      setTimeout(() => setShowWelcome(false), 3200);
+    }
+  }, []);
 
   useEffect(() => {
     const stored = localStorage.getItem("research-match-saved");
@@ -147,11 +160,21 @@ export default function Home() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Toast helper
+  const showToast = useCallback((msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 2200);
+  }, []);
+
   function toggleSave(author: Author) {
+    const id = author.id.split("/").pop()!;
+    setStarBounce(id);
+    setTimeout(() => setStarBounce(null), 500);
     setSaved((prev) => {
       const exists = prev.some((a) => a.id === author.id);
       const next = exists ? prev.filter((a) => a.id !== author.id) : [...prev, author];
       localStorage.setItem("research-match-saved", JSON.stringify(next));
+      if (!exists) showToast("Professor saved!");
       return next;
     });
   }
@@ -184,7 +207,6 @@ export default function Home() {
       let authors: Author[] = [];
 
       if (!topicId) {
-        // No good topic match — fallback to keyword search on works
         const instFilter = institutionId ? `&filter=authorships.institutions.id:${institutionId}` : "";
         const worksRes = await fetch(`https://api.openalex.org/works?search=${encodeURIComponent(query)}${instFilter}&sort=publication_date:desc&per_page=20&select=authorships`);
         const worksData = await worksRes.json();
@@ -207,7 +229,6 @@ export default function Home() {
         }
         authors = Array.from(authorMap.values()).sort((a, b) => b.cited_by_count - a.cited_by_count);
       } else {
-        // Normal topic-based search
         const institutionFilter = institutionId ? `,last_known_institutions.id:${institutionId}` : "";
         const res = await fetch(`https://api.openalex.org/authors?filter=topics.id:${topicId}${institutionFilter}&per_page=20&sort=cited_by_count:desc`);
         const data = await res.json();
@@ -291,9 +312,42 @@ export default function Home() {
     try {
       const res = await fetch("/api/email", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ draft: emailDraft, professorName: emailTarget.display_name, institution: emailTarget.last_known_institutions?.[0]?.display_name || "", topics: emailTarget.topics?.slice(0, 4).map((t) => t.display_name), highlights: summary?.highlights || [], questions: summary?.questions || [] }) });
       const data = await res.json();
-      setEmailFlags(data.flags ?? []); setHasChecked(true);
+      const flags = data.flags ?? [];
+      setEmailFlags(flags);
+      setHasChecked(true);
+
+      // Perfect email celebration!
+      if (flags.length === 0) {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ["#2d5a3d", "#BAC095", "#D4DE95", "#636B2F", "#F5F0E6"],
+        });
+        setTimeout(() => {
+          confetti({
+            particleCount: 50,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 },
+            colors: ["#2d5a3d", "#BAC095", "#D4DE95"],
+          });
+          confetti({
+            particleCount: 50,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 },
+            colors: ["#2d5a3d", "#BAC095", "#D4DE95"],
+          });
+        }, 300);
+      }
     } catch { setEmailFlags([{ type: "error", issue: "Check failed", suggestion: "Something went wrong. Try again." }]); setHasChecked(true); }
     finally { setCheckingEmail(false); }
+  }
+
+  function handleCopy() {
+    navigator.clipboard.writeText(emailDraft);
+    showToast("Copied to clipboard!");
   }
 
   const filteredSuggestions = query.trim()
@@ -306,6 +360,17 @@ export default function Home() {
 
   return (
     <>
+      {/* Welcome moment */}
+      {showWelcome && (
+        <div className="welcome-overlay">
+          <div className="welcome-content">
+            <span className="welcome-leaf">&#127807;</span>
+            <p className="welcome-text">Welcome to Research Match</p>
+            <p className="welcome-subtext">Let&apos;s find your perfect research mentor.</p>
+          </div>
+        </div>
+      )}
+
       <div className="splotches">
         <div className="splotch splotch-1" />
         <div className="splotch splotch-2" />
@@ -332,34 +397,16 @@ export default function Home() {
 
         {/* SEARCH MODE TOGGLE */}
         {!showSaved && (
-          <div style={{ display: "flex", gap: "0", marginBottom: "20px" }}>
+          <div className="mode-toggle">
             <button
               onClick={() => setSearchMode("interest")}
-              style={{
-                padding: "10px 24px", fontSize: "0.9rem", fontWeight: 600,
-                fontFamily: "'Playfair Display', Georgia, serif",
-                border: "1.5px solid rgba(99,107,47,0.2)",
-                borderRight: "none",
-                borderRadius: "999px 0 0 999px",
-                background: searchMode === "interest" ? "#2d5a3d" : "rgba(255,255,255,0.5)",
-                color: searchMode === "interest" ? "#fff" : "#636B2F",
-                cursor: "pointer", transition: "all 0.2s",
-              }}
+              className={`mode-toggle-btn ${searchMode === "interest" ? "mode-toggle-btn-active" : ""}`}
             >
               By Interest
             </button>
             <button
               onClick={() => setSearchMode("name")}
-              style={{
-                padding: "10px 24px", fontSize: "0.9rem", fontWeight: 600,
-                fontFamily: "'Playfair Display', Georgia, serif",
-                border: "1.5px solid rgba(99,107,47,0.2)",
-                borderLeft: "none",
-                borderRadius: "0 999px 999px 0",
-                background: searchMode === "name" ? "#2d5a3d" : "rgba(255,255,255,0.5)",
-                color: searchMode === "name" ? "#fff" : "#636B2F",
-                cursor: "pointer", transition: "all 0.2s",
-              }}
+              className={`mode-toggle-btn ${searchMode === "name" ? "mode-toggle-btn-active" : ""}`}
             >
               By Name
             </button>
@@ -412,7 +459,12 @@ export default function Home() {
         )}
 
         {/* STATUS */}
-        {loading && <p className="shimmer" style={{ textAlign: "center", fontSize: "1.1rem", color: "#8A8D72", marginBottom: "32px" }}>Searching...</p>}
+        {loading && (
+          <div style={{ textAlign: "center", marginBottom: "32px" }}>
+            <span className="loading-spinner">&#127807;</span>
+            <p style={{ fontSize: "1.1rem", color: "#8A8D72", marginTop: "12px" }}>Searching...</p>
+          </div>
+        )}
         {error && <p style={{ textAlign: "center", fontSize: "1.1rem", color: "#9B3322", marginBottom: "32px" }}>{error}</p>}
 
         {!showSaved && results.length > 0 && (
@@ -437,7 +489,12 @@ export default function Home() {
                       <a href={profileUrl(author)} target="_blank" rel="noopener noreferrer" className="rm-card-name">
                         {author.display_name}
                       </a>
-                      <button onClick={() => toggleSave(author)} style={{ fontSize: "1.3rem", color: isSaved(author) ? "#8B6914" : "#BAC095", background: "none", border: "none", cursor: "pointer", transition: "color 0.2s" }} title={isSaved(author) ? "Remove from saved" : "Save professor"}>
+                      <button
+                        onClick={() => toggleSave(author)}
+                        className={starBounce === id ? "star-bounce" : ""}
+                        style={{ fontSize: "1.4rem", color: isSaved(author) ? "#8B6914" : "#BAC095", background: "none", border: "none", cursor: "pointer", transition: "color 0.2s, transform 0.2s" }}
+                        title={isSaved(author) ? "Remove from saved" : "Save professor"}
+                      >
                         {isSaved(author) ? "\u2605" : "\u2606"}
                       </button>
                     </div>
@@ -458,7 +515,7 @@ export default function Home() {
                 )}
 
                 {summary ? (
-                  <div style={{ marginTop: "28px" }}>
+                  <div className="summary-enter" style={{ marginTop: "28px" }}>
                     <p style={{ fontSize: "1.05rem", lineHeight: 1.7, color: "#5A5D45" }}>{summary.summary}</p>
                     {summary.highlights.length > 0 && (
                       <div style={{ marginTop: "24px" }}>
@@ -469,14 +526,14 @@ export default function Home() {
                               const el = e.currentTarget.nextElementSibling as HTMLElement;
                               if (el) el.style.display = el.style.display === "none" ? "block" : "none";
                             }}
-                            style={{ fontSize: "0.7rem", fontWeight: 700, color: "#A8AB92", cursor: "pointer", background: "rgba(186,192,149,0.15)", border: "1px solid #BAC095", borderRadius: "999px", width: "18px", height: "18px", display: "inline-flex", alignItems: "center", justifyContent: "center", fontFamily: "'Playfair Display', Georgia, serif" }}
+                            style={{ fontSize: "0.7rem", fontWeight: 700, color: "#A8AB92", cursor: "pointer", background: "rgba(186,192,149,0.15)", border: "1px solid #BAC095", borderRadius: "999px", width: "18px", height: "18px", display: "inline-flex", alignItems: "center", justifyContent: "center", fontFamily: "'Playfair Display', Georgia, serif", transition: "all 0.2s ease" }}
                           >?</button>
                           <div style={{ display: "none", padding: "14px 18px", background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)", border: "1px solid rgba(186,192,149,0.3)", borderRadius: "12px", fontSize: "0.85rem", color: "#5A5D45", lineHeight: 1.6, marginTop: "4px", marginBottom: "8px" }}>
                             In most lab sciences (biology, chemistry, medicine, etc.), <strong>1st author</strong> did the hands-on work and <strong>last author</strong> runs the lab. In many other fields (math, CS, economics, humanities), author order is often alphabetical and doesn&apos;t indicate contribution level. When in doubt, check if the professor lists the paper prominently on their own website — that usually means it&apos;s important to them.
                           </div>
                         </div>
                         {summary.highlights.map((h, i) => (
-                          <div key={i} style={{ paddingLeft: "20px", borderLeft: "3px solid #BAC095", marginBottom: "16px" }}>
+                          <div key={i} className="finding-border" style={{ paddingLeft: "20px", marginBottom: "16px" }}>
                             <p style={{ fontSize: "1rem", color: "#5A5D45", lineHeight: 1.6 }}>{h.detail}</p>
                             <p style={{ fontSize: "0.85rem", color: "#A8AB92", fontStyle: "italic", marginTop: "4px" }}>
                               {h.paper}
@@ -498,20 +555,27 @@ export default function Home() {
                         ))}
                       </div>
                     )}
-                    {/* Closing tip */}
-                    <div style={{ marginTop: "24px", padding: "16px 20px", background: "rgba(212,222,149,0.15)", border: "1px solid rgba(186,192,149,0.3)", borderRadius: "14px" }}>
-                      <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "#636B2F", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "6px" }}>Closing Tip</p>
-                      <p style={{ fontSize: "0.9rem", color: "#5A5D45", lineHeight: 1.6 }}>
-                        End your email with: &ldquo;If you&apos;re not currently taking students, is there someone in your group you&apos;d recommend I reach out to?&rdquo;
-                      </p>
-                    </div>
+                    {/* Closing tip — only if highlights exist */}
+                    {summary.highlights.length > 0 && (
+                      <div style={{ marginTop: "24px", padding: "16px 20px", background: "rgba(212,222,149,0.15)", border: "1px solid rgba(186,192,149,0.3)", borderRadius: "14px" }}>
+                        <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "#636B2F", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "6px" }}>Closing Tip</p>
+                        <p style={{ fontSize: "0.9rem", color: "#5A5D45", lineHeight: 1.6 }}>
+                          End your email with: &ldquo;If you&apos;re not currently taking students, is there someone in your group you&apos;d recommend I reach out to?&rdquo;
+                        </p>
+                      </div>
+                    )}
                     <button onClick={() => openEmailDraft(author)} className="btn-secondary" style={{ marginTop: "16px", padding: "12px 28px", fontSize: "0.95rem" }}>
                       Draft email to professor &rarr;
                     </button>
                   </div>
                 ) : (
-                  <button onClick={() => loadSummary(author)} disabled={isLoadingSummary} className={`btn-secondary ${isLoadingSummary ? "shimmer" : ""}`} style={{ marginTop: "24px", padding: "12px 28px", fontSize: "0.95rem", opacity: isLoadingSummary ? 0.5 : 1 }}>
-                    {isLoadingSummary ? "Generating summary..." : "Summarize research \u2192"}
+                  <button onClick={() => loadSummary(author)} disabled={isLoadingSummary} className={`btn-secondary`} style={{ marginTop: "24px", padding: "12px 28px", fontSize: "0.95rem", opacity: isLoadingSummary ? 0.5 : 1 }}>
+                    {isLoadingSummary ? (
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+                        <span className="loading-spinner" style={{ fontSize: "1rem" }}>&#127807;</span>
+                        Generating summary...
+                      </span>
+                    ) : "Summarize research \u2192"}
                   </button>
                 )}
               </div>
@@ -530,7 +594,7 @@ export default function Home() {
                 <div className="rm-modal-left">
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
                     <h2 className="rm-modal-title">Email to {emailTarget.display_name}</h2>
-                    <button onClick={() => { setEmailTarget(null); setEmailDraft(""); setEmailFlags([]); setHasChecked(false); }} style={{ fontSize: "1.5rem", color: "#A8AB92", background: "none", border: "none", cursor: "pointer" }}>&times;</button>
+                    <button onClick={() => { setEmailTarget(null); setEmailDraft(""); setEmailFlags([]); setHasChecked(false); }} style={{ fontSize: "1.5rem", color: "#A8AB92", background: "none", border: "none", cursor: "pointer", transition: "transform 0.2s" }} onMouseEnter={e => (e.currentTarget.style.transform = "rotate(90deg)")} onMouseLeave={e => (e.currentTarget.style.transform = "rotate(0deg)")}>&times;</button>
                   </div>
 
                   {/* Check their website banner */}
@@ -551,12 +615,20 @@ export default function Home() {
                   <textarea value={emailDraft} onChange={(e) => { setEmailDraft(e.target.value); setHasChecked(false); }} placeholder={`Dear Professor ${emailTarget.display_name},\n\nI'm a [year] [major] student at [your university]...\n\nUse the reference panel to mention specific papers and research.`} className="modal-textarea" style={{ flex: 1, padding: "24px", lineHeight: 1.7 }} />
                   <div className="rm-modal-actions">
                     <button onClick={checkEmail} disabled={checkingEmail || !emailDraft.trim()} className="btn-cta" style={{ padding: "14px 36px", fontSize: "1rem" }}>
-                      {checkingEmail ? "Checking..." : "Check my email"}
+                      {checkingEmail ? (
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+                          <span className="loading-spinner" style={{ fontSize: "0.9rem" }}>&#127807;</span>
+                          Checking...
+                        </span>
+                      ) : "Check my email"}
                     </button>
-                    <button onClick={() => navigator.clipboard.writeText(emailDraft)} disabled={!emailDraft.trim()} style={{ fontSize: "1rem", color: "#8A8D72", background: "none", border: "none", cursor: emailDraft.trim() ? "pointer" : "default", opacity: emailDraft.trim() ? 1 : 0.3, fontFamily: "'Playfair Display', Georgia, serif" }}>
+                    <button onClick={handleCopy} disabled={!emailDraft.trim()} style={{ fontSize: "1rem", color: "#8A8D72", background: "none", border: "none", cursor: emailDraft.trim() ? "pointer" : "default", opacity: emailDraft.trim() ? 1 : 0.3, fontFamily: "'Playfair Display', Georgia, serif", transition: "color 0.2s" }}
+                      onMouseEnter={e => { if (emailDraft.trim()) e.currentTarget.style.color = "#2d5a3d"; }}
+                      onMouseLeave={e => { e.currentTarget.style.color = "#8A8D72"; }}
+                    >
                       Copy to clipboard
                     </button>
-                    <span style={{ marginLeft: "auto", fontSize: "0.9rem", fontWeight: 700, color: wordCount > 200 ? "#9B3322" : "#8A8D72", background: wordCount > 200 ? "rgba(155,51,34,0.08)" : "transparent", padding: "6px 14px", borderRadius: "999px" }}>
+                    <span style={{ marginLeft: "auto", fontSize: "0.9rem", fontWeight: 700, color: wordCount > 200 ? "#9B3322" : "#8A8D72", background: wordCount > 200 ? "rgba(155,51,34,0.08)" : "transparent", padding: "6px 14px", borderRadius: "999px", transition: "all 0.3s ease" }}>
                       {wordCount} words
                     </span>
                   </div>
@@ -571,8 +643,10 @@ export default function Home() {
                     </div>
                   )}
                   {hasChecked && emailFlags.length === 0 && (
-                    <div className="flag-enter" style={{ marginTop: "20px", padding: "16px 20px", background: "rgba(45,90,61,0.08)", border: "1.5px solid rgba(45,90,61,0.2)", borderRadius: "16px" }}>
-                      <span style={{ fontWeight: 700, fontSize: "0.95rem", color: "#2d5a3d" }}>&#10003; Looks good! No issues found.</span>
+                    <div className="email-pass" style={{ marginTop: "20px", padding: "20px 24px", textAlign: "center" }}>
+                      <p style={{ fontSize: "1.4rem", marginBottom: "6px" }}>&#127881;</p>
+                      <p style={{ fontWeight: 700, fontSize: "1.05rem", color: "#2d5a3d" }}>Perfect email! No issues found.</p>
+                      <p style={{ fontSize: "0.85rem", color: "#8A8D72", marginTop: "6px" }}>Copy it and send it with confidence.</p>
                     </div>
                   )}
                   {!hasChecked && emailDraft.trim().length > 0 && !checkingEmail && (
@@ -589,7 +663,12 @@ export default function Home() {
                     </div>
                   </div>
                   <div style={{ height: "1px", background: "linear-gradient(to right, transparent, #BAC095, transparent)", opacity: 0.5, marginBottom: "24px" }} />
-                  {isLoadingTargetSummary && <p className="shimmer" style={{ fontSize: "0.9rem", color: "#8A8D72" }}>Loading research info...</p>}
+                  {isLoadingTargetSummary && (
+                    <div style={{ textAlign: "center", padding: "20px 0" }}>
+                      <span className="loading-spinner">&#127807;</span>
+                      <p style={{ fontSize: "0.9rem", color: "#8A8D72", marginTop: "8px" }}>Loading research info...</p>
+                    </div>
+                  )}
                   {targetSummary && (
                     <>
                       <div style={{ marginBottom: "24px" }}>
@@ -622,6 +701,9 @@ export default function Home() {
             </div>
           );
         })()}
+
+        {/* TOAST */}
+        {toast && <div className="toast">{toast}</div>}
       </main>
     </>
   );
