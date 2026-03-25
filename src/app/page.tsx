@@ -389,7 +389,7 @@ export default function Home() {
             </p>
           </div>
           <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-            <a href="/feedback" className="pill" style={{ padding: "10px 24px", fontSize: "0.9rem", textDecoration: "none", color: "#3D4127" }}>
+            <a href="/feedback" className="btn-cta" style={{ padding: "10px 24px", fontSize: "0.9rem", textDecoration: "none" }}>
               Feedback
             </a>
             {saved.length > 0 && (

@@ -141,8 +141,8 @@ export default function FeedbackPage() {
               Help shape Research Match. Suggest features, report bugs, or share your thoughts.
             </p>
           </div>
-          <a href="/" className="btn-secondary" style={{ padding: "12px 28px", fontSize: "0.9rem", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "8px", whiteSpace: "nowrap" }}>
-            <span style={{ display: "inline-block", transition: "transform 0.3s ease" }}>&larr;</span> Back to tool
+          <a href="/" className="btn-cta" style={{ padding: "12px 28px", fontSize: "0.9rem", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "8px", whiteSpace: "nowrap" }}>
+            &larr; Back to tool
           </a>
         </div>
 
