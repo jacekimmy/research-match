@@ -388,11 +388,16 @@ export default function Home() {
               Find professors who match your research interests.
             </p>
           </div>
-          {saved.length > 0 && (
-            <button onClick={() => setShowSaved(!showSaved)} className={`pill ${showSaved ? "pill-active" : ""}`} style={{ padding: "10px 24px", fontSize: "1rem" }}>
-              Saved ({saved.length})
-            </button>
-          )}
+          <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+            <a href="/feedback" className="pill" style={{ padding: "10px 24px", fontSize: "0.9rem", textDecoration: "none", color: "#3D4127" }}>
+              Feedback
+            </a>
+            {saved.length > 0 && (
+              <button onClick={() => setShowSaved(!showSaved)} className={`pill ${showSaved ? "pill-active" : ""}`} style={{ padding: "10px 24px", fontSize: "1rem" }}>
+                Saved ({saved.length})
+              </button>
+            )}
+          </div>
         </div>
 
         {/* SEARCH MODE TOGGLE */}
