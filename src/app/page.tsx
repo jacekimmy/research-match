@@ -83,7 +83,7 @@ interface Author {
 
 interface SummaryData {
   summary: string;
-  highlights: { paper: string; detail: string; authorPosition?: string }[];
+  highlights: { paper: string; detail: string; authorPosition?: string; doi?: string | null }[];
   questions: string[];
 }
 
@@ -263,6 +263,8 @@ export default function Home() {
           }
         }
       }
+      // Filter out non-professors: require 10+ publications
+      authors = authors.filter((a) => a.works_count >= 10);
       if (authors.length === 0) setError(`No professors found for "${topicName}"${institutionName ? ` at ${institutionName}` : ""}. Try a more specific topic like "machine learning" or "quantum computing".`);
       setResults(authors);
     } catch { setError("Something went wrong. Please try again."); }
@@ -293,15 +295,16 @@ export default function Home() {
     else search();
   }
 
-  async function loadSummary(author: Author) {
+  async function loadSummary(author: Author, retry = false) {
     const id = author.id.split("/").pop()!;
-    if (summaries[id] || loadingSummary[id]) return;
+    if (!retry && (summaries[id] || loadingSummary[id])) return;
+    if (retry) setSummaries((prev) => { const next = { ...prev }; delete next[id]; return next; });
     setLoadingSummary((prev) => ({ ...prev, [id]: true }));
     try {
       const res = await fetch("/api/summarize", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ authorId: id }) });
       const data = await res.json();
-      setSummaries((prev) => ({ ...prev, [id]: { summary: data.summary || data.error || "Could not generate summary.", highlights: data.highlights || [], questions: data.questions || [] } }));
-    } catch { setSummaries((prev) => ({ ...prev, [id]: { summary: "Could not generate summary.", highlights: [], questions: [] } })); }
+      setSummaries((prev) => ({ ...prev, [id]: { summary: data.summary || data.error || "Summary unavailable. Try again or visit their faculty page.", highlights: data.highlights || [], questions: data.questions || [] } }));
+    } catch { setSummaries((prev) => ({ ...prev, [id]: { summary: "Summary unavailable. Try again or visit their faculty page.", highlights: [], questions: [] } })); }
     finally { setLoadingSummary((prev) => ({ ...prev, [id]: false })); }
   }
 
@@ -542,6 +545,15 @@ export default function Home() {
                 {summary ? (
                   <div className="summary-enter" style={{ marginTop: "28px" }}>
                     <p style={{ fontSize: "1.05rem", lineHeight: 1.7, color: "#5A5D45" }}>{summary.summary}</p>
+                    {summary.highlights.length === 0 && summary.summary.includes("unavailable") && (
+                      <button
+                        onClick={() => loadSummary(author, true)}
+                        className="btn-secondary"
+                        style={{ marginTop: "12px", padding: "8px 20px", fontSize: "0.85rem" }}
+                      >
+                        Retry summary
+                      </button>
+                    )}
                     {summary.highlights.length > 0 && (
                       <div style={{ marginTop: "24px" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
@@ -566,6 +578,11 @@ export default function Home() {
                                 <span style={{ fontStyle: "normal", fontSize: "0.75rem", marginLeft: "8px", padding: "2px 8px", borderRadius: "999px", background: h.authorPosition === "first" ? "rgba(45,90,61,0.1)" : h.authorPosition === "last" ? "rgba(139,105,20,0.1)" : "rgba(138,141,114,0.1)", color: h.authorPosition === "first" ? "#2d5a3d" : h.authorPosition === "last" ? "#8B6914" : "#8A8D72" }}>
                                   {h.authorPosition === "first" ? "1st author" : h.authorPosition === "last" ? "last author" : "middle author"}
                                 </span>
+                              )}
+                              {h.doi && (
+                                <a href={h.doi} target="_blank" rel="noopener noreferrer" style={{ fontStyle: "normal", fontSize: "0.8rem", marginLeft: "10px", color: "#2d5a3d", textDecoration: "none", borderBottom: "1px solid transparent", transition: "border-color 0.2s" }} onMouseEnter={(e) => (e.currentTarget.style.borderBottomColor = "#2d5a3d")} onMouseLeave={(e) => (e.currentTarget.style.borderBottomColor = "transparent")}>
+                                  Read paper →
+                                </a>
                               )}
                             </p>
                           </div>
@@ -705,7 +722,14 @@ export default function Home() {
                           <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "14px" }}>Papers to Mention</p>
                           {targetSummary.highlights.map((h, i) => (
                             <div key={i} style={{ marginBottom: "14px" }}>
-                              <p style={{ fontSize: "0.85rem", fontWeight: 700, color: "#2d5a3d" }}>{h.paper}</p>
+                              <p style={{ fontSize: "0.85rem", fontWeight: 700, color: "#2d5a3d" }}>
+                                {h.paper}
+                                {h.doi && (
+                                  <a href={h.doi} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 400, fontSize: "0.75rem", marginLeft: "8px", color: "#636B2F" }}>
+                                    Read →
+                                  </a>
+                                )}
+                              </p>
                               <p style={{ fontSize: "0.8rem", color: "#8A8D72", marginTop: "3px" }}>{h.detail}</p>
                             </div>
                           ))}

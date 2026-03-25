@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     // Fetch recent papers (last 3 years) sorted by citation count
     const fromYear = new Date().getFullYear() - 3;
     const worksRes = await fetch(
-      `https://api.openalex.org/works?filter=author.id:${authorId},publication_year:>${fromYear}&sort=cited_by_count:desc&per_page=20&select=title,abstract_inverted_index,cited_by_count,publication_year,authorships`
+      `https://api.openalex.org/works?filter=author.id:${authorId},publication_year:>${fromYear}&sort=cited_by_count:desc&per_page=20&select=title,abstract_inverted_index,cited_by_count,publication_year,authorships,doi`
     );
     const worksData = await worksRes.json();
     const allWorks = worksData.results ?? [];
@@ -23,14 +23,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ summary: "No recent papers found for this researcher.", highlights: [] });
     }
 
-    // Get author position for each paper
+    // Get author position and DOI for each paper
     const authorPositions: Record<string, string> = {};
+    const paperDois: Record<string, string> = {};
     for (const w of works) {
       const authorship = w.authorships?.find(
         (a: any) => a.author?.id === `https://openalex.org/${authorId}`
       );
       if (authorship && w.title) {
         authorPositions[w.title] = authorship.author_position ?? "unknown";
+      }
+      if (w.title && w.doi) {
+        paperDois[w.title] = w.doi;
       }
     }
 
@@ -87,10 +91,11 @@ Return only valid JSON, no markdown, no explanation.`;
       parsed = { summary: raw, highlights: [] };
     }
 
-    // Attach author position to each highlight
+    // Attach author position and DOI to each highlight
     const highlightsWithPosition = (parsed.highlights ?? []).map((h) => ({
       ...h,
       authorPosition: authorPositions[h.paper] ?? "unknown",
+      doi: paperDois[h.paper] ?? null,
     }));
 
     return NextResponse.json({
