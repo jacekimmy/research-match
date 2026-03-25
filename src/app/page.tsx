@@ -111,6 +111,9 @@ export default function Home() {
   const [showWelcome, setShowWelcome] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [starBounce, setStarBounce] = useState<string | null>(null);
+  const toggleRef = useRef<HTMLDivElement>(null);
+  const btnInterestRef = useRef<HTMLButtonElement>(null);
+  const btnNameRef = useRef<HTMLButtonElement>(null);
 
   const PLACEHOLDER_EXAMPLES = [
     "e.g. neuroscience", "e.g. organic chemistry", "e.g. political science",
@@ -125,6 +128,10 @@ export default function Home() {
   const [emailFlags, setEmailFlags] = useState<EmailFlag[]>([]);
   const [checkingEmail, setCheckingEmail] = useState(false);
   const [hasChecked, setHasChecked] = useState(false);
+
+  // Force re-render after mount so toggle slider refs are measured
+  const [, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
 
   // Welcome moment on first visit
   useEffect(() => {
@@ -402,14 +409,27 @@ export default function Home() {
 
         {/* SEARCH MODE TOGGLE */}
         {!showSaved && (
-          <div className="mode-toggle">
+          <div className="mode-toggle" ref={toggleRef}>
+            <div
+              className="mode-toggle-slider"
+              style={{
+                left: searchMode === "interest"
+                  ? (btnInterestRef.current?.offsetLeft ?? 4) + "px"
+                  : (btnNameRef.current?.offsetLeft ?? 100) + "px",
+                width: searchMode === "interest"
+                  ? (btnInterestRef.current?.offsetWidth ?? 110) + "px"
+                  : (btnNameRef.current?.offsetWidth ?? 95) + "px",
+              }}
+            />
             <button
+              ref={btnInterestRef}
               onClick={() => setSearchMode("interest")}
               className={`mode-toggle-btn ${searchMode === "interest" ? "mode-toggle-btn-active" : ""}`}
             >
               By Interest
             </button>
             <button
+              ref={btnNameRef}
               onClick={() => setSearchMode("name")}
               className={`mode-toggle-btn ${searchMode === "name" ? "mode-toggle-btn-active" : ""}`}
             >
