@@ -1184,8 +1184,8 @@ export default function AppPage() {
               if (!user) { setShowUpgradeModal(false); setShowAuthModal(true); setAuthMode("signup"); return; }
               try {
                 const priceId = upgradeBilling === "monthly"
-                  ? (process.env.NEXT_PUBLIC_STRIPE_PRICE_STUDENT_MONTHLY || "price_1TF3ANFOZT5rwCzEGAwLUS84")
-                  : (process.env.NEXT_PUBLIC_STRIPE_PRICE_STUDENT_ANNUAL || "price_1TF3AqFOZT5rwCzEF6Mdr8Yf");
+                  ? (process.env.NEXT_PUBLIC_STRIPE_PRICE_STUDENT_MONTHLY || "price_1TF4pEFINW44xCyF0nDRsX8l")
+                  : (process.env.NEXT_PUBLIC_STRIPE_PRICE_STUDENT_ANNUAL || "price_1TF4paFINW44xCyFydayukDG");
                 const res = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ priceId, userId: user.id }) });
                 const data = await res.json();
                 if (data.url) window.location.href = data.url;
