@@ -181,12 +181,25 @@ export default function ProfilePage() {
           </div>
 
           {!isPaid && (
-            <Link href="/app" className="btn-cta rm-search-btn" style={{
-              display: "block", textAlign: "center", padding: "14px",
-              textDecoration: "none", marginTop: "24px", fontSize: "0.95rem",
-            }}>
+            <button
+              onClick={async () => {
+                const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_STUDENT_MONTHLY || "price_1TF4pEFINW44xCyF0nDRsX8l";
+                const res = await fetch("/api/checkout", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ priceId, userId: user?.id }),
+                });
+                const data = await res.json();
+                if (data.url) window.location.href = data.url;
+              }}
+              className="btn-cta rm-search-btn"
+              style={{
+                display: "block", width: "100%", textAlign: "center", padding: "14px",
+                marginTop: "24px", fontSize: "0.95rem", border: "none", cursor: "pointer",
+              }}
+            >
               Upgrade to Student — $9/mo
-            </Link>
+            </button>
           )}
         </div>
 
