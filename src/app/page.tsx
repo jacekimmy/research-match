@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 
 export default function LandingPage() {
@@ -8,20 +8,8 @@ export default function LandingPage() {
   const [waitlistTier, setWaitlistTier] = useState<"research_pro" | "pro" | null>(null);
   const [waitlistDone, setWaitlistDone] = useState(false);
   const [waitlistLoading, setWaitlistLoading] = useState(false);
-  const [paperCount, setPaperCount] = useState(0);
-
-  // Animate the paper count on mount
-  useEffect(() => {
-    let frame = 0;
-    const target = 250;
-    const duration = 40;
-    const interval = setInterval(() => {
-      frame++;
-      setPaperCount(Math.min(Math.round((frame / duration) * target), target));
-      if (frame >= duration) clearInterval(interval);
-    }, 30);
-    return () => clearInterval(interval);
-  }, []);
+  const [inlineWaitlistEmail, setInlineWaitlistEmail] = useState("");
+  const [inlineWaitlistDone, setInlineWaitlistDone] = useState(false);
 
   async function joinWaitlist() {
     if (!waitlistEmail || !waitlistTier) return;
@@ -35,6 +23,18 @@ export default function LandingPage() {
       setWaitlistDone(true);
     } catch { /* ignore */ }
     finally { setWaitlistLoading(false); }
+  }
+
+  async function joinInlineWaitlist() {
+    if (!inlineWaitlistEmail) return;
+    try {
+      await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: inlineWaitlistEmail, tier: "general" }),
+      });
+      setInlineWaitlistDone(true);
+    } catch { /* ignore */ }
   }
 
   return (
@@ -78,11 +78,16 @@ export default function LandingPage() {
         </h1>
         <p style={{
           fontSize: "clamp(1.05rem, 2vw, 1.3rem)", color: "#5A5D45",
-          lineHeight: 1.7, maxWidth: "640px", margin: "0 auto 20px",
+          lineHeight: 1.7, maxWidth: "640px", margin: "0 auto 16px",
         }}>
-          Search <span className="stat-number">{paperCount}M+</span> academic papers.
+          Search 250M+ academic papers.
           Understand their work instantly.
           Write emails that actually get responses.
+        </p>
+        <p style={{
+          fontSize: "0.95rem", color: "#8A8D72", marginBottom: "20px",
+        }}>
+          Built for students looking for research opportunities — from high schoolers to PhD applicants.
         </p>
         <p className="hero-social" style={{
           fontSize: "0.95rem", color: "#8A8D72", fontStyle: "italic", marginBottom: "44px",
@@ -151,9 +156,62 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Email checker callout */}
+      <section className="landing-section" style={{
+        maxWidth: "700px", margin: "0 auto", padding: "0 40px 80px",
+      }}>
+        <div className="glass-card" style={{
+          padding: "40px 36px", textAlign: "center",
+          border: "2px solid rgba(45,90,61,0.2)",
+          background: "rgba(45,90,61,0.04)",
+        }}>
+          <h3 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "16px" }}>
+            Sound like yourself, not a chatbot
+          </h3>
+          <p style={{ fontSize: "1rem", color: "#5A5D45", lineHeight: 1.7 }}>
+            Our email checker scans your draft for generic phrasing, sycophantic tone, and AI-sounding language — the exact things professors told us make them hit delete. Fix the red flags before you hit send.
+          </p>
+        </div>
+      </section>
+
+      {/* Why cold emails fail */}
+      <section className="landing-section" style={{
+        maxWidth: "800px", margin: "0 auto", padding: "0 40px 80px",
+      }}>
+        <h2 style={{
+          fontSize: "1.8rem", fontWeight: 700, color: "#2d5a3d",
+          textAlign: "center", marginBottom: "12px",
+        }}>
+          Most cold emails to professors get ignored. Here&apos;s why.
+        </h2>
+        <div className="section-divider" />
+        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+          {[
+            "Professors can spot AI-written emails instantly — and delete them.",
+            "Generic emails that could be sent to anyone get ignored.",
+            "Name-dropping papers without understanding them backfires.",
+          ].map((point, i) => (
+            <div key={i} style={{
+              display: "flex", gap: "16px", alignItems: "flex-start",
+              padding: "20px 24px", borderRadius: "14px",
+              background: "rgba(155,51,34,0.04)", border: "1px solid rgba(155,51,34,0.1)",
+            }}>
+              <span style={{ color: "#9B3322", fontSize: "1.2rem", flexShrink: 0 }}>✕</span>
+              <p style={{ fontSize: "1rem", color: "#5A5D45", lineHeight: 1.6 }}>{point}</p>
+            </div>
+          ))}
+        </div>
+        <p style={{
+          fontSize: "1rem", color: "#2d5a3d", textAlign: "center",
+          marginTop: "28px", lineHeight: 1.7, fontWeight: 500,
+        }}>
+          Research Match helps you avoid all three. Our email checker catches generic and AI-sounding language before you hit send — so your message sounds like you, not a chatbot.
+        </p>
+      </section>
+
       {/* Social proof */}
       <section className="landing-section" style={{
-        maxWidth: "1000px", margin: "0 auto", padding: "40px 40px 80px",
+        maxWidth: "1000px", margin: "0 auto", padding: "0 40px 40px",
       }}>
         <h2 style={{
           fontSize: "1.8rem", fontWeight: 700, color: "#2d5a3d",
@@ -163,14 +221,13 @@ export default function LandingPage() {
         </h2>
         <div className="section-divider" />
         <div className="landing-quotes" style={{
-          display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+          display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
           gap: "24px",
         }}>
           {[
             { quote: "This is actually good.", author: "Professor, r/AskAcademia" },
             { quote: "Endorse this advice 💯. If an email smells of AI I will not answer it.", author: "Research Professor" },
-            { quote: "Your website has made my task very easy and simple.", author: "Student user" },
-            { quote: "A Princeton professor responded within 24 hours using this tool.", author: "Tool creator" },
+            { quote: "First time I've gotten real advice on my emails. I've sent 10 emails so far using this.", author: "Student user" },
           ].map((item, i) => (
             <div key={i} className="glass-card landing-quote" style={{ padding: "30px 26px" }}>
               <div className="quote-mark">&ldquo;</div>
@@ -185,9 +242,29 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Founder note */}
+      <section className="landing-section" style={{
+        maxWidth: "700px", margin: "0 auto", padding: "20px 40px 80px",
+      }}>
+        <div style={{
+          padding: "32px 36px", borderLeft: "4px solid #2d5a3d",
+          background: "rgba(45,90,61,0.03)", borderRadius: "0 14px 14px 0",
+        }}>
+          <p style={{
+            fontSize: "1.05rem", color: "#5A5D45", lineHeight: 1.75,
+            fontStyle: "italic",
+          }}>
+            &ldquo;When I was a high school freshman, I used this approach to cold email 5 professors. A Princeton astrophysics professor responded within 24 hours and said I was &lsquo;way ahead of the curve.&rsquo; That&apos;s why I built Research Match.&rdquo;
+          </p>
+          <p style={{ fontSize: "0.85rem", color: "#2d5a3d", fontWeight: 700, marginTop: "16px" }}>
+            — Jace, Founder
+          </p>
+        </div>
+      </section>
+
       {/* Pricing */}
       <section id="pricing" className="landing-section" style={{
-        maxWidth: "1200px", margin: "0 auto", padding: "40px 40px 100px",
+        maxWidth: "900px", margin: "0 auto", padding: "40px 40px 40px",
       }}>
         <h2 style={{
           fontSize: "1.8rem", fontWeight: 700, color: "#2d5a3d",
@@ -196,9 +273,14 @@ export default function LandingPage() {
           Simple pricing
         </h2>
         <p style={{
-          fontSize: "1.05rem", color: "#8A8D72", textAlign: "center", marginBottom: "8px",
+          fontSize: "1rem", color: "#8A8D72", textAlign: "center", marginBottom: "4px",
         }}>
-          Start free. Upgrade when you&apos;re ready.
+          Free to start because we know what it&apos;s like searching for research with zero budget.
+        </p>
+        <p style={{
+          fontSize: "0.95rem", color: "#5A5D45", textAlign: "center", marginBottom: "8px",
+        }}>
+          If you&apos;re emailing professors regularly, the Student plan pays for itself with one response.
         </p>
         <div className="section-divider" />
 
@@ -235,8 +317,8 @@ export default function LandingPage() {
         </div>
 
         <div className="landing-pricing" style={{
-          display: "grid", gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "20px", alignItems: "start",
+          display: "grid", gridTemplateColumns: "repeat(2, 1fr)",
+          gap: "28px", alignItems: "start", maxWidth: "720px", margin: "0 auto",
         }}>
           {/* Free */}
           <div className="glass-card landing-pricing-card" style={{ padding: "36px 30px" }}>
@@ -250,7 +332,7 @@ export default function LandingPage() {
               ))}
             </ul>
             <Link href="/app" className="btn-secondary" style={{ display: "block", textAlign: "center", padding: "14px", textDecoration: "none", fontSize: "0.95rem" }}>
-              Get started
+              Find a professor now — free
             </Link>
           </div>
 
@@ -259,7 +341,6 @@ export default function LandingPage() {
             padding: "36px 30px", position: "relative",
             border: "2px solid rgba(45,90,61,0.35)",
             boxShadow: "0 8px 40px rgba(45,90,61,0.15)",
-            display: "block",
           }}>
             <span style={{
               position: "absolute", top: "-13px", left: "50%", transform: "translateX(-50%)",
@@ -293,81 +374,42 @@ export default function LandingPage() {
               Upgrade to Student
             </Link>
           </div>
+        </div>
 
-          {/* Research Pro */}
-          <div className="glass-card landing-pricing-card" style={{ padding: "36px 30px", opacity: 0.65, position: "relative" }}>
-            <span style={{
-              position: "absolute", top: "-13px", left: "50%", transform: "translateX(-50%)",
-              background: "#8A8D72", color: "#F5F0E6", fontSize: "0.65rem", fontWeight: 700,
-              padding: "5px 16px", borderRadius: "999px", textTransform: "uppercase", letterSpacing: "0.1em",
-              whiteSpace: "nowrap",
-            }}>Coming Soon</span>
-            <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#8A8D72", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Research Pro</p>
-            <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#3D4127", marginBottom: "4px", letterSpacing: "-0.02em" }}>
-              {billingCycle === "monthly" ? "$19" : "$149"}
-              <span style={{ fontSize: "1rem", fontWeight: 400, color: "#8A8D72" }}>/{billingCycle === "monthly" ? "mo" : "yr"}</span>
+        {/* Inline waitlist */}
+        <div style={{ textAlign: "center", marginTop: "44px" }}>
+          <p style={{ fontSize: "0.95rem", color: "#8A8D72", marginBottom: "16px" }}>
+            More plans coming soon. Want early access?
+          </p>
+          {inlineWaitlistDone ? (
+            <p style={{ fontSize: "0.95rem", color: "#2d5a3d", fontWeight: 600 }}>
+              You&apos;re on the list! We&apos;ll email you when new plans launch.
             </p>
-            {billingCycle === "annual" ? (
-              <p style={{ fontSize: "0.8rem", color: "#636B2F", marginBottom: "20px", fontWeight: 600 }}>Save $79 vs monthly</p>
-            ) : (
-              <div style={{ height: "20px" }} />
-            )}
-            <ul style={{ listStyle: "none", padding: 0, marginBottom: "30px" }}>
-              <li style={{ fontSize: "0.9rem", color: "#3D4127", padding: "7px 0", fontWeight: 700 }}>Everything in Student, plus:</li>
-              {[
-                "Lab activity signals",
-                "Grad student & postdoc lookup",
-                "Smart professor ranking",
-                "Email tone analyzer",
-                "Follow-up email suggestions",
-                "Side-by-side comparison",
-                "Export research briefs as PDF",
-              ].map((f) => (
-                <li key={f} style={{ fontSize: "0.9rem", color: "#8A8D72", padding: "7px 0", display: "flex", gap: "10px", alignItems: "center" }}>
-                  <span style={{ color: "#BAC095", fontSize: "0.85rem" }}>○</span> {f}
-                </li>
-              ))}
-            </ul>
-            <button onClick={() => { setWaitlistTier("research_pro"); setWaitlistDone(false); setWaitlistEmail(""); }} className="btn-secondary" style={{ width: "100%", padding: "14px", fontSize: "0.95rem" }}>
-              Join Waitlist
-            </button>
-          </div>
-
-          {/* Pro */}
-          <div className="glass-card landing-pricing-card" style={{ padding: "36px 30px", opacity: 0.65, position: "relative" }}>
-            <span style={{
-              position: "absolute", top: "-13px", left: "50%", transform: "translateX(-50%)",
-              background: "#8A8D72", color: "#F5F0E6", fontSize: "0.65rem", fontWeight: 700,
-              padding: "5px 16px", borderRadius: "999px", textTransform: "uppercase", letterSpacing: "0.1em",
-              whiteSpace: "nowrap",
-            }}>Coming Soon</span>
-            <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#8A8D72", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Pro</p>
-            <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#3D4127", marginBottom: "4px", letterSpacing: "-0.02em" }}>
-              {billingCycle === "monthly" ? "$59" : "$319"}
-              <span style={{ fontSize: "1rem", fontWeight: 400, color: "#8A8D72" }}>/{billingCycle === "monthly" ? "mo" : "yr"}</span>
-            </p>
-            {billingCycle === "annual" ? (
-              <p style={{ fontSize: "0.8rem", color: "#636B2F", marginBottom: "20px", fontWeight: 600 }}>Save $389 vs monthly</p>
-            ) : (
-              <div style={{ height: "20px" }} />
-            )}
-            <ul style={{ listStyle: "none", padding: 0, marginBottom: "30px" }}>
-              <li style={{ fontSize: "0.9rem", color: "#3D4127", padding: "7px 0", fontWeight: 700 }}>Everything in Research Pro, plus:</li>
-              {[
-                "Funding radar — NIH/NSF grants",
-                "Undergrad hiring signal",
-                "Smart pivot engine",
-                "Full grad student gateway",
-              ].map((f) => (
-                <li key={f} style={{ fontSize: "0.9rem", color: "#8A8D72", padding: "7px 0", display: "flex", gap: "10px", alignItems: "center" }}>
-                  <span style={{ color: "#BAC095", fontSize: "0.85rem" }}>○</span> {f}
-                </li>
-              ))}
-            </ul>
-            <button onClick={() => { setWaitlistTier("pro"); setWaitlistDone(false); setWaitlistEmail(""); }} className="btn-secondary" style={{ width: "100%", padding: "14px", fontSize: "0.95rem" }}>
-              Join Waitlist
-            </button>
-          </div>
+          ) : (
+            <div style={{ display: "inline-flex", gap: "10px", flexWrap: "wrap", justifyContent: "center" }}>
+              <input
+                type="email"
+                placeholder="your@email.com"
+                value={inlineWaitlistEmail}
+                onChange={(e) => setInlineWaitlistEmail(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && joinInlineWaitlist()}
+                style={{
+                  padding: "12px 18px", fontSize: "0.9rem",
+                  border: "1.5px solid rgba(186,192,149,0.4)", borderRadius: "14px",
+                  background: "rgba(255,255,255,0.5)", color: "#3D4127",
+                  fontFamily: "inherit", outline: "none", width: "260px",
+                  transition: "border-color 0.2s",
+                }}
+              />
+              <button
+                onClick={joinInlineWaitlist}
+                className="btn-cta rm-search-btn"
+                style={{ padding: "12px 24px", fontSize: "0.9rem" }}
+              >
+                Join waitlist
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
@@ -385,7 +427,7 @@ export default function LandingPage() {
         </div>
       </footer>
 
-      {/* Waitlist modal */}
+      {/* Waitlist modal (kept for any future use) */}
       {waitlistTier && (
         <div className="modal-overlay" style={{
           position: "fixed", inset: 0, zIndex: 100,
@@ -427,8 +469,6 @@ export default function LandingPage() {
                     fontFamily: "inherit", marginBottom: "16px", outline: "none",
                     transition: "border-color 0.2s, box-shadow 0.2s",
                   }}
-                  onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(45,90,61,0.4)"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(45,90,61,0.08)"; }}
-                  onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(186,192,149,0.4)"; e.currentTarget.style.boxShadow = "none"; }}
                 />
                 <button
                   onClick={joinWaitlist}
