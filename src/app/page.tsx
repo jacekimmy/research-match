@@ -219,8 +219,8 @@ export default function LandingPage() {
         </div>
 
         <div className="landing-pricing" style={{
-          display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(255px, 1fr))",
-          gap: "24px", alignItems: "start",
+          display: "grid", gridTemplateColumns: "repeat(4, 1fr)",
+          gap: "20px", alignItems: "start",
         }}>
           {/* Free */}
           <div className="glass-card landing-pricing-card" style={{ padding: "36px 30px" }}>

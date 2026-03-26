@@ -1092,12 +1092,16 @@ body::after {
 
   .landing-hero h1 { font-size: 2rem !important; }
   .landing-steps { grid-template-columns: 1fr !important; }
-  .landing-pricing { grid-template-columns: 1fr !important; }
+  .landing-pricing { grid-template-columns: repeat(2, 1fr) !important; }
   .landing-quotes { grid-template-columns: 1fr !important; }
   .landing-nav { padding: 16px 20px !important; }
   .landing-hero { padding: 40px 20px 40px !important; }
   .landing-section { padding-left: 20px !important; padding-right: 20px !important; }
   .landing-footer { padding: 24px 20px !important; flex-direction: column !important; text-align: center !important; }
+}
+
+@media (max-width: 500px) {
+  .landing-pricing { grid-template-columns: 1fr !important; }
 }
 
 /* ===== LANDING PAGE ===== */
