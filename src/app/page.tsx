@@ -134,6 +134,7 @@ export default function LandingPage() {
           Research Match
         </span>
         <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+          <Link href="/blog" style={{ fontSize: "0.9rem", color: "#8A8D72", textDecoration: "none", transition: "color 0.2s" }}>Blog</Link>
           <Link href="/feedback" style={{ fontSize: "0.9rem", color: "#8A8D72", textDecoration: "none", transition: "color 0.2s" }}>Feedback</Link>
           <Link href="/app" className="btn-cta landing-cta-primary rm-search-btn" style={{ padding: "11px 28px", fontSize: "0.9rem", textDecoration: "none" }}>
             Open Tool
@@ -559,6 +560,7 @@ export default function LandingPage() {
         <span style={{ fontSize: "0.9rem", color: "#8A8D72", fontWeight: 600 }}>Research Match</span>
         <div style={{ display: "flex", gap: "28px" }}>
           <Link href="/app" style={{ fontSize: "0.85rem", color: "#8A8D72", textDecoration: "none", transition: "color 0.2s" }}>Tool</Link>
+          <Link href="/blog" style={{ fontSize: "0.85rem", color: "#8A8D72", textDecoration: "none", transition: "color 0.2s" }}>Blog</Link>
           <a href="#pricing" style={{ fontSize: "0.85rem", color: "#8A8D72", textDecoration: "none", transition: "color 0.2s" }}>Pricing</a>
           <Link href="/feedback" style={{ fontSize: "0.85rem", color: "#8A8D72", textDecoration: "none", transition: "color 0.2s" }}>Feedback</Link>
         </div>
