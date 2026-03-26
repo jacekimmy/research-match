@@ -48,6 +48,20 @@ export default function LandingPage() {
     return () => clearInterval(interval);
   }, []);
 
+  // Parallax scroll — each splotch drifts at a different rate via margin-top offset
+  useEffect(() => {
+    const speeds = [0.15, -0.1, 0.2, -0.12, 0.08, -0.18, 0.14, -0.06, 0.1, -0.15, 0.12, -0.08, 0.18, -0.14, 0.1, -0.16];
+    function handleScroll() {
+      const scrollY = window.scrollY;
+      document.querySelectorAll(".splotch").forEach((s, i) => {
+        const speed = speeds[i % speeds.length];
+        (s as HTMLElement).style.marginTop = `${scrollY * speed}px`;
+      });
+    }
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   function heroSearch() {
     if (!heroQuery.trim()) return;
     const params = new URLSearchParams();
@@ -85,21 +99,30 @@ export default function LandingPage() {
   }
 
   return (
-    <div style={{ minHeight: "100vh" }}>
-      {/* Background splotches */}
+    <div style={{ minHeight: "100vh", position: "relative" }}>
+      {/* Background splotches — scattered throughout the full page */}
       <div className="splotches">
+        {/* Hero area */}
         <div className="splotch splotch-1" />
-        <div className="splotch splotch-2" />
-        <div className="splotch splotch-3" />
-        <div className="splotch splotch-4" />
-        <div className="splotch splotch-5" />
-        <div className="splotch splotch-6" />
-        <div className="splotch splotch-7" />
-        <div className="splotch splotch-8" />
         <div className="splotch splotch-9" />
-        <div className="splotch splotch-10" />
+        <div className="splotch splotch-5" />
+        {/* How it works area */}
+        <div className="splotch splotch-2" />
+        <div className="splotch splotch-8" />
         <div className="splotch splotch-11" />
+        {/* Cold email / testimonials area */}
+        <div className="splotch splotch-3" />
+        <div className="splotch splotch-6" />
+        <div className="splotch splotch-10" />
+        {/* Pricing / footer area */}
+        <div className="splotch splotch-4" />
+        <div className="splotch splotch-7" />
         <div className="splotch splotch-12" />
+        {/* Extra deep-page splotches */}
+        <div className="splotch splotch-13" />
+        <div className="splotch splotch-14" />
+        <div className="splotch splotch-15" />
+        <div className="splotch splotch-16" />
       </div>
 
       {/* Nav */}
