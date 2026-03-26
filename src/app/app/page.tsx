@@ -553,41 +553,98 @@ function AppPageInner() {
 
   const profileUrl = (author: Author) => `https://openalex.org/authors/${author.id.split("/").pop()}`;
 
-  function guessEmail(author: Author): string | null {
+  function getEmailInfo(author: Author): { emails: string[]; domain: string | null; searchUrl: string } | null {
     const inst = author.last_known_institutions?.[0];
     if (!inst?.display_name) return null;
-    const nameParts = author.display_name.toLowerCase().replace(/[^a-z\s]/g, "").split(/\s+/).filter(Boolean);
+    const nameParts = author.display_name.toLowerCase().replace(/[^a-z\s.-]/g, "").split(/\s+/).filter(Boolean);
     if (nameParts.length < 2) return null;
     const first = nameParts[0];
     const last = nameParts[nameParts.length - 1];
-    // Map common universities to their email domains
-    const domainMap: Record<string, string> = {
-      "massachusetts institute of technology": "mit.edu",
-      "stanford university": "stanford.edu",
-      "harvard university": "harvard.edu",
-      "princeton university": "princeton.edu",
-      "yale university": "yale.edu",
-      "columbia university": "columbia.edu",
-      "university of california, berkeley": "berkeley.edu",
-      "cornell university": "cornell.edu",
-      "university of chicago": "uchicago.edu",
-      "university of pennsylvania": "upenn.edu",
-      "duke university": "duke.edu",
-      "university of michigan": "umich.edu",
-      "university of oxford": "ox.ac.uk",
-      "university of cambridge": "cam.ac.uk",
+    const firstInitial = first[0];
+
+    const domainMap: Record<string, { domain: string; formats: string[] }> = {
+      "massachusetts institute of technology": { domain: "mit.edu", formats: ["{last}@", "{first}{last}@"] },
+      "stanford university": { domain: "stanford.edu", formats: ["{first}.{last}@", "{last}@"] },
+      "harvard university": { domain: "harvard.edu", formats: ["{first}_{last}@", "{last}@fas."] },
+      "princeton university": { domain: "princeton.edu", formats: ["{first}.{last}@", "{last}@"] },
+      "yale university": { domain: "yale.edu", formats: ["{first}.{last}@", "{last}@"] },
+      "columbia university": { domain: "columbia.edu", formats: ["{fi}{last}@", "{first}.{last}@"] },
+      "university of california, berkeley": { domain: "berkeley.edu", formats: ["{last}@", "{first}.{last}@"] },
+      "cornell university": { domain: "cornell.edu", formats: ["{fi}{last}@", "{first}.{last}@"] },
+      "university of chicago": { domain: "uchicago.edu", formats: ["{last}@", "{first}.{last}@"] },
+      "university of pennsylvania": { domain: "upenn.edu", formats: ["{last}@", "{first}.{last}@"] },
+      "duke university": { domain: "duke.edu", formats: ["{first}.{last}@", "{last}@"] },
+      "university of michigan": { domain: "umich.edu", formats: ["{last}@", "{first}{last}@"] },
+      "university of oxford": { domain: "ox.ac.uk", formats: ["{first}.{last}@", "{last}@"] },
+      "university of cambridge": { domain: "cam.ac.uk", formats: ["{fi}{last}@", "{first}.{last}@"] },
+      "california institute of technology": { domain: "caltech.edu", formats: ["{last}@", "{first}@"] },
+      "carnegie mellon university": { domain: "cmu.edu", formats: ["{first}{last}@", "{last}@cs."] },
+      "georgia institute of technology": { domain: "gatech.edu", formats: ["{first}.{last}@", "{last}@"] },
+      "university of california, los angeles": { domain: "ucla.edu", formats: ["{last}@", "{first}.{last}@"] },
+      "university of california, san diego": { domain: "ucsd.edu", formats: ["{fi}{last}@", "{last}@"] },
+      "university of washington": { domain: "uw.edu", formats: ["{last}@", "{first}@"] },
+      "northwestern university": { domain: "northwestern.edu", formats: ["{first}.{last}@", "{fi}-{last}@"] },
+      "johns hopkins university": { domain: "jhu.edu", formats: ["{last}@", "{first}.{last}@"] },
+      "new york university": { domain: "nyu.edu", formats: ["{fi}{last}@", "{first}.{last}@"] },
+      "university of texas at austin": { domain: "utexas.edu", formats: ["{first}.{last}@", "{last}@"] },
+      "university of illinois urbana-champaign": { domain: "illinois.edu", formats: ["{last}@", "{first}@"] },
+      "brown university": { domain: "brown.edu", formats: ["{first}_{last}@", "{last}@"] },
+      "rice university": { domain: "rice.edu", formats: ["{last}@", "{first}.{last}@"] },
+      "vanderbilt university": { domain: "vanderbilt.edu", formats: ["{first}.{last}@", "{last}@"] },
+      "emory university": { domain: "emory.edu", formats: ["{first}.{last}@", "{last}@"] },
+      "university of southern california": { domain: "usc.edu", formats: ["{last}@", "{first}.{last}@"] },
+      "boston university": { domain: "bu.edu", formats: ["{last}@", "{first}@"] },
+      "university of virginia": { domain: "virginia.edu", formats: ["{fi}{last}@", "{last}@"] },
+      "purdue university": { domain: "purdue.edu", formats: ["{last}@", "{first}.{last}@"] },
+      "ohio state university": { domain: "osu.edu", formats: ["{last}.1@", "{first}.{last}@"] },
+      "penn state university": { domain: "psu.edu", formats: ["{fi}{last}@", "{last}@"] },
+      "university of florida": { domain: "ufl.edu", formats: ["{last}@", "{first}.{last}@"] },
+      "eth zurich": { domain: "ethz.ch", formats: ["{first}.{last}@", "{last}@"] },
+      "university of toronto": { domain: "utoronto.ca", formats: ["{first}.{last}@", "{last}@"] },
+      "university of british columbia": { domain: "ubc.ca", formats: ["{first}.{last}@", "{last}@"] },
+      "mcgill university": { domain: "mcgill.ca", formats: ["{first}.{last}@", "{last}@"] },
+      "imperial college london": { domain: "imperial.ac.uk", formats: ["{fi}.{last}@", "{first}.{last}@"] },
+      "university college london": { domain: "ucl.ac.uk", formats: ["{fi}.{last}@", "{first}.{last}@"] },
+      "national university of singapore": { domain: "nus.edu.sg", formats: ["{last}@", "{first}.{last}@"] },
+      "university of tokyo": { domain: "u-tokyo.ac.jp", formats: ["{last}@", "{first}.{last}@"] },
     };
+
     const instName = inst.display_name.toLowerCase();
-    let domain = domainMap[instName];
-    if (!domain) {
-      // Try to construct from institution name
-      const words = instName.replace(/university of /i, "").replace(/university/i, "").trim().split(/\s+/);
-      if (words.length > 0 && words[0].length > 2) {
-        domain = words[0] + ".edu";
+    const mapped = domainMap[instName];
+    let domain: string | null = null;
+    let emails: string[] = [];
+
+    if (mapped) {
+      domain = mapped.domain;
+      emails = mapped.formats.map(fmt =>
+        fmt.replace("{first}", first).replace("{last}", last).replace("{fi}", firstInitial) + (fmt.includes("@") && !fmt.endsWith("@") ? domain! : domain!)
+      );
+    } else {
+      // Fallback: try to extract domain
+      const words = instName.replace(/university of |the /gi, "").replace(/university|college|institute|school/gi, "").trim().split(/\s+/).filter(w => w.length > 2);
+      if (words.length > 0) {
+        domain = words[0].replace(/[^a-z]/g, "") + ".edu";
+        emails = [
+          `${first}.${last}@${domain}`,
+          `${firstInitial}${last}@${domain}`,
+          `${last}@${domain}`,
+        ];
       }
     }
-    if (!domain) return null;
-    return `${first}.${last}@${domain}`;
+
+    // Fix: the format strings already include @, so we need to handle this properly
+    if (mapped) {
+      emails = mapped.formats.map(fmt => {
+        const parts = fmt.split("@");
+        const localPart = parts[0].replace("{first}", first).replace("{last}", last).replace("{fi}", firstInitial);
+        const domainSuffix = parts[1] || "";
+        return `${localPart}@${domainSuffix}${domainSuffix ? "" : ""}${mapped.domain}`;
+      });
+    }
+
+    const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(`"${author.display_name}" email ${inst.display_name}`)}`;
+
+    return emails.length > 0 ? { emails: [...new Set(emails)].slice(0, 3), domain, searchUrl } : null;
   }
   const displayList = showSaved ? saved : results;
   const wordCount = emailDraft.trim().split(/\s+/).filter(Boolean).length;
@@ -792,18 +849,29 @@ function AppPageInner() {
 
                 {/* Professor Email Finder */}
                 {isPaid ? (() => {
-                  const email = guessEmail(author);
-                  return email ? (
-                    <div style={{ marginTop: "16px", display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-                      <span style={{ fontSize: "0.85rem", color: "#5A5D45" }}>Email:</span>
-                      <span style={{ fontSize: "0.85rem", color: "#2d5a3d", fontWeight: 600 }}>{email}</span>
-                      <button onClick={() => { navigator.clipboard.writeText(email); showToast("Email copied!"); }} style={{ fontSize: "0.75rem", color: "#F5F0E6", background: "#2d5a3d", border: "none", borderRadius: "8px", padding: "4px 12px", cursor: "pointer", transition: "opacity 0.2s" }}>
-                        Copy
-                      </button>
-                      <a href={profileUrl(author)} target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.8rem", color: "#636B2F" }}>
-                        Faculty page →
-                      </a>
-                      <span style={{ fontSize: "0.7rem", color: "#BAC095", fontStyle: "italic" }}>Estimated — verify on their page</span>
+                  const info = getEmailInfo(author);
+                  return info ? (
+                    <div style={{ marginTop: "16px", padding: "14px 18px", background: "rgba(45,90,61,0.03)", borderRadius: "12px", border: "1px solid rgba(186,192,149,0.2)" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" }}>
+                        <span style={{ fontSize: "0.7rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em" }}>Possible emails</span>
+                        <a href={info.searchUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.7rem", color: "#636B2F", textDecoration: "underline", marginLeft: "auto" }}>
+                          Find verified email →
+                        </a>
+                      </div>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                        {info.emails.map((email, i) => (
+                          <div key={i} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                            {i === 0 && <span style={{ fontSize: "0.6rem", color: "#636B2F", background: "rgba(99,107,47,0.1)", padding: "2px 6px", borderRadius: "4px", fontWeight: 600 }}>most likely</span>}
+                            <span style={{ fontSize: "0.85rem", color: "#2d5a3d", fontWeight: i === 0 ? 600 : 400, fontFamily: "monospace" }}>{email}</span>
+                            <button onClick={() => { navigator.clipboard.writeText(email); showToast("Email copied!"); }} style={{ fontSize: "0.65rem", color: "#F5F0E6", background: "#2d5a3d", border: "none", borderRadius: "6px", padding: "3px 10px", cursor: "pointer" }}>
+                              Copy
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      <p style={{ fontSize: "0.7rem", color: "#BAC095", fontStyle: "italic", marginTop: "8px" }}>
+                        Click &quot;Find verified email&quot; to search for their real address on Google
+                      </p>
                     </div>
                   ) : null;
                 })() : (
