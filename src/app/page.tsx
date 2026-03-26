@@ -289,7 +289,7 @@ export default function LandingPage() {
                 </li>
               ))}
             </ul>
-            <Link href="/app" className="btn-cta landing-cta-primary rm-search-btn" style={{ display: "block", textAlign: "center", padding: "14px", textDecoration: "none", fontSize: "0.95rem", width: "100%" }}>
+            <Link href="/app?upgrade=true" className="btn-cta landing-cta-primary rm-search-btn" style={{ display: "block", textAlign: "center", padding: "14px", textDecoration: "none", fontSize: "0.95rem", width: "100%" }}>
               Upgrade to Student
             </Link>
           </div>

@@ -1,8 +1,13 @@
 "use client";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import confetti from "canvas-confetti";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
+
+export default function AppPageWrapper() {
+  return <Suspense><AppPageInner /></Suspense>;
+}
 
 const RESEARCH_SUGGESTIONS = [
   // Medicine & Health
@@ -95,8 +100,9 @@ interface EmailFlag {
   suggestion: string;
 }
 
-export default function AppPage() {
-  const { user, profile, signUp, signIn, signOut, refreshProfile } = useAuth();
+function AppPageInner() {
+  const { user, profile, loading: authLoading2, signUp, signIn, signOut, refreshProfile } = useAuth();
+  const searchParams = useSearchParams();
   const [searchMode, setSearchMode] = useState<"interest" | "name">("interest");
   const [query, setQuery] = useState("");
   const [university, setUniversity] = useState("");
@@ -153,6 +159,20 @@ export default function AppPage() {
   // Force re-render after mount so toggle slider refs are measured
   const [, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
+
+  // Handle ?upgrade=true from landing page
+  useEffect(() => {
+    if (authLoading2) return;
+    if (searchParams.get("upgrade") === "true") {
+      if (!user) {
+        setShowAuthModal(true);
+        setAuthMode("signup");
+        setAuthError("");
+      } else {
+        setShowUpgradeModal(true);
+      }
+    }
+  }, [authLoading2, user, searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Welcome moment on first visit
   useEffect(() => {
