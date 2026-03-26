@@ -463,7 +463,7 @@ export default function LandingPage() {
             <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#8A8D72", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Free</p>
             <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#2d5a3d", marginBottom: "24px", letterSpacing: "-0.02em" }}>$0</p>
             <ul style={{ listStyle: "none", padding: 0, marginBottom: "30px" }}>
-              {["3 searches per month", "Full research summaries", "Suggested questions", "Author position labels", "Save professors", "Paper links"].map((f) => (
+              {["Unlimited professor searches", "3 research summaries per month", "Suggested questions", "Author position labels", "Save professors", "Paper links"].map((f) => (
                 <li key={f} style={{ fontSize: "0.9rem", color: "#5A5D45", padding: "7px 0", display: "flex", gap: "10px", alignItems: "center" }}>
                   <span style={{ color: "#2d5a3d", fontSize: "0.85rem" }}>✓</span> {f}
                 </li>
@@ -499,7 +499,7 @@ export default function LandingPage() {
             <ul style={{ listStyle: "none", padding: 0, marginBottom: "30px" }}>
               <li style={{ fontSize: "0.9rem", color: "#3D4127", padding: "7px 0", fontWeight: 700 }}>Everything in Free, plus:</li>
               {[
-                "Unlimited searches",
+                "Unlimited research summaries",
                 "Email checker — catches generic & AI language",
                 "Professor email finder",
               ].map((f) => (

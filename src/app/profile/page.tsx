@@ -44,8 +44,8 @@ export default function ProfilePage() {
   const planLabel = isPaid
     ? profile?.plan_type === "student_annual" ? "Student (Annual)" : "Student (Monthly)"
     : "Free";
-  const searchesUsed = profile?.searches_used ?? 0;
-  const searchesLeft = isPaid ? "Unlimited" : `${Math.max(0, 3 - searchesUsed)} of 3`;
+  const summariesUsed = profile?.searches_used ?? 0;
+  const summariesLeft = isPaid ? "Unlimited" : `${Math.max(0, 3 - summariesUsed)} of 3`;
   const resetDate = profile?.searches_reset_at
     ? new Date(profile.searches_reset_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })
     : "—";
@@ -121,7 +121,7 @@ export default function ProfilePage() {
           gap: "16px", marginBottom: "24px",
         }}>
           {[
-            { label: "Searches left", value: searchesLeft, icon: "🔍", sub: isPaid ? "No limits" : `Resets ${resetDate}` },
+            { label: "Summaries left", value: summariesLeft, icon: "📄", sub: isPaid ? "No limits" : `Resets ${resetDate}` },
             { label: "Days active", value: daysActive.toString(), icon: "📅", sub: "Keep going!" },
             { label: "Professors saved", value: (JSON.parse(localStorage.getItem("research-match-saved") || "[]")).length.toString(), icon: "⭐", sub: "Your picks" },
           ].map((stat, i) => (
@@ -151,7 +151,7 @@ export default function ProfilePage() {
               { feature: "Author position labels", included: true },
               { feature: "Save professors", included: true },
               { feature: "Paper links", included: true },
-              { feature: "Unlimited searches", included: isPaid },
+              { feature: "Unlimited summaries", included: isPaid },
               { feature: "Email checker", included: isPaid },
               { feature: "Professor email finder", included: isPaid },
               { feature: "Nearby professor access", included: isPaid },

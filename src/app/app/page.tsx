@@ -249,22 +249,20 @@ function AppPageInner() {
     return saved.some((a) => a.id === author.id);
   }
 
-  function canSearch(): boolean {
-    // Paid users: unlimited
+  function canSummarize(): boolean {
     if (isPaid) return true;
-    // Check localStorage for anonymous searches
-    const anonSearches = parseInt(localStorage.getItem("research-match-searches") || "0", 10);
+    // Check localStorage for anonymous summaries
+    const anonSummaries = parseInt(localStorage.getItem("research-match-summaries") || "0", 10);
     if (!user) {
-      // No account: 3 searches via localStorage
-      if (anonSearches >= 3) {
+      if (anonSummaries >= 3) {
         setShowAuthModal(true);
         setAuthMode("signup");
-        setAuthError("Create a free account to keep searching.");
+        setAuthError("Create a free account for 3 more summaries this month.");
         return false;
       }
       return true;
     }
-    // Free account: 3 per month
+    // Free account: 3 summaries per month
     if (profile && profile.searches_used >= 3) {
       setShowUpgradeModal(true);
       return false;
@@ -272,17 +270,15 @@ function AppPageInner() {
     return true;
   }
 
-  async function incrementSearch() {
+  async function incrementSummary() {
     if (isPaid) return;
     if (!user) {
-      const current = parseInt(localStorage.getItem("research-match-searches") || "0", 10);
-      localStorage.setItem("research-match-searches", String(current + 1));
+      const current = parseInt(localStorage.getItem("research-match-summaries") || "0", 10);
+      localStorage.setItem("research-match-summaries", String(current + 1));
       return;
     }
-    // Increment in Supabase for free users
     try {
       const { supabase } = await import("@/lib/supabase");
-      // Check if we need to reset monthly counter
       if (profile?.searches_reset_at && new Date() > new Date(profile.searches_reset_at)) {
         const nextMonth = new Date();
         nextMonth.setMonth(nextMonth.getMonth() + 1, 1);
@@ -302,7 +298,6 @@ function AppPageInner() {
 
   async function search() {
     if (!query) return;
-    if (!canSearch()) return;
     setLoading(true);
     setError("");
     setResults([]);
@@ -401,7 +396,7 @@ function AppPageInner() {
         }
       }
       if (authors.length === 0) setError(`No professors found for "${topicName}"${institutionName ? ` at ${institutionName}` : ""}. Try a more specific topic like "machine learning" or "quantum computing".`);
-      if (authors.length > 0) incrementSearch();
+      // searches are now unlimited
       setResults(authors);
       // Fetch nearby professors (different universities, same topic) in background
       if (authors.length > 0 && topicId && institutionId) {
@@ -458,7 +453,6 @@ function AppPageInner() {
 
   async function searchByName() {
     if (!profName.trim()) return;
-    if (!canSearch()) return;
     setLoading(true);
     setError("");
     setResults([]);
@@ -471,7 +465,7 @@ function AppPageInner() {
       const data = await res.json();
       const authors: Author[] = data.results || [];
       if (authors.length === 0) setError(`No professors found matching "${profName}".`);
-      if (authors.length > 0) incrementSearch();
+      // searches are now unlimited
       setResults(authors);
     } catch { setError("Something went wrong. Please try again."); }
     finally { setLoading(false); }
@@ -485,12 +479,16 @@ function AppPageInner() {
   async function loadSummary(author: Author, retry = false) {
     const id = author.id.split("/").pop()!;
     if (!retry && (summaries[id] || loadingSummary[id])) return;
+    // Check if user can view summaries
+    if (!canSummarize()) return;
     if (retry) setSummaries((prev) => { const next = { ...prev }; delete next[id]; return next; });
     setLoadingSummary((prev) => ({ ...prev, [id]: true }));
     try {
       const res = await fetch("/api/summarize", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ authorId: id }) });
       const data = await res.json();
       setSummaries((prev) => ({ ...prev, [id]: { summary: data.summary || data.error || "Summary unavailable. Try again or visit their faculty page.", highlights: data.highlights || [], questions: data.questions || [] } }));
+      // Increment summary count after successful load
+      incrementSummary();
     } catch { setSummaries((prev) => ({ ...prev, [id]: { summary: "Summary unavailable. Try again or visit their faculty page.", highlights: [], questions: [] } })); }
     finally { setLoadingSummary((prev) => ({ ...prev, [id]: false })); }
   }
@@ -1254,7 +1252,7 @@ function AppPageInner() {
         <div style={{ position: "fixed", inset: 0, zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(245,240,230,0.85)", backdropFilter: "blur(12px)" }} onClick={() => setShowUpgradeModal(false)}>
           <div className="glass-card" style={{ padding: "40px", maxWidth: "420px", width: "90%" }} onClick={(e) => e.stopPropagation()}>
             <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "8px" }}>Upgrade to Student</h3>
-            <p style={{ fontSize: "0.9rem", color: "#8A8D72", marginBottom: "24px" }}>Unlimited searches, email checker, and professor email finder.</p>
+            <p style={{ fontSize: "0.9rem", color: "#8A8D72", marginBottom: "24px" }}>Unlimited summaries, email checker, and professor email finder.</p>
             <div style={{ display: "flex", justifyContent: "center", marginBottom: "24px" }}>
               <div style={{
                 display: "inline-flex", background: "rgba(45,90,61,0.08)",
@@ -1280,7 +1278,7 @@ function AppPageInner() {
               </div>
             </div>
             <ul style={{ listStyle: "none", padding: 0, marginBottom: "24px" }}>
-              {["Unlimited searches", "Email checker with red-flag detection", "Professor email finder", "Everything in Free"].map((f) => (
+              {["Unlimited research summaries", "Email checker with red-flag detection", "Professor email finder", "Everything in Free"].map((f) => (
                 <li key={f} style={{ fontSize: "0.9rem", color: "#5A5D45", padding: "5px 0", display: "flex", gap: "8px" }}>
                   <span style={{ color: "#2d5a3d" }}>✓</span> {f}
                 </li>
