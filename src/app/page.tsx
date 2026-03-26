@@ -56,8 +56,9 @@ export default function LandingPage() {
       .catch(() => setLifetimeSpotsRemaining(200));
   }, []);
 
-  // Parallax scroll — each splotch drifts at a different rate via margin-top offset
+  // Parallax scroll — disabled on mobile for performance
   useEffect(() => {
+    if (window.innerWidth < 768) return;
     const speeds = [0.15, -0.1, 0.2, -0.12, 0.08, -0.18, 0.14, -0.06, 0.1, -0.15, 0.12, -0.08, 0.18, -0.14, 0.1, -0.16];
     function handleScroll() {
       const scrollY = window.scrollY;

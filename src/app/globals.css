@@ -13,6 +13,16 @@ body {
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Reduce motion for users who prefer it and for performance */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* ===== BACKGROUND SPLOTCHES ===== */
@@ -49,10 +59,12 @@ body::after {
   top: 0;
   left: 0;
   right: 0;
+  width: 100%;
   height: 100%;
   pointer-events: none;
   z-index: -1;
   overflow: hidden;
+  max-width: 100vw;
 }
 
 .splotch {
@@ -1396,30 +1408,67 @@ body::after {
     transform: none;
   }
 
-  .splotch { filter: blur(60px); }
-  .splotch-1 { width: 200px; height: 200px; }
-  .splotch-2 { width: 250px; height: 250px; }
-  .splotch-3 { width: 180px; height: 180px; }
-  .splotch-4 { width: 300px; height: 300px; }
-  .splotch-5 { width: 150px; height: 150px; }
+  /* Reduce splotch sizes to prevent horizontal scroll */
+  .splotch { filter: blur(50px); }
+  .splotch-1, .splotch-6, .splotch-8, .splotch-11, .splotch-14, .splotch-16 { width: 150px; height: 150px; }
+  .splotch-2, .splotch-7, .splotch-9, .splotch-13 { width: 180px; height: 180px; }
+  .splotch-3, .splotch-5, .splotch-10, .splotch-12 { width: 130px; height: 130px; }
+  .splotch-4, .splotch-15 { width: 200px; height: 200px; }
 
-  body::before { width: 300px; height: 300px; }
-  body::after { width: 350px; height: 350px; }
+  body::before { width: 200px; height: 200px; }
+  body::after { width: 250px; height: 250px; }
 
   .welcome-overlay { display: none; }
 
-  .landing-hero h1 { font-size: 2rem !important; }
+  /* Disable 3D transforms on mobile for performance */
+  .splotch { animation-duration: 30s !important; }
+
+  /* Landing page mobile */
+  .landing-hero h1 { font-size: 1.8rem !important; }
   .landing-steps { grid-template-columns: 1fr !important; }
-  .landing-pricing { grid-template-columns: repeat(2, 1fr) !important; }
+  .landing-pricing { grid-template-columns: 1fr !important; max-width: 400px !important; margin: 0 auto !important; }
   .landing-quotes { grid-template-columns: 1fr !important; }
   .landing-nav { padding: 16px 20px !important; }
   .landing-hero { padding: 40px 20px 40px !important; }
-  .landing-section { padding-left: 20px !important; padding-right: 20px !important; }
+  .landing-section { padding-left: 16px !important; padding-right: 16px !important; }
   .landing-footer { padding: 24px 20px !important; flex-direction: column !important; text-align: center !important; }
-}
 
-@media (max-width: 500px) {
-  .landing-pricing { grid-template-columns: 1fr !important; }
+  /* Hero search bar mobile */
+  .hero-search-bar {
+    border-radius: 20px !important;
+    flex-direction: column !important;
+    padding: 16px !important;
+  }
+  .hero-search-bar > div[style*="width: 1px"] {
+    width: 80% !important;
+    height: 1px !important;
+    margin: 4px auto !important;
+  }
+  .hero-search-btn {
+    width: 100% !important;
+    border-radius: 14px !important;
+    margin-top: 6px;
+  }
+  .hero-search-focused {
+    transform: none !important;
+  }
+  .hero-search-bar:hover:not(.hero-search-focused) {
+    transform: none !important;
+  }
+
+  /* Card hover effects — disable on touch */
+  .landing-pricing-card:hover,
+  .lifetime-card:hover {
+    transform: none !important;
+  }
+
+  /* Blog mobile */
+  .blog-content h2 { font-size: 1.2rem; }
+  .blog-content blockquote { padding: 14px 16px; margin: 16px 0; }
+  .blog-cta { padding: 24px 20px; }
+
+  /* Feedback mobile */
+  .feedback-form { padding: 20px !important; }
 }
 
 /* ===== LANDING PAGE ===== */
