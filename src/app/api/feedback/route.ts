@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
 
 export async function GET(req: NextRequest) {
-  const supabase = getSupabase();
   const sort = req.nextUrl.searchParams.get("sort") || "upvotes";
   const order = sort === "newest" ? "created_at" : "upvotes";
 
@@ -16,7 +15,6 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const supabase = getSupabase();
   const { content, category, author_name } = await req.json();
 
   if (!content?.trim()) {
@@ -39,7 +37,6 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-  const supabase = getSupabase();
   const { id } = await req.json();
 
   if (!id) return NextResponse.json({ error: "ID required." }, { status: 400 });

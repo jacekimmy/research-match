@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
+import { AuthProvider } from "@/lib/auth-context";
 
 export const metadata: Metadata = {
-  title: "Research Match",
-  description: "Find professors who match your research interests.",
+  title: "Research Match - Find Research Professors in Minutes",
+  description: "Free tool that helps students find professors for research. Summarizes papers in plain English. Checks cold emails for red flags.",
+  openGraph: {
+    title: "Research Match - Find Research Professors in Minutes",
+    description: "Search 250M+ academic papers. Understand their work instantly. Write emails that actually get responses.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -23,7 +29,9 @@ export default function RootLayout({
         />
       </head>
       <body>
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
         <Analytics />
       </body>
     </html>
