@@ -153,17 +153,18 @@ function AppPageInner() {
   const [nearbyLoading, setNearbyLoading] = useState(false);
 
   // Plan helpers
-  const isPaid = profile?.plan_type === "student_monthly" || profile?.plan_type === "student_annual";
+  const isPaid = profile?.plan_type === "student_monthly" || profile?.plan_type === "student_annual" || profile?.plan_type === "lifetime";
   const isFree = !isPaid;
 
   // Force re-render after mount so toggle slider refs are measured
   const [, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
 
-  // Handle ?upgrade=true from landing page
+  // Handle ?upgrade=true or ?upgrade=lifetime from landing page
   useEffect(() => {
     if (authLoading2) return;
-    if (searchParams.get("upgrade") === "true") {
+    const upgradeParam = searchParams.get("upgrade");
+    if (upgradeParam === "true" || upgradeParam === "lifetime") {
       if (!user) {
         setShowAuthModal(true);
         setAuthMode("signup");
@@ -696,7 +697,8 @@ function AppPageInner() {
             ) : (
               <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                 {isFree && <button onClick={() => setShowUpgradeModal(true)} style={{ fontSize: "0.75rem", fontWeight: 600, color: "#2d5a3d", background: "rgba(45,90,61,0.1)", padding: "6px 14px", borderRadius: "999px", border: "none", cursor: "pointer", transition: "all 0.2s" }}>Upgrade</button>}
-                {isPaid && <span style={{ fontSize: "0.7rem", fontWeight: 700, color: "#F5F0E6", background: "#2d5a3d", padding: "4px 12px", borderRadius: "999px" }}>Student</span>}
+                {isPaid && profile?.plan_type === "lifetime" && <span style={{ fontSize: "0.7rem", fontWeight: 700, color: "#F5F0E6", background: "linear-gradient(135deg, #2d5a3d, #4a7c5c)", padding: "4px 12px", borderRadius: "999px" }}>Lifetime</span>}
+                {isPaid && profile?.plan_type !== "lifetime" && <span style={{ fontSize: "0.7rem", fontWeight: 700, color: "#F5F0E6", background: "#2d5a3d", padding: "4px 12px", borderRadius: "999px" }}>Student</span>}
                 <Link href="/profile" style={{
                   width: "38px", height: "38px", borderRadius: "50%",
                   background: "linear-gradient(135deg, #2d5a3d, #4a7c5c)",
@@ -1250,54 +1252,91 @@ function AppPageInner() {
       {/* UPGRADE MODAL */}
       {showUpgradeModal && (
         <div style={{ position: "fixed", inset: 0, zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(245,240,230,0.85)", backdropFilter: "blur(12px)" }} onClick={() => setShowUpgradeModal(false)}>
-          <div className="glass-card" style={{ padding: "40px", maxWidth: "420px", width: "90%" }} onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "8px" }}>Upgrade to Student</h3>
+          <div className="glass-card" style={{ padding: "40px", maxWidth: "540px", width: "90%" }} onClick={(e) => e.stopPropagation()}>
+            <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "8px" }}>Upgrade your plan</h3>
             <p style={{ fontSize: "0.9rem", color: "#8A8D72", marginBottom: "24px" }}>Unlimited summaries, email checker, and professor email finder.</p>
-            <div style={{ display: "flex", justifyContent: "center", marginBottom: "24px" }}>
-              <div style={{
-                display: "inline-flex", background: "rgba(45,90,61,0.08)",
-                border: "2px solid rgba(45,90,61,0.2)", borderRadius: "999px",
-                padding: "4px", gap: "4px",
-              }}>
-                <button onClick={() => setUpgradeBilling("monthly")} style={{
-                  padding: "10px 24px", fontSize: "0.9rem", fontWeight: 700,
-                  fontFamily: "'Playfair Display', Georgia, serif",
-                  border: "none", borderRadius: "999px", cursor: "pointer",
-                  transition: "all 0.3s ease",
-                  background: upgradeBilling === "monthly" ? "#2d5a3d" : "transparent",
-                  color: upgradeBilling === "monthly" ? "#F5F0E6" : "#3D4127",
-                }}>$9/mo</button>
-                <button onClick={() => setUpgradeBilling("annual")} style={{
-                  padding: "10px 24px", fontSize: "0.9rem", fontWeight: 700,
-                  fontFamily: "'Playfair Display', Georgia, serif",
-                  border: "none", borderRadius: "999px", cursor: "pointer",
-                  transition: "all 0.3s ease",
-                  background: upgradeBilling === "annual" ? "#2d5a3d" : "transparent",
-                  color: upgradeBilling === "annual" ? "#F5F0E6" : "#3D4127",
-                }}>$79/yr <span style={{ fontSize: "0.75rem", color: upgradeBilling === "annual" ? "#D4DE95" : "#636B2F" }}>(save $29)</span></button>
+
+            {/* Student option */}
+            <div style={{ marginBottom: "20px", padding: "20px", borderRadius: "14px", border: "1.5px solid rgba(45,90,61,0.2)", background: "rgba(45,90,61,0.03)" }}>
+              <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "8px" }}>Student</p>
+              <div style={{ display: "flex", justifyContent: "center", marginBottom: "16px" }}>
+                <div style={{
+                  display: "inline-flex", background: "rgba(45,90,61,0.08)",
+                  border: "2px solid rgba(45,90,61,0.2)", borderRadius: "999px",
+                  padding: "4px", gap: "4px",
+                }}>
+                  <button onClick={() => setUpgradeBilling("monthly")} style={{
+                    padding: "10px 24px", fontSize: "0.9rem", fontWeight: 700,
+                    fontFamily: "'Playfair Display', Georgia, serif",
+                    border: "none", borderRadius: "999px", cursor: "pointer",
+                    transition: "all 0.3s ease",
+                    background: upgradeBilling === "monthly" ? "#2d5a3d" : "transparent",
+                    color: upgradeBilling === "monthly" ? "#F5F0E6" : "#3D4127",
+                  }}>$9/mo</button>
+                  <button onClick={() => setUpgradeBilling("annual")} style={{
+                    padding: "10px 24px", fontSize: "0.9rem", fontWeight: 700,
+                    fontFamily: "'Playfair Display', Georgia, serif",
+                    border: "none", borderRadius: "999px", cursor: "pointer",
+                    transition: "all 0.3s ease",
+                    background: upgradeBilling === "annual" ? "#2d5a3d" : "transparent",
+                    color: upgradeBilling === "annual" ? "#F5F0E6" : "#3D4127",
+                  }}>$79/yr <span style={{ fontSize: "0.75rem", color: upgradeBilling === "annual" ? "#D4DE95" : "#636B2F" }}>(save $29)</span></button>
+                </div>
               </div>
+              <ul style={{ listStyle: "none", padding: 0, marginBottom: "16px" }}>
+                {["Unlimited research summaries", "Email checker with red-flag detection", "Professor email finder", "Everything in Free"].map((f) => (
+                  <li key={f} style={{ fontSize: "0.85rem", color: "#5A5D45", padding: "4px 0", display: "flex", gap: "8px" }}>
+                    <span style={{ color: "#2d5a3d" }}>✓</span> {f}
+                  </li>
+                ))}
+              </ul>
+              <button onClick={async () => {
+                if (!user) { setShowUpgradeModal(false); setShowAuthModal(true); setAuthMode("signup"); return; }
+                try {
+                  const priceId = upgradeBilling === "monthly"
+                    ? (process.env.NEXT_PUBLIC_STRIPE_PRICE_STUDENT_MONTHLY || "price_1TF4pEFINW44xCyF0nDRsX8l")
+                    : (process.env.NEXT_PUBLIC_STRIPE_PRICE_STUDENT_ANNUAL || "price_1TF4paFINW44xCyFydayukDG");
+                  const res = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ priceId, userId: user.id }) });
+                  const data = await res.json();
+                  if (data.url) window.location.href = data.url;
+                } catch { showToast("Something went wrong. Try again."); }
+              }} className="btn-cta rm-search-btn" style={{ width: "100%", padding: "12px", fontSize: "0.95rem" }}>
+                Upgrade to Student
+              </button>
             </div>
-            <ul style={{ listStyle: "none", padding: 0, marginBottom: "24px" }}>
-              {["Unlimited research summaries", "Email checker with red-flag detection", "Professor email finder", "Everything in Free"].map((f) => (
-                <li key={f} style={{ fontSize: "0.9rem", color: "#5A5D45", padding: "5px 0", display: "flex", gap: "8px" }}>
-                  <span style={{ color: "#2d5a3d" }}>✓</span> {f}
-                </li>
-              ))}
-            </ul>
-            <button onClick={async () => {
-              if (!user) { setShowUpgradeModal(false); setShowAuthModal(true); setAuthMode("signup"); return; }
-              try {
-                const priceId = upgradeBilling === "monthly"
-                  ? (process.env.NEXT_PUBLIC_STRIPE_PRICE_STUDENT_MONTHLY || "price_1TF4pEFINW44xCyF0nDRsX8l")
-                  : (process.env.NEXT_PUBLIC_STRIPE_PRICE_STUDENT_ANNUAL || "price_1TF4paFINW44xCyFydayukDG");
-                const res = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ priceId, userId: user.id }) });
-                const data = await res.json();
-                if (data.url) window.location.href = data.url;
-              } catch { showToast("Something went wrong. Try again."); }
-            }} className="btn-cta rm-search-btn" style={{ width: "100%", padding: "14px", fontSize: "1rem" }}>
-              Upgrade now
-            </button>
-            <p style={{ fontSize: "0.75rem", color: "#8A8D72", textAlign: "center", marginTop: "12px" }}>Cancel anytime. Powered by Stripe.</p>
+
+            {/* Lifetime option */}
+            <div style={{ padding: "20px", borderRadius: "14px", border: "2px solid rgba(45,90,61,0.4)", boxShadow: "0 0 20px rgba(45,90,61,0.1)", background: "rgba(45,90,61,0.05)" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+                <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em" }}>Lifetime</p>
+                <span style={{ fontSize: "0.6rem", fontWeight: 700, color: "#F5F0E6", background: "linear-gradient(135deg, #2d5a3d, #4a7c5c)", padding: "3px 10px", borderRadius: "999px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Limited</span>
+              </div>
+              <div style={{ display: "flex", alignItems: "baseline", gap: "8px", marginBottom: "4px" }}>
+                <span style={{ fontSize: "2rem", fontWeight: 800, color: "#2d5a3d" }}>$29</span>
+                <span style={{ fontSize: "1rem", color: "#BAC095", textDecoration: "line-through" }}>$108</span>
+                <span style={{ fontSize: "0.85rem", color: "#636B2F", fontWeight: 600 }}>one-time</span>
+              </div>
+              <ul style={{ listStyle: "none", padding: 0, marginBottom: "16px" }}>
+                {["Everything in Student, forever", "One payment, lifetime access"].map((f) => (
+                  <li key={f} style={{ fontSize: "0.85rem", color: "#5A5D45", padding: "4px 0", display: "flex", gap: "8px" }}>
+                    <span style={{ color: "#2d5a3d" }}>✓</span> {f}
+                  </li>
+                ))}
+              </ul>
+              <button onClick={async () => {
+                if (!user) { setShowUpgradeModal(false); setShowAuthModal(true); setAuthMode("signup"); return; }
+                try {
+                  const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_LIFETIME || "price_1TFLm1FINW44xCyF3FAt3jF5";
+                  const res = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ priceId, userId: user.id }) });
+                  const data = await res.json();
+                  if (data.url) window.location.href = data.url;
+                } catch { showToast("Something went wrong. Try again."); }
+              }} className="btn-cta rm-search-btn" style={{ width: "100%", padding: "12px", fontSize: "0.95rem" }}>
+                Claim your spot — $29
+              </button>
+            </div>
+
+            <p style={{ fontSize: "0.75rem", color: "#8A8D72", textAlign: "center", marginTop: "12px" }}>Powered by Stripe.</p>
           </div>
         </div>
       )}

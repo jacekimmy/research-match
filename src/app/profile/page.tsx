@@ -40,10 +40,12 @@ export default function ProfilePage() {
     );
   }
 
-  const isPaid = profile?.plan_type === "student_monthly" || profile?.plan_type === "student_annual";
-  const planLabel = isPaid
-    ? profile?.plan_type === "student_annual" ? "Student (Annual)" : "Student (Monthly)"
-    : "Free";
+  const isPaid = profile?.plan_type === "student_monthly" || profile?.plan_type === "student_annual" || profile?.plan_type === "lifetime";
+  const planLabel = profile?.plan_type === "lifetime"
+    ? "Lifetime"
+    : isPaid
+      ? profile?.plan_type === "student_annual" ? "Student (Annual)" : "Student (Monthly)"
+      : "Free";
   const summariesUsed = profile?.searches_used ?? 0;
   const summariesLeft = isPaid ? "Unlimited" : `${Math.max(0, 3 - summariesUsed)} of 3`;
   const resetDate = profile?.searches_reset_at
@@ -180,7 +182,7 @@ export default function ProfilePage() {
             ))}
           </div>
 
-          {!isPaid && (
+          {!isPaid && profile?.plan_type !== "lifetime" && (
             <button
               onClick={async () => {
                 const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_STUDENT_MONTHLY || "price_1TF4pEFINW44xCyF0nDRsX8l";

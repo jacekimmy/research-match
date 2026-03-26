@@ -35,7 +35,16 @@ export async function POST(req: NextRequest) {
 
     // Determine plan type from the subscription/payment
     let planType = "student_monthly";
-    if (session.mode === "subscription" && session.subscription) {
+    const lifetimePriceId = process.env.STRIPE_PRICE_LIFETIME || "price_1TFLm1FINW44xCyF3FAt3jF5";
+
+    if (session.mode === "payment") {
+      // One-time payment — check if it's the lifetime price
+      const lineItems = await stripe.checkout.sessions.listLineItems(session.id, { limit: 1 });
+      const paidPriceId = lineItems.data[0]?.price?.id;
+      if (paidPriceId === lifetimePriceId) {
+        planType = "lifetime";
+      }
+    } else if (session.mode === "subscription" && session.subscription) {
       const sub = await stripe.subscriptions.retrieve(
         session.subscription as string
       );
@@ -49,6 +58,28 @@ export async function POST(req: NextRequest) {
       .from("profiles")
       .update({ plan_type: planType })
       .eq("id", userId);
+
+    // Increment lifetime spots counter if lifetime purchase
+    if (planType === "lifetime") {
+      const { data: setting } = await supabaseAdmin
+        .from("settings")
+        .select("value")
+        .eq("key", "lifetime_spots_claimed")
+        .single();
+
+      const currentClaimed = setting ? parseInt(setting.value, 10) : 0;
+
+      if (setting) {
+        await supabaseAdmin
+          .from("settings")
+          .update({ value: String(currentClaimed + 1) })
+          .eq("key", "lifetime_spots_claimed");
+      } else {
+        await supabaseAdmin
+          .from("settings")
+          .insert({ key: "lifetime_spots_claimed", value: "1" });
+      }
+    }
   }
 
   if (event.type === "customer.subscription.deleted") {

@@ -26,6 +26,7 @@ export default function LandingPage() {
   const [waitlistLoading, setWaitlistLoading] = useState(false);
   const [inlineWaitlistEmail, setInlineWaitlistEmail] = useState("");
   const [inlineWaitlistDone, setInlineWaitlistDone] = useState(false);
+  const [lifetimeSpotsRemaining, setLifetimeSpotsRemaining] = useState<number | null>(null);
 
   async function joinWaitlist() {
     if (!waitlistEmail || !waitlistTier) return;
@@ -46,6 +47,13 @@ export default function LandingPage() {
       setPlaceholderIdx((i) => (i + 1) % HERO_PLACEHOLDERS.length);
     }, 3000);
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/lifetime-spots")
+      .then((r) => r.json())
+      .then((d) => setLifetimeSpotsRemaining(d.remaining ?? 200))
+      .catch(() => setLifetimeSpotsRemaining(200));
   }, []);
 
   // Parallax scroll — each splotch drifts at a different rate via margin-top offset
@@ -402,7 +410,7 @@ export default function LandingPage() {
 
       {/* Pricing */}
       <section id="pricing" className="landing-section" style={{
-        maxWidth: "900px", margin: "0 auto", padding: "40px 40px 40px",
+        maxWidth: "1140px", margin: "0 auto", padding: "40px 40px 40px",
       }}>
         <h2 style={{
           fontSize: "1.8rem", fontWeight: 700, color: "#2d5a3d",
@@ -455,8 +463,8 @@ export default function LandingPage() {
         </div>
 
         <div className="landing-pricing" style={{
-          display: "grid", gridTemplateColumns: "repeat(2, 1fr)",
-          gap: "28px", alignItems: "start", maxWidth: "720px", margin: "0 auto",
+          display: "grid", gridTemplateColumns: "repeat(3, 1fr)",
+          gap: "28px", alignItems: "start", maxWidth: "1080px", margin: "0 auto",
         }}>
           {/* Free */}
           <div className="glass-card landing-pricing-card" style={{ padding: "36px 30px" }}>
@@ -511,6 +519,66 @@ export default function LandingPage() {
             <Link href="/app?upgrade=true" className="btn-cta landing-cta-primary rm-search-btn" style={{ display: "block", textAlign: "center", padding: "14px", textDecoration: "none", fontSize: "0.95rem", width: "100%" }}>
               Upgrade to Student
             </Link>
+          </div>
+
+          {/* Lifetime */}
+          <div className="glass-card landing-pricing-card" style={{
+            padding: "40px 30px", position: "relative",
+            border: "2px solid rgba(45,90,61,0.4)",
+            boxShadow: "0 0 30px rgba(45,90,61,0.15), 0 8px 40px rgba(45,90,61,0.1)",
+          }}>
+            <span style={{
+              position: "absolute", top: "-13px", left: "50%", transform: "translateX(-50%)",
+              background: "linear-gradient(135deg, #2d5a3d, #4a7c5c)", color: "#F5F0E6",
+              fontSize: "0.6rem", fontWeight: 700,
+              padding: "5px 14px", borderRadius: "999px", textTransform: "uppercase", letterSpacing: "0.1em",
+              whiteSpace: "nowrap",
+            }}>Limited — First 200 users only</span>
+            <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Lifetime</p>
+            <div style={{ display: "flex", alignItems: "baseline", gap: "10px", marginBottom: "4px" }}>
+              <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#2d5a3d", letterSpacing: "-0.02em" }}>$29</p>
+              <p style={{ fontSize: "1.2rem", color: "#BAC095", textDecoration: "line-through", fontWeight: 500 }}>$108</p>
+            </div>
+            <p style={{ fontSize: "0.8rem", color: "#636B2F", marginBottom: "8px", fontWeight: 600 }}>one-time</p>
+            {lifetimeSpotsRemaining !== null && (
+              <p style={{
+                fontSize: "0.8rem", color: lifetimeSpotsRemaining > 0 ? "#2d5a3d" : "#9B3322",
+                fontWeight: 600, marginBottom: "16px",
+              }}>
+                {lifetimeSpotsRemaining > 0
+                  ? `${lifetimeSpotsRemaining} of 200 spots remaining`
+                  : "Sold out"}
+              </p>
+            )}
+            <ul style={{ listStyle: "none", padding: 0, marginBottom: "30px" }}>
+              <li style={{ fontSize: "0.9rem", color: "#3D4127", padding: "7px 0", fontWeight: 700 }}>Everything in Student, forever:</li>
+              {[
+                "Unlimited searches",
+                "Unlimited research summaries",
+                "Email checker",
+                "Professor email finder",
+                "Nearby professor access",
+                "One payment, lifetime access",
+              ].map((f) => (
+                <li key={f} style={{ fontSize: "0.9rem", color: "#5A5D45", padding: "7px 0", display: "flex", gap: "10px", alignItems: "flex-start" }}>
+                  <span style={{ color: "#2d5a3d", flexShrink: 0, fontSize: "0.85rem" }}>✓</span> {f}
+                </li>
+              ))}
+            </ul>
+            {lifetimeSpotsRemaining === 0 ? (
+              <button disabled style={{
+                display: "block", textAlign: "center", padding: "14px", fontSize: "0.95rem",
+                width: "100%", background: "#BAC095", color: "#F5F0E6", border: "none",
+                borderRadius: "14px", cursor: "not-allowed", fontWeight: 700,
+                fontFamily: "'Playfair Display', Georgia, serif",
+              }}>
+                Sold out
+              </button>
+            ) : (
+              <Link href="/app?upgrade=lifetime" className="btn-cta landing-cta-primary rm-search-btn" style={{ display: "block", textAlign: "center", padding: "14px", textDecoration: "none", fontSize: "0.95rem", width: "100%" }}>
+                Claim your spot
+              </Link>
+            )}
           </div>
         </div>
 
