@@ -337,8 +337,8 @@ export default function LandingPage() {
             }}>Coming Soon</span>
             <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#8A8D72", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Pro</p>
             <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#3D4127", marginBottom: "4px", letterSpacing: "-0.02em" }}>
-              $74.99
-              <span style={{ fontSize: "1rem", fontWeight: 400, color: "#8A8D72" }}> one-time</span>
+              $59
+              <span style={{ fontSize: "1rem", fontWeight: 400, color: "#8A8D72" }}>/mo</span>
             </p>
             <div style={{ height: "20px" }} />
             <ul style={{ listStyle: "none", padding: 0, marginBottom: "30px" }}>
