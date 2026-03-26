@@ -204,17 +204,33 @@ export default function LandingPage() {
 
         {/* Billing toggle */}
         <div style={{ display: "flex", justifyContent: "center", marginBottom: "44px" }}>
-          <div className="mode-toggle">
+          <div style={{
+            display: "inline-flex", background: "rgba(45,90,61,0.08)",
+            border: "2px solid rgba(45,90,61,0.2)", borderRadius: "999px",
+            padding: "4px", gap: "4px",
+          }}>
             <button
-              className={`mode-toggle-btn ${billingCycle === "monthly" ? "mode-toggle-btn-active" : ""}`}
               onClick={() => setBillingCycle("monthly")}
+              style={{
+                padding: "12px 32px", fontSize: "0.95rem", fontWeight: 700,
+                fontFamily: "'Playfair Display', Georgia, serif",
+                border: "none", borderRadius: "999px", cursor: "pointer",
+                transition: "all 0.3s ease",
+                background: billingCycle === "monthly" ? "#2d5a3d" : "transparent",
+                color: billingCycle === "monthly" ? "#F5F0E6" : "#3D4127",
+              }}
             >Monthly</button>
             <button
-              className={`mode-toggle-btn ${billingCycle === "annual" ? "mode-toggle-btn-active" : ""}`}
               onClick={() => setBillingCycle("annual")}
-            >
-              Annual
-            </button>
+              style={{
+                padding: "12px 32px", fontSize: "0.95rem", fontWeight: 700,
+                fontFamily: "'Playfair Display', Georgia, serif",
+                border: "none", borderRadius: "999px", cursor: "pointer",
+                transition: "all 0.3s ease",
+                background: billingCycle === "annual" ? "#2d5a3d" : "transparent",
+                color: billingCycle === "annual" ? "#F5F0E6" : "#3D4127",
+              }}
+            >Annual</button>
           </div>
         </div>
 
