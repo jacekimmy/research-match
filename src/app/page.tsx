@@ -521,29 +521,35 @@ export default function LandingPage() {
             </Link>
           </div>
 
-          {/* Lifetime */}
-          <div className="glass-card landing-pricing-card" style={{
+          {/* Lifetime — Gold Premium */}
+          <div className="glass-card landing-pricing-card lifetime-card" style={{
             padding: "40px 30px", position: "relative",
-            border: "2px solid rgba(45,90,61,0.4)",
-            boxShadow: "0 0 30px rgba(45,90,61,0.15), 0 8px 40px rgba(45,90,61,0.1)",
+            border: "2px solid rgba(180, 155, 80, 0.5)",
+            background: "linear-gradient(165deg, rgba(255,250,235,0.85) 0%, rgba(255,245,220,0.6) 50%, rgba(245,235,200,0.4) 100%)",
+            boxShadow: "0 0 40px rgba(180, 155, 80, 0.15), 0 8px 40px rgba(180, 155, 80, 0.1), inset 0 1px 0 rgba(255,255,255,0.8)",
           }}>
             <span style={{
               position: "absolute", top: "-13px", left: "50%", transform: "translateX(-50%)",
-              background: "linear-gradient(135deg, #2d5a3d, #4a7c5c)", color: "#F5F0E6",
+              background: "linear-gradient(135deg, #8B6914, #C4981A, #8B6914)",
+              color: "#FFF8E7",
               fontSize: "0.6rem", fontWeight: 700,
-              padding: "5px 14px", borderRadius: "999px", textTransform: "uppercase", letterSpacing: "0.1em",
+              padding: "6px 16px", borderRadius: "999px", textTransform: "uppercase", letterSpacing: "0.1em",
               whiteSpace: "nowrap",
+              boxShadow: "0 2px 12px rgba(180, 155, 80, 0.3)",
             }}>Limited — First 200 users only</span>
-            <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Lifetime</p>
+            <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#8B6914", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Lifetime</p>
             <div style={{ display: "flex", alignItems: "baseline", gap: "10px", marginBottom: "4px" }}>
-              <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#2d5a3d", letterSpacing: "-0.02em" }}>$29</p>
-              <p style={{ fontSize: "1.2rem", color: "#BAC095", textDecoration: "line-through", fontWeight: 500 }}>$108</p>
+              <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#6B5210", letterSpacing: "-0.02em" }}>$29</p>
+              <p style={{ fontSize: "1.2rem", color: "#BAA870", textDecoration: "line-through", fontWeight: 500 }}>$108</p>
             </div>
-            <p style={{ fontSize: "0.8rem", color: "#636B2F", marginBottom: "8px", fontWeight: 600 }}>one-time</p>
+            <p style={{ fontSize: "0.8rem", color: "#8B6914", marginBottom: "8px", fontWeight: 600 }}>one-time</p>
             {lifetimeSpotsRemaining !== null && (
               <p style={{
-                fontSize: "0.8rem", color: lifetimeSpotsRemaining > 0 ? "#2d5a3d" : "#9B3322",
-                fontWeight: 600, marginBottom: "16px",
+                fontSize: "0.8rem",
+                color: lifetimeSpotsRemaining > 0 ? "#8B6914" : "#9B3322",
+                fontWeight: 700, marginBottom: "16px",
+                background: lifetimeSpotsRemaining > 0 ? "rgba(180,155,80,0.1)" : "rgba(155,51,34,0.08)",
+                padding: "4px 12px", borderRadius: "8px", display: "inline-block",
               }}>
                 {lifetimeSpotsRemaining > 0
                   ? `${lifetimeSpotsRemaining} of 200 spots remaining`
@@ -551,7 +557,7 @@ export default function LandingPage() {
               </p>
             )}
             <ul style={{ listStyle: "none", padding: 0, marginBottom: "30px" }}>
-              <li style={{ fontSize: "0.9rem", color: "#3D4127", padding: "7px 0", fontWeight: 700 }}>Everything in Student, forever:</li>
+              <li style={{ fontSize: "0.9rem", color: "#5A4A1A", padding: "7px 0", fontWeight: 700 }}>Everything in Student, forever:</li>
               {[
                 "Unlimited searches",
                 "Unlimited research summaries",
@@ -560,22 +566,30 @@ export default function LandingPage() {
                 "Nearby professor access",
                 "One payment, lifetime access",
               ].map((f) => (
-                <li key={f} style={{ fontSize: "0.9rem", color: "#5A5D45", padding: "7px 0", display: "flex", gap: "10px", alignItems: "flex-start" }}>
-                  <span style={{ color: "#2d5a3d", flexShrink: 0, fontSize: "0.85rem" }}>✓</span> {f}
+                <li key={f} style={{ fontSize: "0.9rem", color: "#6B5A2A", padding: "7px 0", display: "flex", gap: "10px", alignItems: "flex-start" }}>
+                  <span style={{ color: "#8B6914", flexShrink: 0, fontSize: "0.85rem" }}>✓</span> {f}
                 </li>
               ))}
             </ul>
             {lifetimeSpotsRemaining === 0 ? (
               <button disabled style={{
                 display: "block", textAlign: "center", padding: "14px", fontSize: "0.95rem",
-                width: "100%", background: "#BAC095", color: "#F5F0E6", border: "none",
+                width: "100%", background: "#BAA870", color: "#FFF8E7", border: "none",
                 borderRadius: "14px", cursor: "not-allowed", fontWeight: 700,
                 fontFamily: "'Playfair Display', Georgia, serif",
               }}>
                 Sold out
               </button>
             ) : (
-              <Link href="/app?upgrade=lifetime" className="btn-cta landing-cta-primary rm-search-btn" style={{ display: "block", textAlign: "center", padding: "14px", textDecoration: "none", fontSize: "0.95rem", width: "100%" }}>
+              <Link href="/app?upgrade=lifetime" style={{
+                display: "block", textAlign: "center", padding: "14px",
+                textDecoration: "none", fontSize: "0.95rem", width: "100%",
+                background: "linear-gradient(135deg, #8B6914, #C4981A)",
+                color: "#FFF8E7", borderRadius: "14px", fontWeight: 700,
+                fontFamily: "'Playfair Display', Georgia, serif",
+                boxShadow: "0 4px 16px rgba(180, 155, 80, 0.3)",
+                transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+              }}>
                 Claim your spot
               </Link>
             )}
