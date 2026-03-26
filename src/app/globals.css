@@ -104,11 +104,82 @@ body::after {
   animation: drift5 16s ease-in-out infinite alternate;
 }
 
+.splotch-6 {
+  top: 70%;
+  right: 15%;
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, rgba(45, 90, 61, 0.12) 0%, transparent 70%);
+  animation: drift6 19s ease-in-out infinite alternate;
+}
+
+.splotch-7 {
+  top: 85%;
+  left: 50%;
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle, rgba(130, 160, 80, 0.18) 0%, transparent 70%);
+  animation: drift7 24s ease-in-out infinite alternate;
+}
+
+.splotch-8 {
+  top: 40%;
+  right: 25%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(76, 115, 55, 0.15) 0%, transparent 70%);
+  animation: drift8 17s ease-in-out infinite alternate;
+}
+
+.splotch-9 {
+  top: 10%;
+  left: 15%;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(150, 180, 90, 0.14) 0%, transparent 70%);
+  animation: drift9 21s ease-in-out infinite alternate;
+}
+
+.splotch-10 {
+  top: 60%;
+  left: 60%;
+  width: 260px;
+  height: 260px;
+  background: radial-gradient(circle, rgba(88, 120, 44, 0.13) 0%, transparent 70%);
+  filter: blur(90px);
+  animation: drift10 23s ease-in-out infinite alternate;
+}
+
+.splotch-11 {
+  top: 25%;
+  right: 5%;
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, rgba(45, 90, 61, 0.1) 0%, transparent 70%);
+  animation: drift11 15s ease-in-out infinite alternate;
+}
+
+.splotch-12 {
+  top: 90%;
+  left: 10%;
+  width: 340px;
+  height: 340px;
+  background: radial-gradient(circle, rgba(186, 192, 149, 0.2) 0%, transparent 70%);
+  animation: drift12 26s ease-in-out infinite alternate;
+}
+
 @keyframes drift1 { from { transform: translate(0, 0); } to { transform: translate(-40px, 30px); } }
 @keyframes drift2 { from { transform: translate(0, 0); } to { transform: translate(30px, -40px); } }
 @keyframes drift3 { from { transform: translate(0, 0); } to { transform: translate(-20px, -30px); } }
 @keyframes drift4 { from { transform: translate(0, 0); } to { transform: translate(40px, -20px); } }
 @keyframes drift5 { from { transform: translate(0, 0); } to { transform: translate(-30px, 20px); } }
+@keyframes drift6 { from { transform: translate(0, 0); } to { transform: translate(25px, -35px); } }
+@keyframes drift7 { from { transform: translate(0, 0); } to { transform: translate(-35px, 25px); } }
+@keyframes drift8 { from { transform: translate(0, 0); } to { transform: translate(20px, 30px); } }
+@keyframes drift9 { from { transform: translate(0, 0); } to { transform: translate(-25px, -20px); } }
+@keyframes drift10 { from { transform: translate(0, 0); } to { transform: translate(30px, 25px); } }
+@keyframes drift11 { from { transform: translate(0, 0); } to { transform: translate(-15px, 35px); } }
+@keyframes drift12 { from { transform: translate(0, 0); } to { transform: translate(35px, -15px); } }
 
 /* ===== WELCOME OVERLAY ===== */
 

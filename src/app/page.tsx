@@ -93,6 +93,13 @@ export default function LandingPage() {
         <div className="splotch splotch-3" />
         <div className="splotch splotch-4" />
         <div className="splotch splotch-5" />
+        <div className="splotch splotch-6" />
+        <div className="splotch splotch-7" />
+        <div className="splotch splotch-8" />
+        <div className="splotch splotch-9" />
+        <div className="splotch splotch-10" />
+        <div className="splotch splotch-11" />
+        <div className="splotch splotch-12" />
       </div>
 
       {/* Nav */}
@@ -133,9 +140,9 @@ export default function LandingPage() {
         <div
           className={`hero-search-bar ${heroFocused ? "hero-search-focused" : ""}`}
           style={{
-            maxWidth: "740px", margin: "0 auto 24px",
-            padding: "8px",
-            borderRadius: "24px",
+            maxWidth: "820px", margin: "0 auto 28px",
+            padding: "10px 14px",
+            borderRadius: "999px",
             display: "flex", alignItems: "center", gap: "0",
             position: "relative",
           }}
@@ -191,9 +198,9 @@ export default function LandingPage() {
             onClick={heroSearch}
             className="hero-search-btn"
             style={{
-              padding: "16px 36px", fontSize: "1.05rem", fontWeight: 700,
+              padding: "18px 40px", fontSize: "1.1rem", fontWeight: 700,
               fontFamily: "'Playfair Display', Georgia, serif",
-              border: "none", borderRadius: "18px", cursor: "pointer",
+              border: "none", borderRadius: "999px", cursor: "pointer",
               color: "#F5F0E6", background: "#2d5a3d",
               flexShrink: 0, position: "relative", overflow: "hidden",
             }}
