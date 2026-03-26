@@ -1149,9 +1149,29 @@ export default function AppPage() {
           <div className="glass-card" style={{ padding: "40px", maxWidth: "420px", width: "90%" }} onClick={(e) => e.stopPropagation()}>
             <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "8px" }}>Upgrade to Student</h3>
             <p style={{ fontSize: "0.9rem", color: "#8A8D72", marginBottom: "24px" }}>Unlimited searches, email checker, and professor email finder.</p>
-            <div className="mode-toggle" style={{ marginBottom: "24px", display: "flex", justifyContent: "center" }}>
-              <button className={`mode-toggle-btn ${upgradeBilling === "monthly" ? "mode-toggle-btn-active" : ""}`} onClick={() => setUpgradeBilling("monthly")}>$9/mo</button>
-              <button className={`mode-toggle-btn ${upgradeBilling === "annual" ? "mode-toggle-btn-active" : ""}`} onClick={() => setUpgradeBilling("annual")}>$79/yr (save $29)</button>
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: "24px" }}>
+              <div style={{
+                display: "inline-flex", background: "rgba(45,90,61,0.08)",
+                border: "2px solid rgba(45,90,61,0.2)", borderRadius: "999px",
+                padding: "4px", gap: "4px",
+              }}>
+                <button onClick={() => setUpgradeBilling("monthly")} style={{
+                  padding: "10px 24px", fontSize: "0.9rem", fontWeight: 700,
+                  fontFamily: "'Playfair Display', Georgia, serif",
+                  border: "none", borderRadius: "999px", cursor: "pointer",
+                  transition: "all 0.3s ease",
+                  background: upgradeBilling === "monthly" ? "#2d5a3d" : "transparent",
+                  color: upgradeBilling === "monthly" ? "#F5F0E6" : "#3D4127",
+                }}>$9/mo</button>
+                <button onClick={() => setUpgradeBilling("annual")} style={{
+                  padding: "10px 24px", fontSize: "0.9rem", fontWeight: 700,
+                  fontFamily: "'Playfair Display', Georgia, serif",
+                  border: "none", borderRadius: "999px", cursor: "pointer",
+                  transition: "all 0.3s ease",
+                  background: upgradeBilling === "annual" ? "#2d5a3d" : "transparent",
+                  color: upgradeBilling === "annual" ? "#F5F0E6" : "#3D4127",
+                }}>$79/yr <span style={{ fontSize: "0.75rem", color: upgradeBilling === "annual" ? "#D4DE95" : "#636B2F" }}>(save $29)</span></button>
+              </div>
             </div>
             <ul style={{ listStyle: "none", padding: 0, marginBottom: "24px" }}>
               {["Unlimited searches", "Email checker with red-flag detection", "Professor email finder", "Everything in Free"].map((f) => (
@@ -1163,7 +1183,9 @@ export default function AppPage() {
             <button onClick={async () => {
               if (!user) { setShowUpgradeModal(false); setShowAuthModal(true); setAuthMode("signup"); return; }
               try {
-                const priceId = upgradeBilling === "monthly" ? process.env.NEXT_PUBLIC_STRIPE_PRICE_STUDENT_MONTHLY : process.env.NEXT_PUBLIC_STRIPE_PRICE_STUDENT_ANNUAL;
+                const priceId = upgradeBilling === "monthly"
+                  ? (process.env.NEXT_PUBLIC_STRIPE_PRICE_STUDENT_MONTHLY || "price_1TF3ANFOZT5rwCzEGAwLUS84")
+                  : (process.env.NEXT_PUBLIC_STRIPE_PRICE_STUDENT_ANNUAL || "price_1TF3AqFOZT5rwCzEF6Mdr8Yf");
                 const res = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ priceId, userId: user.id }) });
                 const data = await res.json();
                 if (data.url) window.location.href = data.url;
