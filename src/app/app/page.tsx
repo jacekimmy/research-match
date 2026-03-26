@@ -174,6 +174,24 @@ function AppPageInner() {
     }
   }, [authLoading2, user, searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Auto-search from landing page URL params
+  const [autoSearched, setAutoSearched] = useState(false);
+  useEffect(() => {
+    if (autoSearched) return;
+    const q = searchParams.get("q");
+    const u = searchParams.get("u");
+    if (q) {
+      setQuery(q);
+      if (u) setUniversity(u);
+      setAutoSearched(true);
+      // Delay to let state settle
+      setTimeout(() => {
+        const btn = document.querySelector("[data-search-btn]") as HTMLButtonElement;
+        if (btn) btn.click();
+      }, 100);
+    }
+  }, [searchParams, autoSearched]);
+
   // Welcome moment on first visit
   useEffect(() => {
     const hasVisited = localStorage.getItem("research-match-visited");
@@ -703,7 +721,7 @@ function AppPageInner() {
               <label className="rm-search-label">University</label>
               <input value={university} onChange={(e) => setUniversity(e.target.value)} onKeyDown={(e) => e.key === "Enter" && search()} placeholder="e.g. MIT, Stanford..." className="rm-search-input" />
             </div>
-            <button onClick={search} className="btn-cta rm-search-btn">Search</button>
+            <button data-search-btn onClick={search} className="btn-cta rm-search-btn">Search</button>
           </div>
         )}
         {!showSaved && searchMode === "name" && (

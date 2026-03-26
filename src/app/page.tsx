@@ -1,8 +1,24 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+const HERO_PLACEHOLDERS = [
+  "e.g. machine learning",
+  "e.g. neuroscience",
+  "e.g. organic chemistry",
+  "e.g. political science",
+  "e.g. cardiology",
+  "e.g. astrophysics",
+  "e.g. behavioral economics",
+];
 
 export default function LandingPage() {
+  const router = useRouter();
+  const [heroQuery, setHeroQuery] = useState("");
+  const [heroUni, setHeroUni] = useState("");
+  const [heroFocused, setHeroFocused] = useState(false);
+  const [placeholderIdx, setPlaceholderIdx] = useState(0);
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
   const [waitlistEmail, setWaitlistEmail] = useState("");
   const [waitlistTier, setWaitlistTier] = useState<"research_pro" | "pro" | null>(null);
@@ -23,6 +39,21 @@ export default function LandingPage() {
       setWaitlistDone(true);
     } catch { /* ignore */ }
     finally { setWaitlistLoading(false); }
+  }
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPlaceholderIdx((i) => (i + 1) % HERO_PLACEHOLDERS.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  function heroSearch() {
+    if (!heroQuery.trim()) return;
+    const params = new URLSearchParams();
+    params.set("q", heroQuery.trim());
+    if (heroUni.trim()) params.set("u", heroUni.trim());
+    router.push(`/app?${params.toString()}`);
   }
 
   useEffect(() => {
@@ -98,23 +129,90 @@ export default function LandingPage() {
         }}>
           Search 250M+ papers, understand their work, and write emails professors actually read.
         </p>
+        {/* Hero Search Bar */}
+        <div
+          className={`hero-search-bar ${heroFocused ? "hero-search-focused" : ""}`}
+          style={{
+            maxWidth: "740px", margin: "0 auto 24px",
+            padding: "8px",
+            borderRadius: "24px",
+            display: "flex", alignItems: "center", gap: "0",
+            position: "relative",
+          }}
+        >
+          <div className="hero-search-glow" />
+          <div style={{ flex: 2, position: "relative" }}>
+            <label style={{
+              display: "block", fontSize: "0.6rem", fontWeight: 700,
+              color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.12em",
+              padding: "8px 20px 0", textAlign: "left",
+            }}>Research Interest</label>
+            <input
+              type="text"
+              value={heroQuery}
+              onChange={(e) => setHeroQuery(e.target.value)}
+              onFocus={() => setHeroFocused(true)}
+              onBlur={() => setHeroFocused(false)}
+              onKeyDown={(e) => e.key === "Enter" && heroSearch()}
+              placeholder={HERO_PLACEHOLDERS[placeholderIdx]}
+              style={{
+                width: "100%", padding: "6px 20px 12px", fontSize: "1.1rem",
+                border: "none", background: "transparent", color: "#3D4127",
+                fontFamily: "'Playfair Display', Georgia, serif", outline: "none",
+              }}
+            />
+          </div>
+          <div style={{
+            width: "1px", height: "36px", background: "rgba(186,192,149,0.4)",
+            flexShrink: 0,
+          }} />
+          <div style={{ flex: 1, position: "relative" }}>
+            <label style={{
+              display: "block", fontSize: "0.6rem", fontWeight: 700,
+              color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.12em",
+              padding: "8px 20px 0", textAlign: "left",
+            }}>University</label>
+            <input
+              type="text"
+              value={heroUni}
+              onChange={(e) => setHeroUni(e.target.value)}
+              onFocus={() => setHeroFocused(true)}
+              onBlur={() => setHeroFocused(false)}
+              onKeyDown={(e) => e.key === "Enter" && heroSearch()}
+              placeholder="e.g. MIT, Stanford..."
+              style={{
+                width: "100%", padding: "6px 20px 12px", fontSize: "1.1rem",
+                border: "none", background: "transparent", color: "#3D4127",
+                fontFamily: "'Playfair Display', Georgia, serif", outline: "none",
+              }}
+            />
+          </div>
+          <button
+            onClick={heroSearch}
+            className="hero-search-btn"
+            style={{
+              padding: "16px 36px", fontSize: "1.05rem", fontWeight: 700,
+              fontFamily: "'Playfair Display', Georgia, serif",
+              border: "none", borderRadius: "18px", cursor: "pointer",
+              color: "#F5F0E6", background: "#2d5a3d",
+              flexShrink: 0, position: "relative", overflow: "hidden",
+            }}
+          >
+            <span style={{ position: "relative", zIndex: 1 }}>Search</span>
+          </button>
+        </div>
+
         <p className="hero-social" style={{
-          fontSize: "0.95rem", color: "#8A8D72", fontStyle: "italic", marginBottom: "24px",
+          fontSize: "0.95rem", color: "#8A8D72", fontStyle: "italic", marginBottom: "16px",
         }}>
           A Princeton professor responded to a high school freshman within 24 hours.
         </p>
-        <div className="hero-buttons" style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
-          <Link href="/app" className="btn-cta landing-cta-primary rm-search-btn" style={{
-            padding: "18px 40px", fontSize: "1.15rem", textDecoration: "none",
-          }}>
-            Start searching for free
-          </Link>
-          <a href="#pricing" className="btn-secondary" style={{
-            padding: "18px 40px", fontSize: "1.15rem", textDecoration: "none",
-          }}>
-            See pricing
-          </a>
-        </div>
+        <a href="#pricing" style={{
+          fontSize: "0.85rem", color: "#8A8D72", textDecoration: "underline",
+          textUnderlineOffset: "3px",
+        }}>
+          See pricing
+        </a>
       </section>
 
       {/* How it works */}
