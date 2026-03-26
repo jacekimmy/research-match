@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
 export default function LandingPage() {
@@ -24,6 +24,22 @@ export default function LandingPage() {
     } catch { /* ignore */ }
     finally { setWaitlistLoading(false); }
   }
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("scroll-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
+    document.querySelectorAll(".landing-step, .landing-quote, .cold-email-item").forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
 
   async function joinInlineWaitlist() {
     if (!inlineWaitlistEmail) return;
@@ -184,7 +200,7 @@ export default function LandingPage() {
             "Generic emails that could be sent to anyone get ignored.",
             "Name-dropping papers without understanding them backfires.",
           ].map((point, i) => (
-            <div key={i} style={{
+            <div key={i} className="cold-email-item" style={{
               display: "flex", gap: "16px", alignItems: "flex-start",
               padding: "20px 24px", borderRadius: "14px",
               background: "rgba(155,51,34,0.04)", border: "1px solid rgba(155,51,34,0.1)",

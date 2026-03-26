@@ -1183,11 +1183,13 @@ body::after {
 
 .landing-step {
   opacity: 0;
-  animation: stepReveal 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform: translateY(20px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.landing-step:nth-child(1) { animation-delay: 0.1s; }
-.landing-step:nth-child(2) { animation-delay: 0.25s; }
-.landing-step:nth-child(3) { animation-delay: 0.4s; }
+.landing-step.scroll-visible { opacity: 1; transform: translateY(0); }
+.landing-step:nth-child(1) { transition-delay: 0s; }
+.landing-step:nth-child(2) { transition-delay: 0.1s; }
+.landing-step:nth-child(3) { transition-delay: 0.2s; }
 
 .landing-step:hover {
   transform: translateY(-6px);
@@ -1203,18 +1205,29 @@ body::after {
 
 .landing-quote {
   opacity: 0;
-  animation: quoteSlideIn 0.6s ease both;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.3s ease;
 }
-.landing-quote:nth-child(1) { animation-delay: 0.1s; }
-.landing-quote:nth-child(2) { animation-delay: 0.2s; }
-.landing-quote:nth-child(3) { animation-delay: 0.3s; }
-.landing-quote:nth-child(4) { animation-delay: 0.4s; }
+.landing-quote.scroll-visible { opacity: 1; transform: translateY(0); }
+.landing-quote:nth-child(1) { transition-delay: 0s; }
+.landing-quote:nth-child(2) { transition-delay: 0.1s; }
+.landing-quote:nth-child(3) { transition-delay: 0.2s; }
 
-.landing-quote:hover {
+.landing-quote.scroll-visible:hover {
   transform: translateY(-4px) scale(1.02);
   box-shadow: 0 8px 30px rgba(45, 90, 61, 0.08);
 }
+
+/* Cold email fail items */
+.cold-email-item {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.cold-email-item.scroll-visible { opacity: 1; transform: translateY(0); }
+.cold-email-item:nth-child(1) { transition-delay: 0s; }
+.cold-email-item:nth-child(2) { transition-delay: 0.1s; }
+.cold-email-item:nth-child(3) { transition-delay: 0.2s; }
 
 .landing-pricing-card {
   opacity: 0;
