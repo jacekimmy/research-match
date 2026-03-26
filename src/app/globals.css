@@ -56,6 +56,7 @@ body::after {
   position: absolute;
   border-radius: 50%;
   filter: blur(80px);
+  transform-style: preserve-3d;
 }
 
 .splotch-1 {
@@ -63,8 +64,8 @@ body::after {
   right: 10%;
   width: 350px;
   height: 350px;
-  background: radial-gradient(circle, rgba(99, 107, 47, 0.2) 0%, transparent 70%);
-  animation: drift1 20s ease-in-out infinite alternate;
+  background: radial-gradient(ellipse at 35% 40%, rgba(99, 107, 47, 0.25) 0%, rgba(130, 160, 60, 0.1) 40%, transparent 70%);
+  animation: blob1 20s ease-in-out infinite;
 }
 
 .splotch-2 {
@@ -72,8 +73,8 @@ body::after {
   left: 5%;
   width: 420px;
   height: 420px;
-  background: radial-gradient(circle, rgba(186, 192, 149, 0.35) 0%, transparent 70%);
-  animation: drift2 25s ease-in-out infinite alternate;
+  background: radial-gradient(ellipse at 60% 30%, rgba(186, 192, 149, 0.4) 0%, rgba(160, 180, 120, 0.15) 40%, transparent 70%);
+  animation: blob2 25s ease-in-out infinite;
 }
 
 .splotch-3 {
@@ -81,8 +82,8 @@ body::after {
   left: 40%;
   width: 300px;
   height: 300px;
-  background: radial-gradient(circle, rgba(212, 222, 149, 0.3) 0%, transparent 70%);
-  animation: drift3 18s ease-in-out infinite alternate;
+  background: radial-gradient(ellipse at 40% 60%, rgba(212, 222, 149, 0.35) 0%, rgba(180, 200, 100, 0.1) 50%, transparent 70%);
+  animation: blob3 18s ease-in-out infinite;
 }
 
 .splotch-4 {
@@ -90,9 +91,9 @@ body::after {
   left: 25%;
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(61, 65, 39, 0.1) 0%, transparent 70%);
+  background: radial-gradient(ellipse at 50% 50%, rgba(61, 65, 39, 0.15) 0%, rgba(80, 100, 50, 0.05) 50%, transparent 70%);
   filter: blur(100px);
-  animation: drift4 22s ease-in-out infinite alternate;
+  animation: blob4 22s ease-in-out infinite;
 }
 
 .splotch-5 {
@@ -100,8 +101,8 @@ body::after {
   left: 60%;
   width: 250px;
   height: 250px;
-  background: radial-gradient(circle, rgba(168, 186, 100, 0.25) 0%, transparent 70%);
-  animation: drift5 16s ease-in-out infinite alternate;
+  background: radial-gradient(ellipse at 30% 70%, rgba(168, 186, 100, 0.3) 0%, rgba(140, 170, 80, 0.1) 40%, transparent 70%);
+  animation: blob5 16s ease-in-out infinite;
 }
 
 .splotch-6 {
@@ -109,8 +110,8 @@ body::after {
   right: 15%;
   width: 280px;
   height: 280px;
-  background: radial-gradient(circle, rgba(45, 90, 61, 0.12) 0%, transparent 70%);
-  animation: drift6 19s ease-in-out infinite alternate;
+  background: radial-gradient(ellipse at 65% 35%, rgba(45, 90, 61, 0.16) 0%, rgba(60, 110, 70, 0.06) 45%, transparent 70%);
+  animation: blob6 19s ease-in-out infinite;
 }
 
 .splotch-7 {
@@ -118,8 +119,8 @@ body::after {
   left: 50%;
   width: 380px;
   height: 380px;
-  background: radial-gradient(circle, rgba(130, 160, 80, 0.18) 0%, transparent 70%);
-  animation: drift7 24s ease-in-out infinite alternate;
+  background: radial-gradient(ellipse at 45% 55%, rgba(130, 160, 80, 0.22) 0%, rgba(110, 150, 60, 0.08) 45%, transparent 70%);
+  animation: blob7 24s ease-in-out infinite;
 }
 
 .splotch-8 {
@@ -127,8 +128,8 @@ body::after {
   right: 25%;
   width: 200px;
   height: 200px;
-  background: radial-gradient(circle, rgba(76, 115, 55, 0.15) 0%, transparent 70%);
-  animation: drift8 17s ease-in-out infinite alternate;
+  background: radial-gradient(ellipse at 55% 40%, rgba(76, 115, 55, 0.2) 0%, rgba(90, 130, 65, 0.08) 40%, transparent 70%);
+  animation: blob8 17s ease-in-out infinite;
 }
 
 .splotch-9 {
@@ -136,8 +137,8 @@ body::after {
   left: 15%;
   width: 320px;
   height: 320px;
-  background: radial-gradient(circle, rgba(150, 180, 90, 0.14) 0%, transparent 70%);
-  animation: drift9 21s ease-in-out infinite alternate;
+  background: radial-gradient(ellipse at 40% 50%, rgba(150, 180, 90, 0.18) 0%, rgba(130, 160, 70, 0.06) 45%, transparent 70%);
+  animation: blob9 21s ease-in-out infinite;
 }
 
 .splotch-10 {
@@ -145,9 +146,9 @@ body::after {
   left: 60%;
   width: 260px;
   height: 260px;
-  background: radial-gradient(circle, rgba(88, 120, 44, 0.13) 0%, transparent 70%);
+  background: radial-gradient(ellipse at 50% 45%, rgba(88, 120, 44, 0.18) 0%, rgba(70, 100, 40, 0.06) 45%, transparent 70%);
   filter: blur(90px);
-  animation: drift10 23s ease-in-out infinite alternate;
+  animation: blob10 23s ease-in-out infinite;
 }
 
 .splotch-11 {
@@ -155,8 +156,8 @@ body::after {
   right: 5%;
   width: 180px;
   height: 180px;
-  background: radial-gradient(circle, rgba(45, 90, 61, 0.1) 0%, transparent 70%);
-  animation: drift11 15s ease-in-out infinite alternate;
+  background: radial-gradient(ellipse at 60% 40%, rgba(45, 90, 61, 0.14) 0%, rgba(55, 100, 70, 0.05) 40%, transparent 70%);
+  animation: blob11 15s ease-in-out infinite;
 }
 
 .splotch-12 {
@@ -164,22 +165,95 @@ body::after {
   left: 10%;
   width: 340px;
   height: 340px;
-  background: radial-gradient(circle, rgba(186, 192, 149, 0.2) 0%, transparent 70%);
-  animation: drift12 26s ease-in-out infinite alternate;
+  background: radial-gradient(ellipse at 35% 55%, rgba(186, 192, 149, 0.25) 0%, rgba(170, 185, 130, 0.08) 45%, transparent 70%);
+  animation: blob12 26s ease-in-out infinite;
 }
 
-@keyframes drift1 { from { transform: translate(0, 0); } to { transform: translate(-40px, 30px); } }
-@keyframes drift2 { from { transform: translate(0, 0); } to { transform: translate(30px, -40px); } }
-@keyframes drift3 { from { transform: translate(0, 0); } to { transform: translate(-20px, -30px); } }
-@keyframes drift4 { from { transform: translate(0, 0); } to { transform: translate(40px, -20px); } }
-@keyframes drift5 { from { transform: translate(0, 0); } to { transform: translate(-30px, 20px); } }
-@keyframes drift6 { from { transform: translate(0, 0); } to { transform: translate(25px, -35px); } }
-@keyframes drift7 { from { transform: translate(0, 0); } to { transform: translate(-35px, 25px); } }
-@keyframes drift8 { from { transform: translate(0, 0); } to { transform: translate(20px, 30px); } }
-@keyframes drift9 { from { transform: translate(0, 0); } to { transform: translate(-25px, -20px); } }
-@keyframes drift10 { from { transform: translate(0, 0); } to { transform: translate(30px, 25px); } }
-@keyframes drift11 { from { transform: translate(0, 0); } to { transform: translate(-15px, 35px); } }
-@keyframes drift12 { from { transform: translate(0, 0); } to { transform: translate(35px, -15px); } }
+/* 3D morphing blob animations — each blob drifts, scales, rotates, and morphs */
+@keyframes blob1 {
+  0%   { transform: translate(0, 0) scale(1) rotate3d(1, 0.5, 0, 0deg); border-radius: 50%; }
+  25%  { transform: translate(-30px, 20px) scale(1.08) rotate3d(1, 0.5, 0, 8deg); border-radius: 45% 55% 50% 50%; }
+  50%  { transform: translate(-50px, 40px) scale(0.95) rotate3d(0.5, 1, 0, -5deg); border-radius: 55% 45% 48% 52%; }
+  75%  { transform: translate(-20px, 50px) scale(1.12) rotate3d(1, 0.3, 0.5, 6deg); border-radius: 48% 52% 55% 45%; }
+  100% { transform: translate(0, 0) scale(1) rotate3d(1, 0.5, 0, 0deg); border-radius: 50%; }
+}
+
+@keyframes blob2 {
+  0%   { transform: translate(0, 0) scale(1) rotate3d(0, 1, 0.5, 0deg); border-radius: 50%; }
+  33%  { transform: translate(40px, -30px) scale(1.1) rotate3d(0, 1, 0.5, 10deg); border-radius: 42% 58% 55% 45%; }
+  66%  { transform: translate(20px, -50px) scale(0.92) rotate3d(0.5, 0, 1, -7deg); border-radius: 55% 45% 42% 58%; }
+  100% { transform: translate(0, 0) scale(1) rotate3d(0, 1, 0.5, 0deg); border-radius: 50%; }
+}
+
+@keyframes blob3 {
+  0%   { transform: translate(0, 0) scale(1) rotateX(0deg); border-radius: 50%; }
+  30%  { transform: translate(-25px, -20px) scale(1.06) rotateX(6deg); border-radius: 52% 48% 45% 55%; }
+  60%  { transform: translate(-40px, -35px) scale(0.94) rotateX(-4deg); border-radius: 46% 54% 52% 48%; }
+  100% { transform: translate(0, 0) scale(1) rotateX(0deg); border-radius: 50%; }
+}
+
+@keyframes blob4 {
+  0%   { transform: translate(0, 0) scale(1) rotateY(0deg); border-radius: 50%; }
+  20%  { transform: translate(25px, -15px) scale(1.05) rotateY(5deg); border-radius: 48% 52% 56% 44%; }
+  50%  { transform: translate(50px, -25px) scale(0.93) rotateY(-6deg); border-radius: 54% 46% 44% 56%; }
+  80%  { transform: translate(30px, -10px) scale(1.08) rotateY(3deg); border-radius: 46% 54% 50% 50%; }
+  100% { transform: translate(0, 0) scale(1) rotateY(0deg); border-radius: 50%; }
+}
+
+@keyframes blob5 {
+  0%   { transform: translate(0, 0) scale(1) rotate3d(1, 1, 0, 0deg); border-radius: 50%; }
+  40%  { transform: translate(-35px, 25px) scale(1.15) rotate3d(1, 1, 0, 12deg); border-radius: 44% 56% 52% 48%; }
+  70%  { transform: translate(-15px, 40px) scale(0.9) rotate3d(0, 1, 1, -8deg); border-radius: 56% 44% 48% 52%; }
+  100% { transform: translate(0, 0) scale(1) rotate3d(1, 1, 0, 0deg); border-radius: 50%; }
+}
+
+@keyframes blob6 {
+  0%   { transform: translate(0, 0) scale(1) rotateZ(0deg); border-radius: 50%; }
+  35%  { transform: translate(30px, -40px) scale(1.07) rotateZ(8deg); border-radius: 50% 50% 45% 55%; }
+  65%  { transform: translate(15px, -25px) scale(0.96) rotateZ(-5deg); border-radius: 45% 55% 50% 50%; }
+  100% { transform: translate(0, 0) scale(1) rotateZ(0deg); border-radius: 50%; }
+}
+
+@keyframes blob7 {
+  0%   { transform: translate(0, 0) scale(1) rotate3d(0.5, 1, 0.3, 0deg); border-radius: 50%; }
+  50%  { transform: translate(-40px, 30px) scale(1.1) rotate3d(0.5, 1, 0.3, 15deg); border-radius: 43% 57% 54% 46%; }
+  100% { transform: translate(0, 0) scale(1) rotate3d(0.5, 1, 0.3, 0deg); border-radius: 50%; }
+}
+
+@keyframes blob8 {
+  0%   { transform: translate(0, 0) scale(1) rotateX(0deg) rotateY(0deg); border-radius: 50%; }
+  25%  { transform: translate(25px, 20px) scale(1.12) rotateX(5deg) rotateY(8deg); border-radius: 47% 53% 55% 45%; }
+  50%  { transform: translate(35px, 35px) scale(0.9) rotateX(-3deg) rotateY(-5deg); border-radius: 53% 47% 45% 55%; }
+  75%  { transform: translate(15px, 25px) scale(1.05) rotateX(4deg) rotateY(3deg); border-radius: 49% 51% 52% 48%; }
+  100% { transform: translate(0, 0) scale(1) rotateX(0deg) rotateY(0deg); border-radius: 50%; }
+}
+
+@keyframes blob9 {
+  0%   { transform: translate(0, 0) scale(1) rotate3d(1, 0, 1, 0deg); border-radius: 50%; }
+  33%  { transform: translate(-30px, -25px) scale(1.08) rotate3d(1, 0, 1, 10deg); border-radius: 52% 48% 43% 57%; }
+  66%  { transform: translate(-15px, -40px) scale(0.95) rotate3d(0, 1, 0, -6deg); border-radius: 48% 52% 57% 43%; }
+  100% { transform: translate(0, 0) scale(1) rotate3d(1, 0, 1, 0deg); border-radius: 50%; }
+}
+
+@keyframes blob10 {
+  0%   { transform: translate(0, 0) scale(1) rotateY(0deg); border-radius: 50%; }
+  40%  { transform: translate(35px, 30px) scale(1.1) rotateY(12deg); border-radius: 45% 55% 50% 50%; }
+  80%  { transform: translate(20px, 15px) scale(0.92) rotateY(-8deg); border-radius: 55% 45% 50% 50%; }
+  100% { transform: translate(0, 0) scale(1) rotateY(0deg); border-radius: 50%; }
+}
+
+@keyframes blob11 {
+  0%   { transform: translate(0, 0) scale(1) rotateX(0deg); border-radius: 50%; }
+  50%  { transform: translate(-20px, 40px) scale(1.18) rotateX(10deg); border-radius: 44% 56% 48% 52%; }
+  100% { transform: translate(0, 0) scale(1) rotateX(0deg); border-radius: 50%; }
+}
+
+@keyframes blob12 {
+  0%   { transform: translate(0, 0) scale(1) rotate3d(0, 0.5, 1, 0deg); border-radius: 50%; }
+  30%  { transform: translate(40px, -20px) scale(1.06) rotate3d(0, 0.5, 1, 8deg); border-radius: 50% 50% 44% 56%; }
+  60%  { transform: translate(25px, -35px) scale(0.94) rotate3d(1, 0, 0.5, -6deg); border-radius: 46% 54% 56% 44%; }
+  100% { transform: translate(0, 0) scale(1) rotate3d(0, 0.5, 1, 0deg); border-radius: 50%; }
+}
 
 /* ===== WELCOME OVERLAY ===== */
 
