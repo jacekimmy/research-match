@@ -943,6 +943,25 @@ body::after {
   color: #F5F0E6;
 }
 
+/* ===== PROFILE AVATAR ===== */
+
+.profile-avatar:hover {
+  transform: scale(1.1) !important;
+  box-shadow: 0 4px 16px rgba(45,90,61,0.35) !important;
+}
+
+@keyframes profilePop {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@media (max-width: 768px) {
+  .profile-stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
 /* ===== FINDING BORDER GLOW ===== */
 
 .finding-border {

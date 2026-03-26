@@ -602,10 +602,19 @@ export default function AppPage() {
               </>
             ) : (
               <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                <span style={{ fontSize: "0.85rem", color: "#8A8D72" }}>{user.email}</span>
-                {isPaid && <span style={{ fontSize: "0.7rem", fontWeight: 700, color: "#F5F0E6", background: "#2d5a3d", padding: "3px 10px", borderRadius: "999px" }}>Student</span>}
-                {isFree && <button onClick={() => setShowUpgradeModal(true)} style={{ fontSize: "0.75rem", fontWeight: 600, color: "#2d5a3d", background: "rgba(45,90,61,0.1)", padding: "4px 12px", borderRadius: "999px", border: "none", cursor: "pointer" }}>Upgrade</button>}
-                <button onClick={signOut} style={{ fontSize: "0.8rem", color: "#8A8D72", background: "none", border: "none", cursor: "pointer" }}>Sign out</button>
+                {isFree && <button onClick={() => setShowUpgradeModal(true)} style={{ fontSize: "0.75rem", fontWeight: 600, color: "#2d5a3d", background: "rgba(45,90,61,0.1)", padding: "6px 14px", borderRadius: "999px", border: "none", cursor: "pointer", transition: "all 0.2s" }}>Upgrade</button>}
+                {isPaid && <span style={{ fontSize: "0.7rem", fontWeight: 700, color: "#F5F0E6", background: "#2d5a3d", padding: "4px 12px", borderRadius: "999px" }}>Student</span>}
+                <Link href="/profile" style={{
+                  width: "38px", height: "38px", borderRadius: "50%",
+                  background: "linear-gradient(135deg, #2d5a3d, #4a7c5c)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  color: "#F5F0E6", fontSize: "0.85rem", fontWeight: 700,
+                  textDecoration: "none", transition: "transform 0.2s, box-shadow 0.2s",
+                  boxShadow: "0 2px 8px rgba(45,90,61,0.2)",
+                  border: "2px solid rgba(255,255,255,0.4)",
+                }} className="profile-avatar">
+                  {user.email?.charAt(0).toUpperCase()}
+                </Link>
               </div>
             )}
           </div>
