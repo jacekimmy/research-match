@@ -78,19 +78,12 @@ export default function LandingPage() {
         </h1>
         <p style={{
           fontSize: "clamp(1.05rem, 2vw, 1.3rem)", color: "#5A5D45",
-          lineHeight: 1.7, maxWidth: "640px", margin: "0 auto 16px",
+          lineHeight: 1.7, maxWidth: "640px", margin: "0 auto 28px",
         }}>
-          Search 250M+ academic papers.
-          Understand their work instantly.
-          Write emails that actually get responses.
-        </p>
-        <p style={{
-          fontSize: "0.95rem", color: "#8A8D72", marginBottom: "20px",
-        }}>
-          Built for students looking for research opportunities — from high schoolers to PhD applicants.
+          Search 250M+ papers, understand their work, and write emails professors actually read.
         </p>
         <p className="hero-social" style={{
-          fontSize: "0.95rem", color: "#8A8D72", fontStyle: "italic", marginBottom: "44px",
+          fontSize: "0.95rem", color: "#8A8D72", fontStyle: "italic", marginBottom: "24px",
         }}>
           A Princeton professor responded to a high school freshman within 24 hours.
         </p>
@@ -227,7 +220,7 @@ export default function LandingPage() {
           {[
             { quote: "This is actually good.", author: "Professor, r/AskAcademia" },
             { quote: "Endorse this advice 💯. If an email smells of AI I will not answer it.", author: "Research Professor" },
-            { quote: "First time I've gotten real advice on my emails. I've sent 10 emails so far using this.", author: "Student user" },
+            { quote: "This website is goated. I'm saving this for future use.", author: "Student user" },
           ].map((item, i) => (
             <div key={i} className="glass-card landing-quote" style={{ padding: "30px 26px" }}>
               <div className="quote-mark">&ldquo;</div>
