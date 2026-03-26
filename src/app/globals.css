@@ -1717,15 +1717,20 @@ body::after {
   box-shadow: 0 16px 50px rgba(45, 90, 61, 0.12);
 }
 
+.lifetime-card {
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.5s ease, border-color 0.5s ease !important;
+}
+
 .lifetime-card:hover {
-  transform: translateY(-10px) !important;
-  box-shadow: 0 0 50px rgba(180, 155, 80, 0.2), 0 16px 50px rgba(180, 155, 80, 0.15) !important;
-  border-color: rgba(180, 155, 80, 0.7) !important;
+  transform: translateY(-6px) !important;
+  box-shadow: 0 0 40px rgba(180, 155, 80, 0.18), 0 12px 40px rgba(180, 155, 80, 0.12) !important;
+  border-color: rgba(180, 155, 80, 0.65) !important;
 }
 
 .lifetime-card a:hover {
   box-shadow: 0 6px 24px rgba(180, 155, 80, 0.4) !important;
-  transform: scale(1.03);
+  transform: scale(1.02);
+  transition: all 0.3s ease;
 }
 
 .pricing-popular {

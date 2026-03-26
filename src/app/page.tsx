@@ -372,7 +372,7 @@ export default function LandingPage() {
           gap: "24px",
         }}>
           {[
-            { quote: "This is actually good.", author: "Professor, r/AskAcademia" },
+            { quote: "First time I've gotten real advice on my emails. I've sent 10 emails so far using this.", author: "Student user" },
             { quote: "Endorse this advice 💯. If an email smells of AI I will not answer it.", author: "Research Professor" },
             { quote: "This website is goated. I'm saving this for future use.", author: "Student user" },
           ].map((item, i) => (
