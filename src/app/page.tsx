@@ -255,9 +255,11 @@ export default function LandingPage() {
           </div>
 
           {/* Student */}
-          <div className="glass-card landing-pricing-card pricing-popular" style={{
+          <div id="student-card" className="glass-card landing-pricing-card" style={{
             padding: "36px 30px", position: "relative",
             border: "2px solid rgba(45,90,61,0.35)",
+            boxShadow: "0 8px 40px rgba(45,90,61,0.15)",
+            display: "block",
           }}>
             <span style={{
               position: "absolute", top: "-13px", left: "50%", transform: "translateX(-50%)",
@@ -305,7 +307,11 @@ export default function LandingPage() {
               {billingCycle === "monthly" ? "$19" : "$149"}
               <span style={{ fontSize: "1rem", fontWeight: 400, color: "#8A8D72" }}>/{billingCycle === "monthly" ? "mo" : "yr"}</span>
             </p>
-            <div style={{ height: "20px" }} />
+            {billingCycle === "annual" ? (
+              <p style={{ fontSize: "0.8rem", color: "#636B2F", marginBottom: "20px", fontWeight: 600 }}>Save $79 vs monthly</p>
+            ) : (
+              <div style={{ height: "20px" }} />
+            )}
             <ul style={{ listStyle: "none", padding: 0, marginBottom: "30px" }}>
               <li style={{ fontSize: "0.9rem", color: "#3D4127", padding: "7px 0", fontWeight: 700 }}>Everything in Student, plus:</li>
               {[
@@ -337,10 +343,14 @@ export default function LandingPage() {
             }}>Coming Soon</span>
             <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#8A8D72", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Pro</p>
             <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#3D4127", marginBottom: "4px", letterSpacing: "-0.02em" }}>
-              $59
-              <span style={{ fontSize: "1rem", fontWeight: 400, color: "#8A8D72" }}>/mo</span>
+              {billingCycle === "monthly" ? "$59" : "$319"}
+              <span style={{ fontSize: "1rem", fontWeight: 400, color: "#8A8D72" }}>/{billingCycle === "monthly" ? "mo" : "yr"}</span>
             </p>
-            <div style={{ height: "20px" }} />
+            {billingCycle === "annual" ? (
+              <p style={{ fontSize: "0.8rem", color: "#636B2F", marginBottom: "20px", fontWeight: 600 }}>Save $389 vs monthly</p>
+            ) : (
+              <div style={{ height: "20px" }} />
+            )}
             <ul style={{ listStyle: "none", padding: 0, marginBottom: "30px" }}>
               <li style={{ fontSize: "0.9rem", color: "#3D4127", padding: "7px 0", fontWeight: 700 }}>Everything in Research Pro, plus:</li>
               {[
