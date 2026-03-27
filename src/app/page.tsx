@@ -561,18 +561,19 @@ export default function LandingPage() {
               <p style={{ fontSize: "1.2rem", color: "#BAA870", textDecoration: "line-through", fontWeight: 500 }}>$108</p>
             </div>
             <p style={{ fontSize: "0.8rem", color: "#8B6914", marginBottom: "8px", fontWeight: 600 }}>one-time</p>
-            {lifetimeSpotsRemaining !== null && (
-              <p style={{
-                fontSize: "0.8rem",
-                color: lifetimeSpotsRemaining > 0 ? "#8B6914" : "#9B3322",
-                fontWeight: 700, marginBottom: "16px",
-                background: lifetimeSpotsRemaining > 0 ? "rgba(180,155,80,0.1)" : "rgba(155,51,34,0.08)",
-                padding: "4px 12px", borderRadius: "8px", display: "inline-block",
-              }}>
-                {lifetimeSpotsRemaining > 0
-                  ? `${lifetimeSpotsRemaining} of 200 spots remaining`
-                  : "Sold out"}
-              </p>
+            {lifetimeSpotsRemaining !== null && lifetimeSpotsRemaining > 0 && (
+              <div style={{ marginBottom: "16px" }}>
+                <p style={{
+                  fontSize: "0.8rem", color: "#8B6914", fontWeight: 700,
+                  background: "rgba(180,155,80,0.1)",
+                  padding: "4px 12px", borderRadius: "8px", display: "inline-block",
+                }}>
+                  Limited to first 200 users
+                </p>
+                <p style={{ fontSize: "0.75rem", color: "#BAA870", fontStyle: "italic", marginTop: "6px" }}>
+                  This deal won&apos;t last forever.
+                </p>
+              </div>
             )}
             <ul style={{ listStyle: "none", padding: 0, marginBottom: "30px" }}>
               <li style={{ fontSize: "0.9rem", color: "#5A4A1A", padding: "7px 0", fontWeight: 700 }}>Everything in Student, forever:</li>
