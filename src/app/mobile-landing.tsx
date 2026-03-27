@@ -182,7 +182,7 @@ export default function MobileLanding() {
         </Link>
       </nav>
 
-      <div style={{ height: "16px" }} />
+      <div style={{ height: "28px" }} />
 
       {/* Hero */}
       <section style={{ padding: "24px 20px 40px", textAlign: "center" }}>
