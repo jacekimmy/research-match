@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import confetti from "canvas-confetti";
+import { useAuth } from "@/lib/auth-context";
 
 interface FeedbackItem {
   id: string;
@@ -9,7 +10,10 @@ interface FeedbackItem {
   author_name: string;
   upvotes: number;
   created_at: string;
+  resolved: boolean;
 }
+
+const ADMIN_EMAIL = "thomasjacekim@gmail.com";
 
 const CATEGORIES = ["Feature Request", "Bug Report", "General Feedback"];
 
@@ -37,6 +41,8 @@ export default function FeedbackPage() {
   const [voted, setVoted] = useState<Set<string>>(new Set());
   const [toast, setToast] = useState<string | null>(null);
   const [voteBounce, setVoteBounce] = useState<string | null>(null);
+  const { user } = useAuth();
+  const isAdmin = user?.email === ADMIN_EMAIL;
 
   const showToast = useCallback((msg: string) => {
     setToast(msg);
@@ -111,6 +117,18 @@ export default function FeedbackPage() {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id }),
+      });
+    } catch { /* ignore */ }
+  }
+
+  async function handleResolve(id: string) {
+    setItems((prev) => prev.map((item) => item.id === id ? { ...item, resolved: true } : item));
+    showToast("Marked as resolved");
+    try {
+      await fetch("/api/feedback", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, resolved: true }),
       });
     } catch { /* ignore */ }
   }
@@ -229,11 +247,16 @@ export default function FeedbackPage() {
             const hasVoted = voted.has(item.id);
             const isBouncing = voteBounce === item.id;
             return (
-              <div key={item.id} className="glass-card card-enter" style={{ padding: "24px 28px", display: "flex", gap: "20px", alignItems: "flex-start", animationDelay: `${idx * 0.06}s` }}>
+              <div key={item.id} className="glass-card card-enter" style={{
+                padding: "24px 28px", display: "flex", gap: "20px", alignItems: "flex-start",
+                animationDelay: `${idx * 0.06}s`,
+                opacity: item.resolved ? 0.7 : 1,
+                borderColor: item.resolved ? "rgba(45,90,61,0.25)" : undefined,
+              }}>
                 {/* Upvote */}
                 <button
-                  onClick={() => handleUpvote(item.id)}
-                  disabled={hasVoted}
+                  onClick={() => !item.resolved && handleUpvote(item.id)}
+                  disabled={hasVoted || item.resolved}
                   className={isBouncing ? "star-bounce" : ""}
                   style={{
                     display: "flex", flexDirection: "column", alignItems: "center", gap: "2px",
@@ -290,6 +313,36 @@ export default function FeedbackPage() {
                     <span style={{ fontSize: "0.8rem", color: "#A8AB92" }}>{item.author_name}</span>
                     <span style={{ fontSize: "0.8rem", color: "#BAC095" }}>&middot;</span>
                     <span style={{ fontSize: "0.8rem", color: "#A8AB92" }}>{timeAgo(item.created_at)}</span>
+                    {item.resolved && (
+                      <span style={{
+                        fontSize: "0.7rem", fontWeight: 700, padding: "3px 10px",
+                        borderRadius: "999px", background: "rgba(45,90,61,0.12)",
+                        color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.06em",
+                      }}>
+                        ✓ Resolved
+                      </span>
+                    )}
+                    {isAdmin && !item.resolved && (
+                      <button
+                        onClick={() => handleResolve(item.id)}
+                        style={{
+                          fontSize: "0.72rem", fontWeight: 600, padding: "3px 10px",
+                          borderRadius: "999px", background: "rgba(45,90,61,0.06)",
+                          color: "#8A8D72", border: "1px solid rgba(186,192,149,0.3)",
+                          cursor: "pointer", transition: "all 0.2s ease",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = "rgba(45,90,61,0.15)";
+                          e.currentTarget.style.color = "#2d5a3d";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = "rgba(45,90,61,0.06)";
+                          e.currentTarget.style.color = "#8A8D72";
+                        }}
+                      >
+                        Mark resolved
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

@@ -52,3 +52,17 @@ export async function PATCH(req: NextRequest) {
 
   return NextResponse.json({ success: true });
 }
+
+export async function PUT(req: NextRequest) {
+  const { id, resolved } = await req.json();
+
+  if (!id) return NextResponse.json({ error: "ID required." }, { status: 400 });
+
+  const { error } = await supabase
+    .from("feedback")
+    .update({ resolved: !!resolved })
+    .eq("id", id);
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json({ success: true });
+}
