@@ -108,7 +108,7 @@ export default function LandingPage() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", position: "relative" }}>
+    <div style={{ minHeight: "100vh", position: "relative", overflowX: "hidden" }}>
       {/* Background splotches — scattered throughout the full page */}
       <div className="splotches">
         {/* Hero area */}
@@ -142,10 +142,15 @@ export default function LandingPage() {
         <span style={{ fontSize: "1.5rem", fontWeight: 800, color: "#2d5a3d", letterSpacing: "-0.02em" }}>
           Research Match
         </span>
-        <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+        <div className="nav-links-desktop" style={{ display: "flex", gap: "16px", alignItems: "center" }}>
           <Link href="/blog" style={{ fontSize: "0.9rem", color: "#8A8D72", textDecoration: "none", transition: "color 0.2s" }}>Blog</Link>
           <Link href="/feedback" style={{ fontSize: "0.9rem", color: "#8A8D72", textDecoration: "none", transition: "color 0.2s" }}>Feedback</Link>
           <Link href="/app" className="btn-cta landing-cta-primary rm-search-btn" style={{ padding: "11px 28px", fontSize: "0.9rem", textDecoration: "none" }}>
+            Open Tool
+          </Link>
+        </div>
+        <div className="nav-links-mobile" style={{ display: "none", gap: "12px", alignItems: "center" }}>
+          <Link href="/app" className="btn-cta landing-cta-primary rm-search-btn" style={{ padding: "10px 22px", fontSize: "0.85rem", textDecoration: "none" }}>
             Open Tool
           </Link>
         </div>
@@ -253,6 +258,10 @@ export default function LandingPage() {
         }}>
           See pricing
         </a>
+        <div className="scroll-indicator">
+          <span>Scroll to learn more</span>
+          <span className="scroll-indicator-arrow">↓</span>
+        </div>
       </section>
 
       {/* How it works */}
