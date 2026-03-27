@@ -557,8 +557,7 @@ export default function MobileLanding() {
           {/* Lifetime — Gold Premium (first on mobile) */}
           <div
             ref={(el) => { pricingRefs.current[0] = el; }}
-            className={`mobile-card-enter ${glowingCard === "lifetime" ? "mobile-pricing-glow" : ""}`}
-            onTouchStart={() => handlePricingTap("lifetime")}
+            className={`mobile-card-enter `}
             style={{
               padding: "36px 24px", position: "relative",
               border: "2px solid rgba(180, 155, 80, 0.5)",
@@ -639,8 +638,7 @@ export default function MobileLanding() {
           {/* Student */}
           <div
             ref={(el) => { pricingRefs.current[1] = el; }}
-            className={`mobile-card-enter ${glowingCard === "student" ? "mobile-pricing-glow" : ""}`}
-            onTouchStart={() => handlePricingTap("student")}
+            className={`mobile-card-enter `}
             style={{
               padding: "36px 24px", position: "relative",
               border: "2px solid rgba(45,90,61,0.35)",
@@ -688,8 +686,7 @@ export default function MobileLanding() {
           {/* Free */}
           <div
             ref={(el) => { pricingRefs.current[2] = el; }}
-            className={`mobile-card-enter ${glowingCard === "free" ? "mobile-pricing-glow" : ""}`}
-            onTouchStart={() => handlePricingTap("free")}
+            className={`mobile-card-enter `}
             style={{
               padding: "32px 24px",
               background: "rgba(255,255,255,0.55)",
