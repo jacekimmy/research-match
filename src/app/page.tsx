@@ -563,7 +563,6 @@ export default function LandingPage() {
             <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#8B6914", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Lifetime</p>
             <div style={{ display: "flex", alignItems: "baseline", gap: "10px", marginBottom: "4px" }}>
               <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#6B5210", letterSpacing: "-0.02em" }}>$29</p>
-              <p style={{ fontSize: "1.2rem", color: "#BAA870", textDecoration: "line-through", fontWeight: 500 }}>$108</p>
             </div>
             <p style={{ fontSize: "0.8rem", color: "#8B6914", marginBottom: "8px", fontWeight: 600 }}>one-time</p>
             {lifetimeSpotsRemaining !== null && lifetimeSpotsRemaining > 0 && (
