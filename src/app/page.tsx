@@ -2,6 +2,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useMobile } from "@/lib/use-mobile";
+import MobileLanding from "./mobile-landing";
 
 const HERO_PLACEHOLDERS = [
   "e.g. machine learning",
@@ -14,6 +16,7 @@ const HERO_PLACEHOLDERS = [
 ];
 
 export default function LandingPage() {
+  const isMobile = useMobile();
   const router = useRouter();
   const [heroQuery, setHeroQuery] = useState("");
   const [heroUni, setHeroUni] = useState("");
@@ -106,6 +109,8 @@ export default function LandingPage() {
       setInlineWaitlistDone(true);
     } catch { /* ignore */ }
   }
+
+  if (isMobile) return <MobileLanding />;
 
   return (
     <div style={{ minHeight: "100vh", position: "relative", overflowX: "hidden" }}>

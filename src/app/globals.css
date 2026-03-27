@@ -1955,3 +1955,84 @@ body::after {
   from { opacity: 0; transform: scale(0.9) translateY(20px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
+
+/* ===== MOBILE LANDING PAGE ===== */
+
+/* Timeline */
+.mobile-timeline {
+  position: relative;
+}
+
+.mobile-timeline-step {
+  position: relative;
+}
+
+.mobile-timeline-line {
+  position: absolute;
+  left: 17px;
+  width: 2px;
+  background: linear-gradient(to bottom, #BAC095, rgba(186, 192, 149, 0.2));
+}
+
+/* Touch feedback for all mobile buttons */
+.mobile-btn:active {
+  transform: scale(0.97) !important;
+  transition: transform 0.08s ease !important;
+}
+
+/* Mobile input focus */
+.mobile-input:focus {
+  border-color: rgba(45, 90, 61, 0.4) !important;
+  box-shadow: 0 0 0 3px rgba(45, 90, 61, 0.08) !important;
+}
+
+/* Scroll reveal — card enter animation */
+.mobile-card-enter {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mobile-card-enter.mobile-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger for siblings */
+.mobile-card-enter:nth-child(1) { transition-delay: 0s; }
+.mobile-card-enter:nth-child(2) { transition-delay: 0.1s; }
+.mobile-card-enter:nth-child(3) { transition-delay: 0.2s; }
+.mobile-card-enter:nth-child(4) { transition-delay: 0.3s; }
+
+/* 3D tilt on touch for testimonial cards */
+.mobile-tilt {
+  transform-style: preserve-3d;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+  will-change: transform;
+}
+
+.mobile-tilt:active {
+  box-shadow: 0 12px 40px rgba(61, 65, 39, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Pricing card glow on tap */
+.mobile-pricing-glow {
+  animation: mobilePricingGlowAnim 0.6s ease forwards !important;
+}
+
+@keyframes mobilePricingGlowAnim {
+  0% { box-shadow: 0 4px 24px rgba(45, 90, 61, 0.06); }
+  40% { box-shadow: 0 0 30px rgba(45, 90, 61, 0.2), 0 0 60px rgba(45, 90, 61, 0.08), 0 8px 40px rgba(45, 90, 61, 0.12); }
+  100% { box-shadow: 0 4px 24px rgba(45, 90, 61, 0.06); }
+}
+
+/* Lifetime card gets gold glow */
+.mobile-pricing-glow[style*="rgba(180, 155, 80"] {
+  animation: mobileLifetimeGlowAnim 0.6s ease forwards !important;
+}
+
+@keyframes mobileLifetimeGlowAnim {
+  0% { box-shadow: 0 0 40px rgba(180, 155, 80, 0.15), 0 8px 40px rgba(180, 155, 80, 0.1); }
+  40% { box-shadow: 0 0 50px rgba(180, 155, 80, 0.35), 0 0 80px rgba(180, 155, 80, 0.15), 0 8px 40px rgba(180, 155, 80, 0.2); }
+  100% { box-shadow: 0 0 40px rgba(180, 155, 80, 0.15), 0 8px 40px rgba(180, 155, 80, 0.1); }
+}
