@@ -169,10 +169,15 @@ export default function MobileLanding() {
         display: "flex", justifyContent: "space-between", alignItems: "center",
         padding: "16px 20px",
       }}>
-        <span style={{ fontSize: "1.2rem", fontWeight: 800, color: "#2d5a3d", letterSpacing: "-0.02em" }}>
+        <span style={{ fontSize: "1.1rem", fontWeight: 800, color: "#2d5a3d", letterSpacing: "-0.02em", whiteSpace: "nowrap" }}>
           Research Match
         </span>
-        <Link href="/app" className="btn-cta landing-cta-primary rm-search-btn mobile-btn" style={{ padding: "8px 16px", fontSize: "0.8rem", textDecoration: "none", whiteSpace: "nowrap", flexShrink: 0 }}>
+        <Link href="/app" style={{
+          padding: "8px 18px", fontSize: "0.8rem", textDecoration: "none",
+          whiteSpace: "nowrap", flexShrink: 0,
+          background: "#2d5a3d", color: "#F5F0E6", borderRadius: "999px",
+          fontWeight: 700, fontFamily: "'Playfair Display', Georgia, serif",
+        }}>
           Open Tool
         </Link>
       </nav>
