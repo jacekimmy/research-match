@@ -288,7 +288,7 @@ export default function LandingPage() {
               padding: "36px 30px", textAlign: "center",
             }}>
               <div className="step-icon" style={{
-                fontSize: "2.8rem", marginBottom: "18px",
+                fontSize: "2.8rem", marginBottom: "24px",
                 display: "inline-block",
               }}>
                 {item.icon}
