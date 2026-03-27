@@ -172,13 +172,15 @@ export default function MobileLanding() {
         <span style={{ fontSize: "1.2rem", fontWeight: 800, color: "#2d5a3d", letterSpacing: "-0.02em" }}>
           Research Match
         </span>
-        <Link href="/app" className="btn-cta landing-cta-primary rm-search-btn mobile-btn" style={{ padding: "10px 22px", fontSize: "0.85rem", textDecoration: "none" }}>
+        <Link href="/app" className="btn-cta landing-cta-primary rm-search-btn mobile-btn" style={{ padding: "8px 16px", fontSize: "0.8rem", textDecoration: "none", whiteSpace: "nowrap", flexShrink: 0 }}>
           Open Tool
         </Link>
       </nav>
 
+      <div style={{ height: "16px" }} />
+
       {/* Hero */}
-      <section style={{ padding: "30px 20px 40px", textAlign: "center" }}>
+      <section style={{ padding: "24px 20px 40px", textAlign: "center" }}>
         <h1 style={{
           fontSize: "1.9rem", fontWeight: 800,
           color: "#2d5a3d", lineHeight: 1.12, marginBottom: "20px",
