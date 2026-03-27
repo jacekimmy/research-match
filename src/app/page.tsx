@@ -310,6 +310,10 @@ export default function LandingPage() {
             </div>
           ))}
         </div>
+        <div className="carousel-hint">
+          <span>Swipe</span>
+          <span className="carousel-hint-arrow">→</span>
+        </div>
       </section>
 
       {/* Email checker callout */}
@@ -395,6 +399,10 @@ export default function LandingPage() {
               </p>
             </div>
           ))}
+        </div>
+        <div className="carousel-hint">
+          <span>Swipe</span>
+          <span className="carousel-hint-arrow">→</span>
         </div>
       </section>
 
@@ -604,6 +612,10 @@ export default function LandingPage() {
               </Link>
             )}
           </div>
+        </div>
+        <div className="carousel-hint">
+          <span>Swipe</span>
+          <span className="carousel-hint-arrow">→</span>
         </div>
 
         {/* Inline waitlist */}

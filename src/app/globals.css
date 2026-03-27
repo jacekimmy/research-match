@@ -1439,28 +1439,29 @@ body::after {
   .landing-steps {
     display: flex !important;
     overflow-x: auto !important;
-    scroll-snap-type: x mandatory !important;
+    scroll-snap-type: x proximity !important;
     -webkit-overflow-scrolling: touch;
     gap: 16px !important;
-    padding-bottom: 16px !important;
+    padding: 20px 0 16px !important;
     scrollbar-width: none;
   }
   .landing-steps::-webkit-scrollbar { display: none; }
   .landing-steps .glass-card.landing-step {
-    min-width: 280px !important;
+    min-width: 75vw !important;
     max-width: 300px !important;
     flex-shrink: 0 !important;
-    scroll-snap-align: center;
+    scroll-snap-align: start;
   }
 
   /* Pricing — horizontal scroll on mobile */
   .landing-pricing {
     display: flex !important;
     overflow-x: auto !important;
-    scroll-snap-type: x mandatory !important;
+    overflow-y: visible !important;
+    scroll-snap-type: x proximity !important;
     -webkit-overflow-scrolling: touch;
     gap: 16px !important;
-    padding-bottom: 16px !important;
+    padding: 20px 0 16px !important;
     grid-template-columns: none !important;
     max-width: none !important;
     scrollbar-width: none;
@@ -1468,28 +1469,33 @@ body::after {
   .landing-pricing::-webkit-scrollbar { display: none; }
   .landing-pricing .landing-pricing-card,
   .landing-pricing .lifetime-card {
-    min-width: 280px !important;
+    min-width: 75vw !important;
     max-width: 320px !important;
     flex-shrink: 0 !important;
-    scroll-snap-align: center;
+    scroll-snap-align: start;
   }
 
   /* Testimonials — horizontal scroll */
   .landing-quotes {
     display: flex !important;
     overflow-x: auto !important;
-    scroll-snap-type: x mandatory !important;
+    scroll-snap-type: x proximity !important;
     -webkit-overflow-scrolling: touch;
     gap: 16px !important;
-    padding-bottom: 16px !important;
+    padding: 20px 0 16px !important;
     scrollbar-width: none;
   }
   .landing-quotes::-webkit-scrollbar { display: none; }
   .landing-quotes .glass-card.landing-quote {
-    min-width: 280px !important;
+    min-width: 75vw !important;
     max-width: 300px !important;
     flex-shrink: 0 !important;
-    scroll-snap-align: center;
+    scroll-snap-align: start;
+  }
+
+  /* Carousel scroll hint arrow */
+  .carousel-hint {
+    display: flex !important;
   }
 
   /* Hero search bar mobile */
@@ -1535,6 +1541,29 @@ body::after {
 
   /* Feedback mobile */
   .feedback-form { padding: 20px !important; }
+}
+
+/* ===== CAROUSEL HINT ARROW ===== */
+
+.carousel-hint {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0 0;
+  color: #BAC095;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+}
+
+.carousel-hint-arrow {
+  display: inline-block;
+  animation: hintSlide 1.5s ease-in-out infinite;
+}
+
+@keyframes hintSlide {
+  0%, 100% { transform: translateX(0); opacity: 0.5; }
+  50% { transform: translateX(6px); opacity: 1; }
 }
 
 /* ===== SCROLL INDICATOR ===== */
