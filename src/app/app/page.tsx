@@ -131,6 +131,7 @@ function AppPageInner() {
   const [authPassword, setAuthPassword] = useState("");
   const [authError, setAuthError] = useState("");
   const [authLoading, setAuthLoading] = useState(false);
+  const [authPromoCode, setAuthPromoCode] = useState("");
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [upgradeBilling, setUpgradeBilling] = useState<"monthly" | "annual">("monthly");
 
@@ -1502,13 +1503,17 @@ function AppPageInner() {
             </p>
             {authError && <p style={{ fontSize: "0.85rem", color: "#9B3322", marginBottom: "16px", background: "rgba(155,51,34,0.08)", padding: "10px 14px", borderRadius: "10px" }}>{authError}</p>}
             <input type="email" placeholder="Email" value={authEmail} onChange={(e) => setAuthEmail(e.target.value)} style={{ width: "100%", padding: "12px 16px", fontSize: "1rem", border: "1.5px solid rgba(168,196,178,0.4)", borderRadius: "12px", background: "rgba(255,255,255,0.5)", color: "#2C3E34", fontFamily: "inherit", marginBottom: "12px", outline: "none" }} />
-            <input type="password" placeholder="Password" value={authPassword} onChange={(e) => setAuthPassword(e.target.value)} style={{ width: "100%", padding: "12px 16px", fontSize: "1rem", border: "1.5px solid rgba(168,196,178,0.4)", borderRadius: "12px", background: "rgba(255,255,255,0.5)", color: "#2C3E34", fontFamily: "inherit", marginBottom: "20px", outline: "none" }} />
+            <input type="password" placeholder="Password" value={authPassword} onChange={(e) => setAuthPassword(e.target.value)} style={{ width: "100%", padding: "12px 16px", fontSize: "1rem", border: "1.5px solid rgba(168,196,178,0.4)", borderRadius: "12px", background: "rgba(255,255,255,0.5)", color: "#2C3E34", fontFamily: "inherit", marginBottom: "12px", outline: "none" }} />
+            {authMode === "signup" && (
+              <input type="text" placeholder="Promo code (optional)" value={authPromoCode} onChange={(e) => setAuthPromoCode(e.target.value)} style={{ width: "100%", padding: "12px 16px", fontSize: "1rem", border: "1.5px solid rgba(168,196,178,0.4)", borderRadius: "12px", background: "rgba(255,255,255,0.5)", color: "#2C3E34", fontFamily: "inherit", marginBottom: "20px", outline: "none" }} />
+            )}
+            {authMode !== "signup" && <div style={{ marginBottom: "8px" }} />}
             <button disabled={authLoading} onClick={async () => {
               setAuthLoading(true); setAuthError("");
               try {
                 if (authMode === "signup") {
-                  const { error } = await signUp(authEmail, authPassword);
-                  if (error) { setAuthError(error.message); } else { setShowAuthModal(false); showToast("Account created! Check your email to confirm."); }
+                  const { error, promoApplied } = await signUp(authEmail, authPassword, authPromoCode || undefined);
+                  if (error) { setAuthError(error.message); } else { setShowAuthModal(false); setAuthPromoCode(""); showToast(promoApplied ? "Account created with Student access! Check your email to confirm." : "Account created! Check your email to confirm."); }
                 } else {
                   const { error } = await signIn(authEmail, authPassword);
                   if (error) { setAuthError(error.message); } else { setShowAuthModal(false); showToast("Welcome back!"); }

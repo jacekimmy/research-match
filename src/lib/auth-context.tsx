@@ -18,7 +18,7 @@ interface AuthContextType {
   user: User | null;
   profile: Profile | null;
   loading: boolean;
-  signUp: (email: string, password: string) => Promise<{ error: AuthError | null }>;
+  signUp: (email: string, password: string, promoCode?: string) => Promise<{ error: AuthError | null; promoApplied?: boolean }>;
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
@@ -28,7 +28,7 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   profile: null,
   loading: true,
-  signUp: async () => ({ error: null }),
+  signUp: async () => ({ error: null, promoApplied: false }),
   signIn: async () => ({ error: null }),
   signOut: async () => {},
   refreshProfile: async () => {},
@@ -69,7 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, [fetchProfile]);
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string, promoCode?: string) => {
     const { data, error } = await supabase.auth.signUp({ email, password });
     if (!error && data.user) {
       // Create profile row
@@ -85,9 +85,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         summaries_used: 0,
         summaries_reset_at: nextMonth.toISOString(),
       });
+
+      // Apply promo code if provided
+      let promoApplied = false;
+      if (promoCode?.trim()) {
+        try {
+          const res = await fetch("/api/promo", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code: promoCode.trim(), userId: data.user.id }),
+          });
+          const promoData = await res.json();
+          if (promoData.success) promoApplied = true;
+        } catch { /* promo failed silently, user still gets free account */ }
+      }
+
       await fetchProfile(data.user.id);
+      return { error, promoApplied };
     }
-    return { error };
+    return { error, promoApplied: false };
   };
 
   const signIn = async (email: string, password: string) => {
