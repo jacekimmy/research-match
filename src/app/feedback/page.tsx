@@ -159,7 +159,7 @@ export default function FeedbackPage() {
               Help shape Research Match. Suggest features, report bugs, or share your thoughts.
             </p>
           </div>
-          <a href="/" className="btn-cta" style={{ padding: "14px 32px", fontSize: "1.05rem", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "8px", whiteSpace: "nowrap" }}>
+          <a href="/" className="btn-cta" style={{ padding: "12px 28px", fontSize: "0.9rem", textDecoration: "none", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px", whiteSpace: "nowrap", textAlign: "center" }}>
             &larr; Back to tool
           </a>
         </div>
