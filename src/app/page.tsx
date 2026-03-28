@@ -76,27 +76,7 @@ export default function LandingPage() {
       .catch(() => setLifetimeSpotsRemaining(200));
   }, []);
 
-  // Parallax scroll — disabled on mobile for performance
-  // Uses transform (GPU-composited) instead of marginTop (layout-triggering)
-  useEffect(() => {
-    if (window.innerWidth < 768) return;
-    const speeds = [0.15, -0.1, 0.2, -0.12, 0.08, -0.18, 0.14, -0.06, 0.1, -0.15, 0.12, -0.08, 0.18, -0.14, 0.1, -0.16];
-    let ticking = false;
-    function handleScroll() {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => {
-        const scrollY = window.scrollY;
-        document.querySelectorAll(".splotch").forEach((s, i) => {
-          const speed = speeds[i % speeds.length];
-          (s as HTMLElement).style.transform = `translate3d(0, ${scrollY * speed}px, 0)`;
-        });
-        ticking = false;
-      });
-    }
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  // Parallax removed for performance — splotches are static
 
   function heroSearch() {
     if (!heroQuery.trim()) return;
@@ -138,29 +118,12 @@ export default function LandingPage() {
 
   return (
     <div style={{ minHeight: "100vh", position: "relative" }}>
-      {/* Background splotches — scattered throughout the full page */}
+      {/* Background splotches — reduced to 4 for performance */}
       <div className="splotches">
-        {/* Hero area */}
         <div className="splotch splotch-1" />
-        <div className="splotch splotch-9" />
-        <div className="splotch splotch-5" />
-        {/* How it works area */}
         <div className="splotch splotch-2" />
-        <div className="splotch splotch-8" />
-        <div className="splotch splotch-11" />
-        {/* Cold email / testimonials area */}
         <div className="splotch splotch-3" />
-        <div className="splotch splotch-6" />
-        <div className="splotch splotch-10" />
-        {/* Pricing / footer area */}
         <div className="splotch splotch-4" />
-        <div className="splotch splotch-7" />
-        <div className="splotch splotch-12" />
-        {/* Extra deep-page splotches */}
-        <div className="splotch splotch-13" />
-        <div className="splotch splotch-14" />
-        <div className="splotch splotch-15" />
-        <div className="splotch splotch-16" />
       </div>
 
       {/* Nav */}
