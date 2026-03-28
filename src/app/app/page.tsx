@@ -1220,19 +1220,19 @@ function AppPageInner() {
                 ) : (
                   /* No summary loaded yet — show button or locked overlay */
                   getSummariesRemaining() <= 0 && !isPaid ? (
-                    <div style={{ marginTop: "24px", position: "relative", borderRadius: "14px", overflow: "hidden" }}>
-                      <div style={{ padding: "24px", filter: "blur(6px)", userSelect: "none", pointerEvents: "none" }}>
+                    <div style={{ marginTop: "24px", position: "relative", borderRadius: "14px", overflow: "visible" }}>
+                      <div style={{ padding: "24px", filter: "blur(6px)", userSelect: "none", pointerEvents: "none", borderRadius: "14px", overflow: "hidden" }}>
                         <p style={{ fontSize: "1.05rem", lineHeight: 1.7, color: "#4A5D50" }}>
                           This professor studies the intersection of computational methods and experimental techniques to advance understanding in their field. Their recent work focuses on developing novel approaches that combine interdisciplinary insights.
                         </p>
                       </div>
-                      <div className="locked-summary-overlay" onClick={() => {
+                      <div className="locked-summary-overlay" style={{ paddingBottom: "28px" }} onClick={() => {
                         if (!user) { setShowAuthModal(true); setAuthMode("signup"); setAuthError("Create a free account for 1 more free summary."); }
                         else { setShowUpgradeModal(true); }
                       }}>
                         <span style={{ fontSize: "1.6rem", marginBottom: "10px" }}>&#128274;</span>
                         <p style={{ fontSize: "1rem", fontWeight: 700, color: "#1C7A56", marginBottom: "6px" }}>
-                          You&apos;ve used your free summary
+                          You&apos;ve used your free summaries
                         </p>
                         <p style={{ fontSize: "0.85rem", color: "#7A8E80", marginBottom: "14px" }}>
                           {!user ? "Create a free account for 1 more free summary" : "Upgrade for unlimited access"}
