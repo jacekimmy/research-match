@@ -60,14 +60,21 @@ export default function LandingPage() {
   }, []);
 
   // Parallax scroll — disabled on mobile for performance
+  // Uses transform (GPU-composited) instead of marginTop (layout-triggering)
   useEffect(() => {
     if (window.innerWidth < 768) return;
     const speeds = [0.15, -0.1, 0.2, -0.12, 0.08, -0.18, 0.14, -0.06, 0.1, -0.15, 0.12, -0.08, 0.18, -0.14, 0.1, -0.16];
+    let ticking = false;
     function handleScroll() {
-      const scrollY = window.scrollY;
-      document.querySelectorAll(".splotch").forEach((s, i) => {
-        const speed = speeds[i % speeds.length];
-        (s as HTMLElement).style.marginTop = `${scrollY * speed}px`;
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const scrollY = window.scrollY;
+        document.querySelectorAll(".splotch").forEach((s, i) => {
+          const speed = speeds[i % speeds.length];
+          (s as HTMLElement).style.transform = `translate3d(0, ${scrollY * speed}px, 0)`;
+        });
+        ticking = false;
       });
     }
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -113,7 +120,7 @@ export default function LandingPage() {
   if (isMobile) return <MobileLanding />;
 
   return (
-    <div style={{ minHeight: "100vh", position: "relative", overflowX: "hidden" }}>
+    <div style={{ minHeight: "100vh", position: "relative" }}>
       {/* Background splotches — scattered throughout the full page */}
       <div className="splotches">
         {/* Hero area */}
@@ -144,12 +151,12 @@ export default function LandingPage() {
         display: "flex", justifyContent: "space-between", alignItems: "center",
         padding: "24px 40px", maxWidth: "1200px", margin: "0 auto",
       }}>
-        <span style={{ fontSize: "1.5rem", fontWeight: 800, color: "#1A6B5A", letterSpacing: "-0.02em" }}>
+        <span style={{ fontSize: "1.5rem", fontWeight: 800, color: "#1C7A56", letterSpacing: "-0.02em" }}>
           Research Match
         </span>
         <div className="nav-links-desktop" style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-          <Link href="/blog" style={{ fontSize: "0.9rem", color: "#7A8E88", textDecoration: "none", transition: "color 0.2s" }}>Blog</Link>
-          <Link href="/feedback" style={{ fontSize: "0.9rem", color: "#7A8E88", textDecoration: "none", transition: "color 0.2s" }}>Feedback</Link>
+          <Link href="/blog" style={{ fontSize: "0.9rem", color: "#7A8E80", textDecoration: "none", transition: "color 0.2s" }}>Blog</Link>
+          <Link href="/feedback" style={{ fontSize: "0.9rem", color: "#7A8E80", textDecoration: "none", transition: "color 0.2s" }}>Feedback</Link>
           <Link href="/app" className="btn-cta landing-cta-primary rm-search-btn" style={{ padding: "11px 28px", fontSize: "0.9rem", textDecoration: "none" }}>
             Open Tool
           </Link>
@@ -168,13 +175,13 @@ export default function LandingPage() {
       }}>
         <h1 style={{
           fontSize: "clamp(2.4rem, 5.5vw, 4rem)", fontWeight: 800,
-          color: "#1A6B5A", lineHeight: 1.1, marginBottom: "28px",
+          color: "#1C7A56", lineHeight: 1.1, marginBottom: "28px",
           letterSpacing: "-0.03em",
         }}>
           Find the right research professor in 5 minutes, not 8 hours.
         </h1>
         <p style={{
-          fontSize: "clamp(1.05rem, 2vw, 1.3rem)", color: "#4A5D56",
+          fontSize: "clamp(1.05rem, 2vw, 1.3rem)", color: "#4A5D50",
           lineHeight: 1.7, maxWidth: "640px", margin: "0 auto 28px",
         }}>
           Search 250M+ papers, understand their work, and write emails professors actually read.
@@ -194,7 +201,7 @@ export default function LandingPage() {
           <div style={{ flex: 2, position: "relative" }}>
             <label style={{
               display: "block", fontSize: "0.6rem", fontWeight: 700,
-              color: "#1A6B5A", textTransform: "uppercase", letterSpacing: "0.12em",
+              color: "#1C7A56", textTransform: "uppercase", letterSpacing: "0.12em",
               padding: "8px 20px 0", textAlign: "left",
             }}>Research Interest</label>
             <input
@@ -207,19 +214,19 @@ export default function LandingPage() {
               placeholder={HERO_PLACEHOLDERS[placeholderIdx]}
               style={{
                 width: "100%", padding: "6px 20px 12px", fontSize: "1.1rem",
-                border: "none", background: "transparent", color: "#2C3E38",
+                border: "none", background: "transparent", color: "#2C3E34",
                 fontFamily: "'Playfair Display', Georgia, serif", outline: "none",
               }}
             />
           </div>
           <div style={{
-            width: "1px", height: "36px", background: "rgba(168,196,188,0.4)",
+            width: "1px", height: "36px", background: "rgba(168,196,178,0.4)",
             flexShrink: 0,
           }} />
           <div style={{ flex: 1, position: "relative" }}>
             <label style={{
               display: "block", fontSize: "0.6rem", fontWeight: 700,
-              color: "#1A6B5A", textTransform: "uppercase", letterSpacing: "0.12em",
+              color: "#1C7A56", textTransform: "uppercase", letterSpacing: "0.12em",
               padding: "8px 20px 0", textAlign: "left",
             }}>University</label>
             <input
@@ -232,7 +239,7 @@ export default function LandingPage() {
               placeholder="e.g. MIT, Stanford..."
               style={{
                 width: "100%", padding: "6px 20px 12px", fontSize: "1.1rem",
-                border: "none", background: "transparent", color: "#2C3E38",
+                border: "none", background: "transparent", color: "#2C3E34",
                 fontFamily: "'Playfair Display', Georgia, serif", outline: "none",
               }}
             />
@@ -253,12 +260,12 @@ export default function LandingPage() {
         </div>
 
         <p className="hero-social" style={{
-          fontSize: "0.95rem", color: "#7A8E88", fontStyle: "italic", marginBottom: "16px",
+          fontSize: "0.95rem", color: "#7A8E80", fontStyle: "italic", marginBottom: "16px",
         }}>
           A Princeton professor responded to a high school freshman within 24 hours.
         </p>
         <a href="#pricing" style={{
-          fontSize: "0.85rem", color: "#7A8E88", textDecoration: "underline",
+          fontSize: "0.85rem", color: "#7A8E80", textDecoration: "underline",
           textUnderlineOffset: "3px",
         }}>
           See pricing
@@ -274,7 +281,7 @@ export default function LandingPage() {
         maxWidth: "1000px", margin: "0 auto", padding: "60px 40px 80px",
       }}>
         <h2 style={{
-          fontSize: "1.8rem", fontWeight: 700, color: "#1A6B5A",
+          fontSize: "1.8rem", fontWeight: 700, color: "#1C7A56",
           textAlign: "center", marginBottom: "12px",
         }}>
           How it works
@@ -300,16 +307,16 @@ export default function LandingPage() {
               </div>
               <div style={{
                 display: "inline-block", fontSize: "0.65rem", fontWeight: 700,
-                color: "#1A6B5A", background: "rgba(26,107,90,0.08)",
+                color: "#1C7A56", background: "rgba(28,122,86,0.08)",
                 padding: "4px 12px", borderRadius: "999px", marginBottom: "14px",
                 textTransform: "uppercase", letterSpacing: "0.12em",
               }}>
                 Step {item.step}
               </div>
-              <h3 style={{ fontSize: "1.2rem", fontWeight: 700, color: "#2C3E38", marginBottom: "12px" }}>
+              <h3 style={{ fontSize: "1.2rem", fontWeight: 700, color: "#2C3E34", marginBottom: "12px" }}>
                 {item.title}
               </h3>
-              <p style={{ fontSize: "0.95rem", color: "#7A8E88", lineHeight: 1.65 }}>
+              <p style={{ fontSize: "0.95rem", color: "#7A8E80", lineHeight: 1.65 }}>
                 {item.desc}
               </p>
             </div>
@@ -327,13 +334,13 @@ export default function LandingPage() {
       }}>
         <div className="glass-card" style={{
           padding: "40px 36px", textAlign: "center",
-          border: "2px solid rgba(26,107,90,0.2)",
-          background: "rgba(26,107,90,0.04)",
+          border: "2px solid rgba(28,122,86,0.2)",
+          background: "rgba(28,122,86,0.04)",
         }}>
-          <h3 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#1A6B5A", marginBottom: "16px" }}>
+          <h3 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#1C7A56", marginBottom: "16px" }}>
             Sound like yourself, not a chatbot
           </h3>
-          <p style={{ fontSize: "1rem", color: "#4A5D56", lineHeight: 1.7 }}>
+          <p style={{ fontSize: "1rem", color: "#4A5D50", lineHeight: 1.7 }}>
             Our email checker scans your draft for generic phrasing, sycophantic tone, and AI-sounding language — the exact things professors told us make them hit delete. Fix the red flags before you hit send.
           </p>
         </div>
@@ -344,7 +351,7 @@ export default function LandingPage() {
         maxWidth: "800px", margin: "0 auto", padding: "0 40px 80px",
       }}>
         <h2 style={{
-          fontSize: "1.8rem", fontWeight: 700, color: "#1A6B5A",
+          fontSize: "1.8rem", fontWeight: 700, color: "#1C7A56",
           textAlign: "center", marginBottom: "12px",
         }}>
           Most cold emails to professors get ignored. Here&apos;s why.
@@ -362,12 +369,12 @@ export default function LandingPage() {
               background: "rgba(155,51,34,0.04)", border: "1px solid rgba(155,51,34,0.1)",
             }}>
               <span style={{ color: "#9B3322", fontSize: "1.2rem", flexShrink: 0 }}>✕</span>
-              <p style={{ fontSize: "1rem", color: "#4A5D56", lineHeight: 1.6 }}>{point}</p>
+              <p style={{ fontSize: "1rem", color: "#4A5D50", lineHeight: 1.6 }}>{point}</p>
             </div>
           ))}
         </div>
         <p style={{
-          fontSize: "1rem", color: "#1A6B5A", textAlign: "center",
+          fontSize: "1rem", color: "#1C7A56", textAlign: "center",
           marginTop: "28px", lineHeight: 1.7, fontWeight: 500,
         }}>
           Research Match helps you avoid all three. Our email checker catches generic and AI-sounding language before you hit send — so your message sounds like you, not a chatbot.
@@ -379,7 +386,7 @@ export default function LandingPage() {
         maxWidth: "1000px", margin: "0 auto", padding: "0 40px 40px",
       }}>
         <h2 style={{
-          fontSize: "1.8rem", fontWeight: 700, color: "#1A6B5A",
+          fontSize: "1.8rem", fontWeight: 700, color: "#1C7A56",
           textAlign: "center", marginBottom: "12px",
         }}>
           What people are saying
@@ -396,10 +403,10 @@ export default function LandingPage() {
           ].map((item, i) => (
             <div key={i} className="glass-card landing-quote" style={{ padding: "30px 26px" }}>
               <div className="quote-mark">&ldquo;</div>
-              <p style={{ fontSize: "1.05rem", color: "#2C3E38", lineHeight: 1.65, marginBottom: "16px" }}>
+              <p style={{ fontSize: "1.05rem", color: "#2C3E34", lineHeight: 1.65, marginBottom: "16px" }}>
                 {item.quote}
               </p>
-              <p style={{ fontSize: "0.8rem", color: "#7A8E88", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+              <p style={{ fontSize: "0.8rem", color: "#7A8E80", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
                 — {item.author}
               </p>
             </div>
@@ -416,16 +423,16 @@ export default function LandingPage() {
         maxWidth: "700px", margin: "0 auto", padding: "20px 40px 80px",
       }}>
         <div style={{
-          padding: "32px 36px", borderLeft: "4px solid #1A6B5A",
-          background: "rgba(26,107,90,0.03)", borderRadius: "0 14px 14px 0",
+          padding: "32px 36px", borderLeft: "4px solid #1C7A56",
+          background: "rgba(28,122,86,0.03)", borderRadius: "0 14px 14px 0",
         }}>
           <p style={{
-            fontSize: "1.05rem", color: "#4A5D56", lineHeight: 1.75,
+            fontSize: "1.05rem", color: "#4A5D50", lineHeight: 1.75,
             fontStyle: "italic",
           }}>
             &ldquo;When I was a high school freshman, I used this approach to cold email 5 professors. A Princeton astrophysics professor responded within 24 hours and said I was &lsquo;way ahead of the curve.&rsquo; That&apos;s why I built Research Match.&rdquo;
           </p>
-          <p style={{ fontSize: "0.85rem", color: "#1A6B5A", fontWeight: 700, marginTop: "16px" }}>
+          <p style={{ fontSize: "0.85rem", color: "#1C7A56", fontWeight: 700, marginTop: "16px" }}>
             — Jace, Founder
           </p>
         </div>
@@ -436,18 +443,18 @@ export default function LandingPage() {
         maxWidth: "1140px", margin: "0 auto", padding: "40px 40px 40px",
       }}>
         <h2 style={{
-          fontSize: "1.8rem", fontWeight: 700, color: "#1A6B5A",
+          fontSize: "1.8rem", fontWeight: 700, color: "#1C7A56",
           textAlign: "center", marginBottom: "12px",
         }}>
           Simple pricing
         </h2>
         <p style={{
-          fontSize: "1rem", color: "#7A8E88", textAlign: "center", marginBottom: "4px",
+          fontSize: "1rem", color: "#7A8E80", textAlign: "center", marginBottom: "4px",
         }}>
           Free to start because we know what it&apos;s like searching for research with zero budget.
         </p>
         <p style={{
-          fontSize: "0.95rem", color: "#4A5D56", textAlign: "center", marginBottom: "8px",
+          fontSize: "0.95rem", color: "#4A5D50", textAlign: "center", marginBottom: "8px",
         }}>
           If you&apos;re emailing professors regularly, the Student plan pays for itself with one response.
         </p>
@@ -456,8 +463,8 @@ export default function LandingPage() {
         {/* Billing toggle */}
         <div style={{ display: "flex", justifyContent: "center", marginBottom: "44px" }}>
           <div style={{
-            display: "inline-flex", background: "rgba(26,107,90,0.08)",
-            border: "2px solid rgba(26,107,90,0.2)", borderRadius: "999px",
+            display: "inline-flex", background: "rgba(28,122,86,0.08)",
+            border: "2px solid rgba(28,122,86,0.2)", borderRadius: "999px",
             padding: "4px", gap: "4px",
           }}>
             <button
@@ -467,8 +474,8 @@ export default function LandingPage() {
                 fontFamily: "'Playfair Display', Georgia, serif",
                 border: "none", borderRadius: "999px", cursor: "pointer",
                 transition: "all 0.3s ease",
-                background: billingCycle === "monthly" ? "#1A6B5A" : "transparent",
-                color: billingCycle === "monthly" ? "#F5F0E6" : "#2C3E38",
+                background: billingCycle === "monthly" ? "#1C7A56" : "transparent",
+                color: billingCycle === "monthly" ? "#F5F0E6" : "#2C3E34",
               }}
             >Monthly</button>
             <button
@@ -478,8 +485,8 @@ export default function LandingPage() {
                 fontFamily: "'Playfair Display', Georgia, serif",
                 border: "none", borderRadius: "999px", cursor: "pointer",
                 transition: "all 0.3s ease",
-                background: billingCycle === "annual" ? "#1A6B5A" : "transparent",
-                color: billingCycle === "annual" ? "#F5F0E6" : "#2C3E38",
+                background: billingCycle === "annual" ? "#1C7A56" : "transparent",
+                color: billingCycle === "annual" ? "#F5F0E6" : "#2C3E34",
               }}
             >Annual</button>
           </div>
@@ -491,12 +498,12 @@ export default function LandingPage() {
         }}>
           {/* Free */}
           <div className="glass-card landing-pricing-card" style={{ padding: "36px 30px" }}>
-            <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#7A8E88", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Free</p>
-            <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#1A6B5A", marginBottom: "24px", letterSpacing: "-0.02em" }}>$0</p>
+            <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#7A8E80", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Free</p>
+            <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#1C7A56", marginBottom: "24px", letterSpacing: "-0.02em" }}>$0</p>
             <ul style={{ listStyle: "none", padding: 0, marginBottom: "30px" }}>
               {["Unlimited professor searches", "1 research summary per month", "Author position labels", "Save professors", "Paper links"].map((f) => (
-                <li key={f} style={{ fontSize: "0.9rem", color: "#4A5D56", padding: "7px 0", display: "flex", gap: "10px", alignItems: "center" }}>
-                  <span style={{ color: "#1A6B5A", fontSize: "0.85rem" }}>✓</span> {f}
+                <li key={f} style={{ fontSize: "0.9rem", color: "#4A5D50", padding: "7px 0", display: "flex", gap: "10px", alignItems: "center" }}>
+                  <span style={{ color: "#1C7A56", fontSize: "0.85rem" }}>✓</span> {f}
                 </li>
               ))}
             </ul>
@@ -508,35 +515,35 @@ export default function LandingPage() {
           {/* Student */}
           <div id="student-card" className="glass-card landing-pricing-card" style={{
             padding: "36px 30px", position: "relative",
-            border: "2px solid rgba(26,107,90,0.35)",
-            boxShadow: "0 8px 40px rgba(26,107,90,0.15)",
+            border: "2px solid rgba(28,122,86,0.35)",
+            boxShadow: "0 8px 40px rgba(28,122,86,0.15)",
           }}>
             <span style={{
               position: "absolute", top: "-13px", left: "50%", transform: "translateX(-50%)",
-              background: "#1A6B5A", color: "#F5F0E6", fontSize: "0.65rem", fontWeight: 700,
+              background: "#1C7A56", color: "#F5F0E6", fontSize: "0.65rem", fontWeight: 700,
               padding: "5px 16px", borderRadius: "999px", textTransform: "uppercase", letterSpacing: "0.1em",
               whiteSpace: "nowrap",
             }}>Most Popular</span>
-            <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#1A6B5A", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Student</p>
-            <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#1A6B5A", marginBottom: "4px", letterSpacing: "-0.02em" }}>
+            <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#1C7A56", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Student</p>
+            <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#1C7A56", marginBottom: "4px", letterSpacing: "-0.02em" }}>
               {billingCycle === "monthly" ? "$9" : "$79"}
-              <span style={{ fontSize: "1rem", fontWeight: 400, color: "#7A8E88" }}>/{billingCycle === "monthly" ? "mo" : "yr"}</span>
+              <span style={{ fontSize: "1rem", fontWeight: 400, color: "#7A8E80" }}>/{billingCycle === "monthly" ? "mo" : "yr"}</span>
             </p>
             {billingCycle === "annual" ? (
-              <p style={{ fontSize: "0.8rem", color: "#3D7A6A", marginBottom: "20px", fontWeight: 600 }}>Save $29 vs monthly</p>
+              <p style={{ fontSize: "0.8rem", color: "#3D7A5E", marginBottom: "20px", fontWeight: 600 }}>Save $29 vs monthly</p>
             ) : (
               <div style={{ height: "20px" }} />
             )}
             <ul style={{ listStyle: "none", padding: 0, marginBottom: "30px" }}>
-              <li style={{ fontSize: "0.9rem", color: "#2C3E38", padding: "7px 0", fontWeight: 700 }}>Everything in Free, plus:</li>
+              <li style={{ fontSize: "0.9rem", color: "#2C3E34", padding: "7px 0", fontWeight: 700 }}>Everything in Free, plus:</li>
               {[
                 "Unlimited research summaries",
                 "Email checker — catches generic & AI language",
                 "Professor email finder",
                 "Professor responsiveness indicator",
               ].map((f) => (
-                <li key={f} style={{ fontSize: "0.9rem", color: "#4A5D56", padding: "7px 0", display: "flex", gap: "10px", alignItems: "flex-start" }}>
-                  <span style={{ color: "#1A6B5A", flexShrink: 0, fontSize: "0.85rem" }}>✓</span> {f}
+                <li key={f} style={{ fontSize: "0.9rem", color: "#4A5D50", padding: "7px 0", display: "flex", gap: "10px", alignItems: "flex-start" }}>
+                  <span style={{ color: "#1C7A56", flexShrink: 0, fontSize: "0.85rem" }}>✓</span> {f}
                 </li>
               ))}
             </ul>
@@ -626,11 +633,11 @@ export default function LandingPage() {
 
         {/* Inline waitlist */}
         <div style={{ textAlign: "center", marginTop: "44px" }}>
-          <p style={{ fontSize: "0.95rem", color: "#7A8E88", marginBottom: "16px" }}>
+          <p style={{ fontSize: "0.95rem", color: "#7A8E80", marginBottom: "16px" }}>
             More plans coming soon. Want early access?
           </p>
           {inlineWaitlistDone ? (
-            <p style={{ fontSize: "0.95rem", color: "#1A6B5A", fontWeight: 600 }}>
+            <p style={{ fontSize: "0.95rem", color: "#1C7A56", fontWeight: 600 }}>
               You&apos;re on the list! We&apos;ll email you when new plans launch.
             </p>
           ) : (
@@ -643,8 +650,8 @@ export default function LandingPage() {
                 onKeyDown={(e) => e.key === "Enter" && joinInlineWaitlist()}
                 style={{
                   padding: "12px 18px", fontSize: "0.9rem",
-                  border: "1.5px solid rgba(168,196,188,0.4)", borderRadius: "14px",
-                  background: "rgba(255,255,255,0.5)", color: "#2C3E38",
+                  border: "1.5px solid rgba(168,196,178,0.4)", borderRadius: "14px",
+                  background: "rgba(255,255,255,0.5)", color: "#2C3E34",
                   fontFamily: "inherit", outline: "none", width: "260px",
                   transition: "border-color 0.2s",
                 }}
@@ -664,15 +671,15 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="landing-footer" style={{
         maxWidth: "1200px", margin: "0 auto", padding: "40px",
-        borderTop: "1px solid rgba(168,196,188,0.3)",
+        borderTop: "1px solid rgba(168,196,178,0.3)",
         display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px",
       }}>
-        <span style={{ fontSize: "0.9rem", color: "#7A8E88", fontWeight: 600 }}>Research Match</span>
+        <span style={{ fontSize: "0.9rem", color: "#7A8E80", fontWeight: 600 }}>Research Match</span>
         <div style={{ display: "flex", gap: "28px" }}>
-          <Link href="/app" style={{ fontSize: "0.85rem", color: "#7A8E88", textDecoration: "none", transition: "color 0.2s" }}>Tool</Link>
-          <Link href="/blog" style={{ fontSize: "0.85rem", color: "#7A8E88", textDecoration: "none", transition: "color 0.2s" }}>Blog</Link>
-          <a href="#pricing" style={{ fontSize: "0.85rem", color: "#7A8E88", textDecoration: "none", transition: "color 0.2s" }}>Pricing</a>
-          <Link href="/feedback" style={{ fontSize: "0.85rem", color: "#7A8E88", textDecoration: "none", transition: "color 0.2s" }}>Feedback</Link>
+          <Link href="/app" style={{ fontSize: "0.85rem", color: "#7A8E80", textDecoration: "none", transition: "color 0.2s" }}>Tool</Link>
+          <Link href="/blog" style={{ fontSize: "0.85rem", color: "#7A8E80", textDecoration: "none", transition: "color 0.2s" }}>Blog</Link>
+          <a href="#pricing" style={{ fontSize: "0.85rem", color: "#7A8E80", textDecoration: "none", transition: "color 0.2s" }}>Pricing</a>
+          <Link href="/feedback" style={{ fontSize: "0.85rem", color: "#7A8E80", textDecoration: "none", transition: "color 0.2s" }}>Feedback</Link>
         </div>
       </footer>
 
@@ -689,20 +696,20 @@ export default function LandingPage() {
             {waitlistDone ? (
               <div style={{ textAlign: "center" }}>
                 <p style={{ fontSize: "2.5rem", marginBottom: "16px" }}>🎉</p>
-                <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#1A6B5A", marginBottom: "10px" }}>
+                <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#1C7A56", marginBottom: "10px" }}>
                   You&apos;re on the list!
                 </h3>
-                <p style={{ fontSize: "0.95rem", color: "#7A8E88", lineHeight: 1.6 }}>
+                <p style={{ fontSize: "0.95rem", color: "#7A8E80", lineHeight: 1.6 }}>
                   We&apos;ll email you when {waitlistTier === "research_pro" ? "Research Pro" : "Pro"} launches.
                 </p>
                 <button onClick={() => setWaitlistTier(null)} className="btn-secondary" style={{ marginTop: "24px", padding: "12px 28px" }}>Close</button>
               </div>
             ) : (
               <>
-                <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#1A6B5A", marginBottom: "10px" }}>
+                <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#1C7A56", marginBottom: "10px" }}>
                   Join the {waitlistTier === "research_pro" ? "Research Pro" : "Pro"} waitlist
                 </h3>
-                <p style={{ fontSize: "0.9rem", color: "#7A8E88", marginBottom: "24px", lineHeight: 1.6 }}>
+                <p style={{ fontSize: "0.9rem", color: "#7A8E80", marginBottom: "24px", lineHeight: 1.6 }}>
                   Enter your email to get notified when it launches.
                 </p>
                 <input
@@ -713,8 +720,8 @@ export default function LandingPage() {
                   onKeyDown={(e) => e.key === "Enter" && joinWaitlist()}
                   style={{
                     width: "100%", padding: "14px 18px", fontSize: "1rem",
-                    border: "1.5px solid rgba(168,196,188,0.4)", borderRadius: "14px",
-                    background: "rgba(255,255,255,0.5)", color: "#2C3E38",
+                    border: "1.5px solid rgba(168,196,178,0.4)", borderRadius: "14px",
+                    background: "rgba(255,255,255,0.5)", color: "#2C3E34",
                     fontFamily: "inherit", marginBottom: "16px", outline: "none",
                     transition: "border-color 0.2s, box-shadow 0.2s",
                   }}

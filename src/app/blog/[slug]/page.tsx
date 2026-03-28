@@ -40,11 +40,11 @@ export default async function BlogPost({ params }: Props) {
       <div style={{ maxWidth: "720px", margin: "0 auto" }}>
         {/* Nav */}
         <nav style={{ marginBottom: "40px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Link href="/" style={{ fontSize: "1.3rem", fontWeight: 800, color: "#1A6B5A", textDecoration: "none" }}>
+          <Link href="/" style={{ fontSize: "1.3rem", fontWeight: 800, color: "#1C7A56", textDecoration: "none" }}>
             Research Match
           </Link>
           <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-            <Link href="/blog" style={{ fontSize: "0.85rem", color: "#7A8E88", textDecoration: "none" }}>Blog</Link>
+            <Link href="/blog" style={{ fontSize: "0.85rem", color: "#7A8E80", textDecoration: "none" }}>Blog</Link>
             <Link href="/app" className="btn-cta rm-search-btn" style={{ padding: "10px 24px", fontSize: "0.85rem", textDecoration: "none" }}>
               Open Tool
             </Link>
@@ -55,12 +55,12 @@ export default async function BlogPost({ params }: Props) {
         <article className="blog-article">
           <h1 style={{
             fontSize: "clamp(1.8rem, 4vw, 2.6rem)", fontWeight: 800,
-            color: "#1A6B5A", marginBottom: "16px", lineHeight: 1.2,
+            color: "#1C7A56", marginBottom: "16px", lineHeight: 1.2,
             letterSpacing: "-0.02em",
           }}>
             {post.title}
           </h1>
-          <p style={{ fontSize: "0.85rem", color: "#A8C4BC", marginBottom: "40px" }}>
+          <p style={{ fontSize: "0.85rem", color: "#A8C4B2", marginBottom: "40px" }}>
             Research Match Team
           </p>
           <div
@@ -71,8 +71,8 @@ export default async function BlogPost({ params }: Props) {
 
         {/* Related posts */}
         {relatedPosts.length > 0 && (
-          <div style={{ marginTop: "60px", paddingTop: "40px", borderTop: "1px solid rgba(168,196,188,0.3)" }}>
-            <h2 style={{ fontSize: "1.3rem", fontWeight: 700, color: "#1A6B5A", marginBottom: "20px" }}>
+          <div style={{ marginTop: "60px", paddingTop: "40px", borderTop: "1px solid rgba(168,196,178,0.3)" }}>
+            <h2 style={{ fontSize: "1.3rem", fontWeight: 700, color: "#1C7A56", marginBottom: "20px" }}>
               Related posts
             </h2>
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -86,10 +86,10 @@ export default async function BlogPost({ params }: Props) {
                     transition: "transform 0.3s ease",
                   }}
                 >
-                  <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "#1A6B5A", marginBottom: "6px" }}>
+                  <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "#1C7A56", marginBottom: "6px" }}>
                     {rp.title}
                   </h3>
-                  <p style={{ fontSize: "0.8rem", color: "#7A8E88", lineHeight: 1.5 }}>
+                  <p style={{ fontSize: "0.8rem", color: "#7A8E80", lineHeight: 1.5 }}>
                     {rp.description}
                   </p>
                 </Link>
@@ -99,8 +99,8 @@ export default async function BlogPost({ params }: Props) {
         )}
 
         {/* Footer */}
-        <div style={{ marginTop: "48px", padding: "24px 0", borderTop: "1px solid rgba(168,196,188,0.3)", textAlign: "center" }}>
-          <Link href="/blog" style={{ fontSize: "0.85rem", color: "#7A8E88", textDecoration: "none" }}>
+        <div style={{ marginTop: "48px", padding: "24px 0", borderTop: "1px solid rgba(168,196,178,0.3)", textAlign: "center" }}>
+          <Link href="/blog" style={{ fontSize: "0.85rem", color: "#7A8E80", textDecoration: "none" }}>
             ← Back to all posts
           </Link>
         </div>
