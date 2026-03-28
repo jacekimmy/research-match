@@ -78,13 +78,6 @@ export default function LandingPage() {
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveStep((s) => (s + 1) % 3);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
     fetch("/api/lifetime-spots")
       .then((r) => r.json())
       .then((d) => setLifetimeSpotsRemaining(d.remaining ?? 200))
@@ -421,7 +414,7 @@ export default function LandingPage() {
                   <p style={{ fontSize: "0.95rem", color: "#2C3E34", fontFamily: "'Playfair Display', Georgia, serif", marginTop: "4px" }}>neuroscience</p>
                 </div>
                 {[
-                  { name: "Dr. Sarah Chen", uni: "Harvard Medical School", topics: ["Cognitive Neuroscience", "Memory"] },
+                  { name: "Dr. Emily Nakamura", uni: "Harvard Medical School", topics: ["Cognitive Neuroscience", "Memory"] },
                   { name: "Prof. James Miller", uni: "Stanford University", topics: ["Neural Circuits", "Optogenetics"] },
                   { name: "Dr. Aisha Patel", uni: "MIT", topics: ["Computational Neuroscience", "Brain-Computer Interfaces"] },
                 ].map((prof, i) => (
@@ -451,7 +444,7 @@ export default function LandingPage() {
               }}>
                 <div style={{ background: "rgba(255,255,255,0.8)", borderRadius: "14px", padding: "18px 20px", border: "1px solid rgba(168,196,178,0.2)" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
-                    <p style={{ fontSize: "1rem", fontWeight: 700, color: "#1C7A56" }}>Dr. Sarah Chen</p>
+                    <p style={{ fontSize: "1rem", fontWeight: 700, color: "#1C7A56" }}>Dr. Emily Nakamura</p>
                     <span style={{ fontSize: "0.6rem", padding: "2px 8px", borderRadius: "999px", background: "rgba(28,122,86,0.1)", color: "#1C7A56", fontWeight: 600 }}>Harvard</span>
                   </div>
                   <p style={{ fontSize: "0.82rem", color: "#4A5D50", lineHeight: 1.65, marginBottom: "14px", animation: "fadeSlideIn 0.5s ease 0.1s both" }}>
