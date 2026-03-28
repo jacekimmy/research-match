@@ -1539,27 +1539,20 @@ function AppPageInner() {
             <div style={{ marginBottom: "20px", padding: "20px", borderRadius: "14px", border: "1.5px solid rgba(28,122,86,0.2)", background: "rgba(28,122,86,0.03)" }}>
               <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#1C7A56", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "8px" }}>Student</p>
               <div style={{ display: "flex", justifyContent: "center", marginBottom: "16px" }}>
-                <div style={{
-                  display: "inline-flex", background: "rgba(28,122,86,0.08)",
-                  border: "2px solid rgba(28,122,86,0.2)", borderRadius: "999px",
-                  padding: "4px", gap: "4px",
-                }}>
-                  <button onClick={() => setUpgradeBilling("monthly")} style={{
-                    padding: "10px 24px", fontSize: "0.9rem", fontWeight: 700,
-                    fontFamily: "'Playfair Display', Georgia, serif",
-                    border: "none", borderRadius: "999px", cursor: "pointer",
-                    transition: "all 0.3s ease",
-                    background: upgradeBilling === "monthly" ? "#1C7A56" : "transparent",
-                    color: upgradeBilling === "monthly" ? "#F5F0E6" : "#2C3E34",
-                  }}>$9/mo</button>
-                  <button onClick={() => setUpgradeBilling("annual")} style={{
-                    padding: "10px 24px", fontSize: "0.9rem", fontWeight: 700,
-                    fontFamily: "'Playfair Display', Georgia, serif",
-                    border: "none", borderRadius: "999px", cursor: "pointer",
-                    transition: "all 0.3s ease",
-                    background: upgradeBilling === "annual" ? "#1C7A56" : "transparent",
-                    color: upgradeBilling === "annual" ? "#F5F0E6" : "#2C3E34",
-                  }}>$79/yr <span style={{ fontSize: "0.75rem", color: upgradeBilling === "annual" ? "#B8D8C4" : "#3D7A5E" }}>(save $29)</span></button>
+                <div className="mode-toggle" style={{ marginBottom: 0 }}>
+                  <div className="mode-toggle-slider" style={{
+                    left: upgradeBilling === "monthly" ? "4px" : "50%",
+                    width: "calc(50% - 4px)",
+                    transition: "left 0.45s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                  }} />
+                  <button onClick={() => setUpgradeBilling("monthly")}
+                    className={`mode-toggle-btn ${upgradeBilling === "monthly" ? "mode-toggle-btn-active" : ""}`}
+                    style={{ padding: "10px 24px", fontSize: "0.85rem" }}
+                  >$9/mo</button>
+                  <button onClick={() => setUpgradeBilling("annual")}
+                    className={`mode-toggle-btn ${upgradeBilling === "annual" ? "mode-toggle-btn-active" : ""}`}
+                    style={{ padding: "10px 24px", fontSize: "0.85rem" }}
+                  >$79/yr</button>
                 </div>
               </div>
               <ul style={{ listStyle: "none", padding: 0, marginBottom: "16px" }}>

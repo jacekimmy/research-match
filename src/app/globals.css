@@ -1426,6 +1426,41 @@ body::after {
   color: #F5F0E6;
 }
 
+/* ===== PRICE ROLLER — vertical scroll animation ===== */
+
+.price-roller-wrap {
+  display: inline-block;
+  overflow: hidden;
+  position: relative;
+  vertical-align: baseline;
+}
+
+.price-roller {
+  display: inline-block;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.25s ease;
+}
+
+.price-roller-exit {
+  transform: translateY(-100%);
+  opacity: 0;
+}
+
+.price-roller-enter {
+  animation: priceRollIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes priceRollIn {
+  0% {
+    transform: translateY(80%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 /* ===== PROFILE AVATAR ===== */
 
 .profile-avatar:hover {

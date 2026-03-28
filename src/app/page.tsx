@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMobile } from "@/lib/use-mobile";
@@ -23,6 +23,21 @@ export default function LandingPage() {
   const [heroFocused, setHeroFocused] = useState(false);
   const [placeholderIdx, setPlaceholderIdx] = useState(0);
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
+  const [priceAnimating, setPriceAnimating] = useState(false);
+  const billingToggleRef = useRef<HTMLDivElement>(null);
+  const btnMonthlyRef = useRef<HTMLButtonElement>(null);
+  const btnAnnualRef = useRef<HTMLButtonElement>(null);
+  const [, setBillingMounted] = useState(false);
+  useEffect(() => { setBillingMounted(true); }, []);
+
+  function switchBilling(cycle: "monthly" | "annual") {
+    if (cycle === billingCycle) return;
+    setPriceAnimating(true);
+    setTimeout(() => {
+      setBillingCycle(cycle);
+      setTimeout(() => setPriceAnimating(false), 50);
+    }, 200);
+  }
   const [waitlistEmail, setWaitlistEmail] = useState("");
   const [waitlistTier, setWaitlistTier] = useState<"research_pro" | "pro" | null>(null);
   const [waitlistDone, setWaitlistDone] = useState(false);
@@ -460,35 +475,34 @@ export default function LandingPage() {
         </p>
         <div className="section-divider" />
 
-        {/* Billing toggle */}
+        {/* Billing toggle — slider style */}
         <div style={{ display: "flex", justifyContent: "center", marginBottom: "44px" }}>
-          <div style={{
-            display: "inline-flex", background: "rgba(28,122,86,0.08)",
-            border: "2px solid rgba(28,122,86,0.2)", borderRadius: "999px",
-            padding: "4px", gap: "4px",
-          }}>
-            <button
-              onClick={() => setBillingCycle("monthly")}
+          <div className="mode-toggle" ref={billingToggleRef} style={{ marginBottom: 0 }}>
+            <div
+              className="mode-toggle-slider"
               style={{
-                padding: "12px 32px", fontSize: "0.95rem", fontWeight: 700,
-                fontFamily: "'Playfair Display', Georgia, serif",
-                border: "none", borderRadius: "999px", cursor: "pointer",
-                transition: "all 0.3s ease",
-                background: billingCycle === "monthly" ? "#1C7A56" : "transparent",
-                color: billingCycle === "monthly" ? "#F5F0E6" : "#2C3E34",
+                left: billingCycle === "monthly"
+                  ? (btnMonthlyRef.current?.offsetLeft ?? 4) + "px"
+                  : (btnAnnualRef.current?.offsetLeft ?? 100) + "px",
+                width: billingCycle === "monthly"
+                  ? (btnMonthlyRef.current?.offsetWidth ?? 110) + "px"
+                  : (btnAnnualRef.current?.offsetWidth ?? 95) + "px",
               }}
-            >Monthly</button>
+            />
             <button
-              onClick={() => setBillingCycle("annual")}
-              style={{
-                padding: "12px 32px", fontSize: "0.95rem", fontWeight: 700,
-                fontFamily: "'Playfair Display', Georgia, serif",
-                border: "none", borderRadius: "999px", cursor: "pointer",
-                transition: "all 0.3s ease",
-                background: billingCycle === "annual" ? "#1C7A56" : "transparent",
-                color: billingCycle === "annual" ? "#F5F0E6" : "#2C3E34",
-              }}
-            >Annual</button>
+              ref={btnMonthlyRef}
+              onClick={() => switchBilling("monthly")}
+              className={`mode-toggle-btn ${billingCycle === "monthly" ? "mode-toggle-btn-active" : ""}`}
+            >
+              Monthly
+            </button>
+            <button
+              ref={btnAnnualRef}
+              onClick={() => switchBilling("annual")}
+              className={`mode-toggle-btn ${billingCycle === "annual" ? "mode-toggle-btn-active" : ""}`}
+            >
+              Annual
+            </button>
           </div>
         </div>
 
@@ -525,15 +539,32 @@ export default function LandingPage() {
               whiteSpace: "nowrap",
             }}>Most Popular</span>
             <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#1C7A56", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Student</p>
-            <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#1C7A56", marginBottom: "4px", letterSpacing: "-0.02em" }}>
-              {billingCycle === "monthly" ? "$9" : "$79"}
-              <span style={{ fontSize: "1rem", fontWeight: 400, color: "#7A8E80" }}>/{billingCycle === "monthly" ? "mo" : "yr"}</span>
-            </p>
-            {billingCycle === "annual" ? (
-              <p style={{ fontSize: "0.8rem", color: "#3D7A5E", marginBottom: "20px", fontWeight: 600 }}>Save $29 vs monthly</p>
-            ) : (
-              <div style={{ height: "20px" }} />
-            )}
+            <div style={{ display: "flex", alignItems: "baseline", gap: "2px", marginBottom: "4px" }}>
+              <span style={{ fontSize: "2.6rem", fontWeight: 800, color: "#1C7A56", letterSpacing: "-0.02em" }}>$</span>
+              <div className="price-roller-wrap">
+                <div className={`price-roller ${priceAnimating ? "price-roller-exit" : "price-roller-enter"}`}>
+                  <span style={{ fontSize: "2.6rem", fontWeight: 800, color: "#1C7A56", letterSpacing: "-0.02em" }}>
+                    {billingCycle === "monthly" ? "9" : "79"}
+                  </span>
+                </div>
+              </div>
+              <div className="price-roller-wrap" style={{ marginLeft: "4px" }}>
+                <div className={`price-roller ${priceAnimating ? "price-roller-exit" : "price-roller-enter"}`}>
+                  <span style={{ fontSize: "1rem", fontWeight: 400, color: "#7A8E80" }}>
+                    /{billingCycle === "monthly" ? "mo" : "yr"}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="price-roller-wrap" style={{ height: "20px" }}>
+              <div className={`price-roller ${priceAnimating ? "price-roller-exit" : "price-roller-enter"}`} style={{ transitionDelay: "0.06s" }}>
+                {billingCycle === "annual" ? (
+                  <p style={{ fontSize: "0.8rem", color: "#3D7A5E", fontWeight: 600 }}>Save $29 vs monthly</p>
+                ) : (
+                  <div style={{ height: "20px" }} />
+                )}
+              </div>
+            </div>
             <ul style={{ listStyle: "none", padding: 0, marginBottom: "30px" }}>
               <li style={{ fontSize: "0.9rem", color: "#2C3E34", padding: "7px 0", fontWeight: 700 }}>Everything in Free, plus:</li>
               {[
