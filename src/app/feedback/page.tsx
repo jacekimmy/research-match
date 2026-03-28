@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import confetti from "canvas-confetti";
 import { useAuth } from "@/lib/auth-context";
 
@@ -33,6 +33,10 @@ export default function FeedbackPage() {
   const [items, setItems] = useState<FeedbackItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState<"upvotes" | "newest">("upvotes");
+  const btnVotedRef = useRef<HTMLButtonElement>(null);
+  const btnNewestRef = useRef<HTMLButtonElement>(null);
+  const [, setSortMounted] = useState(false);
+  useEffect(() => { setSortMounted(true); }, []);
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("Feature Request");
   const [authorName, setAuthorName] = useState("");
@@ -225,10 +229,21 @@ export default function FeedbackPage() {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
           <p style={{ fontSize: "0.85rem", color: "#7A8E80" }}>{items.length} suggestion{items.length !== 1 ? "s" : ""}</p>
           <div className="mode-toggle">
-            <button onClick={() => setSort("upvotes")} className={`mode-toggle-btn ${sort === "upvotes" ? "mode-toggle-btn-active" : ""}`} style={{ padding: "8px 20px", fontSize: "0.8rem" }}>
+            <div
+              className="mode-toggle-slider"
+              style={{
+                left: sort === "upvotes"
+                  ? (btnVotedRef.current?.offsetLeft ?? 4) + "px"
+                  : (btnNewestRef.current?.offsetLeft ?? 100) + "px",
+                width: sort === "upvotes"
+                  ? (btnVotedRef.current?.offsetWidth ?? 110) + "px"
+                  : (btnNewestRef.current?.offsetWidth ?? 95) + "px",
+              }}
+            />
+            <button ref={btnVotedRef} onClick={() => setSort("upvotes")} className={`mode-toggle-btn ${sort === "upvotes" ? "mode-toggle-btn-active" : ""}`} style={{ padding: "8px 20px", fontSize: "0.8rem" }}>
               Most voted
             </button>
-            <button onClick={() => setSort("newest")} className={`mode-toggle-btn ${sort === "newest" ? "mode-toggle-btn-active" : ""}`} style={{ padding: "8px 20px", fontSize: "0.8rem" }}>
+            <button ref={btnNewestRef} onClick={() => setSort("newest")} className={`mode-toggle-btn ${sort === "newest" ? "mode-toggle-btn-active" : ""}`} style={{ padding: "8px 20px", fontSize: "0.8rem" }}>
               Newest
             </button>
           </div>
