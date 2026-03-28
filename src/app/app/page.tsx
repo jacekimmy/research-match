@@ -200,14 +200,36 @@ function AppPageInner() {
     }
   }, [searchParams, autoSearched]);
 
-  // Welcome moment on first visit
+  // Grand reveal / welcome back
+  const [revealPhase, setRevealPhase] = useState<"curtain" | "content" | "done">("curtain");
   useEffect(() => {
-    const hasVisited = localStorage.getItem("research-match-visited");
-    if (!hasVisited) {
+    const visitCount = parseInt(localStorage.getItem("research-match-visits") || "0", 10);
+    localStorage.setItem("research-match-visits", String(visitCount + 1));
+    localStorage.setItem("research-match-last-visit", new Date().toISOString());
+
+    if (visitCount === 0) {
+      // First visit — grand reveal
       setShowWelcome(true);
-      localStorage.setItem("research-match-visited", "true");
-      setTimeout(() => setShowWelcome(false), 3200);
+      setTimeout(() => setRevealPhase("content"), 2200);
+      setTimeout(() => { setShowWelcome(false); setRevealPhase("done"); }, 3600);
+    } else {
+      // Returning user — quick welcome back
+      setShowWelcome(true);
+      setRevealPhase("content");
+      setTimeout(() => { setShowWelcome(false); setRevealPhase("done"); }, 1800);
     }
+  }, []);
+
+  // Exit intent — subtle goodbye on mouse leave (desktop only)
+  useEffect(() => {
+    function handleMouseLeave(e: MouseEvent) {
+      if (e.clientY < 5 && !document.querySelector(".exit-hint-active")) {
+        document.body.classList.add("exit-hint-active");
+        setTimeout(() => document.body.classList.remove("exit-hint-active"), 2000);
+      }
+    }
+    document.addEventListener("mouseleave", handleMouseLeave);
+    return () => document.removeEventListener("mouseleave", handleMouseLeave);
   }, []);
 
   useEffect(() => {
@@ -779,13 +801,20 @@ function AppPageInner() {
 
   return (
     <>
-      {/* Welcome moment */}
+      {/* Grand reveal / welcome back */}
       {showWelcome && (
-        <div className="welcome-overlay">
-          <div className="welcome-content">
-            <span className="welcome-leaf">&#127807;</span>
-            <p className="welcome-text">Welcome to Research Match</p>
-            <p className="welcome-subtext">Let&apos;s find your perfect research mentor.</p>
+        <div className={`grand-reveal ${revealPhase === "content" ? "grand-reveal-lifting" : ""}`}>
+          <div className="grand-reveal-inner">
+            <div className="grand-reveal-logo">
+              <span className="grand-reveal-icon">&#127807;</span>
+              <h2 className="grand-reveal-title">Research Match</h2>
+            </div>
+            <div className="grand-reveal-line" />
+            <p className="grand-reveal-subtitle">
+              {parseInt(localStorage.getItem("research-match-visits") || "1", 10) <= 1
+                ? "Your research journey starts here."
+                : "Welcome back. Let\u2019s keep going."}
+            </p>
           </div>
         </div>
       )}
@@ -798,7 +827,7 @@ function AppPageInner() {
         <div className="splotch splotch-5" />
       </div>
 
-      <main className="rm-page">
+      <main className={`rm-page ${revealPhase === "done" ? "rm-page-revealed" : revealPhase === "content" ? "rm-page-revealing" : "rm-page-hidden"}`}>
         {/* HEADER */}
         <div className="rm-header">
           <div>
