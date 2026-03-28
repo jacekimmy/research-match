@@ -1566,8 +1566,8 @@ function AppPageInner() {
                 if (!user) { setShowUpgradeModal(false); setShowAuthModal(true); setAuthMode("signup"); return; }
                 try {
                   const priceId = upgradeBilling === "monthly"
-                    ? (process.env.NEXT_PUBLIC_STRIPE_PRICE_STUDENT_MONTHLY || "price_1TF4pEFINW44xCyF0nDRsX8l")
-                    : (process.env.NEXT_PUBLIC_STRIPE_PRICE_STUDENT_ANNUAL || "price_1TF4paFINW44xCyFydayukDG");
+                    ? (process.env.NEXT_PUBLIC_STRIPE_PRICE_STUDENT_MONTHLY || "price_1TG2YqFINW44xCyFP7rxZdtl")
+                    : (process.env.NEXT_PUBLIC_STRIPE_PRICE_STUDENT_ANNUAL || "price_1TG2Z4FINW44xCyFgg0IJOfX");
                   const res = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ priceId, userId: user.id }) });
                   const data = await res.json();
                   if (data.url) window.location.href = data.url;
@@ -1598,7 +1598,7 @@ function AppPageInner() {
               <button onClick={async () => {
                 if (!user) { setShowUpgradeModal(false); setShowAuthModal(true); setAuthMode("signup"); return; }
                 try {
-                  const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_LIFETIME || "price_1TFLm1FINW44xCyF3FAt3jF5";
+                  const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_LIFETIME || "price_1TG2ZRFINW44xCyFw7Io529q";
                   const res = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ priceId, userId: user.id }) });
                   const data = await res.json();
                   if (data.url) window.location.href = data.url;

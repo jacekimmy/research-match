@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
 
     // Determine plan type from the subscription/payment
     let planType = "student_monthly";
-    const lifetimePriceId = process.env.STRIPE_PRICE_LIFETIME || "price_1TFLm1FINW44xCyF3FAt3jF5";
+    const lifetimePriceId = process.env.STRIPE_PRICE_LIFETIME || "price_1TG2ZRFINW44xCyFw7Io529q";
 
     if (session.mode === "payment") {
       // One-time payment — check if it's the lifetime price
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
         session.subscription as string
       );
       const priceId = sub.items.data[0]?.price.id;
-      if (priceId === process.env.STRIPE_PRICE_STUDENT_ANNUAL) {
+      if (priceId === (process.env.STRIPE_PRICE_STUDENT_ANNUAL || "price_1TG2Z4FINW44xCyFgg0IJOfX")) {
         planType = "student_annual";
       }
     }

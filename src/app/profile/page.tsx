@@ -185,7 +185,7 @@ export default function ProfilePage() {
           {!isPaid && profile?.plan_type !== "lifetime" && (
             <button
               onClick={async () => {
-                const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_STUDENT_MONTHLY || "price_1TF4pEFINW44xCyF0nDRsX8l";
+                const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_STUDENT_MONTHLY || "price_1TG2YqFINW44xCyFP7rxZdtl";
                 const res = await fetch("/api/checkout", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
