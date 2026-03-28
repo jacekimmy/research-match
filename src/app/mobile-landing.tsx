@@ -195,7 +195,7 @@ export default function MobileLanding() {
           background: "#C4981A", color: "#F5F0E6", borderRadius: "999px",
           fontWeight: 700, fontFamily: "'Playfair Display', Georgia, serif",
         }}>
-          Open Tool
+          Start Searching
         </Link>
       </nav>
 
@@ -292,6 +292,51 @@ export default function MobileLanding() {
         }}>
           See pricing
         </a>
+      </section>
+
+      {/* Stats bar */}
+      <section style={{
+        background: "#ede8df", padding: "20px",
+        display: "flex", flexDirection: "column", gap: "16px",
+        borderTop: "1px solid rgba(168,196,178,0.3)",
+        borderBottom: "1px solid rgba(168,196,178,0.3)",
+        margin: "0 0 0 0",
+      }}>
+        {[
+          { num: "250M+", label: "papers indexed" },
+          { num: "20K+", label: "professors discovered" },
+          { num: "Free", label: "to start, always" },
+        ].map((stat, i) => (
+          <div key={i} style={{ textAlign: "center" }}>
+            <div style={{
+              fontSize: "1.8rem", fontWeight: 800, color: "#1C7A56",
+              letterSpacing: "-0.03em",
+              fontFamily: "'Playfair Display', Georgia, serif",
+            }}>{stat.num}</div>
+            <div style={{ fontSize: "0.85rem", color: "#7A8E80", marginTop: "2px" }}>{stat.label}</div>
+          </div>
+        ))}
+      </section>
+
+      {/* University badges */}
+      <section style={{ padding: "32px 20px 0" }}>
+        <p style={{
+          fontSize: "0.7rem", fontWeight: 700, color: "#7A8E80",
+          textTransform: "uppercase", letterSpacing: "0.12em",
+          textAlign: "center", marginBottom: "14px",
+        }}>Students from these schools have used Research Match</p>
+        <div style={{
+          display: "flex", flexWrap: "wrap", gap: "8px", justifyContent: "center",
+        }}>
+          {["MIT", "Stanford", "Harvard", "Princeton", "Berkeley", "Yale", "Columbia", "Cornell", "CMU", "UCLA", "NYU", "UMich"].map((uni) => (
+            <span key={uni} style={{
+              padding: "5px 14px", borderRadius: "999px", fontSize: "0.78rem",
+              background: "rgba(28,122,86,0.07)",
+              border: "1px solid rgba(28,122,86,0.15)",
+              color: "#2C3E34", fontWeight: 500,
+            }}>{uni}</span>
+          ))}
+        </div>
       </section>
 
       {/* How it works — vertical timeline */}
@@ -647,40 +692,37 @@ export default function MobileLanding() {
             )}
           </div>
 
-          {/* Student */}
+          {/* Student — dark card */}
           <div
             ref={(el) => { pricingRefs.current[1] = el; }}
             className={`mobile-card-enter `}
             style={{
               padding: "36px 24px", position: "relative",
-              border: "2px solid rgba(28,122,86,0.35)",
-              boxShadow: "0 8px 40px rgba(28,122,86,0.15)",
-              background: "rgba(255,255,255,0.55)",
-              backdropFilter: "blur(16px) saturate(1.2)",
-              WebkitBackdropFilter: "blur(16px) saturate(1.2)",
+              background: "#2C3E34",
+              boxShadow: "0 12px 40px rgba(28,122,86,0.3)",
               borderRadius: "20px",
               overflow: "visible",
             }}
           >
             <span style={{
               position: "absolute", top: "-13px", left: "50%", transform: "translateX(-50%)",
-              background: "#1C7A56", color: "#F5F0E6", fontSize: "0.65rem", fontWeight: 700,
+              background: "#F5F0E6", color: "#1C7A56", fontSize: "0.65rem", fontWeight: 700,
               padding: "5px 16px", borderRadius: "999px", textTransform: "uppercase", letterSpacing: "0.1em",
               whiteSpace: "nowrap",
             }}>Most Popular</span>
-            <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#1C7A56", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Student</p>
+            <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "rgba(245,240,230,0.6)", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Student</p>
             <div style={{ display: "flex", alignItems: "baseline", gap: "2px", marginBottom: "4px" }}>
-              <span style={{ fontSize: "2.6rem", fontWeight: 800, color: "#1C7A56", letterSpacing: "-0.02em" }}>$</span>
+              <span style={{ fontSize: "2.6rem", fontWeight: 800, color: "#F5F0E6", letterSpacing: "-0.02em" }}>$</span>
               <div className="price-roller-wrap">
                 {priceAnimating ? (
                   <div className="price-roller price-roller-exit">
-                    <span style={{ fontSize: "2.6rem", fontWeight: 800, color: "#1C7A56", letterSpacing: "-0.02em" }}>
+                    <span style={{ fontSize: "2.6rem", fontWeight: 800, color: "#F5F0E6", letterSpacing: "-0.02em" }}>
                       {billingCycle === "monthly" ? "5" : "49"}
                     </span>
                   </div>
                 ) : (
                   <div key={priceKey} className="price-roller price-roller-enter">
-                    <span style={{ fontSize: "2.6rem", fontWeight: 800, color: "#1C7A56", letterSpacing: "-0.02em" }}>
+                    <span style={{ fontSize: "2.6rem", fontWeight: 800, color: "#F5F0E6", letterSpacing: "-0.02em" }}>
                       {billingCycle === "monthly" ? "5" : "49"}
                     </span>
                   </div>
@@ -689,13 +731,13 @@ export default function MobileLanding() {
               <div className="price-roller-wrap" style={{ marginLeft: "4px" }}>
                 {priceAnimating ? (
                   <div className="price-roller price-roller-exit">
-                    <span style={{ fontSize: "1rem", fontWeight: 400, color: "#7A8E80" }}>
+                    <span style={{ fontSize: "1rem", fontWeight: 400, color: "rgba(245,240,230,0.5)" }}>
                       /{billingCycle === "monthly" ? "mo" : "yr"}
                     </span>
                   </div>
                 ) : (
                   <div key={`suffix-${priceKey}`} className="price-roller price-roller-enter">
-                    <span style={{ fontSize: "1rem", fontWeight: 400, color: "#7A8E80" }}>
+                    <span style={{ fontSize: "1rem", fontWeight: 400, color: "rgba(245,240,230,0.5)" }}>
                       /{billingCycle === "monthly" ? "mo" : "yr"}
                     </span>
                   </div>
@@ -710,7 +752,7 @@ export default function MobileLanding() {
               ) : (
                 <div key={`save-${priceKey}`} className="price-roller price-roller-enter" style={{ animationDelay: "0.08s" }}>
                   {billingCycle === "annual" ? (
-                    <p style={{ fontSize: "0.8rem", color: "#3D7A5E", fontWeight: 600 }}>Save $11 vs monthly</p>
+                    <p style={{ fontSize: "0.8rem", color: "#A8D8B8", fontWeight: 600 }}>Save $11 vs monthly</p>
                   ) : (
                     <div style={{ height: "20px" }} />
                   )}
@@ -718,20 +760,24 @@ export default function MobileLanding() {
               )}
             </div>
             <ul style={{ listStyle: "none", padding: 0, marginBottom: "24px" }}>
-              <li style={{ fontSize: "0.9rem", color: "#2C3E34", padding: "7px 0", fontWeight: 700 }}>Everything in Free, plus:</li>
+              <li style={{ fontSize: "0.9rem", color: "rgba(245,240,230,0.7)", padding: "7px 0", fontWeight: 700 }}>Everything in Free, plus:</li>
               {[
                 "Unlimited research summaries",
-                "Email checker \u2014 catches generic & AI language",
+                "Email checker — catches generic & AI language",
                 "Professor email finder",
                 "Professor responsiveness indicator",
               ].map((f) => (
-                <li key={f} style={{ fontSize: "0.9rem", color: "#4A5D50", padding: "7px 0", display: "flex", gap: "10px", alignItems: "flex-start" }}>
-                  <span style={{ color: "#1C7A56", flexShrink: 0, fontSize: "0.85rem" }}>{"\u2713"}</span> {f}
+                <li key={f} style={{ fontSize: "0.9rem", color: "rgba(245,240,230,0.85)", padding: "7px 0", display: "flex", gap: "10px", alignItems: "flex-start" }}>
+                  <span style={{ color: "#A8D8B8", flexShrink: 0, fontSize: "0.85rem" }}>✓</span> {f}
                 </li>
               ))}
             </ul>
-            <Link href="/app?upgrade=true" className="btn-cta landing-cta-primary mobile-btn" style={{ display: "block", textAlign: "center", padding: "16px", textDecoration: "none", fontSize: "1rem", width: "100%", minHeight: "48px" }}>
-              Upgrade to Student
+            <Link href="/app?upgrade=true" className="mobile-btn" style={{
+              display: "block", textAlign: "center", padding: "16px", textDecoration: "none", fontSize: "1rem", width: "100%", minHeight: "48px",
+              background: "#F5F0E6", color: "#1C7A56", borderRadius: "14px", fontWeight: 700,
+              fontFamily: "'Playfair Display', Georgia, serif",
+            }}>
+              Upgrade to Student — $5/mo
             </Link>
           </div>
 
