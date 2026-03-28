@@ -590,7 +590,8 @@ export default function MobileLanding() {
             }}>Limited &mdash; First 200 users only</span>
             <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#8B6914", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Lifetime</p>
             <div style={{ display: "flex", alignItems: "baseline", gap: "10px", marginBottom: "4px" }}>
-              <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#6B5210", letterSpacing: "-0.02em" }}>$29</p>
+              <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#6B5210", letterSpacing: "-0.02em" }}>$25</p>
+              <p style={{ fontSize: "1.1rem", color: "#8B6914", textDecoration: "line-through", fontWeight: 600 }}>$60</p>
             </div>
             <p style={{ fontSize: "0.8rem", color: "#8B6914", marginBottom: "8px", fontWeight: 600 }}>one-time</p>
             {lifetimeSpotsRemaining !== null && lifetimeSpotsRemaining > 0 && (
@@ -674,13 +675,13 @@ export default function MobileLanding() {
                 {priceAnimating ? (
                   <div className="price-roller price-roller-exit">
                     <span style={{ fontSize: "2.6rem", fontWeight: 800, color: "#1C7A56", letterSpacing: "-0.02em" }}>
-                      {billingCycle === "monthly" ? "9" : "79"}
+                      {billingCycle === "monthly" ? "5" : "49"}
                     </span>
                   </div>
                 ) : (
                   <div key={priceKey} className="price-roller price-roller-enter">
                     <span style={{ fontSize: "2.6rem", fontWeight: 800, color: "#1C7A56", letterSpacing: "-0.02em" }}>
-                      {billingCycle === "monthly" ? "9" : "79"}
+                      {billingCycle === "monthly" ? "5" : "49"}
                     </span>
                   </div>
                 )}
@@ -709,7 +710,7 @@ export default function MobileLanding() {
               ) : (
                 <div key={`save-${priceKey}`} className="price-roller price-roller-enter" style={{ animationDelay: "0.08s" }}>
                   {billingCycle === "annual" ? (
-                    <p style={{ fontSize: "0.8rem", color: "#3D7A5E", fontWeight: 600 }}>Save $29 vs monthly</p>
+                    <p style={{ fontSize: "0.8rem", color: "#3D7A5E", fontWeight: 600 }}>Save $11 vs monthly</p>
                   ) : (
                     <div style={{ height: "20px" }} />
                   )}

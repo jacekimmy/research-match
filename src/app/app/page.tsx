@@ -1548,11 +1548,11 @@ function AppPageInner() {
                   <button onClick={() => setUpgradeBilling("monthly")}
                     className={`mode-toggle-btn ${upgradeBilling === "monthly" ? "mode-toggle-btn-active" : ""}`}
                     style={{ padding: "10px 24px", fontSize: "0.85rem" }}
-                  >$9/mo</button>
+                  >$5/mo</button>
                   <button onClick={() => setUpgradeBilling("annual")}
                     className={`mode-toggle-btn ${upgradeBilling === "annual" ? "mode-toggle-btn-active" : ""}`}
                     style={{ padding: "10px 24px", fontSize: "0.85rem" }}
-                  >$79/yr</button>
+                  >$49/yr</button>
                 </div>
               </div>
               <ul style={{ listStyle: "none", padding: 0, marginBottom: "16px" }}>
@@ -1584,7 +1584,8 @@ function AppPageInner() {
                 <span style={{ fontSize: "0.6rem", fontWeight: 700, color: "#F5F0E6", background: "linear-gradient(135deg, #1C7A56, #2E9E72)", padding: "3px 10px", borderRadius: "999px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Limited</span>
               </div>
               <div style={{ display: "flex", alignItems: "baseline", gap: "8px", marginBottom: "4px" }}>
-                <span style={{ fontSize: "2rem", fontWeight: 800, color: "#1C7A56" }}>$29</span>
+                <span style={{ fontSize: "2rem", fontWeight: 800, color: "#1C7A56" }}>$25</span>
+                <span style={{ fontSize: "1rem", color: "#3D7A5E", textDecoration: "line-through", fontWeight: 600 }}>$60</span>
                 <span style={{ fontSize: "0.85rem", color: "#3D7A5E", fontWeight: 600 }}>one-time</span>
               </div>
               <ul style={{ listStyle: "none", padding: 0, marginBottom: "16px" }}>
@@ -1603,7 +1604,7 @@ function AppPageInner() {
                   if (data.url) window.location.href = data.url;
                 } catch { showToast("Something went wrong. Try again."); }
               }} className="btn-cta rm-search-btn" style={{ width: "100%", padding: "12px", fontSize: "0.95rem" }}>
-                Claim your spot — $29
+                Claim your spot — $25
               </button>
             </div>
 

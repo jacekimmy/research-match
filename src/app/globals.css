@@ -2188,3 +2188,16 @@ body::after {
     display: none; /* Tooltip doesn't work well on mobile */
   }
 }
+
+/* Fade slide in animation for how-it-works mockups */
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* How it works mobile responsive */
+@media (max-width: 768px) {
+  .hiw-grid {
+    grid-template-columns: 1fr !important;
+  }
+}

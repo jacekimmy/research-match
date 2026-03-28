@@ -200,7 +200,7 @@ export default function ProfilePage() {
                 marginTop: "24px", fontSize: "0.95rem", border: "none", cursor: "pointer",
               }}
             >
-              Upgrade to Student — $9/mo
+              Upgrade to Student — $5/mo
             </button>
           )}
         </div>

@@ -18,6 +18,8 @@ const HERO_PLACEHOLDERS = [
 export default function LandingPage() {
   const isMobile = useMobile();
   const router = useRouter();
+  const [scrolled, setScrolled] = useState(false);
+  const [activeStep, setActiveStep] = useState(0);
   const [heroQuery, setHeroQuery] = useState("");
   const [heroUni, setHeroUni] = useState("");
   const [heroFocused, setHeroFocused] = useState(false);
@@ -66,6 +68,19 @@ export default function LandingPage() {
     const interval = setInterval(() => {
       setPlaceholderIdx((i) => (i + 1) % HERO_PLACEHOLDERS.length);
     }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveStep((s) => (s + 1) % 3);
+    }, 5000);
     return () => clearInterval(interval);
   }, []);
 
@@ -127,26 +142,29 @@ export default function LandingPage() {
       </div>
 
       {/* Nav */}
-      <nav className="landing-nav" style={{
-        display: "flex", justifyContent: "space-between", alignItems: "center",
-        padding: "24px 40px", maxWidth: "1200px", margin: "0 auto",
-      }}>
-        <span style={{ fontSize: "1.5rem", fontWeight: 800, color: "#1C7A56", letterSpacing: "-0.02em" }}>
-          Research Match
-        </span>
-        <div className="nav-links-desktop" style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-          <Link href="/blog" style={{ fontSize: "0.9rem", color: "#7A8E80", textDecoration: "none", transition: "color 0.2s" }}>Blog</Link>
-          <Link href="/feedback" style={{ fontSize: "0.9rem", color: "#7A8E80", textDecoration: "none", transition: "color 0.2s" }}>Feedback</Link>
-          <Link href="/app" className="btn-cta landing-cta-primary rm-search-btn" style={{ padding: "11px 28px", fontSize: "0.9rem", textDecoration: "none" }}>
-            Open Tool
-          </Link>
-        </div>
-        <div className="nav-links-mobile" style={{ display: "none", gap: "12px", alignItems: "center" }}>
-          <Link href="/app" className="btn-cta landing-cta-primary rm-search-btn" style={{ padding: "10px 22px", fontSize: "0.85rem", textDecoration: "none" }}>
-            Open Tool
-          </Link>
-        </div>
-      </nav>
+      <div style={{ position: "sticky", top: 0, zIndex: 50, background: scrolled ? "rgba(245,240,230,0.85)" : "transparent", backdropFilter: scrolled ? "blur(12px)" : "none", WebkitBackdropFilter: scrolled ? "blur(12px)" : "none", boxShadow: scrolled ? "0 2px 20px rgba(0,0,0,0.06)" : "none", transition: "all 0.3s ease" }}>
+        <nav className="landing-nav" style={{
+          display: "flex", justifyContent: "space-between", alignItems: "center",
+          padding: scrolled ? "14px 40px" : "24px 40px", maxWidth: "1200px", margin: "0 auto",
+          transition: "padding 0.3s ease",
+        }}>
+          <span style={{ fontSize: "1.5rem", fontWeight: 800, color: "#1C7A56", letterSpacing: "-0.02em" }}>
+            Research Match
+          </span>
+          <div className="nav-links-desktop" style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+            <Link href="/blog" style={{ fontSize: "0.9rem", color: "#7A8E80", textDecoration: "none", transition: "color 0.2s" }}>Blog</Link>
+            <Link href="/feedback" style={{ fontSize: "0.9rem", color: "#7A8E80", textDecoration: "none", transition: "color 0.2s" }}>Feedback</Link>
+            <Link href="/app" className="btn-cta landing-cta-primary rm-search-btn" style={{ padding: "11px 28px", fontSize: "0.9rem", textDecoration: "none" }}>
+              Start Searching
+            </Link>
+          </div>
+          <div className="nav-links-mobile" style={{ display: "none", gap: "12px", alignItems: "center" }}>
+            <Link href="/app" className="btn-cta landing-cta-primary rm-search-btn" style={{ padding: "10px 22px", fontSize: "0.85rem", textDecoration: "none" }}>
+              Start Searching
+            </Link>
+          </div>
+        </nav>
+      </div>
 
       {/* Hero */}
       <section className="landing-hero landing-section" style={{
@@ -256,55 +274,240 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* How it works */}
+      {/* Stats Bar */}
+      <section style={{
+        background: "#ede8df", padding: "24px 40px",
+        borderTop: "1px solid rgba(0,0,0,0.04)", borderBottom: "1px solid rgba(0,0,0,0.04)",
+      }}>
+        <div style={{
+          display: "flex", justifyContent: "center", alignItems: "center",
+          gap: "40px", maxWidth: "900px", margin: "0 auto",
+          flexWrap: "wrap",
+        }}>
+          {[
+            { num: "250M+", label: "papers indexed" },
+            { num: "1,000+", label: "universities" },
+            { num: "400+", label: "students served" },
+          ].map((stat, i) => (
+            <div key={i} style={{ textAlign: "center", display: "flex", alignItems: "center", gap: "8px" }}>
+              <span style={{ fontSize: "1.3rem", fontWeight: 800, color: "#1C7A56", fontFamily: "'Playfair Display', Georgia, serif" }}>{stat.num}</span>
+              <span style={{ fontSize: "0.9rem", color: "#7A8E80" }}>{stat.label}</span>
+              {i < 2 && <span style={{ color: "#A8C4B2", marginLeft: "32px", fontSize: "0.5rem" }}>●</span>}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* University Logos */}
+      <section style={{
+        maxWidth: "1000px", margin: "0 auto", padding: "40px 40px 20px",
+        textAlign: "center",
+      }}>
+        <p style={{ fontSize: "0.8rem", color: "#95AD9D", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "20px", fontWeight: 600 }}>
+          Search professors at 1,000+ universities including
+        </p>
+        <div style={{
+          display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "12px",
+        }}>
+          {["MIT", "Harvard", "Stanford", "Johns Hopkins", "Yale", "Princeton", "Columbia", "UC Berkeley", "UCLA", "Duke", "Michigan", "Georgia Tech"].map((uni) => (
+            <span key={uni} style={{
+              fontSize: "0.8rem", color: "#7A8E80", fontWeight: 600,
+              padding: "6px 16px", borderRadius: "999px",
+              background: "rgba(255,255,255,0.6)", border: "1px solid rgba(168,196,178,0.3)",
+              fontFamily: "'Inter', sans-serif",
+            }}>
+              {uni}
+            </span>
+          ))}
+        </div>
+      </section>
+
+      {/* How it works — interactive */}
       <section className="landing-section" style={{
-        maxWidth: "1000px", margin: "0 auto", padding: "60px 40px 80px",
+        maxWidth: "1100px", margin: "0 auto", padding: "60px 40px 80px",
       }}>
         <h2 style={{
           fontSize: "1.8rem", fontWeight: 700, color: "#1C7A56",
           textAlign: "center", marginBottom: "12px",
+          fontFamily: "'Playfair Display', Georgia, serif",
         }}>
           How it works
         </h2>
         <div className="section-divider" />
-        <div className="landing-steps" style={{
-          display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-          gap: "28px",
+        <div style={{
+          display: "grid", gridTemplateColumns: "1fr 1.4fr",
+          gap: "48px", alignItems: "center",
         }}>
-          {[
-            { step: "1", icon: "🔍", title: "Search by interest or name", desc: "Enter a research topic like \"machine learning\" and a university. Or search a professor directly by name." },
-            { step: "2", icon: "📄", title: "Read plain-English summaries", desc: "See what each professor works on, their key findings, and which papers they led — explained simply." },
-            { step: "3", icon: "✉️", title: "Write emails with guidance", desc: "Get suggested questions, a red-flag checker that catches generic language, and tips that actually work." },
-          ].map((item) => (
-            <div key={item.step} className="glass-card landing-step" style={{
-              padding: "36px 30px", textAlign: "center",
+          {/* Left: Steps */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            {[
+              { title: "Search by interest or professor name", desc: "Enter a research topic like \"neuroscience\" and a university. Or search a professor directly by name." },
+              { title: "Read plain-English summaries", desc: "See what each professor works on, their key findings, and which papers they led \u2014 explained simply." },
+              { title: "Write emails with built-in guidance", desc: "Get suggested questions, a red-flag checker that catches generic language, and tips that actually work." },
+            ].map((step, i) => (
+              <button
+                key={i}
+                onClick={() => setActiveStep(i)}
+                style={{
+                  textAlign: "left", padding: "20px 24px",
+                  borderRadius: "16px", border: "none", cursor: "pointer",
+                  background: activeStep === i ? "rgba(28,122,86,0.08)" : "transparent",
+                  borderLeft: activeStep === i ? "3px solid #1C7A56" : "3px solid transparent",
+                  transition: "all 0.3s ease",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px" }}>
+                  <span style={{
+                    fontSize: "0.65rem", fontWeight: 700, color: activeStep === i ? "#1C7A56" : "#95AD9D",
+                    textTransform: "uppercase", letterSpacing: "0.1em",
+                  }}>Step {i + 1}</span>
+                </div>
+                <p style={{
+                  fontSize: "1.05rem", fontWeight: 700,
+                  color: activeStep === i ? "#1C7A56" : "#7A8E80",
+                  fontFamily: "'Playfair Display', Georgia, serif",
+                  marginBottom: "4px", transition: "color 0.3s ease",
+                }}>
+                  {step.title}
+                </p>
+                {activeStep === i && (
+                  <p style={{
+                    fontSize: "0.85rem", color: "#7A8E80", lineHeight: 1.6,
+                    animation: "fadeSlideIn 0.3s ease",
+                  }}>
+                    {step.desc}
+                  </p>
+                )}
+              </button>
+            ))}
+          </div>
+
+          {/* Right: Animated mockup */}
+          <div style={{
+            background: "#2C3E34", borderRadius: "16px", overflow: "hidden",
+            boxShadow: "0 20px 60px rgba(0,0,0,0.15)",
+            minHeight: "380px",
+          }}>
+            {/* Browser chrome */}
+            <div style={{
+              padding: "12px 16px", background: "#232e28",
+              display: "flex", alignItems: "center", gap: "8px",
             }}>
-              <div className="step-icon" style={{
-                fontSize: "2.8rem", marginBottom: "24px",
-                display: "inline-block",
-              }}>
-                {item.icon}
+              <div style={{ display: "flex", gap: "6px" }}>
+                <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#ff5f57" }} />
+                <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#febc2e" }} />
+                <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#28c840" }} />
               </div>
               <div style={{
-                display: "inline-block", fontSize: "0.65rem", fontWeight: 700,
-                color: "#1C7A56", background: "rgba(28,122,86,0.08)",
-                padding: "4px 12px", borderRadius: "999px", marginBottom: "14px",
-                textTransform: "uppercase", letterSpacing: "0.12em",
+                flex: 1, textAlign: "center", fontSize: "0.7rem", color: "#7A8E80",
+                fontFamily: "'Inter', sans-serif",
               }}>
-                Step {item.step}
+                researchmatch.net
               </div>
-              <h3 style={{ fontSize: "1.2rem", fontWeight: 700, color: "#2C3E34", marginBottom: "12px" }}>
-                {item.title}
-              </h3>
-              <p style={{ fontSize: "0.95rem", color: "#7A8E80", lineHeight: 1.65 }}>
-                {item.desc}
-              </p>
             </div>
-          ))}
+
+            {/* Content area */}
+            <div style={{ padding: "24px", background: "#F5F0E6", minHeight: "340px", position: "relative", overflow: "hidden" }}>
+              {/* Step 1: Search animation */}
+              <div style={{
+                opacity: activeStep === 0 ? 1 : 0,
+                transform: activeStep === 0 ? "translateY(0)" : "translateY(10px)",
+                transition: "all 0.4s ease",
+                position: activeStep === 0 ? "relative" : "absolute", top: activeStep !== 0 ? "24px" : undefined, left: activeStep !== 0 ? "24px" : undefined, right: activeStep !== 0 ? "24px" : undefined,
+                pointerEvents: activeStep === 0 ? "auto" : "none",
+              }}>
+                <div style={{ background: "rgba(255,255,255,0.8)", borderRadius: "14px", padding: "14px 20px", marginBottom: "16px", border: "1px solid rgba(168,196,178,0.3)" }}>
+                  <span style={{ fontSize: "0.65rem", fontWeight: 700, color: "#1C7A56", textTransform: "uppercase", letterSpacing: "0.08em" }}>Research Interest</span>
+                  <p style={{ fontSize: "0.95rem", color: "#2C3E34", fontFamily: "'Playfair Display', Georgia, serif", marginTop: "4px" }}>neuroscience</p>
+                </div>
+                {[
+                  { name: "Dr. Sarah Chen", uni: "Harvard Medical School", topics: ["Cognitive Neuroscience", "Memory"] },
+                  { name: "Prof. James Miller", uni: "Stanford University", topics: ["Neural Circuits", "Optogenetics"] },
+                  { name: "Dr. Aisha Patel", uni: "MIT", topics: ["Computational Neuroscience", "Brain-Computer Interfaces"] },
+                ].map((prof, i) => (
+                  <div key={i} style={{
+                    background: "rgba(255,255,255,0.7)", borderRadius: "12px", padding: "14px 16px", marginBottom: "8px",
+                    border: "1px solid rgba(168,196,178,0.2)",
+                    animation: `fadeSlideIn 0.4s ease ${i * 0.15}s both`,
+                  }}>
+                    <p style={{ fontSize: "0.9rem", fontWeight: 700, color: "#1C7A56" }}>{prof.name}</p>
+                    <p style={{ fontSize: "0.75rem", color: "#7A8E80" }}>{prof.uni}</p>
+                    <div style={{ display: "flex", gap: "6px", marginTop: "6px" }}>
+                      {prof.topics.map((t, j) => (
+                        <span key={j} style={{ fontSize: "0.6rem", padding: "2px 8px", borderRadius: "999px", background: "rgba(28,122,86,0.08)", color: "#1C7A56" }}>{t}</span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Step 2: Summary animation */}
+              <div style={{
+                opacity: activeStep === 1 ? 1 : 0,
+                transform: activeStep === 1 ? "translateY(0)" : "translateY(10px)",
+                transition: "all 0.4s ease",
+                position: activeStep === 1 ? "relative" : "absolute", top: activeStep !== 1 ? "24px" : undefined, left: activeStep !== 1 ? "24px" : undefined, right: activeStep !== 1 ? "24px" : undefined,
+                pointerEvents: activeStep === 1 ? "auto" : "none",
+              }}>
+                <div style={{ background: "rgba(255,255,255,0.8)", borderRadius: "14px", padding: "18px 20px", border: "1px solid rgba(168,196,178,0.2)" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
+                    <p style={{ fontSize: "1rem", fontWeight: 700, color: "#1C7A56" }}>Dr. Sarah Chen</p>
+                    <span style={{ fontSize: "0.6rem", padding: "2px 8px", borderRadius: "999px", background: "rgba(28,122,86,0.1)", color: "#1C7A56", fontWeight: 600 }}>Harvard</span>
+                  </div>
+                  <p style={{ fontSize: "0.82rem", color: "#4A5D50", lineHeight: 1.65, marginBottom: "14px", animation: "fadeSlideIn 0.5s ease 0.1s both" }}>
+                    Studies how memories form and consolidate during sleep using fMRI imaging. Recent work shows specific neural oscillation patterns predict next-day recall accuracy in elderly patients with early cognitive decline.
+                  </p>
+                  <div style={{ animation: "fadeSlideIn 0.5s ease 0.3s both" }}>
+                    <p style={{ fontSize: "0.65rem", fontWeight: 700, color: "#1C7A56", textTransform: "uppercase", marginBottom: "8px" }}>Key Findings</p>
+                    <div style={{ paddingLeft: "14px", borderLeft: "3px solid #B8D8C4", marginBottom: "10px" }}>
+                      <p style={{ fontSize: "0.78rem", color: "#4A5D50", lineHeight: 1.5 }}>Theta oscillations during REM sleep increased memory consolidation by 34% in elderly patients</p>
+                      <p style={{ fontSize: "0.68rem", color: "#95AD9D", fontStyle: "italic", marginTop: "2px" }}>Sleep & Memory Consolidation (2024) <span style={{ padding: "1px 6px", borderRadius: "999px", background: "rgba(28,122,86,0.1)", color: "#1C7A56", fontStyle: "normal", fontSize: "0.6rem" }}>1st author</span></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Step 3: Email checker animation */}
+              <div style={{
+                opacity: activeStep === 2 ? 1 : 0,
+                transform: activeStep === 2 ? "translateY(0)" : "translateY(10px)",
+                transition: "all 0.4s ease",
+                position: activeStep === 2 ? "relative" : "absolute", top: activeStep !== 2 ? "24px" : undefined, left: activeStep !== 2 ? "24px" : undefined, right: activeStep !== 2 ? "24px" : undefined,
+                pointerEvents: activeStep === 2 ? "auto" : "none",
+              }}>
+                <div style={{ background: "rgba(255,255,255,0.8)", borderRadius: "14px", padding: "18px 20px", border: "1px solid rgba(168,196,178,0.2)" }}>
+                  <p style={{ fontSize: "0.65rem", fontWeight: 700, color: "#1C7A56", textTransform: "uppercase", marginBottom: "10px" }}>Email Draft</p>
+                  <div style={{ fontSize: "0.82rem", color: "#4A5D50", lineHeight: 1.7 }}>
+                    <p>Dear Professor Chen,</p>
+                    <p style={{ marginTop: "8px" }}>
+                      <span style={{ background: "rgba(155,51,34,0.1)", padding: "1px 4px", borderRadius: "4px", textDecoration: "line-through", color: "#9B3322", animation: "fadeSlideIn 0.4s ease 0.3s both" }}>I found your work fascinating and groundbreaking.</span>
+                    </p>
+                    <p style={{ marginTop: "8px", animation: "fadeSlideIn 0.4s ease 0.6s both" }}>
+                      <span style={{ background: "rgba(28,122,86,0.1)", padding: "1px 4px", borderRadius: "4px", color: "#1C7A56" }}>I read your 2024 paper on theta oscillations during REM sleep — the 34% improvement in memory consolidation was surprising.</span>
+                    </p>
+                  </div>
+                  <div style={{ marginTop: "14px", display: "flex", flexDirection: "column", gap: "6px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 12px", borderRadius: "10px", background: "rgba(155,51,34,0.06)", border: "1px solid rgba(155,51,34,0.12)", animation: "fadeSlideIn 0.4s ease 0.3s both" }}>
+                      <span style={{ color: "#9B3322", fontSize: "0.8rem" }}>&#9888;</span>
+                      <span style={{ fontSize: "0.75rem", color: "#9B3322", fontWeight: 600 }}>Sycophantic tone</span>
+                      <span style={{ fontSize: "0.7rem", color: "#7A8E80", marginLeft: "auto" }}>Remove flattery</span>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 12px", borderRadius: "10px", background: "rgba(28,122,86,0.06)", border: "1px solid rgba(28,122,86,0.12)", animation: "fadeSlideIn 0.4s ease 0.8s both" }}>
+                      <span style={{ color: "#1C7A56", fontSize: "0.8rem" }}>&#10003;</span>
+                      <span style={{ fontSize: "0.75rem", color: "#1C7A56", fontWeight: 600 }}>Specific reference</span>
+                      <span style={{ fontSize: "0.7rem", color: "#7A8E80", marginLeft: "auto" }}>Good — cites real data</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+
+        {/* Mobile fallback: show carousel hint */}
         <div className="carousel-hint">
           <span>Swipe</span>
-          <span className="carousel-hint-arrow">→</span>
+          <span className="carousel-hint-arrow">&#8594;</span>
         </div>
       </section>
 
@@ -494,29 +697,24 @@ export default function LandingPage() {
           {/* Student */}
           <div id="student-card" className="glass-card landing-pricing-card" style={{
             padding: "36px 30px", position: "relative",
-            border: "2px solid rgba(28,122,86,0.35)",
-            boxShadow: "0 8px 40px rgba(28,122,86,0.15)",
+            background: "#2C3E34",
+            border: "2px solid rgba(255,255,255,0.1)",
+            boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
           }}>
-            <span style={{
-              position: "absolute", top: "-13px", left: "50%", transform: "translateX(-50%)",
-              background: "#1C7A56", color: "#F5F0E6", fontSize: "0.65rem", fontWeight: 700,
-              padding: "5px 16px", borderRadius: "999px", textTransform: "uppercase", letterSpacing: "0.1em",
-              whiteSpace: "nowrap",
-            }}>Most Popular</span>
-            <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#1C7A56", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Student</p>
+            <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#B8D8C4", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Student</p>
             <div style={{ display: "flex", alignItems: "baseline", gap: "2px", marginBottom: "4px" }}>
-              <span style={{ fontSize: "2.6rem", fontWeight: 800, color: "#1C7A56", letterSpacing: "-0.02em" }}>$</span>
+              <span style={{ fontSize: "2.6rem", fontWeight: 800, color: "#F5F0E6", letterSpacing: "-0.02em" }}>$</span>
               <div className="price-roller-wrap">
                 {priceAnimating ? (
                   <div className="price-roller price-roller-exit">
-                    <span style={{ fontSize: "2.6rem", fontWeight: 800, color: "#1C7A56", letterSpacing: "-0.02em" }}>
-                      {billingCycle === "monthly" ? "9" : "79"}
+                    <span style={{ fontSize: "2.6rem", fontWeight: 800, color: "#F5F0E6", letterSpacing: "-0.02em" }}>
+                      {billingCycle === "monthly" ? "5" : "49"}
                     </span>
                   </div>
                 ) : (
                   <div key={priceKey} className="price-roller price-roller-enter">
-                    <span style={{ fontSize: "2.6rem", fontWeight: 800, color: "#1C7A56", letterSpacing: "-0.02em" }}>
-                      {billingCycle === "monthly" ? "9" : "79"}
+                    <span style={{ fontSize: "2.6rem", fontWeight: 800, color: "#F5F0E6", letterSpacing: "-0.02em" }}>
+                      {billingCycle === "monthly" ? "5" : "49"}
                     </span>
                   </div>
                 )}
@@ -524,13 +722,13 @@ export default function LandingPage() {
               <div className="price-roller-wrap" style={{ marginLeft: "4px" }}>
                 {priceAnimating ? (
                   <div className="price-roller price-roller-exit">
-                    <span style={{ fontSize: "1rem", fontWeight: 400, color: "#7A8E80" }}>
+                    <span style={{ fontSize: "1rem", fontWeight: 400, color: "rgba(245,240,230,0.6)" }}>
                       /{billingCycle === "monthly" ? "mo" : "yr"}
                     </span>
                   </div>
                 ) : (
                   <div key={`suffix-${priceKey}`} className="price-roller price-roller-enter">
-                    <span style={{ fontSize: "1rem", fontWeight: 400, color: "#7A8E80" }}>
+                    <span style={{ fontSize: "1rem", fontWeight: 400, color: "rgba(245,240,230,0.6)" }}>
                       /{billingCycle === "monthly" ? "mo" : "yr"}
                     </span>
                   </div>
@@ -545,7 +743,7 @@ export default function LandingPage() {
               ) : (
                 <div key={`save-${priceKey}`} className="price-roller price-roller-enter" style={{ animationDelay: "0.08s" }}>
                   {billingCycle === "annual" ? (
-                    <p style={{ fontSize: "0.8rem", color: "#3D7A5E", fontWeight: 600 }}>Save $29 vs monthly</p>
+                    <p style={{ fontSize: "0.8rem", color: "#B8D8C4", fontWeight: 600 }}>Save $11 vs monthly</p>
                   ) : (
                     <div style={{ height: "20px" }} />
                   )}
@@ -553,19 +751,19 @@ export default function LandingPage() {
               )}
             </div>
             <ul style={{ listStyle: "none", padding: 0, marginBottom: "30px" }}>
-              <li style={{ fontSize: "0.9rem", color: "#2C3E34", padding: "7px 0", fontWeight: 700 }}>Everything in Free, plus:</li>
+              <li style={{ fontSize: "0.9rem", color: "#F5F0E6", padding: "7px 0", fontWeight: 700 }}>Everything in Free, plus:</li>
               {[
                 "Unlimited research summaries",
                 "Email checker — catches generic & AI language",
                 "Professor email finder",
                 "Professor responsiveness indicator",
               ].map((f) => (
-                <li key={f} style={{ fontSize: "0.9rem", color: "#4A5D50", padding: "7px 0", display: "flex", gap: "10px", alignItems: "flex-start" }}>
-                  <span style={{ color: "#1C7A56", flexShrink: 0, fontSize: "0.85rem" }}>✓</span> {f}
+                <li key={f} style={{ fontSize: "0.9rem", color: "rgba(245,240,230,0.8)", padding: "7px 0", display: "flex", gap: "10px", alignItems: "flex-start" }}>
+                  <span style={{ color: "#B8D8C4", flexShrink: 0, fontSize: "0.85rem" }}>✓</span> {f}
                 </li>
               ))}
             </ul>
-            <Link href="/app?upgrade=true" className="btn-cta landing-cta-primary rm-search-btn" style={{ display: "block", textAlign: "center", padding: "14px", textDecoration: "none", fontSize: "0.95rem", width: "100%" }}>
+            <Link href="/app?upgrade=true" style={{ display: "block", textAlign: "center", padding: "14px", textDecoration: "none", fontSize: "0.95rem", width: "100%", background: "#F5F0E6", color: "#1C7A56", borderRadius: "14px", fontWeight: 700, fontFamily: "'Playfair Display', Georgia, serif", transition: "all 0.3s ease" }}>
               Upgrade to Student
             </Link>
           </div>
@@ -588,7 +786,8 @@ export default function LandingPage() {
             }}>Limited — First 200 users only</span>
             <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#8B6914", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Lifetime</p>
             <div style={{ display: "flex", alignItems: "baseline", gap: "10px", marginBottom: "4px" }}>
-              <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#6B5210", letterSpacing: "-0.02em" }}>$29</p>
+              <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#6B5210", letterSpacing: "-0.02em" }}>$25</p>
+              <p style={{ fontSize: "1.1rem", color: "#8B6914", textDecoration: "line-through", fontWeight: 600 }}>$60</p>
             </div>
             <p style={{ fontSize: "0.8rem", color: "#8B6914", marginBottom: "8px", fontWeight: 600 }}>one-time</p>
             {lifetimeSpotsRemaining !== null && lifetimeSpotsRemaining > 0 && (
