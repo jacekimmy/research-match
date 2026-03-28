@@ -676,7 +676,7 @@ export default function LandingPage() {
             <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#7A8E80", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Free</p>
             <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#1C7A56", marginBottom: "24px", letterSpacing: "-0.02em" }}>$0</p>
             <ul style={{ listStyle: "none", padding: 0, marginBottom: "30px" }}>
-              {["Unlimited professor searches", "1 research summary per month", "Author position labels", "Save professors", "Paper links"].map((f) => (
+              {["Unlimited professor searches", "3 research summaries", "Author position labels", "Save professors", "Paper links"].map((f) => (
                 <li key={f} style={{ fontSize: "0.9rem", color: "#4A5D50", padding: "7px 0", display: "flex", gap: "10px", alignItems: "center" }}>
                   <span style={{ color: "#1C7A56", fontSize: "0.85rem" }}>✓</span> {f}
                 </li>

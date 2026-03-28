@@ -280,25 +280,25 @@ function AppPageInner() {
     return saved.some((a) => a.id === author.id);
   }
 
-  // Summary limit: no account = 1 total (localStorage), free account = 1/month (supabase)
+  // Summary limit: no account = 2 total (localStorage), free account = 3 total (2 anon + 1 extra)
   function getSummariesRemaining(): number {
     if (isPaid) return Infinity;
     if (!user) {
       const used = parseInt(localStorage.getItem("research-match-summaries") || "0", 10);
-      return Math.max(0, 1 - used);
+      return Math.max(0, 2 - used);
     }
     // Free account: check reset
     if (profile?.summaries_reset_at && new Date() > new Date(profile.summaries_reset_at)) {
       return 1; // will reset on next use
     }
-    return Math.max(0, 1 - (profile?.summaries_used ?? 0));
+    return Math.max(0, 3 - (profile?.summaries_used ?? 0));
   }
 
   function canSummarize(): boolean {
     if (isPaid) return true;
     if (!user) {
       const used = parseInt(localStorage.getItem("research-match-summaries") || "0", 10);
-      if (used >= 1) {
+      if (used >= 2) {
         setShowAuthModal(true);
         setAuthMode("signup");
         setAuthError("Create a free account for 1 more free summary.");
@@ -306,11 +306,11 @@ function AppPageInner() {
       }
       return true;
     }
-    // Free account: 1 summary per month
+    // Free account: 3 summaries total (2 carried from anon + 1 bonus)
     if (profile?.summaries_reset_at && new Date() > new Date(profile.summaries_reset_at)) {
       return true; // reset period passed
     }
-    if (profile && (profile.summaries_used ?? 0) >= 1) {
+    if (profile && (profile.summaries_used ?? 0) >= 3) {
       setShowUpgradeModal(true);
       return false;
     }
@@ -1499,7 +1499,7 @@ function AppPageInner() {
               {authMode === "signup" ? "Create your account" : "Welcome back"}
             </h3>
             <p style={{ fontSize: "0.9rem", color: "#7A8E80", marginBottom: "24px" }}>
-              {authMode === "signup" ? "Unlimited searches + 1 free summary per month." : "Log in to your account."}
+              {authMode === "signup" ? "Unlimited searches + 1 extra free summary." : "Log in to your account."}
             </p>
             {authError && <p style={{ fontSize: "0.85rem", color: "#9B3322", marginBottom: "16px", background: "rgba(155,51,34,0.08)", padding: "10px 14px", borderRadius: "10px" }}>{authError}</p>}
             <input type="email" placeholder="Email" value={authEmail} onChange={(e) => setAuthEmail(e.target.value)} style={{ width: "100%", padding: "12px 16px", fontSize: "1rem", border: "1.5px solid rgba(168,196,178,0.4)", borderRadius: "12px", background: "rgba(255,255,255,0.5)", color: "#2C3E34", fontFamily: "inherit", marginBottom: "12px", outline: "none" }} />
