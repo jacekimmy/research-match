@@ -152,6 +152,9 @@ function AppPageInner() {
   const [nearbyProfs, setNearbyProfs] = useState<Author[]>([]);
   const [nearbyLoading, setNearbyLoading] = useState(false);
 
+  // Professor responsiveness badges
+  const [responsiveness, setResponsiveness] = useState<Record<string, { level: "green" | "yellow" | "red"; label: string }>>({});
+
   // Plan helpers
   const isPaid = profile?.plan_type === "student_monthly" || profile?.plan_type === "student_annual" || profile?.plan_type === "lifetime";
   const isFree = !isPaid;
@@ -250,21 +253,37 @@ function AppPageInner() {
     return saved.some((a) => a.id === author.id);
   }
 
+  // Summary limit: no account = 1 total (localStorage), free account = 1/month (supabase)
+  function getSummariesRemaining(): number {
+    if (isPaid) return Infinity;
+    if (!user) {
+      const used = parseInt(localStorage.getItem("research-match-summaries") || "0", 10);
+      return Math.max(0, 1 - used);
+    }
+    // Free account: check reset
+    if (profile?.summaries_reset_at && new Date() > new Date(profile.summaries_reset_at)) {
+      return 1; // will reset on next use
+    }
+    return Math.max(0, 1 - (profile?.summaries_used ?? 0));
+  }
+
   function canSummarize(): boolean {
     if (isPaid) return true;
-    // Check localStorage for anonymous summaries
-    const anonSummaries = parseInt(localStorage.getItem("research-match-summaries") || "0", 10);
     if (!user) {
-      if (anonSummaries >= 3) {
+      const used = parseInt(localStorage.getItem("research-match-summaries") || "0", 10);
+      if (used >= 1) {
         setShowAuthModal(true);
         setAuthMode("signup");
-        setAuthError("Create a free account for 3 more summaries this month.");
+        setAuthError("Create a free account for 1 more free summary.");
         return false;
       }
       return true;
     }
-    // Free account: 3 summaries per month
-    if (profile && profile.searches_used >= 3) {
+    // Free account: 1 summary per month
+    if (profile?.summaries_reset_at && new Date() > new Date(profile.summaries_reset_at)) {
+      return true; // reset period passed
+    }
+    if (profile && (profile.summaries_used ?? 0) >= 1) {
       setShowUpgradeModal(true);
       return false;
     }
@@ -280,17 +299,17 @@ function AppPageInner() {
     }
     try {
       const { supabase } = await import("@/lib/supabase");
-      if (profile?.searches_reset_at && new Date() > new Date(profile.searches_reset_at)) {
+      if (profile?.summaries_reset_at && new Date() > new Date(profile.summaries_reset_at)) {
         const nextMonth = new Date();
         nextMonth.setMonth(nextMonth.getMonth() + 1, 1);
         nextMonth.setHours(0, 0, 0, 0);
         await supabase.from("profiles").update({
-          searches_used: 1,
-          searches_reset_at: nextMonth.toISOString(),
+          summaries_used: 1,
+          summaries_reset_at: nextMonth.toISOString(),
         }).eq("id", user.id);
       } else {
         await supabase.from("profiles").update({
-          searches_used: (profile?.searches_used ?? 0) + 1,
+          summaries_used: (profile?.summaries_used ?? 0) + 1,
         }).eq("id", user.id);
       }
       refreshProfile();
@@ -399,6 +418,8 @@ function AppPageInner() {
       if (authors.length === 0) setError(`No professors found for "${topicName}"${institutionName ? ` at ${institutionName}` : ""}. Try a more specific topic like "machine learning" or "quantum computing".`);
       // searches are now unlimited
       setResults(authors);
+      // Fetch responsiveness badges in background
+      if (authors.length > 0) fetchResponsiveness(authors);
       // Fetch nearby professors (different universities, same topic) in background
       if (authors.length > 0 && topicId && institutionId) {
         setNearbyProfs([]);
@@ -452,6 +473,82 @@ function AppPageInner() {
     finally { setNearbyLoading(false); }
   }
 
+  async function fetchResponsiveness(authors: Author[]) {
+    for (const author of authors) {
+      const authorId = author.id.split("/").pop()!;
+      try {
+        const now = new Date();
+        const threeYearsAgo = now.getFullYear() - 3;
+        const twoYearsAgo = now.getFullYear() - 2;
+        const oneYearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()).toISOString().split("T")[0];
+
+        const worksRes = await fetch(
+          `https://api.openalex.org/works?filter=author.id:${authorId},publication_year:>${threeYearsAgo}&per_page=50&select=authorships,publication_year`
+        );
+        const worksData = await worksRes.json();
+        const works = worksData.results ?? [];
+
+        if (works.length === 0) {
+          setResponsiveness(prev => ({ ...prev, [authorId]: { level: "red", label: "Inactive lab" } }));
+          continue;
+        }
+
+        // Check if published in last 12 months
+        const recentWorks = works.filter((w: any) => w.publication_year >= now.getFullYear() - 1);
+        const publishedRecently = recentWorks.length > 0;
+
+        // Check for no publications in last 2 years
+        const last2YearWorks = works.filter((w: any) => w.publication_year >= twoYearsAgo);
+        if (last2YearWorks.length === 0) {
+          setResponsiveness(prev => ({ ...prev, [authorId]: { level: "red", label: "Inactive lab" } }));
+          continue;
+        }
+
+        // Count unique co-authors and identify likely students (low publication count at same institution)
+        const coAuthorIds = new Set<string>();
+        const newStudentCoAuthors = new Set<string>();
+        const profInstId = author.last_known_institutions?.[0]?.id;
+
+        for (const w of works) {
+          for (const a of (w.authorships ?? [])) {
+            const coId = a.author?.id;
+            if (!coId || coId === `https://openalex.org/${authorId}`) continue;
+            coAuthorIds.add(coId);
+
+            // Check if co-author is at same institution and likely a student
+            const coInst = a.institutions?.[0]?.id;
+            if (profInstId && coInst === profInstId) {
+              // We'll check works_count via a simple heuristic: new co-authors appearing in recent papers
+              newStudentCoAuthors.add(coId);
+            }
+          }
+        }
+
+        // Estimate student co-authors: sample up to 5 unique co-authors from same institution
+        let studentCount = 0;
+        const samplesToCheck = Array.from(newStudentCoAuthors).slice(0, 5);
+        await Promise.all(samplesToCheck.map(async (coId) => {
+          try {
+            const cId = coId.split("/").pop();
+            const r = await fetch(`https://api.openalex.org/authors/${cId}?select=works_count`, { signal: AbortSignal.timeout(3000) });
+            const d = await r.json();
+            if (d.works_count < 5) studentCount++;
+          } catch { /* skip */ }
+        }));
+
+        if (studentCount >= 2 && publishedRecently) {
+          setResponsiveness(prev => ({ ...prev, [authorId]: { level: "green", label: "Likely takes students" } }));
+        } else if (studentCount <= 1 || !publishedRecently) {
+          setResponsiveness(prev => ({ ...prev, [authorId]: { level: "yellow", label: "May not take students" } }));
+        } else {
+          setResponsiveness(prev => ({ ...prev, [authorId]: { level: "yellow", label: "May not take students" } }));
+        }
+      } catch {
+        // Skip on error — don't show badge
+      }
+    }
+  }
+
   async function searchByName() {
     if (!profName.trim()) return;
     setLoading(true);
@@ -468,6 +565,7 @@ function AppPageInner() {
       if (authors.length === 0) setError(`No professors found matching "${profName}".`);
       // searches are now unlimited
       setResults(authors);
+      if (authors.length > 0) fetchResponsiveness(authors);
     } catch { setError("Something went wrong. Please try again."); }
     finally { setLoading(false); }
   }
@@ -487,9 +585,13 @@ function AppPageInner() {
     try {
       const res = await fetch("/api/summarize", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ authorId: id }) });
       const data = await res.json();
-      setSummaries((prev) => ({ ...prev, [id]: { summary: data.summary || data.error || "Summary unavailable. Try again or visit their faculty page.", highlights: data.highlights || [], questions: data.questions || [] } }));
-      // Increment summary count after successful load
-      incrementSummary();
+      const summaryText = data.summary || data.error || "Summary unavailable. Try again or visit their faculty page.";
+      const highlights = data.highlights || [];
+      setSummaries((prev) => ({ ...prev, [id]: { summary: summaryText, highlights, questions: data.questions || [] } }));
+      // Only count as used if we got real content (not an error/empty)
+      if (highlights.length > 0 && !data.error && !summaryText.includes("unavailable") && !summaryText.includes("No recent papers")) {
+        incrementSummary();
+      }
     } catch { setSummaries((prev) => ({ ...prev, [id]: { summary: "Summary unavailable. Try again or visit their faculty page.", highlights: [], questions: [] } })); }
     finally { setLoadingSummary((prev) => ({ ...prev, [id]: false })); }
   }
@@ -814,14 +916,53 @@ function AppPageInner() {
             const id = author.id.split("/").pop()!;
             const summary = summaries[id];
             const isLoadingSummary = loadingSummary[id];
+            const resp = responsiveness[id];
+            const summaryLocked = !isPaid && summary && getSummariesRemaining() <= 0 && !summaries[id];
             return (
               <div key={author.id} className="glass-card card-enter rm-card">
                 <div className="rm-card-top">
                   <div style={{ flex: 1 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "14px", flexWrap: "wrap" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
                       <a href={profileUrl(author)} target="_blank" rel="noopener noreferrer" className="rm-card-name">
                         {author.display_name}
                       </a>
+                      {/* Responsiveness Badge */}
+                      {resp && (
+                        isPaid ? (
+                          <span className="resp-badge" title="Based on publication patterns and co-author history" style={{
+                            fontSize: "0.7rem", fontWeight: 700, padding: "4px 12px", borderRadius: "999px",
+                            display: "inline-flex", alignItems: "center", gap: "5px",
+                            background: resp.level === "green" ? "rgba(45,90,61,0.1)" : resp.level === "yellow" ? "rgba(180,155,80,0.12)" : "rgba(155,51,34,0.08)",
+                            color: resp.level === "green" ? "#2d5a3d" : resp.level === "yellow" ? "#8B6914" : "#9B3322",
+                            border: `1px solid ${resp.level === "green" ? "rgba(45,90,61,0.2)" : resp.level === "yellow" ? "rgba(180,155,80,0.25)" : "rgba(155,51,34,0.15)"}`,
+                            transition: "all 0.3s ease",
+                          }}>
+                            <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: resp.level === "green" ? "#2d5a3d" : resp.level === "yellow" ? "#C4981A" : "#9B3322" }} />
+                            {resp.label}
+                          </span>
+                        ) : (
+                          <span className="locked-badge-wrap" style={{ position: "relative", display: "inline-flex", alignItems: "center" }}>
+                            <span style={{
+                              fontSize: "0.7rem", fontWeight: 700, padding: "4px 12px", borderRadius: "999px",
+                              background: "rgba(138,141,114,0.08)", color: "transparent", border: "1px solid rgba(186,192,149,0.2)",
+                              filter: "blur(4px)", userSelect: "none",
+                            }}>
+                              Likely takes students
+                            </span>
+                            <button onClick={() => {
+                              if (!user) { setShowAuthModal(true); setAuthMode("signup"); setAuthError(""); }
+                              else { setShowUpgradeModal(true); }
+                            }} className="locked-feature-btn" style={{
+                              position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", gap: "4px",
+                              fontSize: "0.65rem", fontWeight: 600, color: "#8A8D72", background: "rgba(245,240,230,0.6)",
+                              backdropFilter: "blur(2px)", border: "1px solid rgba(186,192,149,0.3)", borderRadius: "999px",
+                              cursor: "pointer", whiteSpace: "nowrap", padding: "4px 10px",
+                            }}>
+                              <span style={{ fontSize: "0.6rem" }}>&#128274;</span> Upgrade to see
+                            </button>
+                          </span>
+                        )
+                      )}
                       <button
                         onClick={() => toggleSave(author)}
                         className={starBounce === id ? "star-bounce" : ""}
@@ -847,7 +988,7 @@ function AppPageInner() {
                   </div>
                 )}
 
-                {/* Professor Email Finder */}
+                {/* Professor Email Finder — always locked for free */}
                 {isPaid ? (() => {
                   const info = getEmailInfo(author);
                   return info ? (
@@ -875,17 +1016,19 @@ function AppPageInner() {
                     </div>
                   ) : null;
                 })() : (
-                  <div style={{ marginTop: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
-                    <span style={{ fontSize: "0.85rem", color: "#8A8D72" }}>🔒 Professor email</span>
+                  <div className="locked-feature-row" style={{ marginTop: "16px", padding: "12px 18px", background: "rgba(245,240,230,0.5)", backdropFilter: "blur(8px)", borderRadius: "12px", border: "1px solid rgba(186,192,149,0.2)", display: "flex", alignItems: "center", gap: "10px" }}>
+                    <span style={{ fontSize: "0.9rem" }}>&#128274;</span>
+                    <span style={{ fontSize: "0.85rem", color: "#8A8D72", flex: 1 }}>Professor email finder</span>
                     <button onClick={() => {
                       if (!user) { setShowAuthModal(true); setAuthMode("signup"); setAuthError(""); }
                       else { setShowUpgradeModal(true); }
-                    }} style={{ fontSize: "0.75rem", color: "#2d5a3d", background: "rgba(45,90,61,0.08)", border: "none", borderRadius: "8px", padding: "4px 12px", cursor: "pointer", fontWeight: 600 }}>
-                      {!user ? "Sign up free" : "Upgrade to Student ($9/mo)"}
+                    }} className="locked-upgrade-btn">
+                      Upgrade to see professor email
                     </button>
                   </div>
                 )}
 
+                {/* Summary section */}
                 {summary ? (
                   <div className="summary-enter" style={{ marginTop: "28px" }}>
                     <p style={{ fontSize: "1.05rem", lineHeight: 1.7, color: "#5A5D45" }}>{summary.summary}</p>
@@ -933,6 +1076,7 @@ function AppPageInner() {
                         ))}
                       </div>
                     )}
+                    {/* Suggested questions — locked when summary is locked for free */}
                     {summary.questions.length > 0 && (
                       <div style={{ marginTop: "24px" }}>
                         <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "14px" }}>Questions to Ask</p>
@@ -950,28 +1094,59 @@ function AppPageInner() {
                         </p>
                       </div>
                     )}
+                    {/* Email checker — always locked for free */}
                     {isPaid ? (
                       <button onClick={() => openEmailDraft(author)} className="btn-secondary" style={{ marginTop: "16px", padding: "12px 28px", fontSize: "0.95rem" }}>
                         Draft email to professor &rarr;
                       </button>
                     ) : (
-                      <button onClick={() => {
-                        if (!user) { setShowAuthModal(true); setAuthMode("signup"); setAuthError("Create a free account to unlock email checking."); }
-                        else { setShowUpgradeModal(true); }
-                      }} className="btn-secondary" style={{ marginTop: "16px", padding: "12px 28px", fontSize: "0.95rem", opacity: 0.7 }}>
-                        🔒 Email checker — {!user ? "Sign up free" : "Upgrade to Student ($9/mo)"}
-                      </button>
+                      <div className="locked-feature-row" style={{ marginTop: "16px", padding: "12px 18px", background: "rgba(245,240,230,0.5)", backdropFilter: "blur(8px)", borderRadius: "12px", border: "1px solid rgba(186,192,149,0.2)", display: "flex", alignItems: "center", gap: "10px" }}>
+                        <span style={{ fontSize: "0.9rem" }}>&#128274;</span>
+                        <span style={{ fontSize: "0.85rem", color: "#8A8D72", flex: 1 }}>Email checker</span>
+                        <button onClick={() => {
+                          if (!user) { setShowAuthModal(true); setAuthMode("signup"); setAuthError(""); }
+                          else { setShowUpgradeModal(true); }
+                        }} className="locked-upgrade-btn">
+                          Upgrade to Student to check your email
+                        </button>
+                      </div>
                     )}
                   </div>
                 ) : (
-                  <button onClick={() => loadSummary(author)} disabled={isLoadingSummary} className={`btn-secondary`} style={{ marginTop: "24px", padding: "12px 28px", fontSize: "0.95rem", opacity: isLoadingSummary ? 0.5 : 1 }}>
-                    {isLoadingSummary ? (
-                      <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
-                        <span className="loading-spinner" style={{ fontSize: "1rem" }}>&#127807;</span>
-                        Generating summary...
-                      </span>
-                    ) : "Summarize research \u2192"}
-                  </button>
+                  /* No summary loaded yet — show button or locked overlay */
+                  getSummariesRemaining() <= 0 && !isPaid ? (
+                    <div style={{ marginTop: "24px", position: "relative", borderRadius: "14px", overflow: "hidden" }}>
+                      <div style={{ padding: "24px", filter: "blur(6px)", userSelect: "none", pointerEvents: "none" }}>
+                        <p style={{ fontSize: "1.05rem", lineHeight: 1.7, color: "#5A5D45" }}>
+                          This professor studies the intersection of computational methods and experimental techniques to advance understanding in their field. Their recent work focuses on developing novel approaches that combine interdisciplinary insights.
+                        </p>
+                      </div>
+                      <div className="locked-summary-overlay" onClick={() => {
+                        if (!user) { setShowAuthModal(true); setAuthMode("signup"); setAuthError("Create a free account for 1 more free summary."); }
+                        else { setShowUpgradeModal(true); }
+                      }}>
+                        <span style={{ fontSize: "1.6rem", marginBottom: "10px" }}>&#128274;</span>
+                        <p style={{ fontSize: "1rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "6px" }}>
+                          You&apos;ve used your free summary
+                        </p>
+                        <p style={{ fontSize: "0.85rem", color: "#8A8D72", marginBottom: "14px" }}>
+                          {!user ? "Create a free account for 1 more free summary" : "Upgrade for unlimited access"}
+                        </p>
+                        <span className="locked-upgrade-btn" style={{ padding: "10px 24px", fontSize: "0.85rem" }}>
+                          {!user ? "Sign up free" : "Upgrade to Student"}
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    <button onClick={() => loadSummary(author)} disabled={isLoadingSummary} className="btn-secondary" style={{ marginTop: "24px", padding: "12px 28px", fontSize: "0.95rem", opacity: isLoadingSummary ? 0.5 : 1 }}>
+                      {isLoadingSummary ? (
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+                          <span className="loading-spinner" style={{ fontSize: "1rem" }}>&#127807;</span>
+                          Generating summary...
+                        </span>
+                      ) : "Summarize research \u2192"}
+                    </button>
+                  )
                 )}
               </div>
             );
@@ -1219,7 +1394,7 @@ function AppPageInner() {
               {authMode === "signup" ? "Create your account" : "Welcome back"}
             </h3>
             <p style={{ fontSize: "0.9rem", color: "#8A8D72", marginBottom: "24px" }}>
-              {authMode === "signup" ? "Get 3 free searches per month." : "Log in to your account."}
+              {authMode === "signup" ? "Unlimited searches + 1 free summary per month." : "Log in to your account."}
             </p>
             {authError && <p style={{ fontSize: "0.85rem", color: "#9B3322", marginBottom: "16px", background: "rgba(155,51,34,0.08)", padding: "10px 14px", borderRadius: "10px" }}>{authError}</p>}
             <input type="email" placeholder="Email" value={authEmail} onChange={(e) => setAuthEmail(e.target.value)} style={{ width: "100%", padding: "12px 16px", fontSize: "1rem", border: "1.5px solid rgba(186,192,149,0.4)", borderRadius: "12px", background: "rgba(255,255,255,0.5)", color: "#3D4127", fontFamily: "inherit", marginBottom: "12px", outline: "none" }} />
@@ -1284,7 +1459,7 @@ function AppPageInner() {
                 </div>
               </div>
               <ul style={{ listStyle: "none", padding: 0, marginBottom: "16px" }}>
-                {["Unlimited research summaries", "Email checker with red-flag detection", "Professor email finder", "Everything in Free"].map((f) => (
+                {["Unlimited research summaries", "Email checker with red-flag detection", "Professor email finder", "Professor responsiveness indicator", "Everything in Free"].map((f) => (
                   <li key={f} style={{ fontSize: "0.85rem", color: "#5A5D45", padding: "4px 0", display: "flex", gap: "8px" }}>
                     <span style={{ color: "#2d5a3d" }}>✓</span> {f}
                   </li>
@@ -1313,7 +1488,6 @@ function AppPageInner() {
               </div>
               <div style={{ display: "flex", alignItems: "baseline", gap: "8px", marginBottom: "4px" }}>
                 <span style={{ fontSize: "2rem", fontWeight: 800, color: "#2d5a3d" }}>$29</span>
-                <span style={{ fontSize: "1rem", color: "#BAC095", textDecoration: "line-through" }}>$108</span>
                 <span style={{ fontSize: "0.85rem", color: "#636B2F", fontWeight: 600 }}>one-time</span>
               </div>
               <ul style={{ listStyle: "none", padding: 0, marginBottom: "16px" }}>

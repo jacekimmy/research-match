@@ -671,6 +671,7 @@ export default function MobileLanding() {
                 "Unlimited research summaries",
                 "Email checker \u2014 catches generic & AI language",
                 "Professor email finder",
+                "Professor responsiveness indicator",
               ].map((f) => (
                 <li key={f} style={{ fontSize: "0.9rem", color: "#5A5D45", padding: "7px 0", display: "flex", gap: "10px", alignItems: "flex-start" }}>
                   <span style={{ color: "#2d5a3d", flexShrink: 0, fontSize: "0.85rem" }}>{"\u2713"}</span> {f}
@@ -699,7 +700,7 @@ export default function MobileLanding() {
             <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#8A8D72", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Free</p>
             <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#2d5a3d", marginBottom: "24px", letterSpacing: "-0.02em" }}>$0</p>
             <ul style={{ listStyle: "none", padding: 0, marginBottom: "24px" }}>
-              {["Unlimited professor searches", "3 research summaries per month", "Suggested questions", "Author position labels", "Save professors", "Paper links"].map((f) => (
+              {["Unlimited professor searches", "1 research summary per month", "Author position labels", "Save professors", "Paper links"].map((f) => (
                 <li key={f} style={{ fontSize: "0.9rem", color: "#5A5D45", padding: "7px 0", display: "flex", gap: "10px", alignItems: "center" }}>
                   <span style={{ color: "#2d5a3d", fontSize: "0.85rem" }}>{"\u2713"}</span> {f}
                 </li>

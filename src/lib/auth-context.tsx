@@ -9,6 +9,8 @@ interface Profile {
   plan_type: "free" | "student_monthly" | "student_annual" | "lifetime";
   searches_used: number;
   searches_reset_at: string;
+  summaries_used: number;
+  summaries_reset_at: string;
   created_at: string;
 }
 
@@ -80,6 +82,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         plan_type: "free",
         searches_used: 0,
         searches_reset_at: nextMonth.toISOString(),
+        summaries_used: 0,
+        summaries_reset_at: nextMonth.toISOString(),
       });
       await fetchProfile(data.user.id);
     }
