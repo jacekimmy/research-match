@@ -26,13 +26,15 @@ export default function MobileLanding() {
   const [, setBillingMounted] = useState(false);
   useEffect(() => { setBillingMounted(true); }, []);
 
+  const [priceKey, setPriceKey] = useState(0);
   function switchBilling(cycle: "monthly" | "annual") {
     if (cycle === billingCycle) return;
     setPriceAnimating(true);
     setTimeout(() => {
       setBillingCycle(cycle);
-      setTimeout(() => setPriceAnimating(false), 50);
-    }, 200);
+      setPriceKey(k => k + 1);
+      setPriceAnimating(false);
+    }, 250);
   }
   const [waitlistEmail, setWaitlistEmail] = useState("");
   const [waitlistTier, setWaitlistTier] = useState<"research_pro" | "pro" | null>(null);
@@ -669,28 +671,50 @@ export default function MobileLanding() {
             <div style={{ display: "flex", alignItems: "baseline", gap: "2px", marginBottom: "4px" }}>
               <span style={{ fontSize: "2.6rem", fontWeight: 800, color: "#1C7A56", letterSpacing: "-0.02em" }}>$</span>
               <div className="price-roller-wrap">
-                <div className={`price-roller ${priceAnimating ? "price-roller-exit" : "price-roller-enter"}`}>
-                  <span style={{ fontSize: "2.6rem", fontWeight: 800, color: "#1C7A56", letterSpacing: "-0.02em" }}>
-                    {billingCycle === "monthly" ? "9" : "79"}
-                  </span>
-                </div>
+                {priceAnimating ? (
+                  <div className="price-roller price-roller-exit">
+                    <span style={{ fontSize: "2.6rem", fontWeight: 800, color: "#1C7A56", letterSpacing: "-0.02em" }}>
+                      {billingCycle === "monthly" ? "9" : "79"}
+                    </span>
+                  </div>
+                ) : (
+                  <div key={priceKey} className="price-roller price-roller-enter">
+                    <span style={{ fontSize: "2.6rem", fontWeight: 800, color: "#1C7A56", letterSpacing: "-0.02em" }}>
+                      {billingCycle === "monthly" ? "9" : "79"}
+                    </span>
+                  </div>
+                )}
               </div>
               <div className="price-roller-wrap" style={{ marginLeft: "4px" }}>
-                <div className={`price-roller ${priceAnimating ? "price-roller-exit" : "price-roller-enter"}`}>
-                  <span style={{ fontSize: "1rem", fontWeight: 400, color: "#7A8E80" }}>
-                    /{billingCycle === "monthly" ? "mo" : "yr"}
-                  </span>
-                </div>
+                {priceAnimating ? (
+                  <div className="price-roller price-roller-exit">
+                    <span style={{ fontSize: "1rem", fontWeight: 400, color: "#7A8E80" }}>
+                      /{billingCycle === "monthly" ? "mo" : "yr"}
+                    </span>
+                  </div>
+                ) : (
+                  <div key={`suffix-${priceKey}`} className="price-roller price-roller-enter">
+                    <span style={{ fontSize: "1rem", fontWeight: 400, color: "#7A8E80" }}>
+                      /{billingCycle === "monthly" ? "mo" : "yr"}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
             <div className="price-roller-wrap" style={{ height: "20px" }}>
-              <div className={`price-roller ${priceAnimating ? "price-roller-exit" : "price-roller-enter"}`} style={{ transitionDelay: "0.06s" }}>
-                {billingCycle === "annual" ? (
-                  <p style={{ fontSize: "0.8rem", color: "#3D7A5E", fontWeight: 600 }}>Save $29 vs monthly</p>
-                ) : (
+              {priceAnimating ? (
+                <div className="price-roller price-roller-exit">
                   <div style={{ height: "20px" }} />
-                )}
-              </div>
+                </div>
+              ) : (
+                <div key={`save-${priceKey}`} className="price-roller price-roller-enter" style={{ animationDelay: "0.08s" }}>
+                  {billingCycle === "annual" ? (
+                    <p style={{ fontSize: "0.8rem", color: "#3D7A5E", fontWeight: 600 }}>Save $29 vs monthly</p>
+                  ) : (
+                    <div style={{ height: "20px" }} />
+                  )}
+                </div>
+              )}
             </div>
             <ul style={{ listStyle: "none", padding: 0, marginBottom: "24px" }}>
               <li style={{ fontSize: "0.9rem", color: "#2C3E34", padding: "7px 0", fontWeight: 700 }}>Everything in Free, plus:</li>
