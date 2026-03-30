@@ -243,7 +243,7 @@ export default function EmailCheckerDemo() {
         style={{
           fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
           fontWeight: 800,
-          color: "#1C7A56",
+          color: "#2d5a3d",
           textAlign: "center",
           marginBottom: "40px",
           letterSpacing: "-0.03em",
@@ -291,7 +291,7 @@ export default function EmailCheckerDemo() {
                   fontWeight: label === "B" ? 700 : 400,
                   fontStyle: label === "I" ? "italic" : "normal",
                   textDecoration: label === "U" ? "underline" : "none",
-                  color: "#8A9A8E",
+                  color: "#6b7280",
                   width: "24px",
                   height: "24px",
                   display: "flex",
@@ -314,7 +314,7 @@ export default function EmailCheckerDemo() {
               gap: "6px",
               fontSize: "0.75rem",
               fontWeight: 600,
-              color: isGoodPhase ? "#1C7A56" : phase === "idle" ? "#8A9A8E" : "#9B3322",
+              color: isGoodPhase ? "#2d5a3d" : phase === "idle" ? "#6b7280" : "#c45c5c",
               transition: "color 0.4s ease",
             }}
           >
@@ -323,12 +323,12 @@ export default function EmailCheckerDemo() {
                 width: 7,
                 height: 7,
                 borderRadius: "50%",
-                background: isGoodPhase ? "#1C7A56" : phase === "idle" ? "#8A9A8E" : "#9B3322",
+                background: isGoodPhase ? "#2d5a3d" : phase === "idle" ? "#6b7280" : "#c45c5c",
                 transition: "background 0.4s ease",
                 boxShadow: isGoodPhase
-                  ? "0 0 6px rgba(28, 122, 86, 0.5)"
+                  ? "0 0 6px rgba(45, 90, 61, 0.5)"
                   : phase !== "idle"
-                  ? "0 0 6px rgba(155, 51, 34, 0.4)"
+                  ? "0 0 6px rgba(196, 92, 92, 0.4)"
                   : "none",
               }}
             />
@@ -346,12 +346,12 @@ export default function EmailCheckerDemo() {
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <span style={{ fontSize: "0.8rem", fontWeight: 600, color: "#8A9A8E", minWidth: "52px" }}>To:</span>
-            <span style={{ fontSize: "0.85rem", color: "#4A5D50" }}>professor.smith@university.edu</span>
+            <span style={{ fontSize: "0.8rem", fontWeight: 600, color: "#6b7280", minWidth: "52px" }}>To:</span>
+            <span style={{ fontSize: "0.85rem", color: "#6b7280" }}>professor.smith@university.edu</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <span style={{ fontSize: "0.8rem", fontWeight: 600, color: "#8A9A8E", minWidth: "52px" }}>Subject:</span>
-            <span style={{ fontSize: "0.85rem", color: "#4A5D50", transition: "opacity 0.3s ease" }}>
+            <span style={{ fontSize: "0.8rem", fontWeight: 600, color: "#6b7280", minWidth: "52px" }}>Subject:</span>
+            <span style={{ fontSize: "0.85rem", color: "#6b7280", transition: "opacity 0.3s ease" }}>
               {isGoodPhase
                 ? "Question about your transfer learning paper"
                 : "Research Opportunity Inquiry"}
@@ -366,7 +366,7 @@ export default function EmailCheckerDemo() {
             style={{
               fontSize: "clamp(0.88rem, 1.3vw, 0.95rem)",
               lineHeight: 1.75,
-              color: "#2C3E34",
+              color: "#1a1a1a",
               minHeight: "180px",
               whiteSpace: "pre-wrap",
               fontFamily: "'Playfair Display', Georgia, serif",
@@ -380,7 +380,7 @@ export default function EmailCheckerDemo() {
                     display: "inline-block",
                     width: "2px",
                     height: "1.1em",
-                    background: "#1C7A56",
+                    background: "#2d5a3d",
                     marginLeft: "1px",
                     verticalAlign: "text-bottom",
                     animation: "cursorBlink 0.6s step-end infinite",
@@ -417,23 +417,23 @@ export default function EmailCheckerDemo() {
                       borderRadius: "999px",
                       fontSize: "0.78rem",
                       fontWeight: 600,
-                      background: isGreen ? "rgba(28, 122, 86, 0.08)" : "rgba(155, 51, 34, 0.08)",
-                      color: isGreen ? "#1C7A56" : "#9B3322",
-                      border: `1px solid ${isGreen ? "rgba(28, 122, 86, 0.18)" : "rgba(155, 51, 34, 0.18)"}`,
+                      background: isGreen ? "rgba(45, 90, 61, 0.08)" : "rgba(196, 92, 92, 0.08)",
+                      color: isGreen ? "#2d5a3d" : "#c45c5c",
+                      border: `1px solid ${isGreen ? "rgba(45, 90, 61, 0.18)" : "rgba(196, 92, 92, 0.18)"}`,
                       transition: "all 0.4s ease",
                       animation: isGreen ? "none" : "fadeSlideIn 0.3s ease both",
                     }}
                   >
                     {isGreen ? (
                       <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
-                        <circle cx="8" cy="8" r="6.5" stroke="#1C7A56" strokeWidth="1.5" />
-                        <path d="M5.5 8L7.2 9.8L10.5 6.2" stroke="#1C7A56" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        <circle cx="8" cy="8" r="6.5" stroke="#2d5a3d" strokeWidth="1.5" />
+                        <path d="M5.5 8L7.2 9.8L10.5 6.2" stroke="#2d5a3d" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     ) : (
                       <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
-                        <path d="M8 1.5L14.5 13H1.5L8 1.5Z" stroke="#9B3322" strokeWidth="1.5" strokeLinejoin="round" />
-                        <path d="M8 6.5V9" stroke="#9B3322" strokeWidth="1.5" strokeLinecap="round" />
-                        <circle cx="8" cy="11" r="0.75" fill="#9B3322" />
+                        <path d="M8 1.5L14.5 13H1.5L8 1.5Z" stroke="#c45c5c" strokeWidth="1.5" strokeLinejoin="round" />
+                        <path d="M8 6.5V9" stroke="#c45c5c" strokeWidth="1.5" strokeLinecap="round" />
+                        <circle cx="8" cy="11" r="0.75" fill="#c45c5c" />
                       </svg>
                     )}
                     {isGreen ? greenLabel : flag}
@@ -480,18 +480,18 @@ export default function EmailCheckerDemo() {
                 fontWeight: 600,
                 borderRadius: "999px",
                 cursor: "pointer",
-                background: "rgba(28, 122, 86, 0.08)",
-                color: "#1C7A56",
-                border: "1px solid rgba(28, 122, 86, 0.2)",
+                background: "rgba(45, 90, 61, 0.08)",
+                color: "#2d5a3d",
+                border: "1px solid rgba(45, 90, 61, 0.2)",
                 transition: "all 0.2s ease",
                 animation: "fadeSlideIn 0.4s ease both",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(28, 122, 86, 0.14)";
+                e.currentTarget.style.background = "rgba(45, 90, 61, 0.14)";
                 e.currentTarget.style.transform = "translateY(-1px)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(28, 122, 86, 0.08)";
+                e.currentTarget.style.background = "rgba(45, 90, 61, 0.08)";
                 e.currentTarget.style.transform = "translateY(0)";
               }}
             >

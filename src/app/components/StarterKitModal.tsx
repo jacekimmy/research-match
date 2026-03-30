@@ -92,7 +92,7 @@ export default function StarterKitModal({ isOpen, onClose }: StarterKitModalProp
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "rgba(28, 46, 34, 0.45)",
+        background: "rgba(26, 26, 26, 0.45)",
         backdropFilter: "blur(8px)",
         WebkitBackdropFilter: "blur(8px)",
         animation: "skModalFadeIn 0.25s ease",
@@ -109,9 +109,9 @@ export default function StarterKitModal({ isOpen, onClose }: StarterKitModalProp
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
           borderRadius: "20px",
-          border: "1px solid rgba(28, 122, 86, 0.12)",
+          border: "1px solid rgba(45, 90, 61, 0.12)",
           boxShadow:
-            "0 24px 80px rgba(0,0,0,0.12), 0 8px 32px rgba(28,122,86,0.08)",
+            "0 24px 80px rgba(0,0,0,0.12), 0 8px 32px rgba(45, 90, 61,0.08)",
           padding: "36px 32px 32px",
           animation: "skModalSlideUp 0.3s ease",
         }}
@@ -128,14 +128,14 @@ export default function StarterKitModal({ isOpen, onClose }: StarterKitModalProp
             border: "none",
             cursor: "pointer",
             fontSize: "1.3rem",
-            color: "#7A8E80",
+            color: "#6b7280",
             lineHeight: 1,
             padding: "4px 8px",
             borderRadius: "8px",
             transition: "background 0.2s",
           }}
           onMouseEnter={(e) =>
-            (e.currentTarget.style.background = "rgba(28,122,86,0.08)")
+            (e.currentTarget.style.background = "rgba(45, 90, 61,0.08)")
           }
           onMouseLeave={(e) =>
             (e.currentTarget.style.background = "none")
@@ -153,7 +153,7 @@ export default function StarterKitModal({ isOpen, onClose }: StarterKitModalProp
                 height: "48px",
                 borderRadius: "14px",
                 background:
-                  "linear-gradient(135deg, rgba(28,122,86,0.12), rgba(28,122,86,0.04))",
+                  "linear-gradient(135deg, rgba(45, 90, 61,0.12), rgba(45, 90, 61,0.04))",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -166,7 +166,7 @@ export default function StarterKitModal({ isOpen, onClose }: StarterKitModalProp
                 height="24"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="#1C7A56"
+                stroke="#2d5a3d"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -184,7 +184,7 @@ export default function StarterKitModal({ isOpen, onClose }: StarterKitModalProp
               style={{
                 fontSize: "1.35rem",
                 fontWeight: 800,
-                color: "#1C7A56",
+                color: "#2d5a3d",
                 marginBottom: "6px",
                 fontFamily: "'Playfair Display', Georgia, serif",
                 letterSpacing: "-0.02em",
@@ -195,7 +195,7 @@ export default function StarterKitModal({ isOpen, onClose }: StarterKitModalProp
             <p
               style={{
                 fontSize: "0.92rem",
-                color: "#4A5D50",
+                color: "#6b7280",
                 lineHeight: 1.6,
                 marginBottom: "22px",
               }}
@@ -219,9 +219,9 @@ export default function StarterKitModal({ isOpen, onClose }: StarterKitModalProp
                   padding: "13px 16px",
                   fontSize: "0.95rem",
                   borderRadius: "12px",
-                  border: "1.5px solid rgba(28,122,86,0.18)",
+                  border: "1.5px solid rgba(45, 90, 61,0.18)",
                   background: "rgba(255,255,255,0.6)",
-                  color: "#2C3E34",
+                  color: "#1a1a1a",
                   outline: "none",
                   fontFamily: "'Playfair Display', Georgia, serif",
                   transition: "border-color 0.2s, box-shadow 0.2s",
@@ -229,12 +229,12 @@ export default function StarterKitModal({ isOpen, onClose }: StarterKitModalProp
                   marginBottom: "12px",
                 }}
                 onFocus={(e) => {
-                  e.currentTarget.style.borderColor = "#1C7A56";
+                  e.currentTarget.style.borderColor = "#2d5a3d";
                   e.currentTarget.style.boxShadow =
-                    "0 0 0 3px rgba(28,122,86,0.1)";
+                    "0 0 0 3px rgba(45, 90, 61,0.1)";
                 }}
                 onBlur={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(28,122,86,0.18)";
+                  e.currentTarget.style.borderColor = "rgba(45, 90, 61,0.18)";
                   e.currentTarget.style.boxShadow = "none";
                 }}
               />
@@ -243,7 +243,7 @@ export default function StarterKitModal({ isOpen, onClose }: StarterKitModalProp
                 <p
                   style={{
                     fontSize: "0.82rem",
-                    color: "#c0392b",
+                    color: "#c45c5c",
                     marginBottom: "10px",
                   }}
                 >
@@ -262,26 +262,26 @@ export default function StarterKitModal({ isOpen, onClose }: StarterKitModalProp
                   borderRadius: "12px",
                   border: "none",
                   background: loading
-                    ? "rgba(28,122,86,0.5)"
-                    : "linear-gradient(135deg, #1C7A56, #24936A)",
-                  color: "#F5F0E6",
+                    ? "rgba(45, 90, 61,0.5)"
+                    : "linear-gradient(135deg, #2d5a3d, #3d7a52)",
+                  color: "#ffffff",
                   cursor: loading ? "not-allowed" : "pointer",
                   fontFamily: "'Playfair Display', Georgia, serif",
                   letterSpacing: "-0.01em",
                   transition: "all 0.2s ease",
-                  boxShadow: "0 4px 16px rgba(28,122,86,0.18)",
+                  boxShadow: "0 4px 16px rgba(45, 90, 61,0.18)",
                 }}
                 onMouseEnter={(e) => {
                   if (!loading) {
                     e.currentTarget.style.transform = "translateY(-1px)";
                     e.currentTarget.style.boxShadow =
-                      "0 6px 24px rgba(28,122,86,0.25)";
+                      "0 6px 24px rgba(45, 90, 61,0.25)";
                   }
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = "translateY(0)";
                   e.currentTarget.style.boxShadow =
-                    "0 4px 16px rgba(28,122,86,0.18)";
+                    "0 4px 16px rgba(45, 90, 61,0.18)";
                 }}
               >
                 {loading ? "Preparing..." : "Download Starter Kit"}
@@ -291,7 +291,7 @@ export default function StarterKitModal({ isOpen, onClose }: StarterKitModalProp
             <p
               style={{
                 fontSize: "0.75rem",
-                color: "#7A8E80",
+                color: "#6b7280",
                 textAlign: "center",
                 marginTop: "14px",
               }}
@@ -308,7 +308,7 @@ export default function StarterKitModal({ isOpen, onClose }: StarterKitModalProp
                 height: "56px",
                 borderRadius: "50%",
                 background:
-                  "linear-gradient(135deg, rgba(28,122,86,0.15), rgba(28,122,86,0.05))",
+                  "linear-gradient(135deg, rgba(45, 90, 61,0.15), rgba(45, 90, 61,0.05))",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -320,7 +320,7 @@ export default function StarterKitModal({ isOpen, onClose }: StarterKitModalProp
                 height="28"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="#1C7A56"
+                stroke="#2d5a3d"
                 strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -333,7 +333,7 @@ export default function StarterKitModal({ isOpen, onClose }: StarterKitModalProp
               style={{
                 fontSize: "1.3rem",
                 fontWeight: 800,
-                color: "#1C7A56",
+                color: "#2d5a3d",
                 marginBottom: "8px",
                 fontFamily: "'Playfair Display', Georgia, serif",
               }}
@@ -343,7 +343,7 @@ export default function StarterKitModal({ isOpen, onClose }: StarterKitModalProp
             <p
               style={{
                 fontSize: "0.92rem",
-                color: "#4A5D50",
+                color: "#6b7280",
                 lineHeight: 1.6,
                 marginBottom: "22px",
               }}
@@ -359,15 +359,15 @@ export default function StarterKitModal({ isOpen, onClose }: StarterKitModalProp
                 fontSize: "0.9rem",
                 fontWeight: 700,
                 borderRadius: "12px",
-                border: "1.5px solid rgba(28,122,86,0.2)",
+                border: "1.5px solid rgba(45, 90, 61,0.2)",
                 background: "transparent",
-                color: "#1C7A56",
+                color: "#2d5a3d",
                 cursor: "pointer",
                 fontFamily: "'Playfair Display', Georgia, serif",
                 transition: "all 0.2s ease",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(28,122,86,0.06)";
+                e.currentTarget.style.background = "rgba(45, 90, 61,0.06)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.background = "transparent";

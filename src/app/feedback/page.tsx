@@ -95,7 +95,7 @@ export default function FeedbackPage() {
           particleCount: 40,
           spread: 60,
           origin: { y: 0.7 },
-          colors: ["#1C7A56", "#A8C4B2", "#B8D8C4"],
+          colors: ["#2d5a3d", "#8aaa96", "#9dbfaa"],
           gravity: 1.2,
         });
       }
@@ -138,9 +138,9 @@ export default function FeedbackPage() {
   }
 
   const categoryStyle = (cat: string) => {
-    if (cat === "Feature Request") return { background: "rgba(28,122,86,0.1)", color: "#1C7A56", border: "1px solid rgba(28,122,86,0.2)" };
-    if (cat === "Bug Report") return { background: "rgba(155,51,34,0.1)", color: "#9B3322", border: "1px solid rgba(155,51,34,0.2)" };
-    return { background: "rgba(149,173,157,0.1)", color: "#7A8E80", border: "1px solid rgba(149,173,157,0.2)" };
+    if (cat === "Feature Request") return { background: "rgba(45, 90, 61,0.1)", color: "#2d5a3d", border: "1px solid rgba(45, 90, 61,0.2)" };
+    if (cat === "Bug Report") return { background: "rgba(196, 92, 92,0.1)", color: "#c45c5c", border: "1px solid rgba(196, 92, 92,0.2)" };
+    return { background: "rgba(149,173,157,0.1)", color: "#6b7280", border: "1px solid rgba(149,173,157,0.2)" };
   };
 
   return (
@@ -159,7 +159,7 @@ export default function FeedbackPage() {
             <a href="/" style={{ textDecoration: "none" }}>
               <h1 className="rm-title" style={{ fontSize: "2.4rem" }}>Feedback Board</h1>
             </a>
-            <p style={{ fontSize: "1.05rem", color: "#7A8E80", marginTop: "8px" }}>
+            <p style={{ fontSize: "1.05rem", color: "#6b7280", marginTop: "8px" }}>
               Help shape Research Match. Suggest features, report bugs, or share your thoughts.
             </p>
           </div>
@@ -187,12 +187,12 @@ export default function FeedbackPage() {
               onChange={(e) => setCategory(e.target.value)}
               style={{
                 padding: "10px 16px", fontSize: "0.9rem", borderRadius: "12px",
-                border: "1.5px solid rgba(168,196,178,0.35)", background: "rgba(255,255,255,0.5)",
-                color: "#2C3E34", fontFamily: "'Playfair Display', Georgia, serif",
+                border: "1.5px solid rgba(45, 90, 61,0.35)", background: "rgba(255,255,255,0.5)",
+                color: "#1a1a1a", fontFamily: "'Playfair Display', Georgia, serif",
                 cursor: "pointer", outline: "none", transition: "all 0.3s ease",
               }}
-              onFocus={(e) => { e.currentTarget.style.borderColor = "#1C7A56"; e.currentTarget.style.boxShadow = "0 0 0 4px rgba(28,122,86,0.08)"; }}
-              onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(168,196,178,0.35)"; e.currentTarget.style.boxShadow = "none"; }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = "#2d5a3d"; e.currentTarget.style.boxShadow = "0 0 0 4px rgba(45, 90, 61,0.08)"; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(45, 90, 61,0.35)"; e.currentTarget.style.boxShadow = "none"; }}
             >
               {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
@@ -202,12 +202,12 @@ export default function FeedbackPage() {
               placeholder="Your name (optional)"
               style={{
                 padding: "10px 16px", fontSize: "0.9rem", borderRadius: "12px",
-                border: "1.5px solid rgba(168,196,178,0.35)", background: "rgba(255,255,255,0.5)",
-                color: "#2C3E34", fontFamily: "'Playfair Display', Georgia, serif",
+                border: "1.5px solid rgba(45, 90, 61,0.35)", background: "rgba(255,255,255,0.5)",
+                color: "#1a1a1a", fontFamily: "'Playfair Display', Georgia, serif",
                 outline: "none", flex: 1, minWidth: "150px", transition: "all 0.3s ease",
               }}
-              onFocus={(e) => { e.currentTarget.style.borderColor = "#1C7A56"; e.currentTarget.style.boxShadow = "0 0 0 4px rgba(28,122,86,0.08)"; }}
-              onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(168,196,178,0.35)"; e.currentTarget.style.boxShadow = "none"; }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = "#2d5a3d"; e.currentTarget.style.boxShadow = "0 0 0 4px rgba(45, 90, 61,0.08)"; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(45, 90, 61,0.35)"; e.currentTarget.style.boxShadow = "none"; }}
             />
             <button type="submit" disabled={!content.trim() || submitting} className="btn-cta" style={{ padding: "12px 32px", fontSize: "0.95rem" }}>
               {submitting ? (
@@ -220,14 +220,14 @@ export default function FeedbackPage() {
           </div>
           {submitted && (
             <div className="email-pass" style={{ marginTop: "16px", padding: "12px 18px", textAlign: "center" }}>
-              <p style={{ fontWeight: 700, fontSize: "0.95rem", color: "#1C7A56" }}>&#10003; Thanks for your feedback!</p>
+              <p style={{ fontWeight: 700, fontSize: "0.95rem", color: "#2d5a3d" }}>&#10003; Thanks for your feedback!</p>
             </div>
           )}
         </form>
 
         {/* SORT TOGGLE */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-          <p style={{ fontSize: "0.85rem", color: "#7A8E80" }}>{items.length} suggestion{items.length !== 1 ? "s" : ""}</p>
+          <p style={{ fontSize: "0.85rem", color: "#6b7280" }}>{items.length} suggestion{items.length !== 1 ? "s" : ""}</p>
           <div className="mode-toggle">
             <div
               className="mode-toggle-slider"
@@ -253,7 +253,7 @@ export default function FeedbackPage() {
         {loading && (
           <div style={{ textAlign: "center", padding: "40px 0" }}>
             <span className="loading-spinner">&#127807;</span>
-            <p style={{ fontSize: "1rem", color: "#7A8E80", marginTop: "12px" }}>Loading feedback...</p>
+            <p style={{ fontSize: "1rem", color: "#6b7280", marginTop: "12px" }}>Loading feedback...</p>
           </div>
         )}
 
@@ -266,7 +266,7 @@ export default function FeedbackPage() {
                 padding: "24px 28px", display: "flex", gap: "20px", alignItems: "flex-start",
                 animationDelay: `${idx * 0.06}s`,
                 opacity: item.resolved ? 0.7 : 1,
-                borderColor: item.resolved ? "rgba(28,122,86,0.25)" : undefined,
+                borderColor: item.resolved ? "rgba(45, 90, 61,0.25)" : undefined,
               }}>
                 {/* Upvote */}
                 <button
@@ -275,39 +275,39 @@ export default function FeedbackPage() {
                   className={isBouncing ? "star-bounce" : ""}
                   style={{
                     display: "flex", flexDirection: "column", alignItems: "center", gap: "2px",
-                    background: hasVoted ? "rgba(28,122,86,0.12)" : "rgba(168,196,178,0.12)",
-                    border: `1.5px solid ${hasVoted ? "rgba(28,122,86,0.3)" : "rgba(168,196,178,0.3)"}`,
+                    background: hasVoted ? "rgba(45, 90, 61,0.12)" : "rgba(45, 90, 61,0.12)",
+                    border: `1.5px solid ${hasVoted ? "rgba(45, 90, 61,0.3)" : "rgba(45, 90, 61,0.3)"}`,
                     borderRadius: "14px", padding: "12px 16px", cursor: hasVoted ? "default" : "pointer",
                     transition: "all 0.35s cubic-bezier(0.4, 0, 0.2, 1)", minWidth: "56px",
-                    boxShadow: hasVoted ? "inset 0 1px 3px rgba(28,122,86,0.08)" : "none",
+                    boxShadow: hasVoted ? "inset 0 1px 3px rgba(45, 90, 61,0.08)" : "none",
                   }}
                   onMouseEnter={(e) => {
                     if (!hasVoted) {
                       e.currentTarget.style.transform = "translateY(-3px)";
-                      e.currentTarget.style.boxShadow = "0 6px 16px rgba(28,122,86,0.12)";
-                      e.currentTarget.style.background = "rgba(28,122,86,0.08)";
-                      e.currentTarget.style.borderColor = "rgba(28,122,86,0.3)";
+                      e.currentTarget.style.boxShadow = "0 6px 16px rgba(45, 90, 61,0.12)";
+                      e.currentTarget.style.background = "rgba(45, 90, 61,0.08)";
+                      e.currentTarget.style.borderColor = "rgba(45, 90, 61,0.3)";
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (!hasVoted) {
                       e.currentTarget.style.transform = "translateY(0)";
                       e.currentTarget.style.boxShadow = "none";
-                      e.currentTarget.style.background = "rgba(168,196,178,0.12)";
-                      e.currentTarget.style.borderColor = "rgba(168,196,178,0.3)";
+                      e.currentTarget.style.background = "rgba(45, 90, 61,0.12)";
+                      e.currentTarget.style.borderColor = "rgba(45, 90, 61,0.3)";
                     }
                   }}
                 >
                   <span style={{
                     fontSize: "1.1rem",
-                    color: hasVoted ? "#1C7A56" : "#7A8E80",
+                    color: hasVoted ? "#2d5a3d" : "#6b7280",
                     transition: "all 0.3s ease",
                     transform: hasVoted ? "scale(1.1)" : "scale(1)",
                     display: "inline-block",
                   }}>&#9650;</span>
                   <span style={{
                     fontSize: "1rem", fontWeight: 700,
-                    color: hasVoted ? "#1C7A56" : "#2C3E34",
+                    color: hasVoted ? "#2d5a3d" : "#1a1a1a",
                     fontFamily: "'Playfair Display', Georgia, serif",
                     transition: "all 0.3s ease",
                   }}>{item.upvotes}</span>
@@ -315,7 +315,7 @@ export default function FeedbackPage() {
 
                 {/* Content */}
                 <div style={{ flex: 1 }}>
-                  <p style={{ fontSize: "1rem", color: "#2C3E34", lineHeight: 1.7 }}>{item.content}</p>
+                  <p style={{ fontSize: "1rem", color: "#1a1a1a", lineHeight: 1.7 }}>{item.content}</p>
                   <div style={{ display: "flex", gap: "10px", alignItems: "center", marginTop: "12px", flexWrap: "wrap" }}>
                     <span className="tag" style={{
                       fontSize: "0.72rem", fontWeight: 700, padding: "4px 12px",
@@ -325,14 +325,14 @@ export default function FeedbackPage() {
                     }}>
                       {item.category}
                     </span>
-                    <span style={{ fontSize: "0.8rem", color: "#95AD9D" }}>{item.author_name}</span>
-                    <span style={{ fontSize: "0.8rem", color: "#A8C4B2" }}>&middot;</span>
-                    <span style={{ fontSize: "0.8rem", color: "#95AD9D" }}>{timeAgo(item.created_at)}</span>
+                    <span style={{ fontSize: "0.8rem", color: "#6b7280" }}>{item.author_name}</span>
+                    <span style={{ fontSize: "0.8rem", color: "#8aaa96" }}>&middot;</span>
+                    <span style={{ fontSize: "0.8rem", color: "#6b7280" }}>{timeAgo(item.created_at)}</span>
                     {item.resolved && (
                       <span style={{
                         fontSize: "0.7rem", fontWeight: 700, padding: "3px 10px",
-                        borderRadius: "999px", background: "rgba(28,122,86,0.12)",
-                        color: "#1C7A56", textTransform: "uppercase", letterSpacing: "0.06em",
+                        borderRadius: "999px", background: "rgba(45, 90, 61,0.12)",
+                        color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.06em",
                       }}>
                         ✓ Resolved
                       </span>
@@ -342,17 +342,17 @@ export default function FeedbackPage() {
                         onClick={() => handleResolve(item.id)}
                         style={{
                           fontSize: "0.72rem", fontWeight: 600, padding: "3px 10px",
-                          borderRadius: "999px", background: "rgba(28,122,86,0.06)",
-                          color: "#7A8E80", border: "1px solid rgba(168,196,178,0.3)",
+                          borderRadius: "999px", background: "rgba(45, 90, 61,0.06)",
+                          color: "#6b7280", border: "1px solid rgba(45, 90, 61,0.3)",
                           cursor: "pointer", transition: "all 0.2s ease",
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.background = "rgba(28,122,86,0.15)";
-                          e.currentTarget.style.color = "#1C7A56";
+                          e.currentTarget.style.background = "rgba(45, 90, 61,0.15)";
+                          e.currentTarget.style.color = "#2d5a3d";
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.background = "rgba(28,122,86,0.06)";
-                          e.currentTarget.style.color = "#7A8E80";
+                          e.currentTarget.style.background = "rgba(45, 90, 61,0.06)";
+                          e.currentTarget.style.color = "#6b7280";
                         }}
                       >
                         Mark resolved
@@ -368,8 +368,8 @@ export default function FeedbackPage() {
         {!loading && items.length === 0 && (
           <div className="glass-card card-enter" style={{ textAlign: "center", padding: "60px 20px" }}>
             <p style={{ fontSize: "2.5rem", marginBottom: "16px" }}>&#127793;</p>
-            <p style={{ fontSize: "1.2rem", color: "#2C3E34", fontWeight: 600 }}>No feedback yet</p>
-            <p style={{ fontSize: "0.95rem", color: "#7A8E80", marginTop: "8px" }}>Be the first to share your thoughts!</p>
+            <p style={{ fontSize: "1.2rem", color: "#1a1a1a", fontWeight: 600 }}>No feedback yet</p>
+            <p style={{ fontSize: "0.95rem", color: "#6b7280", marginTop: "8px" }}>Be the first to share your thoughts!</p>
           </div>
         )}
       </main>

@@ -134,13 +134,13 @@ function Annotation({ text }: { text: string }) {
   return (
     <div
       style={{
-        borderLeft: "4px solid #1C7A56",
-        background: "rgba(28, 122, 86, 0.07)",
+        borderLeft: "4px solid #2d5a3d",
+        background: "rgba(45, 90, 61, 0.07)",
         padding: "14px 18px",
         borderRadius: "0 10px 10px 0",
         fontSize: "0.9rem",
         lineHeight: 1.65,
-        color: "#2C3E34",
+        color: "#1a1a1a",
         fontStyle: "italic",
       }}
     >
@@ -153,8 +153,8 @@ function ResultBox({ text }: { text: string }) {
   return (
     <div
       style={{
-        background: "linear-gradient(135deg, rgba(28, 122, 86, 0.12) 0%, rgba(28, 122, 86, 0.06) 100%)",
-        border: "1px solid rgba(28, 122, 86, 0.25)",
+        background: "linear-gradient(135deg, rgba(45, 90, 61, 0.12) 0%, rgba(45, 90, 61, 0.06) 100%)",
+        border: "1px solid rgba(45, 90, 61, 0.25)",
         borderRadius: "12px",
         padding: "20px 24px",
         marginTop: "12px",
@@ -171,7 +171,7 @@ function ResultBox({ text }: { text: string }) {
           width: "28px",
           height: "28px",
           borderRadius: "50%",
-          background: "#1C7A56",
+          background: "#2d5a3d",
           color: "#fff",
           fontSize: "0.85rem",
           flexShrink: 0,
@@ -180,7 +180,7 @@ function ResultBox({ text }: { text: string }) {
       >
         &#10003;
       </span>
-      <p style={{ margin: 0, lineHeight: 1.7, fontWeight: 500, color: "#1C7A56" }}>{text}</p>
+      <p style={{ margin: 0, lineHeight: 1.7, fontWeight: 500, color: "#2d5a3d" }}>{text}</p>
     </div>
   );
 }
@@ -195,7 +195,7 @@ function EmailCard({ email, index }: { email: EmailExample; index: number }) {
             fontFamily: "'Playfair Display', serif",
             fontSize: "clamp(1.25rem, 3vw, 1.6rem)",
             fontWeight: 700,
-            color: "#1C7A56",
+            color: "#2d5a3d",
             marginBottom: "28px",
             letterSpacing: "-0.01em",
           }}
@@ -224,7 +224,7 @@ function EmailCard({ email, index }: { email: EmailExample; index: number }) {
                     padding: "20px 24px",
                     lineHeight: 1.75,
                     fontSize: "0.95rem",
-                    color: "#2C3E34",
+                    color: "#1a1a1a",
                     boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
                   }}
                 >
@@ -274,7 +274,7 @@ function GatedOverlay() {
           background: "rgba(255,255,255,0.8)",
           backdropFilter: "blur(16px)",
           WebkitBackdropFilter: "blur(16px)",
-          border: "1px solid rgba(28,122,86,0.2)",
+          border: "1px solid rgba(45, 90, 61,0.2)",
           borderRadius: "20px",
           padding: "48px 40px",
           maxWidth: "500px",
@@ -287,7 +287,7 @@ function GatedOverlay() {
             width: "56px",
             height: "56px",
             borderRadius: "16px",
-            background: "linear-gradient(135deg, #1C7A56, #24956A)",
+            background: "linear-gradient(135deg, #2d5a3d, #24956A)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -303,7 +303,7 @@ function GatedOverlay() {
             fontFamily: "'Playfair Display', serif",
             fontSize: "1.35rem",
             fontWeight: 700,
-            color: "#1C7A56",
+            color: "#2d5a3d",
             marginBottom: "14px",
             lineHeight: 1.35,
           }}
@@ -325,7 +325,7 @@ function GatedOverlay() {
           href="/app?upgrade=true"
           style={{
             display: "inline-block",
-            background: "linear-gradient(135deg, #1C7A56, #24956A)",
+            background: "linear-gradient(135deg, #2d5a3d, #24956A)",
             color: "#fff",
             padding: "14px 36px",
             borderRadius: "12px",
@@ -333,7 +333,7 @@ function GatedOverlay() {
             fontSize: "1rem",
             textDecoration: "none",
             transition: "transform 0.2s ease, box-shadow 0.2s ease",
-            boxShadow: "0 4px 16px rgba(28,122,86,0.3)",
+            boxShadow: "0 4px 16px rgba(45, 90, 61,0.3)",
           }}
         >
           Upgrade Now
@@ -380,7 +380,7 @@ export default function ExamplesPage() {
               style={{
                 fontSize: "1.3rem",
                 fontWeight: 800,
-                color: "#1C7A56",
+                color: "#2d5a3d",
                 textDecoration: "none",
                 fontFamily: "'Playfair Display', serif",
               }}
@@ -393,8 +393,8 @@ export default function ExamplesPage() {
                 padding: "10px 24px",
                 fontSize: "0.85rem",
                 fontWeight: 600,
-                color: "#1C7A56",
-                border: "1.5px solid #1C7A56",
+                color: "#2d5a3d",
+                border: "1.5px solid #2d5a3d",
                 borderRadius: "10px",
                 textDecoration: "none",
                 transition: "background 0.2s ease, color 0.2s ease",
@@ -413,7 +413,7 @@ export default function ExamplesPage() {
                   fontFamily: "'Playfair Display', serif",
                   fontSize: "clamp(2rem, 5vw, 3rem)",
                   fontWeight: 800,
-                  color: "#1C7A56",
+                  color: "#2d5a3d",
                   letterSpacing: "-0.02em",
                   marginBottom: "16px",
                   lineHeight: 1.2,
@@ -424,7 +424,7 @@ export default function ExamplesPage() {
               <p
                 style={{
                   fontSize: "1.1rem",
-                  color: "#7A8E80",
+                  color: "#6b7280",
                   lineHeight: 1.7,
                   maxWidth: "600px",
                   margin: "0 auto",
@@ -458,7 +458,7 @@ export default function ExamplesPage() {
                       background: "rgba(255, 255, 255, 0.45)",
                       backdropFilter: "blur(16px)",
                       WebkitBackdropFilter: "blur(16px)",
-                      border: "1px solid rgba(28, 122, 86, 0.15)",
+                      border: "1px solid rgba(45, 90, 61, 0.15)",
                       borderRadius: "20px",
                       padding: "40px 36px",
                       boxShadow: "0 8px 32px rgba(0, 0, 0, 0.06)",
@@ -470,7 +470,7 @@ export default function ExamplesPage() {
                         fontFamily: "'Playfair Display', serif",
                         fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
                         fontWeight: 700,
-                        color: "#1C7A56",
+                        color: "#2d5a3d",
                         marginBottom: "24px",
                       }}
                     >
@@ -486,7 +486,7 @@ export default function ExamplesPage() {
                             gap: "14px",
                             fontSize: "1rem",
                             lineHeight: 1.65,
-                            color: "#2C3E34",
+                            color: "#1a1a1a",
                           }}
                         >
                           <span
@@ -497,8 +497,8 @@ export default function ExamplesPage() {
                               width: "24px",
                               height: "24px",
                               borderRadius: "50%",
-                              background: "rgba(28, 122, 86, 0.12)",
-                              color: "#1C7A56",
+                              background: "rgba(45, 90, 61, 0.12)",
+                              color: "#2d5a3d",
                               fontSize: "0.75rem",
                               fontWeight: 700,
                               flexShrink: 0,

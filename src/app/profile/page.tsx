@@ -31,7 +31,7 @@ export default function ProfilePage() {
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div className="glass-card" style={{ padding: "48px", textAlign: "center", maxWidth: "400px" }}>
           <p style={{ fontSize: "2.5rem", marginBottom: "16px" }}>🔒</p>
-          <h2 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#1C7A56", marginBottom: "12px" }}>Sign in to view your profile</h2>
+          <h2 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "12px" }}>Sign in to view your profile</h2>
           <Link href="/app" className="btn-cta rm-search-btn" style={{ display: "inline-block", padding: "12px 28px", textDecoration: "none", marginTop: "8px" }}>
             Go to app
           </Link>
@@ -80,11 +80,11 @@ export default function ProfilePage() {
           {/* Big avatar */}
           <div style={{
             width: "90px", height: "90px", borderRadius: "50%",
-            background: "linear-gradient(135deg, #1C7A56, #2E9E72)",
+            background: "linear-gradient(135deg, #2d5a3d, #2E9E72)",
             display: "flex", alignItems: "center", justifyContent: "center",
             margin: "0 auto 20px",
-            color: "#F5F0E6", fontSize: "2.2rem", fontWeight: 700,
-            boxShadow: "0 8px 32px rgba(28,122,86,0.25)",
+            color: "#ffffff", fontSize: "2.2rem", fontWeight: 700,
+            boxShadow: "0 8px 32px rgba(45, 90, 61,0.25)",
             border: "3px solid rgba(255,255,255,0.5)",
             animation: "profilePop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both",
           }}>
@@ -92,7 +92,7 @@ export default function ProfilePage() {
           </div>
 
           <h1 style={{
-            fontSize: "1.6rem", fontWeight: 700, color: "#1C7A56",
+            fontSize: "1.6rem", fontWeight: 700, color: "#2d5a3d",
             marginBottom: "6px", letterSpacing: "-0.01em",
           }}>
             {user.email}
@@ -102,15 +102,15 @@ export default function ProfilePage() {
             <span style={{
               fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em",
               padding: "5px 16px", borderRadius: "999px",
-              background: isPaid ? "#1C7A56" : "rgba(28,122,86,0.1)",
-              color: isPaid ? "#F5F0E6" : "#1C7A56",
+              background: isPaid ? "#2d5a3d" : "rgba(45, 90, 61,0.1)",
+              color: isPaid ? "#f4f0ea" : "#2d5a3d",
             }}>
               {planLabel}
             </span>
             <span style={{
-              fontSize: "0.75rem", fontWeight: 600, color: "#7A8E80",
+              fontSize: "0.75rem", fontWeight: 600, color: "#6b7280",
               padding: "5px 16px", borderRadius: "999px",
-              background: "rgba(168,196,178,0.15)",
+              background: "rgba(45, 90, 61,0.15)",
             }}>
               Member since {memberSince}
             </span>
@@ -132,9 +132,9 @@ export default function ProfilePage() {
               animationDelay: `${0.1 + i * 0.08}s`,
             }}>
               <span style={{ fontSize: "1.6rem", display: "block", marginBottom: "10px" }}>{stat.icon}</span>
-              <p style={{ fontSize: "1.8rem", fontWeight: 800, color: "#1C7A56", letterSpacing: "-0.02em" }}>{stat.value}</p>
-              <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "#4A5D50", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "4px" }}>{stat.label}</p>
-              <p style={{ fontSize: "0.7rem", color: "#A8C4B2", marginTop: "6px" }}>{stat.sub}</p>
+              <p style={{ fontSize: "1.8rem", fontWeight: 800, color: "#2d5a3d", letterSpacing: "-0.02em" }}>{stat.value}</p>
+              <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "4px" }}>{stat.label}</p>
+              <p style={{ fontSize: "0.7rem", color: "#8aaa96", marginTop: "6px" }}>{stat.sub}</p>
             </div>
           ))}
         </div>
@@ -144,7 +144,7 @@ export default function ProfilePage() {
           padding: "32px", marginBottom: "24px",
           animationDelay: "0.35s",
         }}>
-          <h2 style={{ fontSize: "1.1rem", fontWeight: 700, color: "#1C7A56", marginBottom: "20px" }}>Your Plan</h2>
+          <h2 style={{ fontSize: "1.1rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "20px" }}>Your Plan</h2>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
             {[
@@ -167,16 +167,16 @@ export default function ProfilePage() {
                   width: "22px", height: "22px", borderRadius: "50%",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   fontSize: "0.7rem",
-                  background: item.included ? "rgba(28,122,86,0.12)" : "rgba(149,173,157,0.1)",
-                  color: item.included ? "#1C7A56" : "#A8C4B2",
+                  background: item.included ? "rgba(45, 90, 61,0.12)" : "rgba(149,173,157,0.1)",
+                  color: item.included ? "#2d5a3d" : "#8aaa96",
                 }}>
                   {item.included ? "✓" : "—"}
                 </span>
-                <span style={{ fontSize: "0.9rem", color: item.included ? "#2C3E34" : "#7A8E80" }}>
+                <span style={{ fontSize: "0.9rem", color: item.included ? "#1a1a1a" : "#6b7280" }}>
                   {item.feature}
                 </span>
                 {!item.included && (
-                  <span style={{ fontSize: "0.65rem", color: "#A8C4B2", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>Student</span>
+                  <span style={{ fontSize: "0.65rem", color: "#8aaa96", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>Student</span>
                 )}
               </div>
             ))}
@@ -210,7 +210,7 @@ export default function ProfilePage() {
           padding: "32px", marginBottom: "40px",
           animationDelay: "0.45s",
         }}>
-          <h2 style={{ fontSize: "1.1rem", fontWeight: 700, color: "#1C7A56", marginBottom: "20px" }}>Account</h2>
+          <h2 style={{ fontSize: "1.1rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "20px" }}>Account</h2>
 
           <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
             <Link href="/feedback" className="btn-secondary" style={{
@@ -221,7 +221,7 @@ export default function ProfilePage() {
             <button
               onClick={async () => { await signOut(); window.location.href = "/"; }}
               className="btn-secondary"
-              style={{ padding: "10px 22px", fontSize: "0.85rem", color: "#9B3322" }}
+              style={{ padding: "10px 22px", fontSize: "0.85rem", color: "#c45c5c" }}
             >
               Sign out
             </button>
