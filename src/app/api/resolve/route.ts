@@ -45,11 +45,9 @@ export async function POST(req: NextRequest) {
     const topicData = await topicRes.json();
     const topics: { id: string; display_name: string }[] = topicData.results ?? [];
 
-    if (topics.length === 0) {
-      return NextResponse.json({ error: "No matching topic found." }, { status: 404 });
-    }
-
-    const topicIdx = await pickBestMatch(topic, topics, "research topic");
+    const topicIdx = topics.length > 0
+      ? await pickBestMatch(topic, topics, "research topic")
+      : -1;
 
     if (topicIdx === -1) {
       let institutionId: string | null = null;

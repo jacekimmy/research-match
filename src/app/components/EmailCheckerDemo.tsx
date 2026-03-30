@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
 
-type DemoPhase = "idle" | "showing_bad" | "showing_flags" | "flags_done" | "deleting" | "typing" | "complete";
+type DemoPhase = "idle" | "showing_bad" | "showing_flags" | "flags_done" | "editing" | "complete";
 
 const BAD_EMAIL = `Dear Professor Smith, I am writing to express my sincere interest in your groundbreaking research. I would be honored to work in your prestigious lab. I am a dedicated and hardworking student who is willing to do whatever it takes. I read your paper on machine learning and found it very interesting. Please let me know if you have any available positions. Thank you for your time and consideration.`;
 
@@ -23,25 +23,65 @@ const GREEN_FLAGS = [
   "Sounds genuine",
 ];
 
-// Map: when typing progress hits these thresholds (0-1), flip the corresponding red flag to green
-const FLAG_THRESHOLDS = [0.15, 0.35, 0.55, 0.75, 0.92];
+interface EditOp {
+  find: string;
+  replace: string;
+  flagIndex: number;
+}
+
+const EDITS: EditOp[] = [
+  {
+    find: "Dear Professor Smith, I am writing to express my sincere interest in your groundbreaking research.",
+    replace: "Hi Professor Smith, I'm a sophomore studying computer science.",
+    flagIndex: 0,
+  },
+  {
+    find: "I would be honored to work in your prestigious lab. I am a dedicated and hardworking student who is willing to do whatever it takes.",
+    replace: "I've been working on a project using neural networks for image classification and your recent paper on transfer learning caught my attention.",
+    flagIndex: 1,
+  },
+  {
+    find: "I read your paper on machine learning and found it very interesting.",
+    replace: "I was curious how your approach handles domain shift when the source dataset is small.",
+    flagIndex: 2,
+  },
+  {
+    find: "Please let me know if you have any available positions.",
+    replace: "Would you have any openings for a volunteer this semester? If not, is there someone in your group you'd recommend I reach out to?",
+    flagIndex: 3,
+  },
+  {
+    find: "Thank you for your time and consideration.",
+    replace: "Thanks, [Name]",
+    flagIndex: 4,
+  },
+];
 
 export default function EmailCheckerDemo() {
   const [phase, setPhase] = useState<DemoPhase>("idle");
   const [visibleRedFlags, setVisibleRedFlags] = useState(0);
   const [displayedText, setDisplayedText] = useState(BAD_EMAIL);
-  // -1 = red, 0+ = index into GREEN_FLAGS that this flag has been "fixed" to
+  const [cursorPos, setCursorPos] = useState(-1);
   const [flagStates, setFlagStates] = useState<("red" | "green")[]>(RED_FLAGS.map(() => "red"));
   const containerRef = useRef<HTMLDivElement>(null);
   const hasStarted = useRef(false);
-  const animFrameRef = useRef<number | null>(null);
+  const cancelledRef = useRef(false);
   const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const clearAll = useCallback(() => {
+    cancelledRef.current = true;
     timeoutsRef.current.forEach(clearTimeout);
     timeoutsRef.current = [];
-    if (animFrameRef.current !== null) cancelAnimationFrame(animFrameRef.current);
   }, []);
+
+  const wait = useCallback(
+    (ms: number) =>
+      new Promise<void>((resolve) => {
+        const id = setTimeout(resolve, ms);
+        timeoutsRef.current.push(id);
+      }),
+    []
+  );
 
   const addTimeout = useCallback((fn: () => void, ms: number) => {
     const id = setTimeout(fn, ms);
@@ -51,8 +91,10 @@ export default function EmailCheckerDemo() {
 
   const startDemo = useCallback(() => {
     clearAll();
+    cancelledRef.current = false;
     setVisibleRedFlags(0);
     setDisplayedText(BAD_EMAIL);
+    setCursorPos(-1);
     setFlagStates(RED_FLAGS.map(() => "red"));
     setPhase("showing_bad");
 
@@ -69,69 +111,91 @@ export default function EmailCheckerDemo() {
     }, 600);
   }, [addTimeout, clearAll]);
 
-  // Live delete then retype
-  const handleFix = useCallback(() => {
+  const handleFix = useCallback(async () => {
     if (phase !== "flags_done") return;
-    setPhase("deleting");
+    setPhase("editing");
+    cancelledRef.current = false;
 
-    let current = BAD_EMAIL;
-    const deleteSpeed = 8; // ms per character deleted
-    const typeSpeed = 18; // ms per character typed
+    let text = BAD_EMAIL;
+    let prevCursorPos = 0;
 
-    // Phase 1: delete the bad email
-    function deleteStep() {
-      if (current.length <= 0) {
-        // Done deleting, start typing
-        setDisplayedText("");
-        setPhase("typing");
-        let typed = 0;
-        function typeStep() {
-          if (typed >= GOOD_EMAIL.length) {
-            setDisplayedText(GOOD_EMAIL);
-            setPhase("complete");
-            return;
-          }
-          // Type a chunk for speed
-          const chunk = Math.min(2, GOOD_EMAIL.length - typed);
-          typed += chunk;
-          setDisplayedText(GOOD_EMAIL.slice(0, typed));
+    for (const edit of EDITS) {
+      if (cancelledRef.current) return;
 
-          // Check if we should flip a flag
-          const progress = typed / GOOD_EMAIL.length;
-          FLAG_THRESHOLDS.forEach((threshold, i) => {
-            if (progress >= threshold) {
-              setFlagStates(prev => {
-                if (prev[i] === "green") return prev;
-                const next = [...prev];
-                next[i] = "green";
-                return next;
-              });
-            }
-          });
+      const startIdx = text.indexOf(edit.find);
+      if (startIdx === -1) continue;
+      const before = text.slice(0, startIdx);
+      const after = text.slice(startIdx + edit.find.length);
+      const targetCursorPos = startIdx + edit.find.length;
 
-          animFrameRef.current = requestAnimationFrame(() => {
-            addTimeout(typeStep, typeSpeed);
-          });
-        }
-        addTimeout(typeStep, 200);
-        return;
+      // Animate cursor traveling to end of the problematic phrase
+      const cursorFrom = prevCursorPos;
+      const cursorTo = targetCursorPos;
+      const cursorSteps = 20;
+      for (let s = 1; s <= cursorSteps; s++) {
+        if (cancelledRef.current) return;
+        const progress = s / cursorSteps;
+        const eased = progress < 0.5
+          ? 2 * progress * progress
+          : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+        const pos = Math.round(cursorFrom + (cursorTo - cursorFrom) * eased);
+        setCursorPos(pos);
+        await wait(20);
       }
-      // Delete a chunk for speed
-      const chunk = Math.min(4, current.length);
-      current = current.slice(0, current.length - chunk);
-      setDisplayedText(current);
-      animFrameRef.current = requestAnimationFrame(() => {
-        addTimeout(deleteStep, deleteSpeed);
+      await wait(300);
+      if (cancelledRef.current) return;
+
+      // Backspace-delete the phrase one character at a time, slowly
+      let delRemaining = edit.find.length;
+      while (delRemaining > 0 && !cancelledRef.current) {
+        delRemaining -= 1;
+        setDisplayedText(before + edit.find.slice(0, delRemaining) + after);
+        setCursorPos(startIdx + delRemaining);
+        await wait(35);
+      }
+      if (cancelledRef.current) return;
+
+      await wait(300);
+      if (cancelledRef.current) return;
+
+      // Type the replacement left to right
+      let typed = 0;
+      while (typed < edit.replace.length && !cancelledRef.current) {
+        const chunk = Math.min(2, edit.replace.length - typed);
+        typed += chunk;
+        setDisplayedText(before + edit.replace.slice(0, typed) + after);
+        setCursorPos(startIdx + typed);
+        await wait(22);
+      }
+      if (cancelledRef.current) return;
+
+      prevCursorPos = startIdx + edit.replace.length;
+
+      // Update running text for next edit
+      text = before + edit.replace + after;
+
+      // Flip the corresponding flag to green
+      setFlagStates((prev) => {
+        const next = [...prev];
+        next[edit.flagIndex] = "green";
+        return next;
       });
+
+      await wait(500);
     }
-    deleteStep();
-  }, [phase, addTimeout]);
+
+    if (!cancelledRef.current) {
+      setCursorPos(-1);
+      setPhase("complete");
+    }
+  }, [phase, wait]);
 
   const handleReplay = useCallback(() => {
     clearAll();
     setPhase("idle");
     setVisibleRedFlags(0);
     setDisplayedText(BAD_EMAIL);
+    setCursorPos(-1);
     setFlagStates(RED_FLAGS.map(() => "red"));
     addTimeout(() => startDemo(), 200);
   }, [clearAll, addTimeout, startDemo]);
@@ -160,10 +224,10 @@ export default function EmailCheckerDemo() {
     };
   }, [startDemo, clearAll]);
 
-  const isGoodPhase = phase === "typing" || phase === "complete";
+  const isGoodPhase = phase === "complete";
   const showFixButton = phase === "flags_done";
   const showReplayButton = phase === "complete";
-  const showCursor = phase === "deleting" || phase === "typing";
+  const showCursor = phase === "editing" && cursorPos >= 0;
 
   return (
     <section
@@ -268,7 +332,7 @@ export default function EmailCheckerDemo() {
                   : "none",
               }}
             />
-            {isGoodPhase ? "Looking good" : phase === "idle" ? "Analyzing..." : "Issues found"}
+            {isGoodPhase ? "Looking good" : phase === "idle" ? "Analyzing..." : phase === "editing" ? "Fixing..." : "Issues found"}
           </div>
         </div>
 
@@ -308,19 +372,24 @@ export default function EmailCheckerDemo() {
               fontFamily: "'Playfair Display', Georgia, serif",
             }}
           >
-            {displayedText}
-            {showCursor && (
-              <span
-                style={{
-                  display: "inline-block",
-                  width: "2px",
-                  height: "1.1em",
-                  background: "#1C7A56",
-                  marginLeft: "1px",
-                  verticalAlign: "text-bottom",
-                  animation: "cursorBlink 0.6s step-end infinite",
-                }}
-              />
+            {showCursor ? (
+              <>
+                {displayedText.slice(0, cursorPos)}
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: "2px",
+                    height: "1.1em",
+                    background: "#1C7A56",
+                    marginLeft: "1px",
+                    verticalAlign: "text-bottom",
+                    animation: "cursorBlink 0.6s step-end infinite",
+                  }}
+                />
+                {displayedText.slice(cursorPos)}
+              </>
+            ) : (
+              displayedText
             )}
           </div>
         </div>
