@@ -839,7 +839,16 @@ function AppPageInner() {
               Find professors who match your research interests.
             </p>
           </div>
-          <div style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
+          <div style={{
+            display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap",
+            background: "rgba(255, 255, 255, 0.45)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            borderRadius: "16px",
+            border: "1px solid rgba(255, 255, 255, 0.6)",
+            boxShadow: "0 4px 16px rgba(0, 0, 0, 0.04), 0 1px 0 rgba(255, 255, 255, 0.7) inset",
+            padding: "8px 16px",
+          }}>
             <Link href="/examples" style={{ padding: "10px 24px", fontSize: "0.9rem", textDecoration: "none", color: "#7A8E80", fontWeight: 600, transition: "color 0.2s" }}>
               Email Examples
             </Link>
@@ -854,7 +863,7 @@ function AppPageInner() {
             {!user ? (
               <>
                 <button onClick={() => { setShowAuthModal(true); setAuthMode("login"); setAuthError(""); }} className="btn-secondary" style={{ padding: "10px 20px", fontSize: "0.85rem" }}>Log in</button>
-                <button onClick={() => { setShowAuthModal(true); setAuthMode("signup"); setAuthError(""); }} className="btn-cta rm-search-btn" style={{ padding: "10px 20px", fontSize: "0.85rem" }}>Sign up</button>
+                <button onClick={() => { setShowAuthModal(true); setAuthMode("signup"); setAuthError(""); }} className="btn-cta" style={{ padding: "10px 20px", fontSize: "0.85rem" }}>Sign up</button>
               </>
             ) : (
               <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
