@@ -285,12 +285,6 @@ export default function MobileLanding() {
           </button>
         </div>
 
-        <a href="#pricing" style={{
-          fontSize: "0.85rem", color: "#6b7280", textDecoration: "underline",
-          textUnderlineOffset: "3px",
-        }}>
-          See pricing
-        </a>
       </section>
 
       {/* Stats bar */}
