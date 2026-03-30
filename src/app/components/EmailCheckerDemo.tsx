@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
 
-type DemoPhase = "idle" | "showing_bad" | "showing_flags" | "flags_done" | "transitioning" | "showing_good" | "showing_green_flags" | "complete";
+type DemoPhase = "idle" | "showing_bad" | "showing_flags" | "flags_done" | "deleting" | "typing" | "complete";
 
 const BAD_EMAIL = `Dear Professor Smith, I am writing to express my sincere interest in your groundbreaking research. I would be honored to work in your prestigious lab. I am a dedicated and hardworking student who is willing to do whatever it takes. I read your paper on machine learning and found it very interesting. Please let me know if you have any available positions. Thank you for your time and consideration.`;
 
@@ -23,18 +23,24 @@ const GREEN_FLAGS = [
   "Sounds genuine",
 ];
 
+// Map: when typing progress hits these thresholds (0-1), flip the corresponding red flag to green
+const FLAG_THRESHOLDS = [0.15, 0.35, 0.55, 0.75, 0.92];
+
 export default function EmailCheckerDemo() {
   const [phase, setPhase] = useState<DemoPhase>("idle");
   const [visibleRedFlags, setVisibleRedFlags] = useState(0);
-  const [visibleGreenFlags, setVisibleGreenFlags] = useState(0);
-  const [emailOpacity, setEmailOpacity] = useState(1);
+  const [displayedText, setDisplayedText] = useState(BAD_EMAIL);
+  // -1 = red, 0+ = index into GREEN_FLAGS that this flag has been "fixed" to
+  const [flagStates, setFlagStates] = useState<("red" | "green")[]>(RED_FLAGS.map(() => "red"));
   const containerRef = useRef<HTMLDivElement>(null);
   const hasStarted = useRef(false);
+  const animFrameRef = useRef<number | null>(null);
   const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
-  const clearAllTimeouts = useCallback(() => {
+  const clearAll = useCallback(() => {
     timeoutsRef.current.forEach(clearTimeout);
     timeoutsRef.current = [];
+    if (animFrameRef.current !== null) cancelAnimationFrame(animFrameRef.current);
   }, []);
 
   const addTimeout = useCallback((fn: () => void, ms: number) => {
@@ -44,57 +50,91 @@ export default function EmailCheckerDemo() {
   }, []);
 
   const startDemo = useCallback(() => {
-    clearAllTimeouts();
+    clearAll();
     setVisibleRedFlags(0);
-    setVisibleGreenFlags(0);
-    setEmailOpacity(1);
+    setDisplayedText(BAD_EMAIL);
+    setFlagStates(RED_FLAGS.map(() => "red"));
     setPhase("showing_bad");
 
-    // Start showing red flags after a brief pause
     addTimeout(() => {
       setPhase("showing_flags");
       RED_FLAGS.forEach((_, i) => {
         addTimeout(() => {
           setVisibleRedFlags(i + 1);
           if (i === RED_FLAGS.length - 1) {
-            addTimeout(() => setPhase("flags_done"), 300);
+            addTimeout(() => setPhase("flags_done"), 200);
           }
-        }, i * 400);
+        }, i * 250);
       });
-    }, 800);
-  }, [addTimeout, clearAllTimeouts]);
+    }, 600);
+  }, [addTimeout, clearAll]);
 
+  // Live delete then retype
   const handleFix = useCallback(() => {
     if (phase !== "flags_done") return;
-    setPhase("transitioning");
-    setEmailOpacity(0);
+    setPhase("deleting");
 
-    addTimeout(() => {
-      setVisibleRedFlags(0);
-      setPhase("showing_good");
-      addTimeout(() => setEmailOpacity(1), 50);
-      addTimeout(() => {
-        setPhase("showing_green_flags");
-        GREEN_FLAGS.forEach((_, i) => {
-          addTimeout(() => {
-            setVisibleGreenFlags(i + 1);
-            if (i === GREEN_FLAGS.length - 1) {
-              addTimeout(() => setPhase("complete"), 300);
+    let current = BAD_EMAIL;
+    const deleteSpeed = 8; // ms per character deleted
+    const typeSpeed = 18; // ms per character typed
+
+    // Phase 1: delete the bad email
+    function deleteStep() {
+      if (current.length <= 0) {
+        // Done deleting, start typing
+        setDisplayedText("");
+        setPhase("typing");
+        let typed = 0;
+        function typeStep() {
+          if (typed >= GOOD_EMAIL.length) {
+            setDisplayedText(GOOD_EMAIL);
+            setPhase("complete");
+            return;
+          }
+          // Type a chunk for speed
+          const chunk = Math.min(2, GOOD_EMAIL.length - typed);
+          typed += chunk;
+          setDisplayedText(GOOD_EMAIL.slice(0, typed));
+
+          // Check if we should flip a flag
+          const progress = typed / GOOD_EMAIL.length;
+          FLAG_THRESHOLDS.forEach((threshold, i) => {
+            if (progress >= threshold) {
+              setFlagStates(prev => {
+                if (prev[i] === "green") return prev;
+                const next = [...prev];
+                next[i] = "green";
+                return next;
+              });
             }
-          }, i * 400);
-        });
-      }, 500);
-    }, 500);
+          });
+
+          animFrameRef.current = requestAnimationFrame(() => {
+            addTimeout(typeStep, typeSpeed);
+          });
+        }
+        addTimeout(typeStep, 200);
+        return;
+      }
+      // Delete a chunk for speed
+      const chunk = Math.min(4, current.length);
+      current = current.slice(0, current.length - chunk);
+      setDisplayedText(current);
+      animFrameRef.current = requestAnimationFrame(() => {
+        addTimeout(deleteStep, deleteSpeed);
+      });
+    }
+    deleteStep();
   }, [phase, addTimeout]);
 
   const handleReplay = useCallback(() => {
-    clearAllTimeouts();
+    clearAll();
     setPhase("idle");
     setVisibleRedFlags(0);
-    setVisibleGreenFlags(0);
-    setEmailOpacity(1);
+    setDisplayedText(BAD_EMAIL);
+    setFlagStates(RED_FLAGS.map(() => "red"));
     addTimeout(() => startDemo(), 200);
-  }, [clearAllTimeouts, addTimeout, startDemo]);
+  }, [clearAll, addTimeout, startDemo]);
 
   // IntersectionObserver to auto-start
   useEffect(() => {
@@ -116,14 +156,14 @@ export default function EmailCheckerDemo() {
     observer.observe(el);
     return () => {
       observer.disconnect();
-      clearAllTimeouts();
+      clearAll();
     };
-  }, [startDemo, clearAllTimeouts]);
+  }, [startDemo, clearAll]);
 
-  const showingGoodEmail = phase === "showing_good" || phase === "showing_green_flags" || phase === "complete";
-  const currentEmail = showingGoodEmail ? GOOD_EMAIL : BAD_EMAIL;
+  const isGoodPhase = phase === "typing" || phase === "complete";
   const showFixButton = phase === "flags_done";
   const showReplayButton = phase === "complete";
+  const showCursor = phase === "deleting" || phase === "typing";
 
   return (
     <section
@@ -141,24 +181,13 @@ export default function EmailCheckerDemo() {
           fontWeight: 800,
           color: "#1C7A56",
           textAlign: "center",
-          marginBottom: "12px",
+          marginBottom: "40px",
           letterSpacing: "-0.03em",
           lineHeight: 1.15,
         }}
       >
-        See it in action
+        See the email checker in action
       </h2>
-      <p
-        style={{
-          textAlign: "center",
-          color: "#5A6E60",
-          fontSize: "clamp(0.95rem, 1.5vw, 1.1rem)",
-          marginBottom: "40px",
-          lineHeight: 1.6,
-        }}
-      >
-        Watch how Research Match flags weak emails and helps you write ones that get replies.
-      </p>
 
       {/* Glassmorphism card */}
       <div
@@ -184,20 +213,18 @@ export default function EmailCheckerDemo() {
             background: "rgba(255, 255, 255, 0.35)",
           }}
         >
-          {/* Window dots */}
           <div style={{ display: "flex", gap: "6px", marginRight: "8px" }}>
             <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#FF5F57" }} />
             <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#FFBD2E" }} />
             <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#27CA40" }} />
           </div>
-          {/* Mock toolbar buttons */}
           <div style={{ display: "flex", gap: "16px", flex: 1 }}>
             {["B", "I", "U"].map((label) => (
               <span
                 key={label}
                 style={{
                   fontSize: "0.75rem",
-                  fontWeight: label === "B" ? 700 : label === "I" ? 400 : 400,
+                  fontWeight: label === "B" ? 700 : 400,
                   fontStyle: label === "I" ? "italic" : "normal",
                   textDecoration: label === "U" ? "underline" : "none",
                   color: "#8A9A8E",
@@ -223,7 +250,7 @@ export default function EmailCheckerDemo() {
               gap: "6px",
               fontSize: "0.75rem",
               fontWeight: 600,
-              color: showingGoodEmail ? "#1C7A56" : phase === "idle" ? "#8A9A8E" : "#9B3322",
+              color: isGoodPhase ? "#1C7A56" : phase === "idle" ? "#8A9A8E" : "#9B3322",
               transition: "color 0.4s ease",
             }}
           >
@@ -232,16 +259,16 @@ export default function EmailCheckerDemo() {
                 width: 7,
                 height: 7,
                 borderRadius: "50%",
-                background: showingGoodEmail ? "#1C7A56" : phase === "idle" ? "#8A9A8E" : "#9B3322",
+                background: isGoodPhase ? "#1C7A56" : phase === "idle" ? "#8A9A8E" : "#9B3322",
                 transition: "background 0.4s ease",
-                boxShadow: showingGoodEmail
+                boxShadow: isGoodPhase
                   ? "0 0 6px rgba(28, 122, 86, 0.5)"
                   : phase !== "idle"
                   ? "0 0 6px rgba(155, 51, 34, 0.4)"
                   : "none",
               }}
             />
-            {showingGoodEmail ? "Looking good" : phase === "idle" ? "Analyzing..." : "Issues found"}
+            {isGoodPhase ? "Looking good" : phase === "idle" ? "Analyzing..." : "Issues found"}
           </div>
         </div>
 
@@ -260,8 +287,8 @@ export default function EmailCheckerDemo() {
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <span style={{ fontSize: "0.8rem", fontWeight: 600, color: "#8A9A8E", minWidth: "52px" }}>Subject:</span>
-            <span style={{ fontSize: "0.85rem", color: "#4A5D50" }}>
-              {showingGoodEmail
+            <span style={{ fontSize: "0.85rem", color: "#4A5D50", transition: "opacity 0.3s ease" }}>
+              {isGoodPhase
                 ? "Question about your transfer learning paper"
                 : "Research Opportunity Inquiry"}
             </span>
@@ -276,13 +303,25 @@ export default function EmailCheckerDemo() {
               fontSize: "clamp(0.88rem, 1.3vw, 0.95rem)",
               lineHeight: 1.75,
               color: "#2C3E34",
-              opacity: emailOpacity,
-              transition: "opacity 0.45s ease",
               minHeight: "180px",
               whiteSpace: "pre-wrap",
+              fontFamily: "'Playfair Display', Georgia, serif",
             }}
           >
-            {currentEmail}
+            {displayedText}
+            {showCursor && (
+              <span
+                style={{
+                  display: "inline-block",
+                  width: "2px",
+                  height: "1.1em",
+                  background: "#1C7A56",
+                  marginLeft: "1px",
+                  verticalAlign: "text-bottom",
+                  animation: "cursorBlink 0.6s step-end infinite",
+                }}
+              />
+            )}
           </div>
         </div>
 
@@ -293,66 +332,45 @@ export default function EmailCheckerDemo() {
             minHeight: "60px",
           }}
         >
-          {/* Red flags */}
-          {!showingGoodEmail && visibleRedFlags > 0 && (
+          {visibleRedFlags > 0 && (
             <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-              {RED_FLAGS.slice(0, visibleRedFlags).map((flag, i) => (
-                <span
-                  key={`red-${i}`}
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "5px",
-                    padding: "6px 14px",
-                    borderRadius: "999px",
-                    fontSize: "0.78rem",
-                    fontWeight: 600,
-                    background: "rgba(155, 51, 34, 0.08)",
-                    color: "#9B3322",
-                    border: "1px solid rgba(155, 51, 34, 0.18)",
-                    animation: "fadeSlideIn 0.4s ease both",
-                    animationDelay: "0s",
-                  }}
-                >
-                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
-                    <path d="M8 1.5L14.5 13H1.5L8 1.5Z" stroke="#9B3322" strokeWidth="1.5" strokeLinejoin="round" />
-                    <path d="M8 6.5V9" stroke="#9B3322" strokeWidth="1.5" strokeLinecap="round" />
-                    <circle cx="8" cy="11" r="0.75" fill="#9B3322" />
-                  </svg>
-                  {flag}
-                </span>
-              ))}
-            </div>
-          )}
-
-          {/* Green flags */}
-          {showingGoodEmail && visibleGreenFlags > 0 && (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-              {GREEN_FLAGS.slice(0, visibleGreenFlags).map((flag, i) => (
-                <span
-                  key={`green-${i}`}
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "5px",
-                    padding: "6px 14px",
-                    borderRadius: "999px",
-                    fontSize: "0.78rem",
-                    fontWeight: 600,
-                    background: "rgba(28, 122, 86, 0.08)",
-                    color: "#1C7A56",
-                    border: "1px solid rgba(28, 122, 86, 0.18)",
-                    animation: "fadeSlideIn 0.4s ease both",
-                    animationDelay: "0s",
-                  }}
-                >
-                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
-                    <circle cx="8" cy="8" r="6.5" stroke="#1C7A56" strokeWidth="1.5" />
-                    <path d="M5.5 8L7.2 9.8L10.5 6.2" stroke="#1C7A56" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  {flag}
-                </span>
-              ))}
+              {RED_FLAGS.slice(0, visibleRedFlags).map((flag, i) => {
+                const isGreen = flagStates[i] === "green";
+                const greenLabel = GREEN_FLAGS[i];
+                return (
+                  <span
+                    key={`flag-${i}`}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "5px",
+                      padding: "6px 14px",
+                      borderRadius: "999px",
+                      fontSize: "0.78rem",
+                      fontWeight: 600,
+                      background: isGreen ? "rgba(28, 122, 86, 0.08)" : "rgba(155, 51, 34, 0.08)",
+                      color: isGreen ? "#1C7A56" : "#9B3322",
+                      border: `1px solid ${isGreen ? "rgba(28, 122, 86, 0.18)" : "rgba(155, 51, 34, 0.18)"}`,
+                      transition: "all 0.4s ease",
+                      animation: isGreen ? "none" : "fadeSlideIn 0.3s ease both",
+                    }}
+                  >
+                    {isGreen ? (
+                      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
+                        <circle cx="8" cy="8" r="6.5" stroke="#1C7A56" strokeWidth="1.5" />
+                        <path d="M5.5 8L7.2 9.8L10.5 6.2" stroke="#1C7A56" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    ) : (
+                      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
+                        <path d="M8 1.5L14.5 13H1.5L8 1.5Z" stroke="#9B3322" strokeWidth="1.5" strokeLinejoin="round" />
+                        <path d="M8 6.5V9" stroke="#9B3322" strokeWidth="1.5" strokeLinecap="round" />
+                        <circle cx="8" cy="11" r="0.75" fill="#9B3322" />
+                      </svg>
+                    )}
+                    {isGreen ? greenLabel : flag}
+                  </span>
+                );
+              })}
             </div>
           )}
         </div>
@@ -414,17 +432,14 @@ export default function EmailCheckerDemo() {
         </div>
       </div>
 
-      {/* Keyframes injected via style tag */}
       <style>{`
         @keyframes fadeSlideIn {
-          0% {
-            opacity: 0;
-            transform: translateY(8px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          0% { opacity: 0; transform: translateY(8px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes cursorBlink {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0; }
         }
       `}</style>
     </section>
