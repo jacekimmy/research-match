@@ -169,13 +169,13 @@ export default function LandingPage() {
           color: "#1C7A56", lineHeight: 1.1, marginBottom: "28px",
           letterSpacing: "-0.03em",
         }}>
-          Find the right research professor in 5 minutes, not 8 hours.
+          Land Your Next Research Position.
         </h1>
         <p style={{
           fontSize: "clamp(1.05rem, 2vw, 1.3rem)", color: "#4A5D50",
           lineHeight: 1.7, maxWidth: "640px", margin: "0 auto 28px",
         }}>
-          Search 250M+ papers, understand their work, and write emails professors actually read.
+          Find professors, understand their papers, and write emails that don&apos;t get deleted.
         </p>
         {/* Hero Search Bar */}
         <div
@@ -253,7 +253,7 @@ export default function LandingPage() {
         <p className="hero-social" style={{
           fontSize: "0.95rem", color: "#7A8E80", fontStyle: "italic", marginBottom: "16px",
         }}>
-          A Princeton professor responded to a high school freshman within 24 hours.
+          {/* Princeton social proof moved to testimonials */}
         </p>
         <a href="#pricing" style={{
           fontSize: "0.85rem", color: "#7A8E80", textDecoration: "underline",
@@ -334,9 +334,9 @@ export default function LandingPage() {
           {/* Left: Steps */}
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             {[
-              { title: "Search by interest or professor name", desc: "Enter a research topic like \"neuroscience\" and a university. Or search a professor directly by name." },
-              { title: "Read plain-English summaries", desc: "See what each professor works on, their key findings, and which papers they led \u2014 explained simply." },
-              { title: "Write emails with built-in guidance", desc: "Get suggested questions, a red-flag checker that catches generic language, and tips that actually work." },
+              { title: "Search by interest or professor name", desc: "Type in your interest and university, or search directly by name." },
+              { title: "Read plain-English summaries", desc: "See their key findings and papers, summarized for easy reading." },
+              { title: "Write emails with built-in guidance", desc: "Get suggested questions and an email checker built from real professor feedback, so your email gets read." },
             ].map((step, i) => (
               <button
                 key={i}
@@ -476,7 +476,7 @@ export default function LandingPage() {
                       <span style={{ background: "rgba(155,51,34,0.1)", padding: "1px 4px", borderRadius: "4px", textDecoration: "line-through", color: "#9B3322", animation: "fadeSlideIn 0.4s ease 0.3s both" }}>I found your work fascinating and groundbreaking.</span>
                     </p>
                     <p style={{ marginTop: "8px", animation: "fadeSlideIn 0.4s ease 0.6s both" }}>
-                      <span style={{ background: "rgba(28,122,86,0.1)", padding: "1px 4px", borderRadius: "4px", color: "#1C7A56" }}>I read your 2024 paper on theta oscillations during REM sleep — the 34% improvement in memory consolidation was surprising.</span>
+                      <span style={{ background: "rgba(28,122,86,0.1)", padding: "1px 4px", borderRadius: "4px", color: "#1C7A56" }}>I read your 2024 paper on theta oscillations during REM sleep. The 34% improvement in memory consolidation was surprising.</span>
                     </p>
                   </div>
                   <div style={{ marginTop: "14px", display: "flex", flexDirection: "column", gap: "6px" }}>
@@ -488,7 +488,7 @@ export default function LandingPage() {
                     <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 12px", borderRadius: "10px", background: "rgba(28,122,86,0.06)", border: "1px solid rgba(28,122,86,0.12)", animation: "fadeSlideIn 0.4s ease 0.8s both" }}>
                       <span style={{ color: "#1C7A56", fontSize: "0.8rem" }}>&#10003;</span>
                       <span style={{ fontSize: "0.75rem", color: "#1C7A56", fontWeight: 600 }}>Specific reference</span>
-                      <span style={{ fontSize: "0.7rem", color: "#7A8E80", marginLeft: "auto" }}>Good — cites real data</span>
+                      <span style={{ fontSize: "0.7rem", color: "#7A8E80", marginLeft: "auto" }}>Good, cites real data</span>
                     </div>
                   </div>
                 </div>
@@ -517,7 +517,7 @@ export default function LandingPage() {
             Sound like yourself, not a chatbot
           </h3>
           <p style={{ fontSize: "1rem", color: "#4A5D50", lineHeight: 1.7 }}>
-            Our email checker scans your draft for generic phrasing, sycophantic tone, and AI-sounding language — the exact things professors told us make them hit delete. Fix the red flags before you hit send.
+            The WORST thing you can do is use AI to write the email. The SECOND worst thing you can do is show no real interest. Our email checker scans your draft for generic tones, a proper intro and ask, specific papers, and more.
           </p>
         </div>
       </section>
@@ -535,7 +535,7 @@ export default function LandingPage() {
         <div className="section-divider" />
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
           {[
-            "Professors can spot AI-written emails instantly — and delete them.",
+            "Professors can spot AI-written emails instantly, and delete them.",
             "Generic emails that could be sent to anyone get ignored.",
             "Name-dropping papers without understanding them backfires.",
           ].map((point, i) => (
@@ -553,7 +553,7 @@ export default function LandingPage() {
           fontSize: "1rem", color: "#1C7A56", textAlign: "center",
           marginTop: "28px", lineHeight: 1.7, fontWeight: 500,
         }}>
-          Research Match helps you avoid all three. Our email checker catches generic and AI-sounding language before you hit send — so your message sounds like you, not a chatbot.
+          Research Match helps you avoid all three. Our email checker catches generic and AI-sounding language before you hit send, so your message sounds like you, not a chatbot.
         </p>
       </section>
 
@@ -573,6 +573,7 @@ export default function LandingPage() {
           gap: "24px",
         }}>
           {[
+            { quote: "A Princeton professor responded to a high school freshman within 24 hours.", author: "Founder experience" },
             { quote: "First time I've gotten real advice on my emails. I've sent 10 emails so far using this.", author: "Student user" },
             { quote: "Endorse this advice 💯. If an email smells of AI I will not answer it.", author: "Research Professor" },
             { quote: "This website is goated. I'm saving this for future use.", author: "Student user" },
@@ -583,7 +584,7 @@ export default function LandingPage() {
                 {item.quote}
               </p>
               <p style={{ fontSize: "0.8rem", color: "#7A8E80", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                — {item.author}
+                - {item.author}
               </p>
             </div>
           ))}
@@ -609,7 +610,7 @@ export default function LandingPage() {
             &ldquo;When I was a high school freshman, I used this approach to cold email 5 professors. A Princeton astrophysics professor responded within 24 hours and said I was &lsquo;way ahead of the curve.&rsquo; That&apos;s why I built Research Match.&rdquo;
           </p>
           <p style={{ fontSize: "0.85rem", color: "#1C7A56", fontWeight: 700, marginTop: "16px" }}>
-            — Jace, Founder
+            - Jace, Founder
           </p>
         </div>
       </section>
@@ -683,7 +684,7 @@ export default function LandingPage() {
               ))}
             </ul>
             <Link href="/app" className="btn-secondary" style={{ display: "block", textAlign: "center", padding: "14px", textDecoration: "none", fontSize: "0.95rem" }}>
-              Find a professor now — free
+              Find a professor now, free
             </Link>
           </div>
 
@@ -747,7 +748,7 @@ export default function LandingPage() {
               <li style={{ fontSize: "0.9rem", color: "#F5F0E6", padding: "7px 0", fontWeight: 700 }}>Everything in Free, plus:</li>
               {[
                 "Unlimited research summaries",
-                "Email checker — catches generic & AI language",
+                "Email checker, catches generic & AI language",
                 "Professor email finder",
                 "Professor responsiveness indicator",
               ].map((f) => (
@@ -776,7 +777,7 @@ export default function LandingPage() {
               padding: "6px 16px", borderRadius: "999px", textTransform: "uppercase", letterSpacing: "0.1em",
               whiteSpace: "nowrap",
               boxShadow: "0 2px 12px rgba(180, 155, 80, 0.3)",
-            }}>Limited — First 200 users only</span>
+            }}>Limited. First 200 users only</span>
             <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#8B6914", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Lifetime</p>
             <div style={{ display: "flex", alignItems: "baseline", gap: "10px", marginBottom: "4px" }}>
               <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#6B5210", letterSpacing: "-0.02em" }}>$25</p>

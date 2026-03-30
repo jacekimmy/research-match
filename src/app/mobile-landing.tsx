@@ -152,19 +152,20 @@ export default function MobileLanding() {
   }, []);
 
   const steps = [
-    { step: "1", icon: "\u{1F50D}", title: "Search by interest or name", desc: "Enter a research topic like \"machine learning\" and a university. Or search a professor directly by name." },
-    { step: "2", icon: "\u{1F4C4}", title: "Read plain-English summaries", desc: "See what each professor works on, their key findings, and which papers they led \u2014 explained simply." },
-    { step: "3", icon: "\u2709\uFE0F", title: "Write emails with guidance", desc: "Get suggested questions, a red-flag checker that catches generic language, and tips that actually work." },
+    { step: "1", icon: "\u{1F50D}", title: "Search by interest or name", desc: "Type in your interest and university, or search directly by name." },
+    { step: "2", icon: "\u{1F4C4}", title: "Read plain-English summaries", desc: "See their key findings and papers, summarized for easy reading." },
+    { step: "3", icon: "\u2709\uFE0F", title: "Write emails with guidance", desc: "Get suggested questions and an email checker built from real professor feedback, so your email gets read." },
   ];
 
   const testimonials = [
+    { quote: "A Princeton professor responded to a high school freshman within 24 hours.", author: "Founder experience" },
     { quote: "First time I\u2019ve gotten real advice on my emails. I\u2019ve sent 10 emails so far using this.", author: "Student user" },
     { quote: "Endorse this advice \u{1F4AF}. If an email smells of AI I will not answer it.", author: "Research Professor" },
     { quote: "This website is goated. I\u2019m saving this for future use.", author: "Student user" },
   ];
 
   const coldEmailPoints = [
-    "Professors can spot AI-written emails instantly \u2014 and delete them.",
+    "Professors can spot AI-written emails instantly, and delete them.",
     "Generic emails that could be sent to anyone get ignored.",
     "Name-dropping papers without understanding them backfires.",
   ];
@@ -209,13 +210,13 @@ export default function MobileLanding() {
           letterSpacing: "-0.03em",
           fontFamily: "'Playfair Display', Georgia, serif",
         }}>
-          Find the right research professor in 5 minutes, not 8 hours.
+          Land Your Next Research Position.
         </h1>
         <p style={{
           fontSize: "1.05rem", color: "#4A5D50",
           lineHeight: 1.7, marginBottom: "24px",
         }}>
-          Search 250M+ papers, understand their work, and write emails professors actually read.
+          Find professors, understand their papers, and write emails that don&apos;t get deleted.
         </p>
 
         {/* Hero Search Bar — stacked vertically */}
@@ -284,7 +285,7 @@ export default function MobileLanding() {
         <p style={{
           fontSize: "0.9rem", color: "#7A8E80", fontStyle: "italic", marginBottom: "12px",
         }}>
-          A Princeton professor responded to a high school freshman within 24 hours.
+          {/* Princeton social proof moved to testimonials */}
         </p>
         <a href="#pricing" style={{
           fontSize: "0.85rem", color: "#7A8E80", textDecoration: "underline",
@@ -442,7 +443,7 @@ export default function MobileLanding() {
             Sound like yourself, not a chatbot
           </h3>
           <p style={{ fontSize: "1rem", color: "#4A5D50", lineHeight: 1.7 }}>
-            Our email checker scans your draft for generic phrasing, sycophantic tone, and AI-sounding language &mdash; the exact things professors told us make them hit delete. Fix the red flags before you hit send.
+            The WORST thing you can do is use AI to write the email. The SECOND worst thing you can do is show no real interest. Our email checker scans your draft for generic tones, a proper intro and ask, specific papers, and more.
           </p>
         </div>
       </section>
@@ -482,7 +483,7 @@ export default function MobileLanding() {
           fontSize: "1rem", color: "#1C7A56", textAlign: "center",
           marginTop: "24px", lineHeight: 1.7, fontWeight: 500,
         }}>
-          Research Match helps you avoid all three. Our email checker catches generic and AI-sounding language before you hit send &mdash; so your message sounds like you, not a chatbot.
+          Research Match helps you avoid all three. Our email checker catches generic and AI-sounding language before you hit send, so your message sounds like you, not a chatbot.
         </p>
       </section>
 
@@ -529,7 +530,7 @@ export default function MobileLanding() {
                 {item.quote}
               </p>
               <p style={{ fontSize: "0.8rem", color: "#7A8E80", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                &mdash; {item.author}
+                - {item.author}
               </p>
             </div>
           ))}
@@ -549,7 +550,7 @@ export default function MobileLanding() {
             &ldquo;When I was a high school freshman, I used this approach to cold email 5 professors. A Princeton astrophysics professor responded within 24 hours and said I was &lsquo;way ahead of the curve.&rsquo; That&apos;s why I built Research Match.&rdquo;
           </p>
           <p style={{ fontSize: "0.85rem", color: "#1C7A56", fontWeight: 700, marginTop: "14px" }}>
-            &mdash; Jace, Founder
+            - Jace, Founder
           </p>
         </div>
       </section>
@@ -632,7 +633,7 @@ export default function MobileLanding() {
               padding: "6px 16px", borderRadius: "999px", textTransform: "uppercase", letterSpacing: "0.1em",
               whiteSpace: "nowrap",
               boxShadow: "0 2px 12px rgba(180, 155, 80, 0.3)",
-            }}>Limited &mdash; First 200 users only</span>
+            }}>Limited. First 200 users only</span>
             <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#8B6914", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Lifetime</p>
             <div style={{ display: "flex", alignItems: "baseline", gap: "10px", marginBottom: "4px" }}>
               <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#6B5210", letterSpacing: "-0.02em" }}>$25</p>
@@ -763,7 +764,7 @@ export default function MobileLanding() {
               <li style={{ fontSize: "0.9rem", color: "rgba(245,240,230,0.7)", padding: "7px 0", fontWeight: 700 }}>Everything in Free, plus:</li>
               {[
                 "Unlimited research summaries",
-                "Email checker — catches generic & AI language",
+                "Email checker, catches generic & AI language",
                 "Professor email finder",
                 "Professor responsiveness indicator",
               ].map((f) => (
@@ -777,7 +778,7 @@ export default function MobileLanding() {
               background: "#F5F0E6", color: "#1C7A56", borderRadius: "14px", fontWeight: 700,
               fontFamily: "'Playfair Display', Georgia, serif",
             }}>
-              Upgrade to Student — $5/mo
+              Upgrade to Student, $5/mo
             </Link>
           </div>
 
@@ -805,7 +806,7 @@ export default function MobileLanding() {
               ))}
             </ul>
             <Link href="/app" className="btn-secondary mobile-btn" style={{ display: "block", textAlign: "center", padding: "16px", textDecoration: "none", fontSize: "1rem", width: "100%", minHeight: "48px" }}>
-              Find a professor now &mdash; free
+              Find a professor now, free
             </Link>
           </div>
         </div>
