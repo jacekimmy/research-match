@@ -828,156 +828,210 @@ function AppPageInner() {
         <div className="splotch splotch-5" />
       </div>
 
-      <main className={`rm-page ${revealPhase === "done" ? "rm-page-revealed" : revealPhase === "content" ? "rm-page-revealing" : "rm-page-hidden"}`}>
-        {/* HEADER */}
-        <div className="rm-header">
-          <div>
-            <Link href="/" style={{ textDecoration: "none" }}>
-              <h1 className="rm-title">Research Match</h1>
-            </Link>
-            <p style={{ fontSize: "1.2rem", color: "#6b7280", marginTop: "12px", fontWeight: 400 }}>
-              Find professors who match your research interests.
-            </p>
-          </div>
-          <div style={{
-            display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap",
-            background: "rgba(255, 255, 255, 0.45)",
-            backdropFilter: "blur(20px)",
-            WebkitBackdropFilter: "blur(20px)",
-            borderRadius: "16px",
-            border: "1px solid rgba(255, 255, 255, 0.6)",
-            boxShadow: "0 4px 16px rgba(0, 0, 0, 0.04), 0 1px 0 rgba(255, 255, 255, 0.7) inset",
-            padding: "8px 16px",
-          }}>
-            <Link href="/examples" style={{ padding: "10px 24px", fontSize: "0.9rem", textDecoration: "none", color: "#6b7280", fontWeight: 600, transition: "color 0.2s" }}>
-              Email Examples
-            </Link>
-            <Link href="/feedback" className="btn-cta" style={{ padding: "10px 24px", fontSize: "0.9rem", textDecoration: "none" }}>
-              Feedback
-            </Link>
-            {saved.length > 0 && (
-              <button onClick={() => setShowSaved(!showSaved)} className={`pill ${showSaved ? "pill-active" : ""}`} style={{ padding: "10px 24px", fontSize: "1rem" }}>
-                Saved ({saved.length})
+      {/* ====== FLOATING PILL NAV ====== */}
+      <nav className="rm-floating-nav">
+        <div className="rm-nav-pill">
+          <Link href="/" className="rm-nav-logo">&#127807; Research Match</Link>
+          <div className="rm-nav-spacer" />
+          {saved.length > 0 && (
+            <button
+              onClick={() => setShowSaved(!showSaved)}
+              className={`rm-nav-saved${showSaved ? " rm-nav-saved-active" : ""}`}
+            >
+              Saved ({saved.length})
+            </button>
+          )}
+          <Link href="/examples" className="rm-nav-link">Examples</Link>
+          <Link href="/feedback" className="rm-nav-link">Feedback</Link>
+          {!user ? (
+            <>
+              <button onClick={() => { setShowAuthModal(true); setAuthMode("login"); setAuthError(""); }} className="rm-nav-btn">
+                Log in
               </button>
-            )}
-            {!user ? (
-              <>
-                <button onClick={() => { setShowAuthModal(true); setAuthMode("login"); setAuthError(""); }} className="btn-secondary" style={{ padding: "10px 20px", fontSize: "0.85rem" }}>Log in</button>
-                <button onClick={() => { setShowAuthModal(true); setAuthMode("signup"); setAuthError(""); }} className="btn-cta" style={{ padding: "10px 20px", fontSize: "0.85rem" }}>Sign up</button>
-              </>
+              <button onClick={() => { setShowAuthModal(true); setAuthMode("signup"); setAuthError(""); }} className="btn-cta rm-nav-cta">
+                Sign up
+              </button>
+            </>
+          ) : (
+            <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+              {isFree && (
+                <button onClick={() => setShowUpgradeModal(true)} style={{ fontSize: "0.78rem", fontWeight: 700, color: "#A8893E", background: "rgba(196, 162, 101, 0.12)", padding: "7px 14px", borderRadius: "999px", border: "1px solid rgba(196, 162, 101, 0.25)", cursor: "pointer", transition: "all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)", fontFamily: "'Playfair Display', Georgia, serif", whiteSpace: "nowrap" }}>
+                  Upgrade
+                </button>
+              )}
+              {isPaid && profile?.plan_type === "lifetime" && (
+                <span className="rm-nav-badge" style={{ color: "#fff", background: "linear-gradient(135deg, #2d5a3d, #2E9E72)" }}>Lifetime</span>
+              )}
+              {isPaid && profile?.plan_type !== "lifetime" && (
+                <span className="rm-nav-badge" style={{ color: "#fff", background: "#2d5a3d" }}>Student</span>
+              )}
+              <Link href="/profile" style={{
+                width: "36px", height: "36px", borderRadius: "50%",
+                background: "linear-gradient(135deg, #2d5a3d, #2E9E72)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                color: "#fff", fontSize: "0.82rem", fontWeight: 700,
+                textDecoration: "none", transition: "transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease",
+                boxShadow: "0 2px 8px rgba(45, 90, 61, 0.25)",
+                border: "2px solid rgba(255,255,255,0.45)",
+                flexShrink: 0,
+              }} className="profile-avatar">
+                {user.email?.charAt(0).toUpperCase()}
+              </Link>
+            </div>
+          )}
+        </div>
+      </nav>
+
+      <main className={`rm-page rm-app-body ${revealPhase === "done" ? "rm-page-revealed" : revealPhase === "content" ? "rm-page-revealing" : "rm-page-hidden"}`}>
+
+        {/* ====== HERO (empty / initial state) ====== */}
+        {!showSaved && results.length === 0 && !loading ? (
+          <div className="rm-hero">
+            <div className="rm-hero-eyebrow">
+              <span>&#127807;</span> Research Match
+            </div>
+            <h1 className="rm-hero-title">
+              Find your research<br />professor.
+            </h1>
+            <p className="rm-hero-subtitle">
+              Match with professors who align with your interests — and craft the perfect cold email.
+            </p>
+
+            {/* Mode toggle */}
+            <div className="mode-toggle" ref={toggleRef}>
+              <div
+                className="mode-toggle-slider"
+                style={{
+                  left: searchMode === "interest"
+                    ? (btnInterestRef.current?.offsetLeft ?? 4) + "px"
+                    : (btnNameRef.current?.offsetLeft ?? 100) + "px",
+                  width: searchMode === "interest"
+                    ? (btnInterestRef.current?.offsetWidth ?? 110) + "px"
+                    : (btnNameRef.current?.offsetWidth ?? 95) + "px",
+                }}
+              />
+              <button ref={btnInterestRef} onClick={() => setSearchMode("interest")} className={`mode-toggle-btn ${searchMode === "interest" ? "mode-toggle-btn-active" : ""}`}>By Interest</button>
+              <button ref={btnNameRef} onClick={() => setSearchMode("name")} className={`mode-toggle-btn ${searchMode === "name" ? "mode-toggle-btn-active" : ""}`}>By Name</button>
+            </div>
+
+            {/* Hero search */}
+            {searchMode === "interest" ? (
+              <div className="glass-search rm-search rm-hero-search">
+                <div className="rm-search-input-wrap" ref={suggestionsRef} style={{ position: "relative" }}>
+                  <label className="rm-search-label">Research Interest</label>
+                  <input
+                    value={query}
+                    onChange={(e) => { setQuery(e.target.value); setShowSuggestions(true); }}
+                    onFocus={() => setShowSuggestions(true)}
+                    onKeyDown={(e) => { if (e.key === "Enter") { setShowSuggestions(false); search(); } }}
+                    placeholder={PLACEHOLDER_EXAMPLES[placeholderIdx]}
+                    className="rm-search-input"
+                  />
+                  {showSuggestions && filteredSuggestions.length > 0 && (
+                    <div className="suggestions-dropdown">
+                      {filteredSuggestions.slice(0, 8).map((s, i) => (
+                        <button key={i} className="suggestion-item" onClick={() => { setQuery(s); setShowSuggestions(false); }}>{s}</button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="rm-search-divider" />
+                <div className="rm-uni-field">
+                  <label className="rm-search-label">University</label>
+                  <input value={university} onChange={(e) => setUniversity(e.target.value)} onKeyDown={(e) => e.key === "Enter" && search()} placeholder="e.g. MIT, Stanford..." className="rm-search-input" />
+                </div>
+                <button data-search-btn onClick={search} className="btn-cta rm-search-btn">Search</button>
+              </div>
             ) : (
-              <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                {isFree && <button onClick={() => setShowUpgradeModal(true)} style={{ fontSize: "0.75rem", fontWeight: 600, color: "#2d5a3d", background: "rgba(45, 90, 61,0.1)", padding: "6px 14px", borderRadius: "999px", border: "none", cursor: "pointer", transition: "all 0.2s" }}>Upgrade</button>}
-                {isPaid && profile?.plan_type === "lifetime" && <span style={{ fontSize: "0.7rem", fontWeight: 700, color: "#ffffff", background: "linear-gradient(135deg, #2d5a3d, #2E9E72)", padding: "4px 12px", borderRadius: "999px" }}>Lifetime</span>}
-                {isPaid && profile?.plan_type !== "lifetime" && <span style={{ fontSize: "0.7rem", fontWeight: 700, color: "#ffffff", background: "#2d5a3d", padding: "4px 12px", borderRadius: "999px" }}>Student</span>}
-                <Link href="/profile" style={{
-                  width: "38px", height: "38px", borderRadius: "50%",
-                  background: "linear-gradient(135deg, #2d5a3d, #2E9E72)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  color: "#ffffff", fontSize: "0.85rem", fontWeight: 700,
-                  textDecoration: "none", transition: "transform 0.2s, box-shadow 0.2s",
-                  boxShadow: "0 2px 8px rgba(45, 90, 61,0.2)",
-                  border: "2px solid rgba(255,255,255,0.4)",
-                }} className="profile-avatar">
-                  {user.email?.charAt(0).toUpperCase()}
-                </Link>
+              <div className="glass-search rm-search rm-hero-search">
+                <div className="rm-search-input-wrap" style={{ flex: 1 }}>
+                  <label className="rm-search-label">Professor Name</label>
+                  <input value={profName} onChange={(e) => setProfName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && searchByName()} placeholder="e.g. Geoffrey Hinton, Fei-Fei Li..." className="rm-search-input" />
+                </div>
+                <button onClick={searchByName} className="btn-cta rm-search-btn">Search</button>
               </div>
             )}
-          </div>
-        </div>
 
-        {/* SEARCH MODE TOGGLE */}
-        {!showSaved && (
-          <div className="mode-toggle" ref={toggleRef}>
-            <div
-              className="mode-toggle-slider"
-              style={{
-                left: searchMode === "interest"
-                  ? (btnInterestRef.current?.offsetLeft ?? 4) + "px"
-                  : (btnNameRef.current?.offsetLeft ?? 100) + "px",
-                width: searchMode === "interest"
-                  ? (btnInterestRef.current?.offsetWidth ?? 110) + "px"
-                  : (btnNameRef.current?.offsetWidth ?? 95) + "px",
-              }}
-            />
-            <button
-              ref={btnInterestRef}
-              onClick={() => setSearchMode("interest")}
-              className={`mode-toggle-btn ${searchMode === "interest" ? "mode-toggle-btn-active" : ""}`}
-            >
-              By Interest
-            </button>
-            <button
-              ref={btnNameRef}
-              onClick={() => setSearchMode("name")}
-              className={`mode-toggle-btn ${searchMode === "name" ? "mode-toggle-btn-active" : ""}`}
-            >
-              By Name
-            </button>
+            {error && <p style={{ textAlign: "center", fontSize: "1rem", color: "#c45c5c", marginTop: "20px" }}>{error}</p>}
           </div>
-        )}
 
-        {/* SEARCH */}
-        {!showSaved && searchMode === "interest" && (
-          <div className="glass-search rm-search">
-            <div className="rm-search-input-wrap" ref={suggestionsRef} style={{ position: "relative" }}>
-              <label className="rm-search-label">Research Interest</label>
-              <input
-                value={query}
-                onChange={(e) => { setQuery(e.target.value); setShowSuggestions(true); }}
-                onFocus={() => setShowSuggestions(true)}
-                onKeyDown={(e) => { if (e.key === "Enter") { setShowSuggestions(false); search(); } }}
-                placeholder={PLACEHOLDER_EXAMPLES[placeholderIdx]}
-                className="rm-search-input"
-              />
-              {showSuggestions && filteredSuggestions.length > 0 && (
-                <div className="suggestions-dropdown">
-                  {filteredSuggestions.slice(0, 8).map((s, i) => (
-                    <button
-                      key={i}
-                      className="suggestion-item"
-                      onClick={() => { setQuery(s); setShowSuggestions(false); }}
-                    >
-                      {s}
-                    </button>
-                  ))}
-                </div>
+        ) : (
+          /* ====== COMPACT SEARCH + RESULTS ====== */
+          <>
+            <div className="rm-compact-header">
+              {!showSaved && (
+                <>
+                  <div className="mode-toggle" ref={toggleRef}>
+                    <div
+                      className="mode-toggle-slider"
+                      style={{
+                        left: searchMode === "interest"
+                          ? (btnInterestRef.current?.offsetLeft ?? 4) + "px"
+                          : (btnNameRef.current?.offsetLeft ?? 100) + "px",
+                        width: searchMode === "interest"
+                          ? (btnInterestRef.current?.offsetWidth ?? 110) + "px"
+                          : (btnNameRef.current?.offsetWidth ?? 95) + "px",
+                      }}
+                    />
+                    <button ref={btnInterestRef} onClick={() => setSearchMode("interest")} className={`mode-toggle-btn ${searchMode === "interest" ? "mode-toggle-btn-active" : ""}`}>By Interest</button>
+                    <button ref={btnNameRef} onClick={() => setSearchMode("name")} className={`mode-toggle-btn ${searchMode === "name" ? "mode-toggle-btn-active" : ""}`}>By Name</button>
+                  </div>
+                  {searchMode === "interest" ? (
+                    <div className="glass-search rm-search">
+                      <div className="rm-search-input-wrap" ref={suggestionsRef} style={{ position: "relative" }}>
+                        <label className="rm-search-label">Research Interest</label>
+                        <input
+                          value={query}
+                          onChange={(e) => { setQuery(e.target.value); setShowSuggestions(true); }}
+                          onFocus={() => setShowSuggestions(true)}
+                          onKeyDown={(e) => { if (e.key === "Enter") { setShowSuggestions(false); search(); } }}
+                          placeholder={PLACEHOLDER_EXAMPLES[placeholderIdx]}
+                          className="rm-search-input"
+                        />
+                        {showSuggestions && filteredSuggestions.length > 0 && (
+                          <div className="suggestions-dropdown">
+                            {filteredSuggestions.slice(0, 8).map((s, i) => (
+                              <button key={i} className="suggestion-item" onClick={() => { setQuery(s); setShowSuggestions(false); }}>{s}</button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      <div className="rm-search-divider" />
+                      <div className="rm-uni-field">
+                        <label className="rm-search-label">University</label>
+                        <input value={university} onChange={(e) => setUniversity(e.target.value)} onKeyDown={(e) => e.key === "Enter" && search()} placeholder="e.g. MIT, Stanford..." className="rm-search-input" />
+                      </div>
+                      <button data-search-btn onClick={search} className="btn-cta rm-search-btn">Search</button>
+                    </div>
+                  ) : (
+                    <div className="glass-search rm-search">
+                      <div className="rm-search-input-wrap" style={{ flex: 1 }}>
+                        <label className="rm-search-label">Professor Name</label>
+                        <input value={profName} onChange={(e) => setProfName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && searchByName()} placeholder="e.g. Geoffrey Hinton, Fei-Fei Li..." className="rm-search-input" />
+                      </div>
+                      <button onClick={searchByName} className="btn-cta rm-search-btn">Search</button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
-            <div className="rm-search-divider" />
-            <div className="rm-uni-field">
-              <label className="rm-search-label">University</label>
-              <input value={university} onChange={(e) => setUniversity(e.target.value)} onKeyDown={(e) => e.key === "Enter" && search()} placeholder="e.g. MIT, Stanford..." className="rm-search-input" />
-            </div>
-            <button data-search-btn onClick={search} className="btn-cta rm-search-btn">Search</button>
-          </div>
-        )}
-        {!showSaved && searchMode === "name" && (
-          <div className="glass-search rm-search">
-            <div className="rm-search-input-wrap" style={{ flex: 1 }}>
-              <label className="rm-search-label">Professor Name</label>
-              <input value={profName} onChange={(e) => setProfName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && searchByName()} placeholder="e.g. Geoffrey Hinton, Fei-Fei Li..." className="rm-search-input" />
-            </div>
-            <button onClick={searchByName} className="btn-cta rm-search-btn">Search</button>
-          </div>
-        )}
 
-        {/* STATUS */}
-        {loading && (
-          <div style={{ textAlign: "center", marginBottom: "32px" }}>
-            <span className="loading-spinner">&#127807;</span>
-            <p style={{ fontSize: "1.1rem", color: "#6b7280", marginTop: "12px" }}>Searching...</p>
-          </div>
-        )}
-        {error && <p style={{ textAlign: "center", fontSize: "1.1rem", color: "#c45c5c", marginBottom: "32px" }}>{error}</p>}
+            {/* STATUS */}
+            {loading && (
+              <div style={{ textAlign: "center", marginBottom: "32px" }}>
+                <span className="loading-spinner">&#127807;</span>
+                <p style={{ fontSize: "1.1rem", color: "#6b7280", marginTop: "12px" }}>Searching...</p>
+              </div>
+            )}
+            {error && <p style={{ textAlign: "center", fontSize: "1.1rem", color: "#c45c5c", marginBottom: "32px" }}>{error}</p>}
 
-        {!showSaved && results.length > 0 && (
-          <p style={{ fontSize: "1rem", color: "#6b7280", marginBottom: "32px" }}>
-            Showing results for <span style={{ color: "#2d5a3d", fontWeight: 700 }}>{resolvedTopic}</span>
-            {resolvedInstitution && <> at <span style={{ color: "#2d5a3d", fontWeight: 700 }}>{resolvedInstitution}</span></>}
-          </p>
-        )}
-        {showSaved && <p style={{ fontSize: "1rem", color: "#6b7280", marginBottom: "32px" }}>Your saved professors ({saved.length})</p>}
+            {!showSaved && results.length > 0 && (
+              <p style={{ fontSize: "1rem", color: "#6b7280", marginBottom: "32px" }}>
+                Showing results for <span style={{ color: "#2d5a3d", fontWeight: 700 }}>{resolvedTopic}</span>
+                {resolvedInstitution && <> at <span style={{ color: "#2d5a3d", fontWeight: 700 }}>{resolvedInstitution}</span></>}
+              </p>
+            )}
+            {showSaved && <p style={{ fontSize: "1rem", color: "#6b7280", marginBottom: "32px" }}>Your saved professors ({saved.length})</p>}
 
         {/* CARDS */}
         <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
@@ -1371,6 +1425,9 @@ function AppPageInner() {
               ))}
             </div>
           </div>
+        )}
+
+          </>
         )}
 
         {/* EMAIL MODAL */}
