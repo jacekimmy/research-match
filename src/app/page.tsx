@@ -161,19 +161,19 @@ export default function LandingPage() {
 
       {/* Hero */}
       <section className="landing-hero landing-section" style={{
-        maxWidth: "900px", margin: "0 auto", padding: "80px 40px 60px",
+        maxWidth: "900px", margin: "0 auto", padding: "60px 40px 48px",
         textAlign: "center",
       }}>
         <h1 style={{
           fontSize: "clamp(2.4rem, 5.5vw, 4rem)", fontWeight: 800,
-          color: "#1C7A56", lineHeight: 1.1, marginBottom: "28px",
+          color: "#1C7A56", lineHeight: 1.1, marginBottom: "20px",
           letterSpacing: "-0.03em",
         }}>
           Land Your Next Research Position.
         </h1>
         <p style={{
           fontSize: "clamp(1.05rem, 2vw, 1.3rem)", color: "#4A5D50",
-          lineHeight: 1.7, maxWidth: "640px", margin: "0 auto 28px",
+          lineHeight: 1.7, maxWidth: "640px", margin: "0 auto 22px",
         }}>
           Find professors, understand their papers, and write emails that don&apos;t get deleted.
         </p>
@@ -250,11 +250,6 @@ export default function LandingPage() {
           </button>
         </div>
 
-        <p className="hero-social" style={{
-          fontSize: "0.95rem", color: "#7A8E80", fontStyle: "italic", marginBottom: "16px",
-        }}>
-          {/* Princeton social proof moved to testimonials */}
-        </p>
         <a href="#pricing" style={{
           fontSize: "0.85rem", color: "#7A8E80", textDecoration: "underline",
           textUnderlineOffset: "3px",
@@ -269,7 +264,7 @@ export default function LandingPage() {
 
       {/* Stats Bar */}
       <section style={{
-        background: "#ede8df", padding: "24px 40px",
+        background: "#ede8df", padding: "40px 40px",
         borderTop: "1px solid rgba(0,0,0,0.04)", borderBottom: "1px solid rgba(0,0,0,0.04)",
       }}>
         <div style={{
@@ -293,7 +288,7 @@ export default function LandingPage() {
 
       {/* University Logos */}
       <section style={{
-        maxWidth: "1000px", margin: "0 auto", padding: "40px 40px 20px",
+        maxWidth: "1000px", margin: "0 auto", padding: "90px 40px 20px",
         textAlign: "center",
       }}>
         <p style={{ fontSize: "0.8rem", color: "#95AD9D", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "20px", fontWeight: 600 }}>
