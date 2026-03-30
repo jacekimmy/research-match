@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMobile } from "@/lib/use-mobile";
 import MobileLanding from "./mobile-landing";
+import EmailCheckerDemo from "./components/EmailCheckerDemo";
+import StarterKitModal from "./components/StarterKitModal";
 
 const HERO_PLACEHOLDERS = [
   "e.g. machine learning",
@@ -49,6 +51,7 @@ export default function LandingPage() {
   const [inlineWaitlistEmail, setInlineWaitlistEmail] = useState("");
   const [inlineWaitlistDone, setInlineWaitlistDone] = useState(false);
   const [lifetimeSpotsRemaining, setLifetimeSpotsRemaining] = useState<number | null>(null);
+  const [showStarterKit, setShowStarterKit] = useState(false);
 
   async function joinWaitlist() {
     if (!waitlistEmail || !waitlistTier) return;
@@ -552,6 +555,42 @@ export default function LandingPage() {
         </p>
       </section>
 
+      {/* Email Checker Demo */}
+      <section className="landing-section" style={{
+        maxWidth: "800px", margin: "0 auto", padding: "0 40px 80px",
+      }}>
+        <EmailCheckerDemo />
+      </section>
+
+      {/* Free Starter Kit CTA */}
+      <section className="landing-section" style={{
+        maxWidth: "700px", margin: "0 auto", padding: "0 40px 80px", textAlign: "center",
+      }}>
+        <div className="glass-card" style={{
+          padding: "36px", border: "2px solid rgba(28,122,86,0.15)",
+          background: "linear-gradient(135deg, rgba(28,122,86,0.04), rgba(184,216,196,0.08))",
+        }}>
+          <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#1C7A56", marginBottom: "12px" }}>
+            Free: The Research Position Starter Kit
+          </h3>
+          <p style={{ fontSize: "0.95rem", color: "#4A5D50", lineHeight: 1.7, marginBottom: "20px" }}>
+            A one-page guide with the exact email format, what to avoid, and the secret weapon line that turns rejections into leads. Based on advice from 30+ real professors.
+          </p>
+          <button
+            onClick={() => setShowStarterKit(true)}
+            style={{
+              padding: "14px 36px", fontSize: "1rem", fontWeight: 700,
+              fontFamily: "'Playfair Display', Georgia, serif",
+              border: "none", borderRadius: "14px", cursor: "pointer",
+              color: "#F5F0E6", background: "#1C7A56",
+              transition: "all 0.3s ease",
+            }}
+          >
+            Download Free Starter Kit
+          </button>
+        </div>
+      </section>
+
       {/* Social proof */}
       <section className="landing-section" style={{
         maxWidth: "1000px", margin: "0 auto", padding: "0 40px 40px",
@@ -883,11 +922,15 @@ export default function LandingPage() {
         <span style={{ fontSize: "0.9rem", color: "#7A8E80", fontWeight: 600 }}>Research Match</span>
         <div style={{ display: "flex", gap: "28px" }}>
           <Link href="/app" style={{ fontSize: "0.85rem", color: "#7A8E80", textDecoration: "none", transition: "color 0.2s" }}>Tool</Link>
+          <Link href="/examples" style={{ fontSize: "0.85rem", color: "#7A8E80", textDecoration: "none", transition: "color 0.2s" }}>Examples</Link>
           <Link href="/blog" style={{ fontSize: "0.85rem", color: "#7A8E80", textDecoration: "none", transition: "color 0.2s" }}>Blog</Link>
           <a href="#pricing" style={{ fontSize: "0.85rem", color: "#7A8E80", textDecoration: "none", transition: "color 0.2s" }}>Pricing</a>
           <Link href="/feedback" style={{ fontSize: "0.85rem", color: "#7A8E80", textDecoration: "none", transition: "color 0.2s" }}>Feedback</Link>
         </div>
       </footer>
+
+      {/* Starter Kit Modal */}
+      <StarterKitModal isOpen={showStarterKit} onClose={() => setShowStarterKit(false)} />
 
       {/* Waitlist modal (kept for any future use) */}
       {waitlistTier && (

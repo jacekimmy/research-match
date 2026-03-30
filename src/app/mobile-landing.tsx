@@ -2,6 +2,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import EmailCheckerDemo from "./components/EmailCheckerDemo";
+import StarterKitModal from "./components/StarterKitModal";
 
 const HERO_PLACEHOLDERS = [
   "e.g. machine learning",
@@ -44,6 +46,7 @@ export default function MobileLanding() {
   const [inlineWaitlistDone, setInlineWaitlistDone] = useState(false);
   const [lifetimeSpotsRemaining, setLifetimeSpotsRemaining] = useState<number | null>(null);
   const [glowingCard, setGlowingCard] = useState<string | null>(null);
+  const [showStarterKit, setShowStarterKit] = useState(false);
   const splotchRefs = useRef<(HTMLDivElement | null)[]>([]);
   const timelineRefs = useRef<(HTMLDivElement | null)[]>([]);
   const testimonialRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -200,10 +203,10 @@ export default function MobileLanding() {
         </Link>
       </nav>
 
-      <div style={{ height: "28px" }} />
+      <div style={{ height: "24px" }} />
 
       {/* Hero */}
-      <section style={{ padding: "24px 20px 40px", textAlign: "center" }}>
+      <section style={{ padding: "32px 20px 72px", textAlign: "center" }}>
         <h1 style={{
           fontSize: "1.9rem", fontWeight: 800,
           color: "#1C7A56", lineHeight: 1.12, marginBottom: "20px",
@@ -282,11 +285,6 @@ export default function MobileLanding() {
           </button>
         </div>
 
-        <p style={{
-          fontSize: "0.9rem", color: "#7A8E80", fontStyle: "italic", marginBottom: "12px",
-        }}>
-          {/* Princeton social proof moved to testimonials */}
-        </p>
         <a href="#pricing" style={{
           fontSize: "0.85rem", color: "#7A8E80", textDecoration: "underline",
           textUnderlineOffset: "3px",
@@ -297,8 +295,8 @@ export default function MobileLanding() {
 
       {/* Stats bar */}
       <section style={{
-        background: "#ede8df", padding: "20px",
-        display: "flex", flexDirection: "column", gap: "16px",
+        background: "#ede8df", padding: "52px 20px",
+        display: "flex", flexDirection: "column", gap: "32px",
         borderTop: "1px solid rgba(168,196,178,0.3)",
         borderBottom: "1px solid rgba(168,196,178,0.3)",
         margin: "0 0 0 0",
@@ -320,7 +318,7 @@ export default function MobileLanding() {
       </section>
 
       {/* University badges */}
-      <section style={{ padding: "32px 20px 0" }}>
+      <section style={{ padding: "72px 20px 36px" }}>
         <p style={{
           fontSize: "0.7rem", fontWeight: 700, color: "#7A8E80",
           textTransform: "uppercase", letterSpacing: "0.12em",
@@ -341,7 +339,7 @@ export default function MobileLanding() {
       </section>
 
       {/* How it works — vertical timeline */}
-      <section style={{ padding: "40px 20px 50px" }}>
+      <section style={{ padding: "72px 20px 84px" }}>
         <h2 style={{
           fontSize: "1.6rem", fontWeight: 700, color: "#1C7A56",
           textAlign: "center", marginBottom: "12px",
@@ -364,7 +362,7 @@ export default function MobileLanding() {
               style={{
                 position: "relative",
                 paddingLeft: "48px",
-                paddingBottom: i < steps.length - 1 ? "40px" : "0",
+                paddingBottom: i < steps.length - 1 ? "52px" : "0",
               }}
             >
               {/* Timeline line */}
@@ -430,9 +428,9 @@ export default function MobileLanding() {
       </section>
 
       {/* Email checker callout */}
-      <section style={{ padding: "0 20px 50px" }}>
+      <section style={{ padding: "20px 20px 100px" }}>
         <div style={{
-          padding: "32px 24px", textAlign: "center",
+          padding: "36px 24px", textAlign: "center",
           border: "2px solid rgba(28,122,86,0.2)",
           background: "rgba(28,122,86,0.04)",
           borderRadius: "20px",
@@ -449,7 +447,7 @@ export default function MobileLanding() {
       </section>
 
       {/* Why cold emails fail */}
-      <section style={{ padding: "0 20px 50px" }}>
+      <section style={{ padding: "20px 20px 100px" }}>
         <h2 style={{
           fontSize: "1.5rem", fontWeight: 700, color: "#1C7A56",
           textAlign: "center", marginBottom: "12px",
@@ -462,7 +460,7 @@ export default function MobileLanding() {
           background: "linear-gradient(90deg, transparent, #A8C4B2, transparent)",
           borderRadius: 2,
         }} />
-        <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
           {coldEmailPoints.map((point, i) => (
             <div
               key={i}
@@ -487,8 +485,44 @@ export default function MobileLanding() {
         </p>
       </section>
 
+      {/* Email Checker Demo */}
+      <section style={{ padding: "20px 20px 100px" }}>
+        <EmailCheckerDemo />
+      </section>
+
+      {/* Free Starter Kit CTA */}
+      <section style={{ padding: "20px 20px 100px" }}>
+        <div style={{
+          padding: "32px 24px", textAlign: "center",
+          border: "2px solid rgba(28,122,86,0.15)",
+          background: "linear-gradient(135deg, rgba(28,122,86,0.04), rgba(184,216,196,0.08))",
+          borderRadius: "20px",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
+        }}>
+          <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#1C7A56", marginBottom: "10px", fontFamily: "'Playfair Display', Georgia, serif" }}>
+            Free: The Research Position Starter Kit
+          </h3>
+          <p style={{ fontSize: "0.9rem", color: "#4A5D50", lineHeight: 1.7, marginBottom: "18px" }}>
+            The exact email format, what to avoid, and the secret weapon line. Based on advice from 30+ real professors.
+          </p>
+          <button
+            onClick={() => setShowStarterKit(true)}
+            style={{
+              padding: "14px 32px", fontSize: "0.95rem", fontWeight: 700,
+              fontFamily: "'Playfair Display', Georgia, serif",
+              border: "none", borderRadius: "14px", cursor: "pointer",
+              color: "#F5F0E6", background: "#1C7A56",
+              width: "100%", minHeight: "48px",
+            }}
+          >
+            Download Free Starter Kit
+          </button>
+        </div>
+      </section>
+
       {/* Social proof — stacked testimonials */}
-      <section style={{ padding: "0 20px 50px" }}>
+      <section style={{ padding: "20px 20px 100px" }}>
         <h2 style={{
           fontSize: "1.5rem", fontWeight: 700, color: "#1C7A56",
           textAlign: "center", marginBottom: "12px",
@@ -501,7 +535,7 @@ export default function MobileLanding() {
           background: "linear-gradient(90deg, transparent, #A8C4B2, transparent)",
           borderRadius: 2,
         }} />
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "22px" }}>
           {testimonials.map((item, i) => (
             <div
               key={i}
@@ -538,7 +572,7 @@ export default function MobileLanding() {
       </section>
 
       {/* Founder note */}
-      <section style={{ padding: "0 20px 50px" }}>
+      <section style={{ padding: "20px 20px 100px" }}>
         <div style={{
           padding: "28px 24px", borderLeft: "4px solid #1C7A56",
           background: "rgba(28,122,86,0.03)", borderRadius: "0 14px 14px 0",
@@ -556,7 +590,7 @@ export default function MobileLanding() {
       </section>
 
       {/* Pricing — stacked vertically, Lifetime first */}
-      <section id="pricing" style={{ padding: "30px 20px 40px" }}>
+      <section id="pricing" style={{ padding: "40px 20px 60px" }}>
         <h2 style={{
           fontSize: "1.6rem", fontWeight: 700, color: "#1C7A56",
           textAlign: "center", marginBottom: "12px",
@@ -611,7 +645,7 @@ export default function MobileLanding() {
           </div>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
           {/* Lifetime — Gold Premium (first on mobile) */}
           <div
             ref={(el) => { pricingRefs.current[0] = el; }}
@@ -864,6 +898,9 @@ export default function MobileLanding() {
           <Link href="/feedback" style={{ fontSize: "0.85rem", color: "#7A8E80", textDecoration: "none" }}>Feedback</Link>
         </div>
       </footer>
+
+      {/* Starter Kit Modal */}
+      <StarterKitModal isOpen={showStarterKit} onClose={() => setShowStarterKit(false)} />
 
       {/* Waitlist modal */}
       {waitlistTier && (

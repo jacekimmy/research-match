@@ -840,6 +840,9 @@ function AppPageInner() {
             </p>
           </div>
           <div style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
+            <Link href="/examples" style={{ padding: "10px 24px", fontSize: "0.9rem", textDecoration: "none", color: "#7A8E80", fontWeight: 600, transition: "color 0.2s" }}>
+              Email Examples
+            </Link>
             <Link href="/feedback" className="btn-cta" style={{ padding: "10px 24px", fontSize: "0.9rem", textDecoration: "none" }}>
               Feedback
             </Link>
