@@ -2369,7 +2369,7 @@ body::after {
   color: #1a1a1a;
   line-height: 1.07;
   letter-spacing: -0.03em;
-  margin-bottom: 22px;
+  margin-bottom: 48px;
   font-family: 'Playfair Display', Georgia, serif;
   animation: heroTitleIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both;
 }
@@ -2395,7 +2395,7 @@ body::after {
 }
 
 .rm-hero .mode-toggle {
-  margin-bottom: 18px;
+  margin-bottom: 28px;
   animation: heroSubIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.26s both;
 }
 
