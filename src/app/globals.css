@@ -2908,7 +2908,7 @@ body::after {
 }
 
 .lp-hero-title-em {
-  font-style: italic;
+  font-style: normal;
   color: #2d5a3d;
   display: block;
 }
