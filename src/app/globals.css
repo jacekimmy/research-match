@@ -2401,13 +2401,13 @@ body::after {
 
 .rm-hero-search {
   width: 100%;
-  max-width: 760px;
+  max-width: 800px;
   margin-bottom: 0 !important;
   animation: heroSubIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.32s both;
 }
 
 .rm-hero-search .rm-search-input {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
 }
 
 .rm-hero-search .rm-search-label {
@@ -2415,15 +2415,15 @@ body::after {
 }
 
 .rm-hero-search .rm-search-input-wrap {
-  padding: 12px 20px;
+  padding: 14px 20px;
 }
 
 .rm-hero-search .rm-uni-field {
-  padding: 12px 20px;
+  padding: 14px 20px;
 }
 
 .rm-hero-search .rm-search-btn {
-  padding: 22px 52px;
+  padding: 24px 56px;
   font-size: 1.15rem;
 }
 
@@ -2437,27 +2437,58 @@ body::after {
 
 @media (max-width: 768px) {
   .rm-floating-nav {
-    top: 12px;
-    width: calc(100% - 24px);
+    top: 10px;
+    width: calc(100% - 20px);
   }
 
   .rm-nav-pill {
     padding: 6px 8px 6px 14px;
-    gap: 4px;
+    gap: 3px;
   }
 
   .rm-nav-link { display: none; }
 
-  .rm-hero {
-    min-height: calc(100vh - 160px);
-    padding: 0 16px;
+  /* Shrink nav logo text on very small screens */
+  .rm-nav-logo {
+    font-size: 0.9rem;
   }
 
-  .rm-hero-title { font-size: 2.4rem; }
+  .rm-hero {
+    min-height: calc(100vh - 140px);
+    padding: 0 16px 100px;
+  }
+
+  .rm-hero-title { font-size: 2.3rem; }
 
   .rm-hero-subtitle {
     font-size: 0.95rem;
-    margin-bottom: 32px;
+    margin-bottom: 28px;
+  }
+
+  /* Hero search stacks vertically on mobile */
+  .rm-hero-search {
+    max-width: 100%;
+  }
+
+  .rm-hero-search .rm-search-input {
+    font-size: 1rem;
+  }
+
+  .rm-hero-search .rm-search-input-wrap {
+    padding: 10px 16px;
+  }
+
+  .rm-hero-search .rm-uni-field {
+    padding: 10px 16px;
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .rm-hero-search .rm-search-btn {
+    padding: 16px 20px;
+    font-size: 1rem;
+    width: 100%;
+    margin-top: 12px;
   }
 
   .rm-app-body {
@@ -2467,4 +2498,14 @@ body::after {
   }
 
   .rm-card { padding: 24px 20px; }
+
+  /* Compact header on mobile */
+  .rm-compact-header {
+    margin-bottom: 24px;
+  }
+
+  /* Suggestions dropdown full width on mobile */
+  .suggestions-dropdown {
+    border-radius: 12px;
+  }
 }
