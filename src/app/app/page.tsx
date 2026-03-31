@@ -820,9 +820,10 @@ function AppPageInner() {
     }
   }
 
-  const filteredSuggestions = query.trim()
+  const filteredSuggestions = (query.trim()
     ? RESEARCH_SUGGESTIONS.filter((s) => s.toLowerCase().includes(query.toLowerCase()))
-    : RESEARCH_SUGGESTIONS;
+    : RESEARCH_SUGGESTIONS
+  ).slice().sort((a, b) => a.localeCompare(b));
 
   const profileUrl = (author: Author) => `https://openalex.org/authors/${author.id.split("/").pop()}`;
 
@@ -1137,7 +1138,7 @@ function AppPageInner() {
                   />
                   {showSuggestions && filteredSuggestions.length > 0 && (
                     <div className="suggestions-dropdown">
-                      {filteredSuggestions.slice(0, 8).map((s, i) => (
+                      {filteredSuggestions.map((s, i) => (
                         <button key={i} className="suggestion-item" onClick={() => { setQuery(s); setShowSuggestions(false); }}>{s}</button>
                       ))}
                     </div>
@@ -1198,7 +1199,7 @@ function AppPageInner() {
                         />
                         {showSuggestions && filteredSuggestions.length > 0 && (
                           <div className="suggestions-dropdown">
-                            {filteredSuggestions.slice(0, 8).map((s, i) => (
+                            {filteredSuggestions.map((s, i) => (
                               <button key={i} className="suggestion-item" onClick={() => { setQuery(s); setShowSuggestions(false); }}>{s}</button>
                             ))}
                           </div>
