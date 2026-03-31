@@ -2,8 +2,6 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMobile } from "@/lib/use-mobile";
-import MobileLanding from "./mobile-landing";
 import StarterKitModal from "./components/StarterKitModal";
 
 const HERO_PLACEHOLDERS = [
@@ -17,7 +15,6 @@ const HERO_PLACEHOLDERS = [
 ];
 
 export default function LandingPage() {
-  const isMobile = useMobile();
   const router = useRouter();
   const [heroQuery, setHeroQuery] = useState("");
   const [heroUni, setHeroUni] = useState("");
@@ -116,8 +113,6 @@ export default function LandingPage() {
     } catch { /* ignore */ }
     finally { setWaitlistLoading(false); }
   }
-
-  if (isMobile) return <MobileLanding />;
 
   return (
     <div className="lp-root">

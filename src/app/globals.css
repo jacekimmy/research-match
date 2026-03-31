@@ -3838,61 +3838,362 @@ body::after {
   font-style: italic;
 }
 
-/* ── LANDING MOBILE ── */
+/* ══════════════════════════════════════════════════════════
+   LANDING — MOBILE FIRST (≤ 860px)
+   Touch-optimized. Every tap target ≥ 44px. No hover jank.
+══════════════════════════════════════════════════════════ */
 @media (max-width: 860px) {
+
+  /* ── Nav ── */
+  .lp-nav {
+    width: calc(100% - 24px);
+    top: 12px;
+  }
+  .lp-nav-pill {
+    padding: 8px 8px 8px 16px;
+    gap: 6px;
+  }
   .lp-nav-links { display: none; }
-  .lp-nav { width: calc(100% - 24px); top: 12px; }
-  .lp-nav-pill { padding: 7px 8px 7px 16px; }
+  .lp-nav-logo {
+    font-size: 0.9rem;
+  }
+  .lp-nav-cta {
+    padding: 9px 16px;
+    font-size: 0.8rem;
+  }
+  /* Disable nav hover effects on touch */
+  .lp-nav-cta:hover { transform: none; box-shadow: 0 2px 12px rgba(45, 90, 61, 0.3); }
 
-  .lp-hero { padding: 100px 24px 80px; min-height: 100svh; }
-  .lp-hero-title { font-size: clamp(2.2rem, 8vw, 3.2rem); }
-  .lp-hero-sub { font-size: 0.95rem; br { display: none; } }
+  /* ── Hero ── */
+  .lp-hero {
+    padding: 90px 20px 60px;
+    min-height: 100svh;
+    min-height: 100vh; /* fallback */
+    justify-content: flex-start;
+    padding-top: max(90px, env(safe-area-inset-top, 0px) + 80px);
+  }
+  .lp-hero-inner {
+    gap: 0;
+    width: 100%;
+  }
+  .lp-hero-eyebrow {
+    font-size: 0.65rem;
+    padding: 5px 12px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .lp-hero-title {
+    font-size: clamp(2.1rem, 9.5vw, 3rem);
+    margin-bottom: 16px;
+    letter-spacing: -0.03em;
+  }
+  .lp-hero-sub {
+    font-size: 0.9rem;
+    margin-bottom: 28px;
+    max-width: 100%;
+  }
+  /* Hide <br> tags inside hero sub on mobile */
+  .lp-hero-sub br { display: none; }
 
+  /* ── Search bar ── */
   .lp-search-bar {
     flex-direction: column;
-    border-radius: 24px;
-    padding: 16px;
+    border-radius: 22px;
+    padding: 12px 12px 12px 12px;
     gap: 0;
+    margin-bottom: 16px;
+    /* Disable hover transform on mobile */
+    transform: none !important;
   }
-  .lp-search-field { padding: 8px 12px; width: 100%; }
-  .lp-search-divider { width: 100%; height: 1px; margin: 4px 0; }
-  .lp-search-btn { width: 100%; border-radius: 14px; margin-left: 0; margin-top: 8px; }
+  .lp-search-bar:hover { transform: none !important; }
+  .lp-search-field {
+    padding: 10px 14px;
+    width: 100%;
+  }
+  .lp-search-label {
+    font-size: 0.55rem;
+    margin-bottom: 2px;
+  }
+  .lp-search-input {
+    font-size: 1rem;
+  }
+  .lp-search-divider {
+    width: calc(100% - 28px);
+    height: 1px;
+    margin: 4px auto;
+  }
+  .lp-search-btn {
+    width: 100%;
+    border-radius: 14px;
+    margin-left: 0;
+    margin-top: 8px;
+    padding: 16px 20px;
+    font-size: 1rem;
+    /* Touch active state */
+    -webkit-tap-highlight-color: transparent;
+  }
+  .lp-search-btn:hover { transform: none; box-shadow: 0 4px 16px rgba(45,90,61,0.3); }
+  .lp-search-btn:active { transform: scale(0.98); }
 
-  .lp-proof-strip { flex-wrap: wrap; gap: 20px; padding: 32px 24px; }
-  .lp-proof-item { padding: 0 20px; border-right: none; }
+  .lp-hero-sub-actions {
+    flex-direction: column;
+    gap: 6px;
+  }
+  .lp-hero-divider-dot { display: none; }
+  .lp-ghost-btn {
+    font-size: 0.82rem;
+    padding: 8px 0;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-  .lp-features-section { padding: 80px 24px; }
-  .lp-feature { grid-template-columns: 1fr; gap: 40px; }
-  .lp-feature-rev { direction: ltr; }
-  .lp-feature-num { font-size: 3.5rem; }
-  .lp-feature-title { font-size: 1.6rem; }
+  /* Hide scroll cue on mobile — content starts immediately */
+  .lp-scroll-cue { display: none; }
 
-  .lp-dark-callout { padding: 80px 24px; }
-  .lp-dark-callout-title { font-size: 1.6rem; }
-  .lp-dark-reason { padding: 14px 18px; font-size: 0.88rem; }
+  /* ── Proof strip ── */
+  .lp-proof-strip {
+    flex-wrap: wrap;
+    gap: 0;
+    padding: 24px 16px;
+  }
+  .lp-proof-item {
+    flex: 1 1 45%;
+    padding: 12px 16px;
+    border-right: none;
+    border-bottom: 1px solid rgba(45,90,61,0.08);
+  }
+  .lp-proof-item:nth-child(odd) {
+    border-right: 1px solid rgba(45,90,61,0.08);
+  }
+  .lp-proof-item:nth-last-child(-n+2) {
+    border-bottom: none;
+  }
+  .lp-proof-num { font-size: 1.3rem; }
+  .lp-proof-label { font-size: 0.7rem; }
 
-  .lp-social-section { padding: 80px 0; }
-  .lp-quotes-track { padding: 0 24px 20px; }
+  /* ── Features ── */
+  .lp-features-section {
+    padding: 64px 20px 40px;
+  }
+  .lp-features-label {
+    margin-bottom: 40px;
+  }
+  .lp-feature {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding: 40px 0;
+  }
+  /* Always show text first on mobile, regardless of reverse */
+  .lp-feature-rev {
+    direction: ltr;
+  }
+  .lp-feature-rev .lp-feature-text {
+    order: 0;
+  }
+  .lp-feature-rev .lp-feature-visual {
+    order: 1;
+  }
+  .lp-feature-num {
+    font-size: 2.8rem;
+    margin-bottom: 8px;
+  }
+  .lp-feature-title {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+  }
+  .lp-feature-desc {
+    font-size: 0.88rem;
+    margin-bottom: 20px;
+    max-width: 100%;
+  }
+  .lp-feature-link {
+    font-size: 0.82rem;
+    padding: 12px 18px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .lp-feature-link:hover { transform: none; }
+  /* Shrink mockup slightly on mobile */
+  .lp-mockup-body { min-height: 220px; padding: 16px; }
+  .lp-feature:hover .lp-mockup { transform: none; box-shadow: 0 40px 100px rgba(0,0,0,0.18); }
 
-  .lp-founder-section { padding: 60px 24px; }
-  .lp-founder-inner { padding: 32px 28px; }
+  /* ── Dark callout ── */
+  .lp-dark-callout {
+    padding: 72px 20px;
+  }
+  .lp-dark-callout-title {
+    font-size: clamp(1.5rem, 6vw, 2rem);
+    margin-bottom: 32px;
+  }
+  .lp-dark-reasons {
+    gap: 10px;
+    margin-bottom: 36px;
+    text-align: left;
+  }
+  .lp-dark-reason {
+    padding: 14px 16px;
+    font-size: 0.84rem;
+    border-radius: 12px;
+    align-items: flex-start;
+  }
+  .lp-dark-cta {
+    padding: 16px 32px;
+    font-size: 0.95rem;
+    width: 100%;
+    justify-content: center;
+  }
+  .lp-dark-cta:hover { transform: none; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+  .lp-dark-cta:active { transform: scale(0.98); }
 
-  .lp-pricing-section { padding: 60px 24px; }
+  /* ── Testimonials ── */
+  .lp-social-section {
+    padding: 64px 0 48px;
+  }
+  .lp-social-label { margin-bottom: 32px; }
+  .lp-quotes-track {
+    padding: 0 20px 24px;
+    gap: 16px;
+    /* Snap to cards on mobile */
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  .lp-quote-card {
+    width: 82vw;
+    max-width: 320px;
+    scroll-snap-align: start;
+    flex-shrink: 0;
+    /* No hover lift on touch */
+  }
+  .lp-quote-card:hover { transform: none; box-shadow: 0 8px 32px rgba(45,90,61,0.07); }
+  .lp-quote-card:active { transform: scale(0.99); }
+
+  /* ── Founder ── */
+  .lp-founder-section {
+    padding: 48px 20px;
+  }
+  .lp-founder-inner {
+    padding: 28px 24px;
+    border-radius: 22px;
+  }
+  .lp-founder-quote-mark { font-size: 3.5rem; margin-bottom: 10px; }
+  .lp-founder-quote { font-size: 0.92rem; line-height: 1.75; }
+
+  /* ── Pricing ── */
+  .lp-pricing-section {
+    padding: 56px 20px 48px;
+  }
+  .lp-pricing-title { font-size: 1.8rem; }
+  .lp-pricing-sub { font-size: 0.88rem; }
   .lp-pricing-grid {
     display: flex;
-    overflow-x: auto;
+    flex-direction: column;
     gap: 16px;
-    scrollbar-width: none;
-    padding-bottom: 16px;
   }
-  .lp-pricing-grid::-webkit-scrollbar { display: none; }
-  .lp-price-card { min-width: 78vw; max-width: 300px; flex-shrink: 0; }
+  .lp-price-card {
+    min-width: unset;
+    max-width: 100%;
+    width: 100%;
+    flex-shrink: unset;
+    /* No hover on mobile */
+  }
+  .lp-price-card:hover { transform: none; box-shadow: 0 4px 24px rgba(45,90,61,0.06); }
+  .lp-price-card-featured:hover { transform: none; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+  .lp-price-card-lifetime:hover { transform: none; }
+  .lp-price-btn {
+    padding: 16px 20px;
+    min-height: 52px;
+    font-size: 1rem;
+  }
+  .lp-price-btn:hover { transform: none !important; }
+  .lp-price-btn:active { transform: scale(0.98) !important; }
 
-  .lp-final-cta { padding: 80px 24px; }
-  .lp-final-cta-title { font-size: 1.8rem; }
-  .lp-final-btn { padding: 16px 36px; font-size: 0.95rem; }
+  /* ── Billing toggle on mobile ── */
+  .lp-pricing-section .mode-toggle {
+    margin-bottom: 0;
+  }
 
-  .lp-footer { padding: 32px 24px; }
-  .lp-footer-inner { flex-direction: column; text-align: center; }
-  .lp-footer-links { flex-wrap: wrap; justify-content: center; gap: 16px; }
+  /* ── Waitlist ── */
+  .lp-waitlist { margin-top: 40px; }
+  .lp-waitlist-form {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+    align-items: stretch;
+  }
+  .lp-waitlist-input {
+    width: 100%;
+    font-size: 1rem;
+    padding: 14px 18px;
+  }
+  .lp-waitlist-form .btn-cta {
+    width: 100%;
+    min-height: 50px;
+  }
+
+  /* ── Final CTA ── */
+  .lp-final-cta {
+    padding: 80px 20px;
+  }
+  .lp-final-cta-title {
+    font-size: clamp(1.7rem, 7vw, 2.4rem);
+    margin-bottom: 12px;
+  }
+  .lp-final-cta-sub { font-size: 0.9rem; margin-bottom: 32px; }
+  .lp-final-cta-actions {
+    flex-direction: column;
+    gap: 14px;
+    align-items: stretch;
+  }
+  .lp-final-btn {
+    padding: 18px 24px;
+    font-size: 1rem;
+    border-radius: 16px;
+    justify-content: center;
+    min-height: 56px;
+    width: 100%;
+  }
+  .lp-final-btn:hover { transform: none; box-shadow: 0 8px 32px rgba(45,90,61,0.3); }
+  .lp-final-btn:active { transform: scale(0.98); }
+  .lp-final-ghost {
+    font-size: 0.85rem;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── Footer ── */
+  .lp-footer { padding: 32px 20px; }
+  .lp-footer-inner {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+  }
+  .lp-footer-links {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px 20px;
+  }
+  .lp-footer-links a {
+    font-size: 0.82rem;
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* ── Global touch: remove all hover transforms ── */
+  * { -webkit-tap-highlight-color: transparent; }
+}
+
+/* ── Extra small screens (≤ 390px) ── */
+@media (max-width: 390px) {
+  .lp-hero-title { font-size: 1.95rem; }
+  .lp-nav-logo span.lp-nav-logo-mark { display: none; }
+  .lp-proof-item { flex: 1 1 100%; border-right: none !important; }
+  .lp-quote-card { width: 88vw; }
+  .lp-price-card { padding: 28px 22px; }
 }
