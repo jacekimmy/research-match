@@ -638,30 +638,31 @@ body::after {
   100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-/* ===== CARD STAGGER with premium spring ===== */
+/* ===== CARD STAGGER — crystallize from liquid ===== */
 
-@keyframes cardSpring {
-  0% { opacity: 0; transform: translateY(40px) scale(0.97); }
-  60% { opacity: 1; transform: translateY(-6px) scale(1.01); }
-  80% { transform: translateY(2px) scale(0.998); }
-  100% { opacity: 1; transform: translateY(0) scale(1); }
+@keyframes cardFromLiquid {
+  0%   { opacity: 0; transform: scaleX(0.6) scaleY(0.4) translateY(-10px); filter: blur(24px); }
+  35%  { opacity: 0.8; transform: scaleX(1.04) scaleY(1.02) translateY(4px); filter: blur(6px); }
+  60%  { transform: scaleX(0.99) scaleY(1.01); filter: blur(1px); }
+  80%  { transform: scaleX(1.005) scaleY(0.998); filter: blur(0); }
+  100% { opacity: 1; transform: scaleX(1) scaleY(1) translateY(0); filter: blur(0); }
 }
 
 .card-enter {
   opacity: 0;
-  animation: cardSpring 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: cardFromLiquid 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.card-enter:nth-child(1) { animation-delay: 0s; }
-.card-enter:nth-child(2) { animation-delay: 0.1s; }
-.card-enter:nth-child(3) { animation-delay: 0.2s; }
-.card-enter:nth-child(4) { animation-delay: 0.3s; }
-.card-enter:nth-child(5) { animation-delay: 0.4s; }
-.card-enter:nth-child(6) { animation-delay: 0.5s; }
-.card-enter:nth-child(7) { animation-delay: 0.6s; }
-.card-enter:nth-child(8) { animation-delay: 0.7s; }
-.card-enter:nth-child(9) { animation-delay: 0.8s; }
-.card-enter:nth-child(10) { animation-delay: 0.9s; }
+.card-enter:nth-child(1)  { animation-delay: 0.05s; }
+.card-enter:nth-child(2)  { animation-delay: 0.15s; }
+.card-enter:nth-child(3)  { animation-delay: 0.25s; }
+.card-enter:nth-child(4)  { animation-delay: 0.35s; }
+.card-enter:nth-child(5)  { animation-delay: 0.45s; }
+.card-enter:nth-child(6)  { animation-delay: 0.55s; }
+.card-enter:nth-child(7)  { animation-delay: 0.65s; }
+.card-enter:nth-child(8)  { animation-delay: 0.75s; }
+.card-enter:nth-child(9)  { animation-delay: 0.85s; }
+.card-enter:nth-child(10) { animation-delay: 0.95s; }
 
 /* ===== FLAGS with slide+shake ===== */
 
@@ -2427,30 +2428,58 @@ body::after {
   font-size: 1.15rem;
 }
 
-/* ===== HERO EXIT ANIMATION ===== */
+/* ===================================================================
+   LIQUID TRANSITION SYSTEM
+   solid (hero) → liquid (motion) → solid (results)
+   =================================================================== */
 
-@keyframes heroExit {
-  0%   { opacity: 1; transform: translateY(0)    scale(1);    }
-  100% { opacity: 0; transform: translateY(-32px) scale(0.96); }
+/* ── 1. TITLE drops with squash → stretch → liquid stream ── */
+@keyframes titleLiquidFall {
+  0%   { opacity: 1; transform: translateY(0)    scaleX(1)    scaleY(1);    filter: blur(0px);  }
+  8%   {             transform: translateY(-6px)  scaleX(1.03) scaleY(0.97);                     } /* anticipation */
+  22%  { opacity: 1; transform: translateY(10px)  scaleX(0.96) scaleY(1.05); filter: blur(2px);  } /* squash on launch */
+  50%  { opacity: 0.5; transform: translateY(56px)  scaleX(0.86) scaleY(1.18); filter: blur(12px); } /* stretching, accelerating */
+  75%  { opacity: 0.1; transform: translateY(100px) scaleX(0.30) scaleY(2.20); filter: blur(22px); } /* becoming a liquid stream */
+  100% { opacity: 0;   transform: translateY(140px) scaleX(0.05) scaleY(3.00); filter: blur(32px); } /* vanishes as thin ribbon */
 }
 
+/* ── 2. Toggle + search bar drift away slightly later ── */
+@keyframes controlsLiquidFall {
+  0%   { opacity: 1; transform: translateY(0)   scaleX(1)    scaleY(1);    filter: blur(0px);  }
+  15%  { opacity: 1; transform: translateY(6px)  scaleX(0.98) scaleY(1.02); filter: blur(3px);  }
+  55%  { opacity: 0.4; transform: translateY(40px) scaleX(0.92) scaleY(1.10); filter: blur(14px); }
+  100% { opacity: 0;   transform: translateY(80px) scaleX(0.80) scaleY(1.30); filter: blur(24px); }
+}
+
+/* ── Exit container — pointer-events off ── */
 .rm-hero-exit {
-  animation: heroExit 0.3s cubic-bezier(0.4, 0, 1, 1) forwards;
   pointer-events: none;
 }
 
-/* ===== COMPACT ENTER ANIMATION ===== */
+.rm-hero-exit .rm-hero-title {
+  animation: titleLiquidFall 0.46s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
 
+.rm-hero-exit .mode-toggle {
+  animation: controlsLiquidFall 0.38s cubic-bezier(0.4, 0, 1, 1) 0.06s forwards;
+}
+
+.rm-hero-exit .rm-hero-search {
+  animation: controlsLiquidFall 0.38s cubic-bezier(0.4, 0, 1, 1) 0.10s forwards;
+}
+
+/* ── 3. Compact search slides in from above — like it was always there ── */
 @keyframes compactReveal {
-  from { opacity: 0; transform: translateY(28px); }
-  to   { opacity: 1; transform: translateY(0);    }
+  0%   { opacity: 0; transform: translateY(-18px) scaleY(0.92); filter: blur(8px);  }
+  50%  { filter: blur(1px); }
+  100% { opacity: 1; transform: translateY(0)     scaleY(1);    filter: blur(0px);  }
 }
 
 /* ===== COMPACT HEADER (when results visible) ===== */
 
 .rm-compact-header {
   margin-bottom: 36px;
-  animation: compactReveal 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: compactReveal 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
 }
 
 /* ===== MOBILE OVERRIDES (app page) ===== */

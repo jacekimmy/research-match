@@ -928,7 +928,7 @@ function AppPageInner() {
   const triggerSearch = () => {
     if (results.length === 0 && !loading && !heroExiting) {
       setHeroExiting(true);
-      setTimeout(() => { setHeroExiting(false); search(); }, 320);
+      setTimeout(() => { setHeroExiting(false); search(); }, 480);
     } else {
       search();
     }
@@ -937,7 +937,7 @@ function AppPageInner() {
   const triggerSearchByName = () => {
     if (results.length === 0 && !loading && !heroExiting) {
       setHeroExiting(true);
-      setTimeout(() => { setHeroExiting(false); searchByName(); }, 320);
+      setTimeout(() => { setHeroExiting(false); searchByName(); }, 480);
     } else {
       searchByName();
     }
