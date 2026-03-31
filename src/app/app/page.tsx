@@ -1012,10 +1012,6 @@ function AppPageInner() {
             <h1 className="rm-hero-title">
               Find your research<br />professor.
             </h1>
-            <p className="rm-hero-subtitle">
-              Match with professors who align with your interests — and craft the perfect cold email.
-            </p>
-
             {/* Mode toggle */}
             <div className="mode-toggle" ref={toggleRef}>
               <div
