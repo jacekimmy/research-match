@@ -922,6 +922,28 @@ function AppPageInner() {
   const displayList = showSaved ? saved : results;
   const wordCount = emailDraft.trim().split(/\s+/).filter(Boolean).length;
 
+  // ── Hero transition ──────────────────────────────────────────────────────
+  const [heroExiting, setHeroExiting] = useState(false);
+
+  const triggerSearch = () => {
+    if (results.length === 0 && !loading && !heroExiting) {
+      setHeroExiting(true);
+      setTimeout(() => { setHeroExiting(false); search(); }, 320);
+    } else {
+      search();
+    }
+  };
+
+  const triggerSearchByName = () => {
+    if (results.length === 0 && !loading && !heroExiting) {
+      setHeroExiting(true);
+      setTimeout(() => { setHeroExiting(false); searchByName(); }, 320);
+    } else {
+      searchByName();
+    }
+  };
+  // ────────────────────────────────────────────────────────────────────────
+
   return (
     <>
       {/* Grand reveal / welcome back */}
@@ -1007,8 +1029,8 @@ function AppPageInner() {
       <main className={`rm-page rm-app-body ${revealPhase === "done" ? "rm-page-revealed" : revealPhase === "content" ? "rm-page-revealing" : "rm-page-hidden"}`}>
 
         {/* ====== HERO (empty / initial state) ====== */}
-        {!showSaved && results.length === 0 && !loading ? (
-          <div className="rm-hero">
+        {(!showSaved && results.length === 0 && !loading) || heroExiting ? (
+          <div className={`rm-hero${heroExiting ? " rm-hero-exit" : ""}`}>
             <h1 className="rm-hero-title">
               Find your research<br />professor.
             </h1>
@@ -1038,7 +1060,7 @@ function AppPageInner() {
                     value={query}
                     onChange={(e) => { setQuery(e.target.value); setShowSuggestions(true); }}
                     onFocus={() => setShowSuggestions(true)}
-                    onKeyDown={(e) => { if (e.key === "Enter") { setShowSuggestions(false); search(); } }}
+                    onKeyDown={(e) => { if (e.key === "Enter") { setShowSuggestions(false); triggerSearch(); } }}
                     placeholder={PLACEHOLDER_EXAMPLES[placeholderIdx]}
                     className="rm-search-input"
                   />
@@ -1053,17 +1075,17 @@ function AppPageInner() {
                 <div className="rm-search-divider" />
                 <div className="rm-uni-field">
                   <label className="rm-search-label">University</label>
-                  <input value={university} onChange={(e) => setUniversity(e.target.value)} onKeyDown={(e) => e.key === "Enter" && search()} placeholder="e.g. MIT, Stanford..." className="rm-search-input" />
+                  <input value={university} onChange={(e) => setUniversity(e.target.value)} onKeyDown={(e) => e.key === "Enter" && triggerSearch()} placeholder="e.g. MIT, Stanford..." className="rm-search-input" />
                 </div>
-                <button data-search-btn onClick={search} className="btn-cta rm-search-btn">Search</button>
+                <button data-search-btn onClick={triggerSearch} className="btn-cta rm-search-btn">Search</button>
               </div>
             ) : (
               <div className="glass-search rm-search rm-hero-search">
                 <div className="rm-search-input-wrap" style={{ flex: 1 }}>
                   <label className="rm-search-label">Professor Name</label>
-                  <input value={profName} onChange={(e) => setProfName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && searchByName()} placeholder="e.g. Geoffrey Hinton, Fei-Fei Li..." className="rm-search-input" />
+                  <input value={profName} onChange={(e) => setProfName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && triggerSearchByName()} placeholder="e.g. Geoffrey Hinton, Fei-Fei Li..." className="rm-search-input" />
                 </div>
-                <button onClick={searchByName} className="btn-cta rm-search-btn">Search</button>
+                <button onClick={triggerSearchByName} className="btn-cta rm-search-btn">Search</button>
               </div>
             )}
 
