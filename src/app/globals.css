@@ -638,19 +638,95 @@ body::after {
   100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-/* ===== CARD STAGGER — crystallize from liquid ===== */
+/* ===== CARD STAGGER — crystallize from liquid ink ===== */
 
-@keyframes cardFromLiquid {
-  0%   { opacity: 0; transform: scaleX(0.6) scaleY(0.4) translateY(-10px); filter: blur(24px); }
-  35%  { opacity: 0.8; transform: scaleX(1.04) scaleY(1.02) translateY(4px); filter: blur(6px); }
-  60%  { transform: scaleX(0.99) scaleY(1.01); filter: blur(1px); }
-  80%  { transform: scaleX(1.005) scaleY(0.998); filter: blur(0); }
-  100% { opacity: 1; transform: scaleX(1) scaleY(1) translateY(0); filter: blur(0); }
+@keyframes cardFromInk {
+  0%   {
+    opacity: 0;
+    transform: scaleX(0.45) scaleY(0.25) translateY(-15px);
+    filter: blur(30px);
+    box-shadow:
+      0 0 80px 12px rgba(45, 90, 61, 0.85),
+      0 0 160px 30px rgba(45, 90, 61, 0.45),
+      inset 0 0 30px rgba(45, 90, 61, 0.4);
+    border-color: rgba(45, 90, 61, 0.85);
+  }
+  20%  {
+    opacity: 0.75;
+    transform: scaleX(1.06) scaleY(1.04) translateY(5px);
+    filter: blur(9px);
+    box-shadow:
+      0 0 40px 6px rgba(45, 90, 61, 0.55),
+      0 0 80px 14px rgba(45, 90, 61, 0.25),
+      inset 0 0 14px rgba(45, 90, 61, 0.2);
+  }
+  42%  {
+    opacity: 0.9;
+    transform: scaleX(0.99) scaleY(1.01) translateY(2px);
+    filter: blur(2px);
+    box-shadow:
+      0 0 18px 3px rgba(45, 90, 61, 0.3),
+      0 4px 24px rgba(45, 90, 61, 0.06),
+      0 1px 4px rgba(45, 90, 61, 0.04),
+      inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  }
+  65%  {
+    transform: scaleX(1.005) scaleY(0.998);
+    filter: blur(0);
+    box-shadow:
+      0 0 6px 1px rgba(45, 90, 61, 0.12),
+      0 4px 24px rgba(45, 90, 61, 0.06),
+      0 1px 4px rgba(45, 90, 61, 0.04),
+      inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  }
+  100% {
+    opacity: 1;
+    transform: scaleX(1) scaleY(1) translateY(0);
+    filter: blur(0);
+    box-shadow:
+      0 4px 24px rgba(45, 90, 61, 0.06),
+      0 1px 4px rgba(45, 90, 61, 0.04),
+      inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    border-color: rgba(255, 255, 255, 0.65);
+  }
+}
+
+/* ── Professor name crystallizes from green ink ── */
+@keyframes nameFromInk {
+  0%   {
+    color: transparent;
+    -webkit-text-stroke: 1.5px rgba(45, 90, 61, 0.95);
+    text-shadow: 0 0 24px rgba(45, 90, 61, 0.9), 0 0 50px rgba(45, 90, 61, 0.5);
+    filter: blur(4px);
+  }
+  30%  {
+    color: rgba(45, 90, 61, 0.85);
+    -webkit-text-stroke: 0.5px rgba(45, 90, 61, 0.6);
+    text-shadow: 0 0 10px rgba(45, 90, 61, 0.5), 0 0 20px rgba(45, 90, 61, 0.2);
+    filter: blur(1px);
+  }
+  60%  {
+    color: #1a2e1f;
+    -webkit-text-stroke: 0px transparent;
+    text-shadow: 0 0 4px rgba(45, 90, 61, 0.2);
+    filter: blur(0);
+  }
+  100% {
+    color: #1a2e1f;
+    -webkit-text-stroke: 0px transparent;
+    text-shadow: none;
+    filter: blur(0);
+  }
 }
 
 .card-enter {
   opacity: 0;
-  animation: cardFromLiquid 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: cardFromInk 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.card-enter .rm-card-name {
+  animation: nameFromInk 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: inherit;
 }
 
 .card-enter:nth-child(1)  { animation-delay: 0.05s; }
@@ -2433,14 +2509,42 @@ body::after {
    solid (hero) → liquid (motion) → solid (results)
    =================================================================== */
 
-/* ── 1. TITLE drops with squash → stretch → liquid stream ── */
-@keyframes titleLiquidFall {
-  0%   { opacity: 1; transform: translateY(0)    scaleX(1)    scaleY(1);    filter: blur(0px);  }
-  8%   {             transform: translateY(-6px)  scaleX(1.03) scaleY(0.97);                     } /* anticipation */
-  22%  { opacity: 1; transform: translateY(10px)  scaleX(0.96) scaleY(1.05); filter: blur(2px);  } /* squash on launch */
-  50%  { opacity: 0.5; transform: translateY(56px)  scaleX(0.86) scaleY(1.18); filter: blur(12px); } /* stretching, accelerating */
-  75%  { opacity: 0.1; transform: translateY(100px) scaleX(0.30) scaleY(2.20); filter: blur(22px); } /* becoming a liquid stream */
-  100% { opacity: 0;   transform: translateY(140px) scaleX(0.05) scaleY(3.00); filter: blur(32px); } /* vanishes as thin ribbon */
+/* ── 1. TITLE melts: solid → outlined → liquid stream ── */
+@keyframes titleMelt {
+  0%   {
+    opacity: 1;
+    transform: translateY(0) scaleX(1) scaleY(1);
+    -webkit-text-fill-color: #2d5a3d;
+    -webkit-text-stroke: 0px transparent;
+    color: #2d5a3d;
+  }
+  12%  { /* anticipation — slight lift before falling */
+    transform: translateY(-5px) scaleX(1.02) scaleY(0.98);
+    -webkit-text-fill-color: #2d5a3d;
+  }
+  30%  { /* fill drains out, stroke emerges — looks like melting ink */
+    opacity: 1;
+    transform: translateY(12px) scaleX(0.96) scaleY(1.05);
+    -webkit-text-fill-color: rgba(45, 90, 61, 0.15);
+    -webkit-text-stroke: 2px rgba(45, 90, 61, 0.9);
+    color: #2d5a3d;
+  }
+  55%  { /* outline starts to stretch and blur */
+    opacity: 0.7;
+    transform: translateY(55px) scaleX(0.82) scaleY(1.22);
+    -webkit-text-fill-color: transparent;
+    -webkit-text-stroke: 1.5px rgba(45, 90, 61, 0.55);
+  }
+  78%  { /* thin ribbon of ink, almost gone */
+    opacity: 0.2;
+    transform: translateY(100px) scaleX(0.22) scaleY(2.60);
+  }
+  100% { /* vanishes */
+    opacity: 0;
+    transform: translateY(145px) scaleX(0.04) scaleY(3.50);
+    -webkit-text-fill-color: transparent;
+    -webkit-text-stroke: 0px transparent;
+  }
 }
 
 /* ── 2. Toggle + search bar drift away slightly later ── */
@@ -2457,7 +2561,7 @@ body::after {
 }
 
 .rm-hero-exit .rm-hero-title {
-  animation: titleLiquidFall 0.46s cubic-bezier(0.4, 0, 1, 1) forwards;
+  animation: titleMelt 0.46s cubic-bezier(0.4, 0, 1, 1) forwards;
 }
 
 .rm-hero-exit .mode-toggle {

@@ -925,6 +925,50 @@ function AppPageInner() {
   // ── Hero transition ──────────────────────────────────────────────────────
   const [heroExiting, setHeroExiting] = useState(false);
 
+  // SVG melt filter refs
+  const meltTurbulenceRef = useRef<SVGFETurbulenceElement | null>(null);
+  const meltDisplacementRef = useRef<SVGFEDisplacementMapElement | null>(null);
+  const meltRafRef = useRef<number | null>(null);
+
+  // Animate the SVG displacement filter while hero is exiting
+  useEffect(() => {
+    if (heroExiting) {
+      const startTime = performance.now();
+      const duration = 460;
+      const animate = (now: number) => {
+        const t = Math.min((now - startTime) / duration, 1);
+        // Accelerate: starts slow, ends fast
+        const eased = t * t * (3 - 2 * t);
+        const scale = eased * 130;
+        const freq = 0.015 + eased * 0.055;
+        if (meltTurbulenceRef.current) {
+          meltTurbulenceRef.current.setAttribute("baseFrequency", `${freq.toFixed(4)} ${(freq * 1.8).toFixed(4)}`);
+        }
+        if (meltDisplacementRef.current) {
+          meltDisplacementRef.current.setAttribute("scale", `${scale.toFixed(1)}`);
+        }
+        if (t < 1) {
+          meltRafRef.current = requestAnimationFrame(animate);
+        }
+      };
+      meltRafRef.current = requestAnimationFrame(animate);
+    } else {
+      if (meltRafRef.current) {
+        cancelAnimationFrame(meltRafRef.current);
+        meltRafRef.current = null;
+      }
+      if (meltTurbulenceRef.current) {
+        meltTurbulenceRef.current.setAttribute("baseFrequency", "0.015 0.027");
+      }
+      if (meltDisplacementRef.current) {
+        meltDisplacementRef.current.setAttribute("scale", "0");
+      }
+    }
+    return () => {
+      if (meltRafRef.current) cancelAnimationFrame(meltRafRef.current);
+    };
+  }, [heroExiting]);
+
   const triggerSearch = () => {
     if (results.length === 0 && !loading && !heroExiting) {
       setHeroExiting(true);
@@ -971,6 +1015,30 @@ function AppPageInner() {
         <div className="splotch splotch-4" />
         <div className="splotch splotch-5" />
       </div>
+
+      {/* ====== SVG FILTER DEFS (melt effect) ====== */}
+      <svg style={{ position: "absolute", width: 0, height: 0, overflow: "hidden" }} aria-hidden="true">
+        <defs>
+          <filter id="meltFilter" x="-40%" y="-40%" width="180%" height="220%">
+            <feTurbulence
+              ref={meltTurbulenceRef}
+              type="turbulence"
+              baseFrequency="0.015 0.027"
+              numOctaves="3"
+              seed="5"
+              result="noise"
+            />
+            <feDisplacementMap
+              ref={meltDisplacementRef}
+              in="SourceGraphic"
+              in2="noise"
+              scale="0"
+              xChannelSelector="R"
+              yChannelSelector="G"
+            />
+          </filter>
+        </defs>
+      </svg>
 
       {/* ====== FLOATING PILL NAV ====== */}
       <nav className="rm-floating-nav">
@@ -1031,7 +1099,10 @@ function AppPageInner() {
         {/* ====== HERO (empty / initial state) ====== */}
         {(!showSaved && results.length === 0 && !loading) || heroExiting ? (
           <div className={`rm-hero${heroExiting ? " rm-hero-exit" : ""}`}>
-            <h1 className="rm-hero-title">
+            <h1
+              className="rm-hero-title"
+              style={heroExiting ? { filter: "url(#meltFilter)" } : {}}
+            >
               Find your research<br />professor.
             </h1>
             {/* Mode toggle */}
