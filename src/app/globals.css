@@ -2338,7 +2338,7 @@ body::after {
   justify-content: center;
   min-height: calc(100vh - 200px);
   text-align: center;
-  padding: 0 24px;
+  padding: 0 24px 120px;
 }
 
 .rm-hero-eyebrow {
@@ -2401,9 +2401,30 @@ body::after {
 
 .rm-hero-search {
   width: 100%;
-  max-width: 700px;
+  max-width: 760px;
   margin-bottom: 0 !important;
   animation: heroSubIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.32s both;
+}
+
+.rm-hero-search .rm-search-input {
+  font-size: 1.25rem;
+}
+
+.rm-hero-search .rm-search-label {
+  font-size: 0.78rem;
+}
+
+.rm-hero-search .rm-search-input-wrap {
+  padding: 12px 20px;
+}
+
+.rm-hero-search .rm-uni-field {
+  padding: 12px 20px;
+}
+
+.rm-hero-search .rm-search-btn {
+  padding: 22px 52px;
+  font-size: 1.15rem;
 }
 
 /* ===== COMPACT HEADER (when results visible) ===== */

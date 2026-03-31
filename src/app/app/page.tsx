@@ -831,7 +831,7 @@ function AppPageInner() {
       {/* ====== FLOATING PILL NAV ====== */}
       <nav className="rm-floating-nav">
         <div className="rm-nav-pill">
-          <Link href="/" className="rm-nav-logo">&#127807; Research Match</Link>
+          <Link href="/" className="rm-nav-logo">&#128300; Research Match</Link>
           <div className="rm-nav-spacer" />
           {saved.length > 0 && (
             <button
@@ -887,9 +887,6 @@ function AppPageInner() {
         {/* ====== HERO (empty / initial state) ====== */}
         {!showSaved && results.length === 0 && !loading ? (
           <div className="rm-hero">
-            <div className="rm-hero-eyebrow">
-              <span>&#127807;</span> Research Match
-            </div>
             <h1 className="rm-hero-title">
               Find your research<br />professor.
             </h1>
