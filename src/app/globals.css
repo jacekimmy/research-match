@@ -2366,7 +2366,7 @@ body::after {
 .rm-hero-title {
   font-size: clamp(2.8rem, 5.5vw, 5.2rem);
   font-weight: 800;
-  color: #1a1a1a;
+  color: #2d5a3d;
   line-height: 1.07;
   letter-spacing: -0.03em;
   margin-bottom: 48px;
