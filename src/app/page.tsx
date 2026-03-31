@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMobile } from "@/lib/use-mobile";
 import MobileLanding from "./mobile-landing";
-import EmailCheckerDemo from "./components/EmailCheckerDemo";
 import StarterKitModal from "./components/StarterKitModal";
 
 const HERO_PLACEHOLDERS = [
@@ -20,21 +19,30 @@ const HERO_PLACEHOLDERS = [
 export default function LandingPage() {
   const isMobile = useMobile();
   const router = useRouter();
-  const [scrolled, setScrolled] = useState(false);
-  const [activeStep, setActiveStep] = useState(0);
   const [heroQuery, setHeroQuery] = useState("");
   const [heroUni, setHeroUni] = useState("");
   const [heroFocused, setHeroFocused] = useState(false);
   const [placeholderIdx, setPlaceholderIdx] = useState(0);
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
   const [priceAnimating, setPriceAnimating] = useState(false);
+  const [priceKey, setPriceKey] = useState(0);
   const billingToggleRef = useRef<HTMLDivElement>(null);
   const btnMonthlyRef = useRef<HTMLButtonElement>(null);
   const btnAnnualRef = useRef<HTMLButtonElement>(null);
   const [, setBillingMounted] = useState(false);
-  useEffect(() => { setBillingMounted(true); }, []);
+  const [inlineWaitlistEmail, setInlineWaitlistEmail] = useState("");
+  const [inlineWaitlistDone, setInlineWaitlistDone] = useState(false);
+  const [lifetimeSpotsRemaining, setLifetimeSpotsRemaining] = useState<number | null>(null);
+  const [showStarterKit, setShowStarterKit] = useState(false);
+  const [waitlistEmail, setWaitlistEmail] = useState("");
+  const [waitlistTier, setWaitlistTier] = useState<"research_pro" | "pro" | null>(null);
+  const [waitlistDone, setWaitlistDone] = useState(false);
+  const [waitlistLoading, setWaitlistLoading] = useState(false);
+  const [heroVisible, setHeroVisible] = useState(false);
 
-  const [priceKey, setPriceKey] = useState(0);
+  useEffect(() => { setBillingMounted(true); }, []);
+  useEffect(() => { setTimeout(() => setHeroVisible(true), 80); }, []);
+
   function switchBilling(cycle: "monthly" | "annual") {
     if (cycle === billingCycle) return;
     setPriceAnimating(true);
@@ -42,16 +50,58 @@ export default function LandingPage() {
       setBillingCycle(cycle);
       setPriceKey(k => k + 1);
       setPriceAnimating(false);
-    }, 250);
+    }, 220);
   }
-  const [waitlistEmail, setWaitlistEmail] = useState("");
-  const [waitlistTier, setWaitlistTier] = useState<"research_pro" | "pro" | null>(null);
-  const [waitlistDone, setWaitlistDone] = useState(false);
-  const [waitlistLoading, setWaitlistLoading] = useState(false);
-  const [inlineWaitlistEmail, setInlineWaitlistEmail] = useState("");
-  const [inlineWaitlistDone, setInlineWaitlistDone] = useState(false);
-  const [lifetimeSpotsRemaining, setLifetimeSpotsRemaining] = useState<number | null>(null);
-  const [showStarterKit, setShowStarterKit] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPlaceholderIdx((i) => (i + 1) % HERO_PLACEHOLDERS.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/lifetime-spots")
+      .then((r) => r.json())
+      .then((d) => setLifetimeSpotsRemaining(d.remaining ?? 200))
+      .catch(() => setLifetimeSpotsRemaining(200));
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("lp-revealed");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+    document.querySelectorAll("[data-reveal]").forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
+  function heroSearch() {
+    if (!heroQuery.trim()) return;
+    const params = new URLSearchParams();
+    params.set("q", heroQuery.trim());
+    if (heroUni.trim()) params.set("u", heroUni.trim());
+    router.push(`/app?${params.toString()}`);
+  }
+
+  async function joinInlineWaitlist() {
+    if (!inlineWaitlistEmail) return;
+    try {
+      await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: inlineWaitlistEmail, tier: "general" }),
+      });
+      setInlineWaitlistDone(true);
+    } catch { /* ignore */ }
+  }
 
   async function joinWaitlist() {
     if (!waitlistEmail || !waitlistTier) return;
@@ -67,605 +117,347 @@ export default function LandingPage() {
     finally { setWaitlistLoading(false); }
   }
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setPlaceholderIdx((i) => (i + 1) % HERO_PLACEHOLDERS.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  useEffect(() => {
-    fetch("/api/lifetime-spots")
-      .then((r) => r.json())
-      .then((d) => setLifetimeSpotsRemaining(d.remaining ?? 200))
-      .catch(() => setLifetimeSpotsRemaining(200));
-  }, []);
-
-  // Parallax removed for performance — splotches are static
-
-  function heroSearch() {
-    if (!heroQuery.trim()) return;
-    const params = new URLSearchParams();
-    params.set("q", heroQuery.trim());
-    if (heroUni.trim()) params.set("u", heroUni.trim());
-    router.push(`/app?${params.toString()}`);
-  }
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("scroll-visible");
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.15 }
-    );
-    document.querySelectorAll(".landing-step, .landing-quote, .cold-email-item").forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-
-  async function joinInlineWaitlist() {
-    if (!inlineWaitlistEmail) return;
-    try {
-      await fetch("/api/waitlist", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: inlineWaitlistEmail, tier: "general" }),
-      });
-      setInlineWaitlistDone(true);
-    } catch { /* ignore */ }
-  }
-
   if (isMobile) return <MobileLanding />;
 
   return (
-    <div style={{ minHeight: "100vh", position: "relative" }}>
-      {/* Background splotches — reduced to 4 for performance */}
-      <div className="splotches">
-        <div className="splotch splotch-1" />
-        <div className="splotch splotch-2" />
-        <div className="splotch splotch-3" />
-        <div className="splotch splotch-4" />
-      </div>
+    <div className="lp-root">
+      {/* ── Animated background orbs ── */}
+      <div className="lp-orb lp-orb-1" />
+      <div className="lp-orb lp-orb-2" />
+      <div className="lp-orb lp-orb-3" />
 
-      {/* Nav */}
-      <div style={{ position: "sticky", top: 0, zIndex: 50, background: scrolled ? "rgba(245,240,230,0.85)" : "transparent", backdropFilter: scrolled ? "blur(12px)" : "none", WebkitBackdropFilter: scrolled ? "blur(12px)" : "none", boxShadow: scrolled ? "0 2px 20px rgba(0,0,0,0.06)" : "none", transition: "all 0.3s ease" }}>
-        <nav className="landing-nav" style={{
-          display: "flex", justifyContent: "space-between", alignItems: "center",
-          padding: scrolled ? "14px 40px" : "24px 40px", maxWidth: "1200px", margin: "0 auto",
-          transition: "padding 0.3s ease",
-        }}>
-          <span style={{ fontSize: "1.5rem", fontWeight: 800, color: "#2d5a3d", letterSpacing: "-0.02em" }}>
+      {/* ── Floating pill nav ── */}
+      <nav className="lp-nav">
+        <div className="lp-nav-pill">
+          <Link href="/" className="lp-nav-logo">
+            <span className="lp-nav-logo-mark">&#128300;</span>
             Research Match
-          </span>
-          <div className="nav-links-desktop" style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-            <Link href="/blog" style={{ fontSize: "0.9rem", color: "#6b7280", textDecoration: "none", transition: "color 0.2s" }}>Blog</Link>
-            <Link href="/feedback" style={{ fontSize: "0.9rem", color: "#6b7280", textDecoration: "none", transition: "color 0.2s" }}>Feedback</Link>
-            <Link href="/app" className="btn-cta landing-cta-primary rm-search-btn" style={{ padding: "11px 28px", fontSize: "0.9rem", textDecoration: "none" }}>
-              Start Searching
-            </Link>
+          </Link>
+          <div className="lp-nav-spacer" />
+          <div className="lp-nav-links">
+            <a href="#how" className="lp-nav-link">How it works</a>
+            <Link href="/blog" className="lp-nav-link">Blog</Link>
+            <a href="#pricing" className="lp-nav-link">Pricing</a>
+            <Link href="/feedback" className="lp-nav-link">Feedback</Link>
           </div>
-          <div className="nav-links-mobile" style={{ display: "none", gap: "12px", alignItems: "center" }}>
-            <Link href="/app" className="btn-cta landing-cta-primary rm-search-btn" style={{ padding: "10px 22px", fontSize: "0.85rem", textDecoration: "none" }}>
-              Start Searching
-            </Link>
+          <Link href="/app" className="lp-nav-cta">
+            Start free
+            <span className="lp-nav-cta-arrow">→</span>
+          </Link>
+        </div>
+      </nav>
+
+      {/* ══════════════════════════════════════════
+          HERO
+      ══════════════════════════════════════════ */}
+      <section className={`lp-hero ${heroVisible ? "lp-hero-visible" : ""}`}>
+        <div className="lp-hero-inner">
+          <div className="lp-hero-eyebrow">
+            <span className="lp-eyebrow-dot" />
+            250M+ papers indexed · 1,000+ universities
           </div>
-        </nav>
+
+          <h1 className="lp-hero-title">
+            Find the professor<br />
+            <em className="lp-hero-title-em">who changes your life.</em>
+          </h1>
+
+          <p className="lp-hero-sub">
+            Search any research interest. Understand their work.<br />
+            Write the email that actually gets a response.
+          </p>
+
+          {/* Hero search */}
+          <div
+            className={`lp-search-bar ${heroFocused ? "lp-search-focused" : ""}`}
+          >
+            <div className="lp-search-field">
+              <label className="lp-search-label">Research Interest</label>
+              <input
+                type="text"
+                value={heroQuery}
+                onChange={(e) => setHeroQuery(e.target.value)}
+                onFocus={() => setHeroFocused(true)}
+                onBlur={() => setHeroFocused(false)}
+                onKeyDown={(e) => e.key === "Enter" && heroSearch()}
+                placeholder={HERO_PLACEHOLDERS[placeholderIdx]}
+                className="lp-search-input"
+              />
+            </div>
+            <div className="lp-search-divider" />
+            <div className="lp-search-field" style={{ flex: "0.75" }}>
+              <label className="lp-search-label">University</label>
+              <input
+                type="text"
+                value={heroUni}
+                onChange={(e) => setHeroUni(e.target.value)}
+                onFocus={() => setHeroFocused(true)}
+                onBlur={() => setHeroFocused(false)}
+                onKeyDown={(e) => e.key === "Enter" && heroSearch()}
+                placeholder="e.g. MIT, Stanford…"
+                className="lp-search-input"
+              />
+            </div>
+            <button onClick={heroSearch} className="lp-search-btn">
+              <span>Search</span>
+            </button>
+          </div>
+
+          <div className="lp-hero-sub-actions">
+            <Link href="/app" className="lp-ghost-btn">
+              Browse without searching
+            </Link>
+            <span className="lp-hero-divider-dot">·</span>
+            <button onClick={() => setShowStarterKit(true)} className="lp-ghost-btn">
+              Free starter kit
+            </button>
+          </div>
+        </div>
+
+        {/* Scroll cue */}
+        <div className="lp-scroll-cue">
+          <div className="lp-scroll-line" />
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════
+          SOCIAL PROOF STRIP
+      ══════════════════════════════════════════ */}
+      <div className="lp-proof-strip" data-reveal>
+        {[
+          { num: "250M+", label: "papers indexed" },
+          { num: "1,000+", label: "universities" },
+          { num: "400+", label: "students served" },
+          { num: "< 24h", label: "first professor response" },
+        ].map((s, i) => (
+          <div key={i} className="lp-proof-item">
+            <span className="lp-proof-num">{s.num}</span>
+            <span className="lp-proof-label">{s.label}</span>
+          </div>
+        ))}
       </div>
 
-      {/* Hero */}
-      <section className="landing-hero landing-section" style={{
-        maxWidth: "900px", margin: "0 auto", padding: "60px 40px 48px",
-        textAlign: "center",
-      }}>
-        <h1 style={{
-          fontSize: "clamp(2.4rem, 5.5vw, 4rem)", fontWeight: 800,
-          color: "#2d5a3d", lineHeight: 1.1, marginBottom: "20px",
-          letterSpacing: "-0.03em",
-        }}>
-          Land Your Next Research Position.
-        </h1>
-        <p style={{
-          fontSize: "clamp(1.05rem, 2vw, 1.3rem)", color: "#6b7280",
-          lineHeight: 1.7, maxWidth: "640px", margin: "0 auto 22px",
-        }}>
-          Find professors, understand their papers, and write emails that don&apos;t get deleted.
-        </p>
-        {/* Hero Search Bar */}
-        <div
-          className={`hero-search-bar ${heroFocused ? "hero-search-focused" : ""}`}
-          style={{
-            maxWidth: "820px", margin: "0 auto 28px",
-            padding: "10px 14px",
-            borderRadius: "999px",
-            display: "flex", alignItems: "center", gap: "0",
-            position: "relative",
-          }}
-        >
-          <div className="hero-search-glow" />
-          <div style={{ flex: 2, position: "relative" }}>
-            <label style={{
-              display: "block", fontSize: "0.6rem", fontWeight: 700,
-              color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.12em",
-              padding: "8px 20px 0", textAlign: "left",
-            }}>Research Interest</label>
-            <input
-              type="text"
-              value={heroQuery}
-              onChange={(e) => setHeroQuery(e.target.value)}
-              onFocus={() => setHeroFocused(true)}
-              onBlur={() => setHeroFocused(false)}
-              onKeyDown={(e) => e.key === "Enter" && heroSearch()}
-              placeholder={HERO_PLACEHOLDERS[placeholderIdx]}
-              style={{
-                width: "100%", padding: "6px 20px 12px", fontSize: "1.1rem",
-                border: "none", background: "transparent", color: "#1a1a1a",
-                fontFamily: "'Playfair Display', Georgia, serif", outline: "none",
-              }}
-            />
+      {/* ══════════════════════════════════════════
+          FEATURES
+      ══════════════════════════════════════════ */}
+      <section id="how" className="lp-features-section">
+        <div className="lp-features-label" data-reveal>How it works</div>
+
+        {/* Feature 1 */}
+        <div className="lp-feature" data-reveal>
+          <div className="lp-feature-text">
+            <div className="lp-feature-num">01</div>
+            <h2 className="lp-feature-title">Search any research interest.</h2>
+            <p className="lp-feature-desc">
+              Type what you care about — quantum computing, cognitive neuroscience, climate policy.
+              We surface the top professors publishing in that exact space, ranked by impact.
+            </p>
+            <Link href="/app" className="lp-feature-link">Try a search →</Link>
           </div>
-          <div style={{
-            width: "1px", height: "36px", background: "rgba(45, 90, 61,0.4)",
-            flexShrink: 0,
-          }} />
-          <div style={{ flex: 1, position: "relative" }}>
-            <label style={{
-              display: "block", fontSize: "0.6rem", fontWeight: 700,
-              color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.12em",
-              padding: "8px 20px 0", textAlign: "left",
-            }}>University</label>
-            <input
-              type="text"
-              value={heroUni}
-              onChange={(e) => setHeroUni(e.target.value)}
-              onFocus={() => setHeroFocused(true)}
-              onBlur={() => setHeroFocused(false)}
-              onKeyDown={(e) => e.key === "Enter" && heroSearch()}
-              placeholder="e.g. MIT, Stanford..."
-              style={{
-                width: "100%", padding: "6px 20px 12px", fontSize: "1.1rem",
-                border: "none", background: "transparent", color: "#1a1a1a",
-                fontFamily: "'Playfair Display', Georgia, serif", outline: "none",
-              }}
-            />
-          </div>
-          <button
-            onClick={heroSearch}
-            className="hero-search-btn"
-            style={{
-              padding: "18px 40px", fontSize: "1.1rem", fontWeight: 700,
-              fontFamily: "'Playfair Display', Georgia, serif",
-              border: "none", borderRadius: "999px", cursor: "pointer",
-              color: "#ffffff", background: "#C4A265",
-              flexShrink: 0, position: "relative", overflow: "hidden",
-            }}
-          >
-            <span style={{ position: "relative", zIndex: 1 }}>Search</span>
-          </button>
-        </div>
-
-        <div className="scroll-indicator">
-          <span>Scroll to learn more</span>
-          <span className="scroll-indicator-arrow">↓</span>
-        </div>
-      </section>
-
-      {/* Stats Bar */}
-      <section style={{
-        background: "#ede8df", padding: "40px 40px",
-        borderTop: "1px solid rgba(0,0,0,0.04)", borderBottom: "1px solid rgba(0,0,0,0.04)",
-      }}>
-        <div style={{
-          display: "flex", justifyContent: "center", alignItems: "center",
-          gap: "40px", maxWidth: "900px", margin: "0 auto",
-          flexWrap: "wrap",
-        }}>
-          {[
-            { num: "250M+", label: "papers indexed" },
-            { num: "1,000+", label: "universities" },
-            { num: "400+", label: "students served" },
-          ].map((stat, i) => (
-            <div key={i} style={{ textAlign: "center", display: "flex", alignItems: "center", gap: "8px" }}>
-              <span style={{ fontSize: "1.3rem", fontWeight: 800, color: "#2d5a3d", fontFamily: "'Playfair Display', Georgia, serif" }}>{stat.num}</span>
-              <span style={{ fontSize: "0.9rem", color: "#6b7280" }}>{stat.label}</span>
-              {i < 2 && <span style={{ color: "#8aaa96", marginLeft: "32px", fontSize: "0.5rem" }}>●</span>}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* University Logos */}
-      <section style={{
-        maxWidth: "1000px", margin: "0 auto", padding: "90px 40px 20px",
-        textAlign: "center",
-      }}>
-        <p style={{ fontSize: "0.8rem", color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "20px", fontWeight: 600 }}>
-          Search professors at 1,000+ universities including
-        </p>
-        <div style={{
-          display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "12px",
-        }}>
-          {["MIT", "Harvard", "Stanford", "Johns Hopkins", "Yale", "Princeton", "Columbia", "UC Berkeley", "UCLA", "Duke", "Michigan", "Georgia Tech"].map((uni) => (
-            <span key={uni} style={{
-              fontSize: "0.8rem", color: "#6b7280", fontWeight: 600,
-              padding: "6px 16px", borderRadius: "999px",
-              background: "rgba(255,255,255,0.6)", border: "1px solid rgba(45, 90, 61,0.3)",
-              fontFamily: "'Inter', sans-serif",
-            }}>
-              {uni}
-            </span>
-          ))}
-        </div>
-      </section>
-
-      {/* How it works — interactive */}
-      <section className="landing-section" style={{
-        maxWidth: "1100px", margin: "0 auto", padding: "60px 40px 80px",
-      }}>
-        <h2 style={{
-          fontSize: "1.8rem", fontWeight: 700, color: "#2d5a3d",
-          textAlign: "center", marginBottom: "12px",
-          fontFamily: "'Playfair Display', Georgia, serif",
-        }}>
-          How it works
-        </h2>
-        <div className="section-divider" />
-        <div style={{
-          display: "grid", gridTemplateColumns: "1fr 1.4fr",
-          gap: "48px", alignItems: "center",
-        }}>
-          {/* Left: Steps */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-            {[
-              { title: "Search by interest or professor name", desc: "Type in your interest and university, or search directly by name." },
-              { title: "Read plain-English summaries", desc: "See their key findings and papers, summarized for easy reading." },
-              { title: "Write emails with built-in guidance", desc: "Get suggested questions and an email checker built from real professor feedback, so your email gets read." },
-            ].map((step, i) => (
-              <button
-                key={i}
-                onClick={() => setActiveStep(i)}
-                style={{
-                  textAlign: "left", padding: "20px 24px",
-                  borderRadius: "16px", border: "none", cursor: "pointer",
-                  background: activeStep === i ? "rgba(45, 90, 61,0.08)" : "transparent",
-                  borderLeft: activeStep === i ? "3px solid #2d5a3d" : "3px solid transparent",
-                  transition: "all 0.3s ease",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px" }}>
-                  <span style={{
-                    fontSize: "0.65rem", fontWeight: 700, color: activeStep === i ? "#2d5a3d" : "#6b7280",
-                    textTransform: "uppercase", letterSpacing: "0.1em",
-                  }}>Step {i + 1}</span>
-                </div>
-                <p style={{
-                  fontSize: "1.05rem", fontWeight: 700,
-                  color: activeStep === i ? "#2d5a3d" : "#6b7280",
-                  fontFamily: "'Playfair Display', Georgia, serif",
-                  marginBottom: "4px", transition: "color 0.3s ease",
-                }}>
-                  {step.title}
-                </p>
-                {activeStep === i && (
-                  <p style={{
-                    fontSize: "0.85rem", color: "#6b7280", lineHeight: 1.6,
-                    animation: "fadeSlideIn 0.3s ease",
-                  }}>
-                    {step.desc}
-                  </p>
-                )}
-              </button>
-            ))}
-          </div>
-
-          {/* Right: Animated mockup */}
-          <div style={{
-            background: "#2d5a3d", borderRadius: "16px", overflow: "hidden",
-            boxShadow: "0 20px 60px rgba(0,0,0,0.15)",
-            minHeight: "380px",
-          }}>
-            {/* Browser chrome */}
-            <div style={{
-              padding: "12px 16px", background: "#2d5a3d",
-              display: "flex", alignItems: "center", gap: "8px",
-            }}>
-              <div style={{ display: "flex", gap: "6px" }}>
-                <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#ff5f57" }} />
-                <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#febc2e" }} />
-                <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#28c840" }} />
+          <div className="lp-feature-visual">
+            <div className="lp-mockup">
+              <div className="lp-mockup-bar">
+                <div className="lp-dot" style={{ background: "#ff5f57" }} />
+                <div className="lp-dot" style={{ background: "#febc2e" }} />
+                <div className="lp-dot" style={{ background: "#28c840" }} />
+                <span className="lp-mockup-url">researchmatch.net/app</span>
               </div>
-              <div style={{
-                flex: 1, textAlign: "center", fontSize: "0.7rem", color: "#6b7280",
-                fontFamily: "'Inter', sans-serif",
-              }}>
-                researchmatch.net
-              </div>
-            </div>
-
-            {/* Content area */}
-            <div style={{ padding: "24px", background: "#f4f0ea", minHeight: "340px", position: "relative", overflow: "hidden" }}>
-              {/* Step 1: Search animation */}
-              <div style={{
-                opacity: activeStep === 0 ? 1 : 0,
-                transform: activeStep === 0 ? "translateY(0)" : "translateY(10px)",
-                transition: "all 0.4s ease",
-                position: activeStep === 0 ? "relative" : "absolute", top: activeStep !== 0 ? "24px" : undefined, left: activeStep !== 0 ? "24px" : undefined, right: activeStep !== 0 ? "24px" : undefined,
-                pointerEvents: activeStep === 0 ? "auto" : "none",
-              }}>
-                <div style={{ background: "rgba(255,255,255,0.8)", borderRadius: "14px", padding: "14px 20px", marginBottom: "16px", border: "1px solid rgba(45, 90, 61,0.3)" }}>
-                  <span style={{ fontSize: "0.65rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.08em" }}>Research Interest</span>
-                  <p style={{ fontSize: "0.95rem", color: "#1a1a1a", fontFamily: "'Playfair Display', Georgia, serif", marginTop: "4px" }}>neuroscience</p>
+              <div className="lp-mockup-body">
+                <div className="lp-mock-search">
+                  <span className="lp-mock-pill">neuroscience</span>
+                  <span className="lp-mock-pill lp-mock-pill-uni">Harvard</span>
                 </div>
                 {[
-                  { name: "Dr. Emily Nakamura", uni: "Harvard Medical School", topics: ["Cognitive Neuroscience", "Memory"] },
-                  { name: "Prof. James Miller", uni: "Stanford University", topics: ["Neural Circuits", "Optogenetics"] },
-                  { name: "Dr. Aisha Patel", uni: "MIT", topics: ["Computational Neuroscience", "Brain-Computer Interfaces"] },
-                ].map((prof, i) => (
-                  <div key={i} style={{
-                    background: "rgba(255,255,255,0.7)", borderRadius: "12px", padding: "14px 16px", marginBottom: "8px",
-                    border: "1px solid rgba(45, 90, 61,0.2)",
-                    animation: `fadeSlideIn 0.4s ease ${i * 0.15}s both`,
-                  }}>
-                    <p style={{ fontSize: "0.9rem", fontWeight: 700, color: "#2d5a3d" }}>{prof.name}</p>
-                    <p style={{ fontSize: "0.75rem", color: "#6b7280" }}>{prof.uni}</p>
-                    <div style={{ display: "flex", gap: "6px", marginTop: "6px" }}>
-                      {prof.topics.map((t, j) => (
-                        <span key={j} style={{ fontSize: "0.6rem", padding: "2px 8px", borderRadius: "999px", background: "rgba(45, 90, 61,0.08)", color: "#2d5a3d" }}>{t}</span>
-                      ))}
+                  { name: "Dr. Emily Nakamura", uni: "Harvard Medical School", topics: ["Memory", "fMRI"] },
+                  { name: "Prof. James Miller", uni: "MIT", topics: ["Neural Circuits", "AI"] },
+                  { name: "Dr. Aisha Patel", uni: "Stanford", topics: ["Computational", "BCI"] },
+                ].map((p, i) => (
+                  <div key={i} className="lp-mock-card" style={{ animationDelay: `${i * 0.12}s` }}>
+                    <div className="lp-mock-card-name">{p.name}</div>
+                    <div className="lp-mock-card-uni">{p.uni}</div>
+                    <div className="lp-mock-card-tags">
+                      {p.topics.map((t, j) => <span key={j} className="lp-mock-tag">{t}</span>)}
                     </div>
                   </div>
                 ))}
               </div>
+            </div>
+          </div>
+        </div>
 
-              {/* Step 2: Summary animation */}
-              <div style={{
-                opacity: activeStep === 1 ? 1 : 0,
-                transform: activeStep === 1 ? "translateY(0)" : "translateY(10px)",
-                transition: "all 0.4s ease",
-                position: activeStep === 1 ? "relative" : "absolute", top: activeStep !== 1 ? "24px" : undefined, left: activeStep !== 1 ? "24px" : undefined, right: activeStep !== 1 ? "24px" : undefined,
-                pointerEvents: activeStep === 1 ? "auto" : "none",
-              }}>
-                <div style={{ background: "rgba(255,255,255,0.8)", borderRadius: "14px", padding: "18px 20px", border: "1px solid rgba(45, 90, 61,0.2)" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
-                    <p style={{ fontSize: "1rem", fontWeight: 700, color: "#2d5a3d" }}>Dr. Emily Nakamura</p>
-                    <span style={{ fontSize: "0.6rem", padding: "2px 8px", borderRadius: "999px", background: "rgba(45, 90, 61,0.1)", color: "#2d5a3d", fontWeight: 600 }}>Harvard</span>
-                  </div>
-                  <p style={{ fontSize: "0.82rem", color: "#6b7280", lineHeight: 1.65, marginBottom: "14px", animation: "fadeSlideIn 0.5s ease 0.1s both" }}>
-                    Studies how memories form and consolidate during sleep using fMRI imaging. Recent work shows specific neural oscillation patterns predict next-day recall accuracy in elderly patients with early cognitive decline.
-                  </p>
-                  <div style={{ animation: "fadeSlideIn 0.5s ease 0.3s both" }}>
-                    <p style={{ fontSize: "0.65rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", marginBottom: "8px" }}>Key Findings</p>
-                    <div style={{ paddingLeft: "14px", borderLeft: "3px solid #9dbfaa", marginBottom: "10px" }}>
-                      <p style={{ fontSize: "0.78rem", color: "#6b7280", lineHeight: 1.5 }}>Theta oscillations during REM sleep increased memory consolidation by 34% in elderly patients</p>
-                      <p style={{ fontSize: "0.68rem", color: "#6b7280", fontStyle: "italic", marginTop: "2px" }}>Sleep & Memory Consolidation (2024) <span style={{ padding: "1px 6px", borderRadius: "999px", background: "rgba(45, 90, 61,0.1)", color: "#2d5a3d", fontStyle: "normal", fontSize: "0.6rem" }}>1st author</span></p>
-                    </div>
-                  </div>
-                </div>
+        {/* Feature 2 — reversed */}
+        <div className="lp-feature lp-feature-rev" data-reveal>
+          <div className="lp-feature-text">
+            <div className="lp-feature-num">02</div>
+            <h2 className="lp-feature-title">Understand their research in plain English.</h2>
+            <p className="lp-feature-desc">
+              Every professor gets an AI summary of their key findings — written so a high schooler
+              can understand it and use it in their email. No more pretending to read papers.
+            </p>
+            <Link href="/app" className="lp-feature-link">See an example →</Link>
+          </div>
+          <div className="lp-feature-visual">
+            <div className="lp-mockup">
+              <div className="lp-mockup-bar">
+                <div className="lp-dot" style={{ background: "#ff5f57" }} />
+                <div className="lp-dot" style={{ background: "#febc2e" }} />
+                <div className="lp-dot" style={{ background: "#28c840" }} />
+                <span className="lp-mockup-url">researchmatch.net/app</span>
               </div>
-
-              {/* Step 3: Email checker animation */}
-              <div style={{
-                opacity: activeStep === 2 ? 1 : 0,
-                transform: activeStep === 2 ? "translateY(0)" : "translateY(10px)",
-                transition: "all 0.4s ease",
-                position: activeStep === 2 ? "relative" : "absolute", top: activeStep !== 2 ? "24px" : undefined, left: activeStep !== 2 ? "24px" : undefined, right: activeStep !== 2 ? "24px" : undefined,
-                pointerEvents: activeStep === 2 ? "auto" : "none",
-              }}>
-                <div style={{ background: "rgba(255,255,255,0.8)", borderRadius: "14px", padding: "18px 20px", border: "1px solid rgba(45, 90, 61,0.2)" }}>
-                  <p style={{ fontSize: "0.65rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", marginBottom: "10px" }}>Email Draft</p>
-                  <div style={{ fontSize: "0.82rem", color: "#6b7280", lineHeight: 1.7 }}>
-                    <p>Dear Professor Chen,</p>
-                    <p style={{ marginTop: "8px" }}>
-                      <span style={{ background: "rgba(196, 92, 92,0.1)", padding: "1px 4px", borderRadius: "4px", textDecoration: "line-through", color: "#c45c5c", animation: "fadeSlideIn 0.4s ease 0.3s both" }}>I found your work fascinating and groundbreaking.</span>
-                    </p>
-                    <p style={{ marginTop: "8px", animation: "fadeSlideIn 0.4s ease 0.6s both" }}>
-                      <span style={{ background: "rgba(45, 90, 61,0.1)", padding: "1px 4px", borderRadius: "4px", color: "#2d5a3d" }}>I read your 2024 paper on theta oscillations during REM sleep. The 34% improvement in memory consolidation was surprising.</span>
-                    </p>
-                  </div>
-                  <div style={{ marginTop: "14px", display: "flex", flexDirection: "column", gap: "6px" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 12px", borderRadius: "10px", background: "rgba(196, 92, 92,0.06)", border: "1px solid rgba(196, 92, 92,0.12)", animation: "fadeSlideIn 0.4s ease 0.3s both" }}>
-                      <span style={{ color: "#c45c5c", fontSize: "0.8rem" }}>&#9888;</span>
-                      <span style={{ fontSize: "0.75rem", color: "#c45c5c", fontWeight: 600 }}>Sycophantic tone</span>
-                      <span style={{ fontSize: "0.7rem", color: "#6b7280", marginLeft: "auto" }}>Remove flattery</span>
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 12px", borderRadius: "10px", background: "rgba(45, 90, 61,0.06)", border: "1px solid rgba(45, 90, 61,0.12)", animation: "fadeSlideIn 0.4s ease 0.8s both" }}>
-                      <span style={{ color: "#2d5a3d", fontSize: "0.8rem" }}>&#10003;</span>
-                      <span style={{ fontSize: "0.75rem", color: "#2d5a3d", fontWeight: 600 }}>Specific reference</span>
-                      <span style={{ fontSize: "0.7rem", color: "#6b7280", marginLeft: "auto" }}>Good, cites real data</span>
-                    </div>
-                  </div>
+              <div className="lp-mockup-body">
+                <div className="lp-mock-summary-header">
+                  <div className="lp-mock-summary-name">Dr. Emily Nakamura</div>
+                  <span className="lp-mock-tag" style={{ fontSize: "0.6rem" }}>Harvard</span>
+                </div>
+                <p className="lp-mock-summary-text">
+                  Studies how memories form and consolidate during sleep using fMRI.
+                  Recent work shows neural oscillation patterns predict next-day recall accuracy
+                  in elderly patients with early cognitive decline.
+                </p>
+                <div className="lp-mock-finding">
+                  <div className="lp-mock-finding-label">Key Finding</div>
+                  <p className="lp-mock-finding-text">
+                    Theta oscillations during REM sleep increased memory consolidation by 34% —
+                    published 2024, first-author.
+                  </p>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Mobile fallback: show carousel hint */}
-        <div className="carousel-hint">
-          <span>Swipe</span>
-          <span className="carousel-hint-arrow">&#8594;</span>
-        </div>
-      </section>
-
-      {/* Email checker callout */}
-      <section className="landing-section" style={{
-        maxWidth: "700px", margin: "0 auto", padding: "0 40px 80px",
-      }}>
-        <div className="glass-card" style={{
-          padding: "40px 36px", textAlign: "center",
-          border: "2px solid rgba(45, 90, 61,0.2)",
-          background: "rgba(45, 90, 61,0.04)",
-        }}>
-          <h3 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "16px" }}>
-            Sound like yourself, not a chatbot
-          </h3>
-          <p style={{ fontSize: "1rem", color: "#6b7280", lineHeight: 1.7 }}>
-            The WORST thing you can do is use AI to write the email. The SECOND worst thing you can do is show no real interest. Our email checker scans your draft for generic tones, a proper intro and ask, specific papers, and more.
-          </p>
-        </div>
-      </section>
-
-      {/* Why cold emails fail */}
-      <section className="landing-section" style={{
-        maxWidth: "800px", margin: "0 auto", padding: "0 40px 80px",
-      }}>
-        <h2 style={{
-          fontSize: "1.8rem", fontWeight: 700, color: "#2d5a3d",
-          textAlign: "center", marginBottom: "12px",
-        }}>
-          Most cold emails to professors get ignored. Here&apos;s why.
-        </h2>
-        <div className="section-divider" />
-        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-          {[
-            "Professors can spot AI-written emails instantly, and delete them.",
-            "Generic emails that could be sent to anyone get ignored.",
-            "Name-dropping papers without understanding them backfires.",
-          ].map((point, i) => (
-            <div key={i} className="cold-email-item" style={{
-              display: "flex", gap: "16px", alignItems: "flex-start",
-              padding: "20px 24px", borderRadius: "14px",
-              background: "rgba(196, 92, 92,0.04)", border: "1px solid rgba(196, 92, 92,0.1)",
-            }}>
-              <span style={{ color: "#c45c5c", fontSize: "1.2rem", flexShrink: 0 }}>✕</span>
-              <p style={{ fontSize: "1rem", color: "#6b7280", lineHeight: 1.6 }}>{point}</p>
+        {/* Feature 3 */}
+        <div className="lp-feature" data-reveal>
+          <div className="lp-feature-text">
+            <div className="lp-feature-num">03</div>
+            <h2 className="lp-feature-title">Write emails that get read.</h2>
+            <p className="lp-feature-desc">
+              Our email checker — built from real professor feedback — catches every mistake
+              before you hit send. Generic tone, AI language, vague ask. Fixed before it costs you.
+            </p>
+            <Link href="/app" className="lp-feature-link">Check your email →</Link>
+          </div>
+          <div className="lp-feature-visual">
+            <div className="lp-mockup">
+              <div className="lp-mockup-bar">
+                <div className="lp-dot" style={{ background: "#ff5f57" }} />
+                <div className="lp-dot" style={{ background: "#febc2e" }} />
+                <div className="lp-dot" style={{ background: "#28c840" }} />
+                <span className="lp-mockup-url">researchmatch.net/app</span>
+              </div>
+              <div className="lp-mockup-body">
+                <div className="lp-mock-email">
+                  <div className="lp-mock-email-line">
+                    <span className="lp-mock-strike">I found your work fascinating and groundbreaking.</span>
+                  </div>
+                  <div className="lp-mock-email-line" style={{ marginTop: "8px" }}>
+                    <span className="lp-mock-good">I read your 2024 paper on theta oscillations. The 34% improvement in memory consolidation surprised me because...</span>
+                  </div>
+                </div>
+                <div className="lp-mock-flags">
+                  <div className="lp-mock-flag lp-mock-flag-bad">
+                    <span>⚠</span>
+                    <span>Sycophantic tone</span>
+                    <span className="lp-mock-flag-action">Remove flattery</span>
+                  </div>
+                  <div className="lp-mock-flag lp-mock-flag-good">
+                    <span>✓</span>
+                    <span>Specific reference</span>
+                    <span className="lp-mock-flag-action">Cites real data</span>
+                  </div>
+                  <div className="lp-mock-flag lp-mock-flag-good">
+                    <span>✓</span>
+                    <span>Original voice</span>
+                    <span className="lp-mock-flag-action">No AI detected</span>
+                  </div>
+                </div>
+              </div>
             </div>
-          ))}
-        </div>
-        <p style={{
-          fontSize: "1rem", color: "#2d5a3d", textAlign: "center",
-          marginTop: "28px", lineHeight: 1.7, fontWeight: 500,
-        }}>
-          Research Match helps you avoid all three. Our email checker catches generic and AI-sounding language before you hit send, so your message sounds like you, not a chatbot.
-        </p>
-      </section>
-
-      {/* Email Checker Demo */}
-      <section className="landing-section" style={{
-        maxWidth: "800px", margin: "0 auto", padding: "0 40px 80px",
-      }}>
-        <EmailCheckerDemo />
-      </section>
-
-      {/* Free Starter Kit CTA */}
-      <section className="landing-section" style={{
-        maxWidth: "700px", margin: "0 auto", padding: "0 40px 80px", textAlign: "center",
-      }}>
-        <div className="glass-card" style={{
-          padding: "36px", border: "2px solid rgba(45, 90, 61,0.15)",
-          background: "linear-gradient(135deg, rgba(45, 90, 61,0.04), rgba(45, 90, 61,0.08))",
-        }}>
-          <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "12px" }}>
-            Free: The Research Position Starter Kit
-          </h3>
-          <p style={{ fontSize: "0.95rem", color: "#6b7280", lineHeight: 1.7, marginBottom: "20px" }}>
-            A one-page guide with the exact email format, what to avoid, and the secret weapon line that turns rejections into leads. Based on advice from 30+ real professors.
-          </p>
-          <button
-            onClick={() => setShowStarterKit(true)}
-            style={{
-              padding: "14px 36px", fontSize: "1rem", fontWeight: 700,
-              fontFamily: "'Playfair Display', Georgia, serif",
-              border: "none", borderRadius: "14px", cursor: "pointer",
-              color: "#ffffff", background: "#2d5a3d",
-              transition: "all 0.3s ease",
-            }}
-          >
-            Download Free Starter Kit
-          </button>
+          </div>
         </div>
       </section>
 
-      {/* Social proof */}
-      <section className="landing-section" style={{
-        maxWidth: "1000px", margin: "0 auto", padding: "0 40px 40px",
-      }}>
-        <h2 style={{
-          fontSize: "1.8rem", fontWeight: 700, color: "#2d5a3d",
-          textAlign: "center", marginBottom: "12px",
-        }}>
-          What people are saying
-        </h2>
-        <div className="section-divider" />
-        <div className="landing-quotes" style={{
-          display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-          gap: "24px",
-        }}>
+      {/* ══════════════════════════════════════════
+          DARK CALLOUT
+      ══════════════════════════════════════════ */}
+      <section className="lp-dark-callout" data-reveal>
+        <div className="lp-dark-callout-inner">
+          <p className="lp-dark-callout-eyebrow">The truth about cold emails</p>
+          <h2 className="lp-dark-callout-title">
+            Professors delete 90% of student emails<br />
+            <span className="lp-dark-callout-em">before finishing the first line.</span>
+          </h2>
+          <div className="lp-dark-reasons">
+            {[
+              "Professors can spot AI-written emails instantly.",
+              "Generic emails that could be sent to anyone get ignored.",
+              "Name-dropping papers without understanding them backfires.",
+            ].map((r, i) => (
+              <div key={i} className="lp-dark-reason">
+                <span className="lp-dark-reason-x">✕</span>
+                <span>{r}</span>
+              </div>
+            ))}
+          </div>
+          <Link href="/app" className="lp-dark-cta">
+            Write one that gets read →
+          </Link>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════
+          TESTIMONIALS
+      ══════════════════════════════════════════ */}
+      <section className="lp-social-section" data-reveal>
+        <div className="lp-social-label">What students say</div>
+        <div className="lp-quotes-track">
           {[
             { quote: "A Princeton professor responded to a high school freshman within 24 hours.", author: "Founder experience" },
             { quote: "First time I've gotten real advice on my emails. I've sent 10 emails so far using this.", author: "Student user" },
             { quote: "Endorse this advice 💯. If an email smells of AI I will not answer it.", author: "Research Professor" },
             { quote: "This website is goated. I'm saving this for future use.", author: "Student user" },
+            { quote: "I got a reply in 3 days. Never happened before.", author: "Undergraduate student" },
           ].map((item, i) => (
-            <div key={i} className="glass-card landing-quote" style={{ padding: "30px 26px" }}>
-              <div className="quote-mark">&ldquo;</div>
-              <p style={{ fontSize: "1.05rem", color: "#1a1a1a", lineHeight: 1.65, marginBottom: "16px" }}>
-                {item.quote}
-              </p>
-              <p style={{ fontSize: "0.8rem", color: "#6b7280", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                - {item.author}
-              </p>
+            <div key={i} className="lp-quote-card">
+              <div className="lp-quote-mark">"</div>
+              <p className="lp-quote-text">{item.quote}</p>
+              <p className="lp-quote-author">— {item.author}</p>
             </div>
           ))}
         </div>
-        <div className="carousel-hint">
-          <span>Swipe</span>
-          <span className="carousel-hint-arrow">→</span>
+      </section>
+
+      {/* ══════════════════════════════════════════
+          FOUNDER NOTE
+      ══════════════════════════════════════════ */}
+      <section className="lp-founder-section" data-reveal>
+        <div className="lp-founder-inner">
+          <div className="lp-founder-quote-mark">"</div>
+          <blockquote className="lp-founder-quote">
+            When I was a high school freshman, I used this approach to cold email 5 professors.
+            A Princeton astrophysics professor responded within 24 hours and said I was
+            &lsquo;way ahead of the curve.&rsquo; That&apos;s why I built Research Match.
+          </blockquote>
+          <div className="lp-founder-sig">
+            <div className="lp-founder-avatar">J</div>
+            <div>
+              <div className="lp-founder-name">Jace</div>
+              <div className="lp-founder-role">Founder, Research Match</div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Founder note */}
-      <section className="landing-section" style={{
-        maxWidth: "700px", margin: "0 auto", padding: "20px 40px 80px",
-      }}>
-        <div style={{
-          padding: "32px 36px", borderLeft: "4px solid #2d5a3d",
-          background: "rgba(45, 90, 61,0.03)", borderRadius: "0 14px 14px 0",
-        }}>
-          <p style={{
-            fontSize: "1.05rem", color: "#6b7280", lineHeight: 1.75,
-            fontStyle: "italic",
-          }}>
-            &ldquo;When I was a high school freshman, I used this approach to cold email 5 professors. A Princeton astrophysics professor responded within 24 hours and said I was &lsquo;way ahead of the curve.&rsquo; That&apos;s why I built Research Match.&rdquo;
-          </p>
-          <p style={{ fontSize: "0.85rem", color: "#2d5a3d", fontWeight: 700, marginTop: "16px" }}>
-            - Jace, Founder
-          </p>
+      {/* ══════════════════════════════════════════
+          PRICING
+      ══════════════════════════════════════════ */}
+      <section id="pricing" className="lp-pricing-section" data-reveal>
+        <div className="lp-pricing-header">
+          <h2 className="lp-pricing-title">Simple, honest pricing.</h2>
+          <p className="lp-pricing-sub">Free to start. Because we know what it&apos;s like to search with zero budget.</p>
         </div>
-      </section>
 
-      {/* Pricing */}
-      <section id="pricing" className="landing-section" style={{
-        maxWidth: "1140px", margin: "0 auto", padding: "40px 40px 40px",
-      }}>
-        <h2 style={{
-          fontSize: "1.8rem", fontWeight: 700, color: "#2d5a3d",
-          textAlign: "center", marginBottom: "12px",
-        }}>
-          Simple pricing
-        </h2>
-        <p style={{
-          fontSize: "1rem", color: "#6b7280", textAlign: "center", marginBottom: "4px",
-        }}>
-          Free to start because we know what it&apos;s like searching for research with zero budget.
-        </p>
-        <p style={{
-          fontSize: "0.95rem", color: "#6b7280", textAlign: "center", marginBottom: "8px",
-        }}>
-          If you&apos;re emailing professors regularly, the Student plan pays for itself with one response.
-        </p>
-        <div className="section-divider" />
-
-        {/* Billing toggle — slider style */}
+        {/* Billing toggle */}
         <div style={{ display: "flex", justifyContent: "center", marginBottom: "44px" }}>
           <div className="mode-toggle" ref={billingToggleRef} style={{ marginBottom: 0 }}>
             <div
@@ -696,210 +488,106 @@ export default function LandingPage() {
           </div>
         </div>
 
-        <div className="landing-pricing" style={{
-          display: "grid", gridTemplateColumns: "repeat(3, 1fr)",
-          gap: "28px", alignItems: "start", maxWidth: "1080px", margin: "0 auto",
-        }}>
+        <div className="lp-pricing-grid">
           {/* Free */}
-          <div className="glass-card landing-pricing-card" style={{ padding: "36px 30px" }}>
-            <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Free</p>
-            <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#2d5a3d", marginBottom: "24px", letterSpacing: "-0.02em" }}>$0</p>
-            <ul style={{ listStyle: "none", padding: 0, marginBottom: "30px" }}>
+          <div className="lp-price-card">
+            <div className="lp-price-tier">Free</div>
+            <div className="lp-price-amount">$0</div>
+            <div className="lp-price-period">forever</div>
+            <ul className="lp-price-features">
               {["Unlimited professor searches", "3 research summaries", "Author position labels", "Save professors", "Paper links"].map((f) => (
-                <li key={f} style={{ fontSize: "0.9rem", color: "#6b7280", padding: "7px 0", display: "flex", gap: "10px", alignItems: "center" }}>
-                  <span style={{ color: "#2d5a3d", fontSize: "0.85rem" }}>✓</span> {f}
-                </li>
+                <li key={f}><span className="lp-check">✓</span>{f}</li>
               ))}
             </ul>
-            <Link href="/app" className="btn-secondary" style={{ display: "block", textAlign: "center", padding: "14px", textDecoration: "none", fontSize: "0.95rem" }}>
-              Find a professor now, free
+            <Link href="/app" className="lp-price-btn lp-price-btn-ghost">
+              Start free
             </Link>
           </div>
 
-          {/* Student */}
-          <div id="student-card" className="glass-card landing-pricing-card" style={{
-            padding: "36px 30px", position: "relative",
-            background: "#2d5a3d",
-            border: "2px solid rgba(255,255,255,0.1)",
-            boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
-          }}>
-            <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#9dbfaa", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Student</p>
-            <div style={{ display: "flex", alignItems: "baseline", gap: "2px", marginBottom: "4px" }}>
-              <span style={{ fontSize: "2.6rem", fontWeight: 800, color: "#ffffff", letterSpacing: "-0.02em" }}>$</span>
+          {/* Student — featured */}
+          <div className="lp-price-card lp-price-card-featured">
+            <div className="lp-price-tier" style={{ color: "#9dbfaa" }}>Student</div>
+            <div style={{ display: "flex", alignItems: "baseline", gap: "2px" }}>
+              <span className="lp-price-dollar">$</span>
               <div className="price-roller-wrap">
                 {priceAnimating ? (
                   <div className="price-roller price-roller-exit">
-                    <span style={{ fontSize: "2.6rem", fontWeight: 800, color: "#ffffff", letterSpacing: "-0.02em" }}>
-                      {billingCycle === "monthly" ? "5" : "49"}
-                    </span>
+                    <span className="lp-price-amount" style={{ color: "#fff" }}>{billingCycle === "monthly" ? "5" : "49"}</span>
                   </div>
                 ) : (
                   <div key={priceKey} className="price-roller price-roller-enter">
-                    <span style={{ fontSize: "2.6rem", fontWeight: 800, color: "#ffffff", letterSpacing: "-0.02em" }}>
-                      {billingCycle === "monthly" ? "5" : "49"}
-                    </span>
-                  </div>
-                )}
-              </div>
-              <div className="price-roller-wrap" style={{ marginLeft: "4px" }}>
-                {priceAnimating ? (
-                  <div className="price-roller price-roller-exit">
-                    <span style={{ fontSize: "1rem", fontWeight: 400, color: "rgba(245,240,230,0.6)" }}>
-                      /{billingCycle === "monthly" ? "mo" : "yr"}
-                    </span>
-                  </div>
-                ) : (
-                  <div key={`suffix-${priceKey}`} className="price-roller price-roller-enter">
-                    <span style={{ fontSize: "1rem", fontWeight: 400, color: "rgba(245,240,230,0.6)" }}>
-                      /{billingCycle === "monthly" ? "mo" : "yr"}
-                    </span>
+                    <span className="lp-price-amount" style={{ color: "#fff" }}>{billingCycle === "monthly" ? "5" : "49"}</span>
                   </div>
                 )}
               </div>
             </div>
-            <div className="price-roller-wrap" style={{ height: "20px" }}>
-              {priceAnimating ? (
-                <div className="price-roller price-roller-exit">
-                  <div style={{ height: "20px" }} />
-                </div>
-              ) : (
-                <div key={`save-${priceKey}`} className="price-roller price-roller-enter" style={{ animationDelay: "0.08s" }}>
-                  {billingCycle === "annual" ? (
-                    <p style={{ fontSize: "0.8rem", color: "#9dbfaa", fontWeight: 600 }}>Save $11 vs monthly</p>
-                  ) : (
-                    <div style={{ height: "20px" }} />
-                  )}
+            <div className="price-roller-wrap" style={{ minHeight: "20px", marginBottom: "4px" }}>
+              {!priceAnimating && (
+                <div key={`period-${priceKey}`} className="price-roller price-roller-enter">
+                  <div className="lp-price-period" style={{ color: "rgba(255,255,255,0.5)" }}>
+                    /{billingCycle === "monthly" ? "month" : "year"}
+                    {billingCycle === "annual" && <span style={{ color: "#9dbfaa", marginLeft: "8px", fontSize: "0.75rem" }}>Save $11</span>}
+                  </div>
                 </div>
               )}
             </div>
-            <ul style={{ listStyle: "none", padding: 0, marginBottom: "30px" }}>
-              <li style={{ fontSize: "0.9rem", color: "#ffffff", padding: "7px 0", fontWeight: 700 }}>Everything in Free, plus:</li>
-              {[
-                "Unlimited research summaries",
-                "Email checker, catches generic & AI language",
-                "Professor email finder",
-                "Professor responsiveness indicator",
-              ].map((f) => (
-                <li key={f} style={{ fontSize: "0.9rem", color: "rgba(245,240,230,0.8)", padding: "7px 0", display: "flex", gap: "10px", alignItems: "flex-start" }}>
-                  <span style={{ color: "#9dbfaa", flexShrink: 0, fontSize: "0.85rem" }}>✓</span> {f}
-                </li>
+            <ul className="lp-price-features" style={{ color: "rgba(255,255,255,0.8)" }}>
+              <li style={{ color: "#fff", fontWeight: 700 }}><span className="lp-check" style={{ color: "#9dbfaa" }}>✓</span>Everything in Free, plus:</li>
+              {["Unlimited research summaries", "Email checker", "Professor email finder", "Responsiveness indicator"].map((f) => (
+                <li key={f}><span className="lp-check" style={{ color: "#9dbfaa" }}>✓</span>{f}</li>
               ))}
             </ul>
-            <Link href="/app?upgrade=true" style={{ display: "block", textAlign: "center", padding: "14px", textDecoration: "none", fontSize: "0.95rem", width: "100%", background: "#f4f0ea", color: "#2d5a3d", borderRadius: "14px", fontWeight: 700, fontFamily: "'Playfair Display', Georgia, serif", transition: "all 0.3s ease" }}>
+            <Link href="/app?upgrade=true" className="lp-price-btn lp-price-btn-white">
               Upgrade to Student
             </Link>
           </div>
 
-          {/* Lifetime — Gold Premium */}
-          <div className="glass-card landing-pricing-card lifetime-card" style={{
-            padding: "40px 30px", position: "relative",
-            border: "2px solid rgba(196, 162, 101, 0.5)",
-            background: "linear-gradient(165deg, rgba(255,250,235,0.85) 0%, rgba(255,245,220,0.6) 50%, rgba(245,235,200,0.4) 100%)",
-            boxShadow: "0 0 40px rgba(196, 162, 101, 0.15), 0 8px 40px rgba(196, 162, 101, 0.1), inset 0 1px 0 rgba(255,255,255,0.8)",
-          }}>
-            <span style={{
-              position: "absolute", top: "-13px", left: "50%", transform: "translateX(-50%)",
-              background: "linear-gradient(135deg, #A8893E, #C4A265, #A8893E)",
-              color: "#ffffff",
-              fontSize: "0.6rem", fontWeight: 700,
-              padding: "6px 16px", borderRadius: "999px", textTransform: "uppercase", letterSpacing: "0.1em",
-              whiteSpace: "nowrap",
-              boxShadow: "0 2px 12px rgba(196, 162, 101, 0.3)",
-            }}>Limited. First 200 users only</span>
-            <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#A8893E", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Lifetime</p>
-            <div style={{ display: "flex", alignItems: "baseline", gap: "10px", marginBottom: "4px" }}>
-              <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#A8893E", letterSpacing: "-0.02em" }}>$25</p>
-              <p style={{ fontSize: "1.1rem", color: "#A8893E", textDecoration: "line-through", fontWeight: 600 }}>$60</p>
+          {/* Lifetime */}
+          <div className="lp-price-card lp-price-card-lifetime">
+            <div className="lp-lifetime-badge">Limited · First 200 only</div>
+            <div className="lp-price-tier" style={{ color: "#A8893E" }}>Lifetime</div>
+            <div style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
+              <div className="lp-price-amount" style={{ color: "#A8893E" }}>$25</div>
+              <div className="lp-price-amount" style={{ color: "#A8893E", opacity: 0.4, textDecoration: "line-through", fontSize: "1.4rem" }}>$60</div>
             </div>
-            <p style={{ fontSize: "0.8rem", color: "#A8893E", marginBottom: "8px", fontWeight: 600 }}>one-time</p>
+            <div className="lp-price-period" style={{ color: "#A8893E", opacity: 0.7 }}>one-time payment</div>
             {lifetimeSpotsRemaining !== null && lifetimeSpotsRemaining > 0 && (
-              <div style={{ marginBottom: "16px" }}>
-                <p style={{
-                  fontSize: "0.8rem", color: "#A8893E", fontWeight: 700,
-                  background: "rgba(196, 162, 101,0.1)",
-                  padding: "4px 12px", borderRadius: "8px", display: "inline-block",
-                }}>
-                  Limited to first 200 users
-                </p>
-                <p style={{ fontSize: "0.75rem", color: "#6b7280", fontStyle: "italic", marginTop: "6px" }}>
-                  This deal won&apos;t last forever.
-                </p>
+              <div className="lp-spots-remaining">
+                {lifetimeSpotsRemaining} spots left
               </div>
             )}
-            <ul style={{ listStyle: "none", padding: 0, marginBottom: "30px" }}>
-              <li style={{ fontSize: "0.9rem", color: "#1a1a1a", padding: "7px 0", fontWeight: 700 }}>Everything in Student, forever:</li>
-              {[
-                "Unlimited searches",
-                "Unlimited research summaries",
-                "Email checker",
-                "Professor email finder",
-                "Nearby professor access",
-                "One payment, lifetime access",
-              ].map((f) => (
-                <li key={f} style={{ fontSize: "0.9rem", color: "#6b7280", padding: "7px 0", display: "flex", gap: "10px", alignItems: "flex-start" }}>
-                  <span style={{ color: "#A8893E", flexShrink: 0, fontSize: "0.85rem" }}>✓</span> {f}
-                </li>
+            <ul className="lp-price-features">
+              <li style={{ fontWeight: 700 }}><span className="lp-check" style={{ color: "#A8893E" }}>✓</span>Everything in Student, forever:</li>
+              {["Unlimited searches", "Unlimited summaries", "Email checker", "Professor email finder", "Nearby professor access"].map((f) => (
+                <li key={f}><span className="lp-check" style={{ color: "#A8893E" }}>✓</span>{f}</li>
               ))}
             </ul>
             {lifetimeSpotsRemaining === 0 ? (
-              <button disabled style={{
-                display: "block", textAlign: "center", padding: "14px", fontSize: "0.95rem",
-                width: "100%", background: "#6b7280", color: "#ffffff", border: "none",
-                borderRadius: "14px", cursor: "not-allowed", fontWeight: 700,
-                fontFamily: "'Playfair Display', Georgia, serif",
-              }}>
-                Sold out
-              </button>
+              <button disabled className="lp-price-btn" style={{ background: "#e5e7eb", color: "#9ca3af", cursor: "not-allowed" }}>Sold out</button>
             ) : (
-              <Link href="/app?upgrade=lifetime" style={{
-                display: "block", textAlign: "center", padding: "14px",
-                textDecoration: "none", fontSize: "0.95rem", width: "100%",
-                background: "linear-gradient(135deg, #A8893E, #C4A265)",
-                color: "#ffffff", borderRadius: "14px", fontWeight: 700,
-                fontFamily: "'Playfair Display', Georgia, serif",
-                boxShadow: "0 4px 16px rgba(196, 162, 101, 0.3)",
-                transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
-              }}>
+              <Link href="/app?upgrade=lifetime" className="lp-price-btn lp-price-btn-gold">
                 Claim your spot
               </Link>
             )}
           </div>
         </div>
-        <div className="carousel-hint">
-          <span>Swipe</span>
-          <span className="carousel-hint-arrow">→</span>
-        </div>
 
         {/* Inline waitlist */}
-        <div style={{ textAlign: "center", marginTop: "44px" }}>
-          <p style={{ fontSize: "0.95rem", color: "#6b7280", marginBottom: "16px" }}>
-            More plans coming soon. Want early access?
-          </p>
+        <div className="lp-waitlist" data-reveal>
+          <p className="lp-waitlist-text">More plans coming. Want early access?</p>
           {inlineWaitlistDone ? (
-            <p style={{ fontSize: "0.95rem", color: "#2d5a3d", fontWeight: 600 }}>
-              You&apos;re on the list! We&apos;ll email you when new plans launch.
-            </p>
+            <p style={{ color: "#2d5a3d", fontWeight: 600 }}>You&apos;re on the list.</p>
           ) : (
-            <div style={{ display: "inline-flex", gap: "10px", flexWrap: "wrap", justifyContent: "center" }}>
+            <div className="lp-waitlist-form">
               <input
                 type="email"
                 placeholder="your@email.com"
                 value={inlineWaitlistEmail}
                 onChange={(e) => setInlineWaitlistEmail(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && joinInlineWaitlist()}
-                style={{
-                  padding: "12px 18px", fontSize: "0.9rem",
-                  border: "1.5px solid rgba(45, 90, 61,0.4)", borderRadius: "14px",
-                  background: "rgba(255,255,255,0.5)", color: "#1a1a1a",
-                  fontFamily: "inherit", outline: "none", width: "260px",
-                  transition: "border-color 0.2s",
-                }}
+                className="lp-waitlist-input"
               />
-              <button
-                onClick={joinInlineWaitlist}
-                className="btn-cta rm-search-btn"
-                style={{ padding: "12px 24px", fontSize: "0.9rem" }}
-              >
+              <button onClick={joinInlineWaitlist} className="btn-cta rm-search-btn" style={{ padding: "12px 24px", fontSize: "0.9rem" }}>
                 Join waitlist
               </button>
             </div>
@@ -907,75 +595,79 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="landing-footer" style={{
-        maxWidth: "1200px", margin: "0 auto", padding: "40px",
-        borderTop: "1px solid rgba(45, 90, 61,0.3)",
-        display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px",
-      }}>
-        <span style={{ fontSize: "0.9rem", color: "#6b7280", fontWeight: 600 }}>Research Match</span>
-        <div style={{ display: "flex", gap: "28px" }}>
-          <Link href="/app" style={{ fontSize: "0.85rem", color: "#6b7280", textDecoration: "none", transition: "color 0.2s" }}>Tool</Link>
-          <Link href="/examples" style={{ fontSize: "0.85rem", color: "#6b7280", textDecoration: "none", transition: "color 0.2s" }}>Examples</Link>
-          <Link href="/blog" style={{ fontSize: "0.85rem", color: "#6b7280", textDecoration: "none", transition: "color 0.2s" }}>Blog</Link>
-          <a href="#pricing" style={{ fontSize: "0.85rem", color: "#6b7280", textDecoration: "none", transition: "color 0.2s" }}>Pricing</a>
-          <Link href="/feedback" style={{ fontSize: "0.85rem", color: "#6b7280", textDecoration: "none", transition: "color 0.2s" }}>Feedback</Link>
+      {/* ══════════════════════════════════════════
+          FINAL CTA
+      ══════════════════════════════════════════ */}
+      <section className="lp-final-cta" data-reveal>
+        <div className="lp-final-cta-inner">
+          <div className="lp-final-cta-eyebrow">Ready?</div>
+          <h2 className="lp-final-cta-title">
+            Your research position<br />is one email away.
+          </h2>
+          <p className="lp-final-cta-sub">
+            Start searching free. No credit card required.
+          </p>
+          <div className="lp-final-cta-actions">
+            <Link href="/app" className="lp-final-btn">
+              Start searching free
+              <span className="lp-final-btn-arrow">→</span>
+            </Link>
+            <button onClick={() => setShowStarterKit(true)} className="lp-final-ghost">
+              Download free starter kit
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Footer ── */}
+      <footer className="lp-footer">
+        <div className="lp-footer-inner">
+          <div className="lp-footer-logo">
+            <span>&#128300;</span> Research Match
+          </div>
+          <div className="lp-footer-links">
+            <Link href="/app">Tool</Link>
+            <Link href="/examples">Examples</Link>
+            <Link href="/blog">Blog</Link>
+            <a href="#pricing">Pricing</a>
+            <Link href="/feedback">Feedback</Link>
+          </div>
+          <div className="lp-footer-copy">
+            Built for the student who reaches out.
+          </div>
         </div>
       </footer>
 
-      {/* Starter Kit Modal */}
       <StarterKitModal isOpen={showStarterKit} onClose={() => setShowStarterKit(false)} />
 
-      {/* Waitlist modal (kept for any future use) */}
       {waitlistTier && (
         <div className="modal-overlay" style={{
           position: "fixed", inset: 0, zIndex: 100,
           display: "flex", alignItems: "center", justifyContent: "center",
           background: "rgba(245,240,230,0.85)", backdropFilter: "blur(12px)",
         }} onClick={() => setWaitlistTier(null)}>
-          <div className="glass-card modal-card" style={{
-            padding: "44px", maxWidth: "420px", width: "90%",
-          }} onClick={(e) => e.stopPropagation()}>
+          <div className="glass-card modal-card" style={{ padding: "44px", maxWidth: "420px", width: "90%" }} onClick={(e) => e.stopPropagation()}>
             {waitlistDone ? (
               <div style={{ textAlign: "center" }}>
                 <p style={{ fontSize: "2.5rem", marginBottom: "16px" }}>🎉</p>
-                <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "10px" }}>
-                  You&apos;re on the list!
-                </h3>
-                <p style={{ fontSize: "0.95rem", color: "#6b7280", lineHeight: 1.6 }}>
-                  We&apos;ll email you when {waitlistTier === "research_pro" ? "Research Pro" : "Pro"} launches.
-                </p>
+                <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "10px" }}>You&apos;re on the list!</h3>
+                <p style={{ fontSize: "0.95rem", color: "#6b7280", lineHeight: 1.6 }}>We&apos;ll email you when it launches.</p>
                 <button onClick={() => setWaitlistTier(null)} className="btn-secondary" style={{ marginTop: "24px", padding: "12px 28px" }}>Close</button>
               </div>
             ) : (
               <>
-                <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "10px" }}>
-                  Join the {waitlistTier === "research_pro" ? "Research Pro" : "Pro"} waitlist
-                </h3>
-                <p style={{ fontSize: "0.9rem", color: "#6b7280", marginBottom: "24px", lineHeight: 1.6 }}>
-                  Enter your email to get notified when it launches.
-                </p>
+                <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "10px" }}>Join the waitlist</h3>
+                <p style={{ fontSize: "0.9rem", color: "#6b7280", marginBottom: "24px", lineHeight: 1.6 }}>Enter your email to get notified when it launches.</p>
                 <input
                   type="email"
                   placeholder="your@email.com"
                   value={waitlistEmail}
                   onChange={(e) => setWaitlistEmail(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && joinWaitlist()}
-                  style={{
-                    width: "100%", padding: "14px 18px", fontSize: "1rem",
-                    border: "1.5px solid rgba(45, 90, 61,0.4)", borderRadius: "14px",
-                    background: "rgba(255,255,255,0.5)", color: "#1a1a1a",
-                    fontFamily: "inherit", marginBottom: "16px", outline: "none",
-                    transition: "border-color 0.2s, box-shadow 0.2s",
-                  }}
+                  style={{ width: "100%", padding: "14px 18px", fontSize: "1rem", border: "1.5px solid rgba(45, 90, 61,0.4)", borderRadius: "14px", background: "rgba(255,255,255,0.5)", color: "#1a1a1a", fontFamily: "inherit", marginBottom: "16px", outline: "none" }}
                 />
-                <button
-                  onClick={joinWaitlist}
-                  disabled={waitlistLoading || !waitlistEmail}
-                  className="btn-cta landing-cta-primary rm-search-btn"
-                  style={{ width: "100%", padding: "14px", fontSize: "1rem" }}
-                >
-                  {waitlistLoading ? "Joining..." : "Join Waitlist"}
+                <button onClick={joinWaitlist} disabled={waitlistLoading || !waitlistEmail} className="btn-cta landing-cta-primary rm-search-btn" style={{ width: "100%", padding: "14px", fontSize: "1rem" }}>
+                  {waitlistLoading ? "Joining…" : "Join Waitlist"}
                 </button>
               </>
             )}
