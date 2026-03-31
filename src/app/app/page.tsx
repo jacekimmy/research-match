@@ -1424,7 +1424,7 @@ function AppPageInner() {
                   /* No summary loaded yet — show button or locked overlay */
                   getSummariesRemaining() <= 0 && !isPaid ? (
                     <div style={{ marginTop: "24px", position: "relative", borderRadius: "14px", overflow: "visible" }}>
-                      <div style={{ padding: "24px", filter: "blur(6px)", userSelect: "none", pointerEvents: "none", borderRadius: "14px", overflow: "hidden" }}>
+                      <div style={{ padding: "80px 24px", filter: "blur(6px)", userSelect: "none", pointerEvents: "none", borderRadius: "14px", overflow: "hidden" }}>
                         <p style={{ fontSize: "1.05rem", lineHeight: 1.7, color: "#6b7280" }}>
                           This professor studies the intersection of computational methods and experimental techniques to advance understanding in their field. Their recent work focuses on developing novel approaches that combine interdisciplinary insights.
                         </p>
