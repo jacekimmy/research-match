@@ -18,6 +18,7 @@ export async function POST(req: NextRequest) {
       payment_method_types: ["card"],
       line_items: [{ price: priceId, quantity: 1 }],
       metadata: { userId },
+      allow_promotion_codes: true,
       success_url: `${req.headers.get("origin") || "http://localhost:3000"}/app?success=true`,
       cancel_url: `${req.headers.get("origin") || "http://localhost:3000"}/app`,
     });
