@@ -402,37 +402,38 @@ function AppPageInner() {
     return saved.some((a) => a.id === author.id);
   }
 
-  // Summary limit: no account = 2 total (localStorage), free account = 3 total (2 anon + 1 extra)
+  // Summary limit: no account = 1 total (localStorage), free account = 2 total (1 anon + 1 extra)
+  // Clicking Summarize unlocks ALL features for that one professor.
   function getSummariesRemaining(): number {
     if (isPaid) return Infinity;
     if (!user) {
       const used = parseInt(localStorage.getItem("research-match-summaries") || "0", 10);
-      return Math.max(0, 2 - used);
+      return Math.max(0, 1 - used);
     }
     // Free account: check reset
     if (profile?.summaries_reset_at && new Date() > new Date(profile.summaries_reset_at)) {
       return 1; // will reset on next use
     }
-    return Math.max(0, 3 - (profile?.summaries_used ?? 0));
+    return Math.max(0, 2 - (profile?.summaries_used ?? 0));
   }
 
   function canSummarize(): boolean {
     if (isPaid) return true;
     if (!user) {
       const used = parseInt(localStorage.getItem("research-match-summaries") || "0", 10);
-      if (used >= 2) {
+      if (used >= 1) {
         setShowAuthModal(true);
         setAuthMode("signup");
-        setAuthError("Create a free account for 1 more free summary.");
+        setAuthError("Create a free account for 1 more free use.");
         return false;
       }
       return true;
     }
-    // Free account: 3 summaries total (2 carried from anon + 1 bonus)
+    // Free account: 2 uses total (1 anon + 1 post-signup)
     if (profile?.summaries_reset_at && new Date() > new Date(profile.summaries_reset_at)) {
       return true; // reset period passed
     }
-    if (profile && (profile.summaries_used ?? 0) >= 3) {
+    if (profile && (profile.summaries_used ?? 0) >= 2) {
       setShowUpgradeModal(true);
       return false;
     }
@@ -769,7 +770,7 @@ function AppPageInner() {
           particleCount: 100,
           spread: 70,
           origin: { y: 0.6 },
-          colors: ["#2d5a3d", "#8aaa96", "#9dbfaa", "#3D7A5E", "#f4f0ea"],
+          colors: ["#2d5a3d", "#8aaa96", "#9dbfaa", "#2d5a3d", "#f4f0ea"],
         });
         setTimeout(() => {
           confetti({
@@ -1260,7 +1261,7 @@ function AppPageInner() {
                       </a>
                       {/* Responsiveness Badge */}
                       {resp && (
-                        isPaid ? (
+                        (isPaid || !!summaries[id]) ? (
                           <span className="resp-badge" title="Based on publication patterns and co-author history" style={{
                             fontSize: "0.7rem", fontWeight: 700, padding: "4px 12px", borderRadius: "999px",
                             display: "inline-flex", alignItems: "center", gap: "5px",
@@ -1281,17 +1282,14 @@ function AppPageInner() {
                             }}>
                               Likely takes students
                             </span>
-                            <button onClick={() => {
-                              if (!user) { setShowAuthModal(true); setAuthMode("signup"); setAuthError(""); }
-                              else { setShowUpgradeModal(true); }
-                            }} className="locked-feature-btn" style={{
-                              position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", gap: "4px",
+                            <span style={{
+                              position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
                               fontSize: "0.65rem", fontWeight: 600, color: "#6b7280", background: "rgba(245,240,230,0.6)",
                               backdropFilter: "blur(2px)", border: "1px solid rgba(45, 90, 61,0.3)", borderRadius: "999px",
-                              cursor: "pointer", whiteSpace: "nowrap", padding: "4px 10px",
+                              whiteSpace: "nowrap", padding: "4px 10px",
                             }}>
-                              <span style={{ fontSize: "0.6rem" }}>&#128274;</span> Upgrade to see
-                            </button>
+                              <span style={{ fontSize: "0.6rem", marginRight: "3px" }}>&#128274;</span> Summarize to unlock
+                            </span>
                           </span>
                         )
                       )}
@@ -1309,19 +1307,28 @@ function AppPageInner() {
                     </p>
                   </div>
                   <div className="rm-card-stats">
-                    <p><span className="rm-card-stat-num">{author.works_count}</span> papers</p>
-                    <p><span className="rm-card-stat-num">{author.cited_by_count.toLocaleString()}</span> citations</p>
+                    <div className="rm-stat-pill">
+                      <span className="rm-stat-num">{author.works_count.toLocaleString()}</span>
+                      <span className="rm-stat-label">papers</span>
+                    </div>
+                    <div className="rm-stat-pill">
+                      <span className="rm-stat-num">{author.cited_by_count.toLocaleString()}</span>
+                      <span className="rm-stat-label">citations</span>
+                    </div>
                   </div>
                 </div>
 
                 {author.topics?.length > 0 && (
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "20px" }}>
-                    {author.topics.slice(0, 4).map((t, i) => <span key={i} className="tag">{t.display_name}</span>)}
-                  </div>
+                  <>
+                    <hr className="rm-card-divider" />
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                      {author.topics.slice(0, 4).map((t, i) => <span key={i} className="tag">{t.display_name}</span>)}
+                    </div>
+                  </>
                 )}
 
-                {/* Professor Email Finder — always locked for free */}
-                {isPaid ? (() => {
+                {/* Professor Email Finder — unlocked for paid or after summarizing */}
+                {(isPaid || !!summaries[id]) ? (() => {
                   const lookup = emailLookup[id];
                   const isLookingUp = emailLookupLoading[id];
                   return (
@@ -1368,22 +1375,22 @@ function AppPageInner() {
                           {/* Search links */}
                           <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginTop: "10px", paddingTop: "10px", borderTop: "1px solid rgba(45, 90, 61,0.2)" }}>
                             {lookup.searchUrls.google && (
-                              <a href={lookup.searchUrls.google} target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.7rem", color: "#3D7A5E", textDecoration: "underline" }}>
+                              <a href={lookup.searchUrls.google} target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.7rem", color: "#2d5a3d", textDecoration: "underline" }}>
                                 Search Google →
                               </a>
                             )}
                             {lookup.searchUrls.directory && (
-                              <a href={lookup.searchUrls.directory} target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.7rem", color: "#3D7A5E", textDecoration: "underline" }}>
+                              <a href={lookup.searchUrls.directory} target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.7rem", color: "#2d5a3d", textDecoration: "underline" }}>
                                 University directory →
                               </a>
                             )}
                             {lookup.homepageUrl && (
-                              <a href={lookup.homepageUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.7rem", color: "#3D7A5E", textDecoration: "underline" }}>
+                              <a href={lookup.homepageUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.7rem", color: "#2d5a3d", textDecoration: "underline" }}>
                                 Faculty page →
                               </a>
                             )}
                             {lookup.orcidUrl && (
-                              <a href={lookup.orcidUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.7rem", color: "#3D7A5E", textDecoration: "underline" }}>
+                              <a href={lookup.orcidUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.7rem", color: "#2d5a3d", textDecoration: "underline" }}>
                                 ORCID profile →
                               </a>
                             )}
@@ -1396,15 +1403,10 @@ function AppPageInner() {
                     </div>
                   );
                 })() : (
-                  <div className="locked-feature-row" style={{ marginTop: "16px", padding: "12px 18px", background: "rgba(245,240,230,0.5)", backdropFilter: "blur(8px)", borderRadius: "12px", border: "1px solid rgba(45, 90, 61,0.2)", display: "flex", alignItems: "center", gap: "10px" }}>
-                    <span style={{ fontSize: "0.9rem" }}>&#128274;</span>
+                  <div className="rm-locked-row" style={{ marginTop: "18px" }}>
+                    <span style={{ fontSize: "0.9rem", opacity: 0.6 }}>&#128274;</span>
                     <span style={{ fontSize: "0.85rem", color: "#6b7280", flex: 1 }}>Professor email finder</span>
-                    <button onClick={() => {
-                      if (!user) { setShowAuthModal(true); setAuthMode("signup"); setAuthError(""); }
-                      else { setShowUpgradeModal(true); }
-                    }} className="locked-upgrade-btn">
-                      Upgrade to see professor email
-                    </button>
+                    <span style={{ fontSize: "0.72rem", color: "#8aaa96", fontStyle: "italic", letterSpacing: "0.02em" }}>Summarize to unlock</span>
                   </div>
                 )}
 
@@ -1468,27 +1470,22 @@ function AppPageInner() {
                     {/* Closing tip — only if highlights exist */}
                     {summary.highlights.length > 0 && (
                       <div style={{ marginTop: "24px", padding: "16px 20px", background: "rgba(45, 90, 61,0.15)", border: "1px solid rgba(45, 90, 61,0.3)", borderRadius: "14px" }}>
-                        <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "#3D7A5E", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "6px" }}>Closing Tip</p>
+                        <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "6px" }}>Closing Tip</p>
                         <p style={{ fontSize: "0.9rem", color: "#6b7280", lineHeight: 1.6 }}>
                           End your email with: &ldquo;If you&apos;re not currently taking students, is there someone in your group you&apos;d recommend I reach out to?&rdquo;
                         </p>
                       </div>
                     )}
-                    {/* Email checker — always locked for free */}
-                    {isPaid ? (
+                    {/* Email checker — unlocked for paid or after summarizing */}
+                    {(isPaid || !!summaries[id]) ? (
                       <button onClick={() => openEmailDraft(author)} className="btn-secondary" style={{ marginTop: "16px", padding: "12px 28px", fontSize: "0.95rem" }}>
                         Draft email to professor &rarr;
                       </button>
                     ) : (
-                      <div className="locked-feature-row" style={{ marginTop: "16px", padding: "12px 18px", background: "rgba(245,240,230,0.5)", backdropFilter: "blur(8px)", borderRadius: "12px", border: "1px solid rgba(45, 90, 61,0.2)", display: "flex", alignItems: "center", gap: "10px" }}>
-                        <span style={{ fontSize: "0.9rem" }}>&#128274;</span>
+                      <div className="rm-locked-row" style={{ marginTop: "16px" }}>
+                        <span style={{ fontSize: "0.9rem", opacity: 0.6 }}>&#128274;</span>
                         <span style={{ fontSize: "0.85rem", color: "#6b7280", flex: 1 }}>Email checker</span>
-                        <button onClick={() => {
-                          if (!user) { setShowAuthModal(true); setAuthMode("signup"); setAuthError(""); }
-                          else { setShowUpgradeModal(true); }
-                        }} className="locked-upgrade-btn">
-                          Upgrade to Student to check your email
-                        </button>
+                        <span style={{ fontSize: "0.72rem", color: "#8aaa96", fontStyle: "italic", letterSpacing: "0.02em" }}>Summarize to unlock</span>
                       </div>
                     )}
                   </div>
@@ -1502,15 +1499,15 @@ function AppPageInner() {
                         </p>
                       </div>
                       <div className="locked-summary-overlay" style={{ paddingBottom: "28px" }} onClick={() => {
-                        if (!user) { setShowAuthModal(true); setAuthMode("signup"); setAuthError("Create a free account for 1 more free summary."); }
+                        if (!user) { setShowAuthModal(true); setAuthMode("signup"); setAuthError("Create a free account for 1 more free use."); }
                         else { setShowUpgradeModal(true); }
                       }}>
                         <span style={{ fontSize: "1.6rem", marginBottom: "10px" }}>&#128274;</span>
                         <p style={{ fontSize: "1rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "6px" }}>
-                          You&apos;ve used your free summaries
+                          You&apos;ve used your free {!user ? "preview" : "previews"}
                         </p>
                         <p style={{ fontSize: "0.85rem", color: "#6b7280", marginBottom: "14px" }}>
-                          {!user ? "Create a free account for 1 more free summary" : "Upgrade for unlimited access"}
+                          {!user ? "Sign up free to unlock 1 more professor" : "Upgrade for unlimited access to all professors"}
                         </p>
                         <span className="locked-upgrade-btn" style={{ padding: "10px 24px", fontSize: "0.85rem" }}>
                           {!user ? "Sign up free" : "Upgrade to Student"}
@@ -1518,14 +1515,23 @@ function AppPageInner() {
                       </div>
                     </div>
                   ) : (
-                    <button onClick={() => loadSummary(author)} disabled={isLoadingSummary} className="btn-secondary" style={{ marginTop: "24px", padding: "12px 28px", fontSize: "0.95rem", opacity: isLoadingSummary ? 0.5 : 1 }}>
-                      {isLoadingSummary ? (
-                        <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
-                          <span className="loading-spinner" style={{ fontSize: "1rem" }}>&#127807;</span>
-                          Generating summary...
+                    <div style={{ marginTop: "28px" }}>
+                      <button onClick={() => loadSummary(author)} disabled={isLoadingSummary} className="rm-summarize-btn">
+                        {isLoadingSummary ? (
+                          <>
+                            <span className="loading-spinner" style={{ fontSize: "1rem" }}>&#127807;</span>
+                            Generating summary...
+                          </>
+                        ) : (
+                          <>Summarize research <span style={{ fontSize: "1.1em", marginLeft: "2px" }}>→</span></>
+                        )}
+                      </button>
+                      {!isPaid && !isLoadingSummary && (
+                        <span className="rm-free-hint">
+                          {getSummariesRemaining()} free {getSummariesRemaining() === 1 ? "use" : "uses"} remaining {"\u2014"} unlocks all features for this professor
                         </span>
-                      ) : "Summarize research \u2192"}
-                    </button>
+                      )}
+                    </div>
                   )
                 )}
               </div>
@@ -1540,9 +1546,9 @@ function AppPageInner() {
               <div style={{ flex: 1, height: "1px", background: "linear-gradient(to right, transparent, rgba(45, 90, 61,0.5), transparent)" }} />
               <h2 style={{
                 fontSize: "1.4rem", fontWeight: 700, color: "#2d5a3d",
-                whiteSpace: "nowrap", letterSpacing: "-0.01em",
+                letterSpacing: "-0.01em",
               }}>
-                Similar researchers at nearby universities
+                Nearby researchers
               </h2>
               <div style={{ flex: 1, height: "1px", background: "linear-gradient(to right, transparent, rgba(45, 90, 61,0.5), transparent)" }} />
             </div>
@@ -1562,8 +1568,8 @@ function AppPageInner() {
                   overflow: "hidden",
                   animationDelay: `${i * 0.12}s`,
                 }}>
-                  {/* Lock overlay for free users */}
-                  {isFree && (
+                  {/* Lock overlay for free users who haven't summarized anyone yet */}
+                  {isFree && Object.keys(summaries).length === 0 && (
                     <div style={{
                       position: "absolute", inset: 0, zIndex: 2,
                       background: "rgba(245,240,230,0.7)",
@@ -1580,10 +1586,10 @@ function AppPageInner() {
                     >
                       <span style={{ fontSize: "2rem", marginBottom: "12px" }}>🔒</span>
                       <p style={{ fontSize: "0.95rem", fontWeight: 700, color: "#2d5a3d", textAlign: "center", marginBottom: "6px" }}>
-                        Unlock nearby professors
+                        Summarize a professor to unlock
                       </p>
                       <p style={{ fontSize: "0.8rem", color: "#6b7280", textAlign: "center" }}>
-                        Upgrade to Student to explore researchers at other universities
+                        Use your free Summarize on any professor above to see nearby researchers
                       </p>
                     </div>
                   )}
@@ -1663,7 +1669,7 @@ function AppPageInner() {
 
                   {/* Volunteer framing tip */}
                   <div style={{ padding: "12px 18px", background: "rgba(45, 90, 61,0.12)", border: "1px solid rgba(45, 90, 61,0.25)", borderRadius: "14px", marginBottom: "20px" }}>
-                    <p style={{ fontSize: "0.82rem", color: "#3D7A5E", lineHeight: 1.6 }}>
+                    <p style={{ fontSize: "0.82rem", color: "#2d5a3d", lineHeight: 1.6 }}>
                       <strong>Tip:</strong> Consider saying you&apos;d like to <em>volunteer</em> rather than asking for a position. It lowers the commitment for professors and makes them more likely to say yes.
                     </p>
                   </div>
@@ -1739,7 +1745,7 @@ function AppPageInner() {
                               <p style={{ fontSize: "0.85rem", fontWeight: 700, color: "#2d5a3d" }}>
                                 {h.paper}
                                 {h.doi && (
-                                  <a href={h.doi} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 400, fontSize: "0.75rem", marginLeft: "8px", color: "#3D7A5E" }}>
+                                  <a href={h.doi} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 400, fontSize: "0.75rem", marginLeft: "8px", color: "#2d5a3d" }}>
                                     Read →
                                   </a>
                                 )}
@@ -1868,8 +1874,8 @@ function AppPageInner() {
               </div>
               <div style={{ display: "flex", alignItems: "baseline", gap: "8px", marginBottom: "4px" }}>
                 <span style={{ fontSize: "2rem", fontWeight: 800, color: "#2d5a3d" }}>$25</span>
-                <span style={{ fontSize: "1rem", color: "#3D7A5E", textDecoration: "line-through", fontWeight: 600 }}>$60</span>
-                <span style={{ fontSize: "0.85rem", color: "#3D7A5E", fontWeight: 600 }}>one-time</span>
+                <span style={{ fontSize: "1rem", color: "#2d5a3d", textDecoration: "line-through", fontWeight: 600 }}>$60</span>
+                <span style={{ fontSize: "0.85rem", color: "#2d5a3d", fontWeight: 600 }}>one-time</span>
               </div>
               <ul style={{ listStyle: "none", padding: 0, marginBottom: "16px" }}>
                 {["Everything in Student, forever", "One payment, lifetime access"].map((f) => (
