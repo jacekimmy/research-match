@@ -3571,6 +3571,12 @@ body::after {
   border-color: rgba(255,255,255,0.12);
   box-shadow: 0 20px 60px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
 }
+.lp-price-card-featured .lp-price-features li {
+  color: rgba(255,255,255,0.9);
+}
+.lp-price-card-featured .lp-price-period {
+  color: rgba(255,255,255,0.55);
+}
 .lp-price-card-featured:hover {
   transform: translateY(-8px);
   box-shadow: 0 32px 80px rgba(0,0,0,0.25);
