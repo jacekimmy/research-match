@@ -280,7 +280,7 @@ function AppPageInner() {
   const [nearbyLoading, setNearbyLoading] = useState(false);
 
   // Professor responsiveness badges
-  const [responsiveness, setResponsiveness] = useState<Record<string, { level: "green" | "yellow" | "red"; label: string }>>({});
+  const [responsiveness, setResponsiveness] = useState<Record<string, { level: "green" | "yellow" | "red"; label: string; tooltip: string }>>({});
 
   // Plan helpers
   const isPaid = profile?.plan_type === "student_monthly" || profile?.plan_type === "student_annual" || profile?.plan_type === "lifetime";
@@ -558,7 +558,7 @@ function AppPageInner() {
           const scoreMap = new Map<string, number>();
           for (const s of scoreData.scored ?? []) scoreMap.set(s.id, s.score);
           authors = authors
-            .filter((a) => (scoreMap.get(a.id) ?? 0) >= 3)
+            .filter((a) => (scoreMap.get(a.id) ?? 0) >= 1)
             .sort((a, b) => (scoreMap.get(b.id) ?? 0) - (scoreMap.get(a.id) ?? 0));
         } catch {
           // Fallback: simple filter if scoring fails
@@ -613,7 +613,7 @@ function AppPageInner() {
         const scoreMap = new Map<string, number>();
         for (const s of scoreData.scored ?? []) scoreMap.set(s.id, s.score);
         candidates = candidates
-          .filter((a) => (scoreMap.get(a.id) ?? 0) >= 3)
+          .filter((a) => (scoreMap.get(a.id) ?? 0) >= 1)
           .sort((a, b) => (scoreMap.get(b.id) ?? 0) - (scoreMap.get(a.id) ?? 0));
       } catch {
         candidates = candidates.sort((a, b) => b.cited_by_count - a.cited_by_count);
@@ -628,9 +628,9 @@ function AppPageInner() {
       const authorId = author.id.split("/").pop()!;
       try {
         const now = new Date();
-        const threeYearsAgo = now.getFullYear() - 3;
-        const twoYearsAgo = now.getFullYear() - 2;
-        const oneYearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()).toISOString().split("T")[0];
+        const currentYear = now.getFullYear();
+        const threeYearsAgo = currentYear - 3;
+        const twoYearsAgo = currentYear - 2;
 
         const worksRes = await fetch(
           `https://api.openalex.org/works?filter=author.id:${authorId},publication_year:>${threeYearsAgo}&per_page=50&select=authorships,publication_year`
@@ -639,18 +639,20 @@ function AppPageInner() {
         const works = worksData.results ?? [];
 
         if (works.length === 0) {
-          setResponsiveness(prev => ({ ...prev, [authorId]: { level: "red", label: "Inactive lab" } }));
+          setResponsiveness(prev => ({ ...prev, [authorId]: { level: "red", label: "Inactive lab", tooltip: "No papers found in the last 3 years — this lab may be inactive or retired" } }));
           continue;
         }
 
         // Check if published in last 12 months
-        const recentWorks = works.filter((w: any) => w.publication_year >= now.getFullYear() - 1);
+        const recentWorks = works.filter((w: any) => w.publication_year >= currentYear - 1);
         const publishedRecently = recentWorks.length > 0;
 
         // Check for no publications in last 2 years
         const last2YearWorks = works.filter((w: any) => w.publication_year >= twoYearsAgo);
         if (last2YearWorks.length === 0) {
-          setResponsiveness(prev => ({ ...prev, [authorId]: { level: "red", label: "Inactive lab" } }));
+          const lastYear = Math.max(...works.map((w: any) => w.publication_year as number));
+          const yearsAgo = currentYear - lastYear;
+          setResponsiveness(prev => ({ ...prev, [authorId]: { level: "red", label: "Inactive lab", tooltip: `Last published in ${lastYear} (${yearsAgo} year${yearsAgo !== 1 ? "s" : ""} ago) — lab appears to be winding down` } }));
           continue;
         }
 
@@ -686,13 +688,34 @@ function AppPageInner() {
           } catch { /* skip */ }
         }));
 
+        let level: "green" | "yellow" | "red";
+        let label: string;
+        let tooltip: string;
+
         if (studentCount >= 2 && publishedRecently) {
-          setResponsiveness(prev => ({ ...prev, [authorId]: { level: "green", label: "Likely takes students" } }));
-        } else if (studentCount <= 1 || !publishedRecently) {
-          setResponsiveness(prev => ({ ...prev, [authorId]: { level: "yellow", label: "May not take students" } }));
+          level = "green";
+          label = "Likely takes students";
+          tooltip = `Published ${recentWorks.length} paper${recentWorks.length !== 1 ? "s" : ""} in the last year with ${studentCount} likely student co-author${studentCount !== 1 ? "s" : ""} at their institution`;
+        } else if (studentCount === 1 && publishedRecently) {
+          // Close to threshold — probably still recruiting
+          level = "yellow";
+          label = "Probably takes students";
+          tooltip = `Published recently but only 1 apparent student co-author found — likely still has capacity, worth reaching out`;
+        } else if (!publishedRecently) {
+          level = "yellow";
+          label = "May not take students";
+          const lastYear = Math.max(...works.map((w: any) => w.publication_year as number));
+          const yearsAgo = currentYear - lastYear;
+          tooltip = yearsAgo >= 2
+            ? `Last published ${yearsAgo} years ago — lab may not be actively recruiting`
+            : `Hasn't published in the last year — may not be actively recruiting right now`;
         } else {
-          setResponsiveness(prev => ({ ...prev, [authorId]: { level: "yellow", label: "May not take students" } }));
+          level = "yellow";
+          label = "May not take students";
+          tooltip = `No apparent student co-authors found in recent papers — lab may not have open positions`;
         }
+
+        setResponsiveness(prev => ({ ...prev, [authorId]: { level, label, tooltip } }));
       } catch {
         // Skip on error — don't show badge
       }
@@ -1262,7 +1285,7 @@ function AppPageInner() {
                       {/* Responsiveness Badge */}
                       {resp && (
                         (isPaid || !!summaries[id]) ? (
-                          <span className="resp-badge" title="Based on publication patterns and co-author history" style={{
+                          <span className="resp-badge" title={resp.tooltip} style={{
                             fontSize: "0.7rem", fontWeight: 700, padding: "4px 12px", borderRadius: "999px",
                             display: "inline-flex", alignItems: "center", gap: "5px",
                             background: resp.level === "green" ? "rgba(45, 90, 61,0.1)" : resp.level === "yellow" ? "rgba(196, 162, 101,0.12)" : "rgba(196, 92, 92,0.08)",

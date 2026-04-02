@@ -60,11 +60,14 @@ export async function POST(req: NextRequest) {
             }
           }
 
-          // +3 for last author on 3+ papers (runs a lab)
+          // +3 for last author on 3+ papers (strong signal in biology/medicine)
           if (lastAuthorCount >= 3) score += 3;
 
-          // -2 if only first/middle author (likely grad student/postdoc)
-          if (onlyFirstMiddle && works.length >= 3) score -= 2;
+          // +1 for any last-author appearances (weaker signal)
+          else if (lastAuthorCount >= 1) score += 1;
+
+          // Note: no penalty for first/middle-only — authorship order conventions
+          // vary by field (astronomy, physics, math use alphabetical ordering)
 
           // +2 for publishing span of 5+ years
           if (years.length >= 2) {
