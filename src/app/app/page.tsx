@@ -698,7 +698,7 @@ function AppPageInner() {
           tooltip = `Published ${recentWorks.length} paper${recentWorks.length !== 1 ? "s" : ""} in the last year with ${studentCount} likely student co-author${studentCount !== 1 ? "s" : ""} at their institution`;
         } else if (studentCount === 1 && publishedRecently) {
           // Close to threshold — probably still recruiting
-          level = "yellow";
+          level = "green";
           label = "Probably takes students";
           tooltip = `Published recently but only 1 apparent student co-author found — likely still has capacity, worth reaching out`;
         } else if (!publishedRecently) {
