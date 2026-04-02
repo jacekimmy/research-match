@@ -571,10 +571,22 @@ function AppPageInner() {
       // Fetch responsiveness badges in background
       if (authors.length > 0) fetchResponsiveness(authors);
       // Fetch nearby professors (different universities, same topic) in background
-      if (authors.length > 0 && topicId && institutionId) {
+      if (authors.length > 0 && institutionId) {
         setNearbyProfs([]);
         setNearbyLoading(true);
-        fetchNearby(topicId, institutionId, authors.map(a => a.id));
+        if (topicId) {
+          fetchNearby(topicId, institutionId, authors.map(a => a.id));
+        } else {
+          // topicId was null (LLM returned -1) — look it up directly from OpenAlex
+          fetch(`https://api.openalex.org/topics?search=${encodeURIComponent(query)}&per_page=1`)
+            .then(r => r.json())
+            .then(d => {
+              const fallbackTopicId = d.results?.[0]?.id?.split("/").pop();
+              if (fallbackTopicId) fetchNearby(fallbackTopicId, institutionId, authors.map(a => a.id));
+              else setNearbyLoading(false);
+            })
+            .catch(() => setNearbyLoading(false));
+        }
       } else {
         setNearbyProfs([]);
       }
@@ -584,9 +596,16 @@ function AppPageInner() {
 
   async function fetchNearby(topicId: string, institutionId: string, excludeIds: string[]) {
     try {
-      const res = await fetch(`https://api.openalex.org/authors?filter=topics.id:${topicId}&per_page=25&sort=cited_by_count:desc`);
+      // Get searched institution's country so we only show same-country researchers
+      const instRes = await fetch(`https://api.openalex.org/institutions/${institutionId}?select=country_code`, { signal: AbortSignal.timeout(5000) });
+      const instData = await instRes.json();
+      const countryCode: string | null = instData.country_code ?? null;
+
+      const countryFilter = countryCode ? `,last_known_institutions.country_code:${countryCode}` : "";
+      const res = await fetch(`https://api.openalex.org/authors?filter=topics.id:${topicId}${countryFilter}&per_page=50&sort=cited_by_count:desc`);
       const data = await res.json();
       let candidates: Author[] = data.results ?? [];
+
       // Filter out: same university, already in results, no institution
       const fullInstId = `https://openalex.org/${institutionId}`;
       candidates = candidates.filter((a) =>
@@ -595,6 +614,7 @@ function AppPageInner() {
         a.last_known_institutions[0]?.id !== fullInstId &&
         a.works_count >= 15
       );
+
       // Score and pick top 3
       try {
         const scoreRes = await fetch("/api/score-authors", {
