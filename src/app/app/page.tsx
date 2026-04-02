@@ -571,21 +571,16 @@ function AppPageInner() {
       // Fetch responsiveness badges in background
       if (authors.length > 0) fetchResponsiveness(authors);
       // Fetch nearby professors (different universities, same topic) in background
-      if (authors.length > 0 && institutionId) {
+      if (authors.length > 0 && institutionId && institutionName) {
         setNearbyProfs([]);
         setNearbyLoading(true);
-        if (topicId) {
-          fetchNearby(topicId, institutionId, authors.map(a => a.id));
+        const resolveTopicId = topicId ?? await fetch(`https://api.openalex.org/topics?search=${encodeURIComponent(query)}&per_page=1`)
+          .then(r => r.json()).then(d => d.results?.[0]?.id?.split("/").pop() ?? null).catch(() => null);
+        if (resolveTopicId) {
+          fetchNearby(resolveTopicId, institutionName, authors.map(a => a.id));
         } else {
-          // topicId was null (LLM returned -1) — look it up directly from OpenAlex
-          fetch(`https://api.openalex.org/topics?search=${encodeURIComponent(query)}&per_page=1`)
-            .then(r => r.json())
-            .then(d => {
-              const fallbackTopicId = d.results?.[0]?.id?.split("/").pop();
-              if (fallbackTopicId) fetchNearby(fallbackTopicId, institutionId, authors.map(a => a.id));
-              else setNearbyLoading(false);
-            })
-            .catch(() => setNearbyLoading(false));
+          setNearbyLoading(false);
+          setNearbyProfs([]);
         }
       } else {
         setNearbyProfs([]);
@@ -594,51 +589,15 @@ function AppPageInner() {
     finally { setLoading(false); }
   }
 
-  async function fetchNearby(topicId: string, institutionId: string, excludeIds: string[]) {
+  async function fetchNearby(topicId: string, institutionName: string, excludeIds: string[]) {
     try {
-      // Get searched institution's country so we only show same-country researchers
-      const instRes = await fetch(`https://api.openalex.org/institutions/${institutionId}?select=country_code`, { signal: AbortSignal.timeout(5000) });
-      const instData = await instRes.json();
-      const countryCode: string | null = instData.country_code ?? null;
-
-      const countryFilter = countryCode ? `,last_known_institutions.country_code:${countryCode}` : "";
-      const res = await fetch(`https://api.openalex.org/authors?filter=topics.id:${topicId}${countryFilter}&per_page=50&sort=cited_by_count:desc`);
+      const res = await fetch("/api/nearby-authors", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ institutionName, topicId, excludeIds }),
+      });
       const data = await res.json();
-      let candidates: Author[] = data.results ?? [];
-
-      // Filter out: same university, already in results, no institution
-      const fullInstId = `https://openalex.org/${institutionId}`;
-      candidates = candidates.filter((a) =>
-        !excludeIds.includes(a.id) &&
-        a.last_known_institutions?.length > 0 &&
-        a.last_known_institutions[0]?.id !== fullInstId &&
-        a.works_count >= 15
-      );
-
-      // Score and pick top 3
-      try {
-        const scoreRes = await fetch("/api/score-authors", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            authors: candidates.map((a) => ({
-              id: a.id,
-              works_count: a.works_count,
-              cited_by_count: a.cited_by_count,
-              has_institution: true,
-            })),
-          }),
-        });
-        const scoreData = await scoreRes.json();
-        const scoreMap = new Map<string, number>();
-        for (const s of scoreData.scored ?? []) scoreMap.set(s.id, s.score);
-        candidates = candidates
-          .filter((a) => (scoreMap.get(a.id) ?? 0) >= 1)
-          .sort((a, b) => (scoreMap.get(b.id) ?? 0) - (scoreMap.get(a.id) ?? 0));
-      } catch {
-        candidates = candidates.sort((a, b) => b.cited_by_count - a.cited_by_count);
-      }
-      setNearbyProfs(candidates.slice(0, 3));
+      setNearbyProfs(data.authors ?? []);
     } catch { /* ignore nearby failures */ }
     finally { setNearbyLoading(false); }
   }
