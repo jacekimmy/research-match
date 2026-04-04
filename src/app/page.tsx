@@ -501,7 +501,6 @@ export default function LandingPage() {
                 <li key={f}><span className="lp-check" style={{ color: "#A8893E" }}>✓</span>{f}</li>
               ))}
             </ul>
-            <p className="lp-refund-note">Not satisfied in 30 days? Full refund. No questions asked.</p>
             {lifetimeSpotsRemaining === 0 ? (
               <button disabled className="lp-price-btn" style={{ background: "#e5e7eb", color: "#9ca3af", cursor: "not-allowed" }}>Sold out</button>
             ) : (
@@ -509,6 +508,7 @@ export default function LandingPage() {
                 Claim your spot
               </Link>
             )}
+            <p className="lp-refund-note">Not satisfied in 30 days? Full refund.</p>
           </div>
 
           {/* Student — monthly/annual */}
@@ -544,10 +544,10 @@ export default function LandingPage() {
                 <li key={f}><span className="lp-check" style={{ color: "#9dbfaa" }}>✓</span>{f}</li>
               ))}
             </ul>
-            <p className="lp-refund-note" style={{ color: "rgba(255,255,255,0.5)" }}>Not satisfied in 30 days? Full refund. No questions asked.</p>
             <Link href="/app?upgrade=true" className="lp-price-btn lp-price-btn-white">
               Upgrade to Student
             </Link>
+            <p className="lp-refund-note" style={{ color: "rgba(255,255,255,0.5)" }}>Not satisfied in 30 days? Full refund.</p>
           </div>
 
           {/* Free — smallest, least prominent */}
