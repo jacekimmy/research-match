@@ -752,20 +752,26 @@ function AppPageInner() {
   async function loadSummary(author: Author, retry = false) {
     const id = author.id.split("/").pop()!;
     if (!retry && (summaries[id] || loadingSummary[id])) return;
-    // Check if user can view summaries
+    // Quick client-side UX check (server is the real gate)
     if (!canSummarize()) return;
     if (retry) setSummaries((prev) => { const next = { ...prev }; delete next[id]; return next; });
     setLoadingSummary((prev) => ({ ...prev, [id]: true }));
     try {
-      const res = await fetch("/api/summarize", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ authorId: id }) });
+      const { supabase } = await import("@/lib/supabase");
+      const { data: { session } } = await supabase.auth.getSession();
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (session?.access_token) headers["Authorization"] = `Bearer ${session.access_token}`;
+      const res = await fetch("/api/summarize", { method: "POST", headers, body: JSON.stringify({ authorId: id }) });
+      if (res.status === 403) {
+        setShowUpgradeModal(true);
+        return;
+      }
       const data = await res.json();
       const summaryText = data.summary || data.error || "Summary unavailable. Try again or visit their faculty page.";
       const highlights = data.highlights || [];
       setSummaries((prev) => ({ ...prev, [id]: { summary: summaryText, highlights, questions: data.questions || [] } }));
-      // Only count as used if we got real content (not an error/empty)
-      if (highlights.length > 0 && !data.error && !summaryText.includes("unavailable") && !summaryText.includes("No recent papers")) {
-        incrementSummary();
-      }
+      // Refresh profile so client UI reflects updated count
+      if (highlights.length > 0 && !data.error) refreshProfile();
     } catch { setSummaries((prev) => ({ ...prev, [id]: { summary: "Summary unavailable. Try again or visit their faculty page.", highlights: [], questions: [] } })); }
     finally { setLoadingSummary((prev) => ({ ...prev, [id]: false })); }
   }

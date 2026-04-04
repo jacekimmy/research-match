@@ -1,7 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
+import { createClient } from "@supabase/supabase-js";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
+
+const FREE_LIMIT = 2;
+const ANON_LIMIT = 1;
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,7 +18,53 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "authorId required" }, { status: 400 });
     }
 
-    // Fetch recent papers (last 3 years) sorted by citation count
+    // --- Server-side rate limiting ---
+    const authHeader = req.headers.get("authorization");
+    const token = authHeader?.replace("Bearer ", "").trim();
+    let userId: string | null = null;
+
+    if (token) {
+      const { data: { user } } = await supabaseAdmin.auth.getUser(token);
+      if (user) userId = user.id;
+    }
+
+    if (userId) {
+      // Authenticated user: check Supabase
+      const { data: profile } = await supabaseAdmin
+        .from("profiles")
+        .select("plan_type, summaries_used, summaries_reset_at")
+        .eq("id", userId)
+        .single();
+
+      const isPaid = profile?.plan_type === "student_monthly" ||
+        profile?.plan_type === "student_annual" ||
+        profile?.plan_type === "lifetime";
+
+      if (!isPaid) {
+        const needsReset = profile?.summaries_reset_at && new Date() > new Date(profile.summaries_reset_at);
+        const used = needsReset ? 0 : (profile?.summaries_used ?? 0);
+        if (used >= FREE_LIMIT) {
+          return NextResponse.json({ error: "limit_reached" }, { status: 403 });
+        }
+      }
+    } else {
+      // Anonymous user: IP-based limiting
+      const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+        req.headers.get("x-real-ip") ||
+        "unknown";
+
+      const { data: anonUse } = await supabaseAdmin
+        .from("anon_summary_uses")
+        .select("count")
+        .eq("ip", ip)
+        .single();
+
+      if ((anonUse?.count ?? 0) >= ANON_LIMIT) {
+        return NextResponse.json({ error: "limit_reached" }, { status: 403 });
+      }
+    }
+
+    // --- Fetch recent papers ---
     const fromYear = new Date().getFullYear() - 3;
     const worksRes = await fetch(
       `https://api.openalex.org/works?filter=author.id:${authorId},publication_year:>${fromYear}&sort=cited_by_count:desc&per_page=20&select=title,abstract_inverted_index,cited_by_count,publication_year,authorships,doi`
@@ -91,18 +145,78 @@ Return only valid JSON, no markdown, no explanation.`;
       parsed = { summary: raw, highlights: [] };
     }
 
-    // Attach author position and DOI to each highlight
     const highlightsWithPosition = (parsed.highlights ?? []).map((h) => ({
       ...h,
       authorPosition: authorPositions[h.paper] ?? "unknown",
       doi: paperDois[h.paper] ?? null,
     }));
 
-    return NextResponse.json({
+    const result = {
       summary: parsed.summary ?? "",
       highlights: highlightsWithPosition,
       questions: parsed.questions ?? [],
-    });
+    };
+
+    // Only count as used if we got real content
+    const gotRealContent = highlightsWithPosition.length > 0 &&
+      !result.summary.includes("unavailable") &&
+      !result.summary.includes("No recent papers");
+
+    if (gotRealContent) {
+      if (userId) {
+        // Increment server-side for authenticated user
+        const { data: profile } = await supabaseAdmin
+          .from("profiles")
+          .select("plan_type, summaries_used, summaries_reset_at")
+          .eq("id", userId)
+          .single();
+
+        const isPaid = profile?.plan_type === "student_monthly" ||
+          profile?.plan_type === "student_annual" ||
+          profile?.plan_type === "lifetime";
+
+        if (!isPaid) {
+          const needsReset = profile?.summaries_reset_at && new Date() > new Date(profile.summaries_reset_at);
+          if (needsReset) {
+            const nextMonth = new Date();
+            nextMonth.setMonth(nextMonth.getMonth() + 1, 1);
+            nextMonth.setHours(0, 0, 0, 0);
+            await supabaseAdmin.from("profiles").update({
+              summaries_used: 1,
+              summaries_reset_at: nextMonth.toISOString(),
+            }).eq("id", userId);
+          } else {
+            await supabaseAdmin.from("profiles").update({
+              summaries_used: (profile?.summaries_used ?? 0) + 1,
+            }).eq("id", userId);
+          }
+        }
+      } else {
+        // Increment IP counter for anon user
+        const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+          req.headers.get("x-real-ip") ||
+          "unknown";
+
+        const { data: existing } = await supabaseAdmin
+          .from("anon_summary_uses")
+          .select("count")
+          .eq("ip", ip)
+          .single();
+
+        if (existing) {
+          await supabaseAdmin
+            .from("anon_summary_uses")
+            .update({ count: existing.count + 1 })
+            .eq("ip", ip);
+        } else {
+          await supabaseAdmin
+            .from("anon_summary_uses")
+            .insert({ ip, count: 1, first_used_at: new Date().toISOString() });
+        }
+      }
+    }
+
+    return NextResponse.json(result);
   } catch (err) {
     console.error("summarize error:", err);
     return NextResponse.json({ error: String(err) }, { status: 500 });
