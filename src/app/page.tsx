@@ -202,10 +202,6 @@ export default function LandingPage() {
             <Link href="/app" className="lp-ghost-btn">
               Browse without searching
             </Link>
-            <span className="lp-hero-divider-dot">·</span>
-            <button onClick={() => setShowStarterKit(true)} className="lp-ghost-btn">
-              Free starter kit
-            </button>
           </div>
         </div>
 
@@ -405,13 +401,13 @@ export default function LandingPage() {
       ══════════════════════════════════════════ */}
       <section className="lp-social-section" data-reveal>
         <div className="lp-social-label">What students say</div>
-        <div className="lp-quotes-track">
+        <div className="lp-quotes-grid">
           {[
             { quote: "A Princeton professor responded to a high school freshman within 24 hours.", author: "Founder experience" },
             { quote: "First time I've gotten real advice on my emails. I've sent 10 emails so far using this.", author: "Student user" },
+            { quote: "I got a reply in 3 days. Never happened before.", author: "Undergraduate student" },
             { quote: "Endorse this advice 💯. If an email smells of AI I will not answer it.", author: "Research Professor" },
             { quote: "This website is goated. I'm saving this for future use.", author: "Student user" },
-            { quote: "I got a reply in 3 days. Never happened before.", author: "Undergraduate student" },
           ].map((item, i) => (
             <div key={i} className="lp-quote-card">
               <div className="lp-quote-mark">"</div>
@@ -490,7 +486,7 @@ export default function LandingPage() {
             <div className="lp-price-amount">$0</div>
             <div className="lp-price-period">forever</div>
             <ul className="lp-price-features">
-              {["Unlimited professor searches", "3 research summaries", "Author position labels", "Save professors", "Paper links"].map((f) => (
+              {["Unlimited professor searches", "2 research summaries", "Author position labels", "Save professors", "Paper links"].map((f) => (
                 <li key={f}><span className="lp-check">✓</span>{f}</li>
               ))}
             </ul>
@@ -539,7 +535,7 @@ export default function LandingPage() {
 
           {/* Lifetime */}
           <div className="lp-price-card lp-price-card-lifetime">
-            <div className="lp-lifetime-badge">Limited · First 200 only</div>
+
             <div className="lp-price-tier" style={{ color: "#A8893E" }}>Lifetime</div>
             <div style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
               <div className="lp-price-amount" style={{ color: "#A8893E" }}>$25</div>
@@ -607,9 +603,6 @@ export default function LandingPage() {
               Start searching free
               <span className="lp-final-btn-arrow">→</span>
             </Link>
-            <button onClick={() => setShowStarterKit(true)} className="lp-final-ghost">
-              Download free starter kit
-            </button>
           </div>
         </div>
       </section>
@@ -633,7 +626,6 @@ export default function LandingPage() {
         </div>
       </footer>
 
-      <StarterKitModal isOpen={showStarterKit} onClose={() => setShowStarterKit(false)} />
 
       {waitlistTier && (
         <div className="modal-overlay" style={{
