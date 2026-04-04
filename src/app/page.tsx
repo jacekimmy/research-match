@@ -538,12 +538,14 @@ export default function LandingPage() {
               )}
             </div>
             {billingCycle === "annual" && (
-              <div style={{
-                display: "inline-block", background: "rgba(157,191,170,0.2)", border: "1px solid rgba(157,191,170,0.4)",
-                borderRadius: "10px", padding: "8px 16px", marginBottom: "20px",
-                fontSize: "0.82rem", fontWeight: 700, color: "#9dbfaa", letterSpacing: "0.02em",
-              }}>
-                You save $72/year vs monthly
+              <div style={{ marginBottom: "20px" }}>
+                <span style={{
+                  display: "inline-block", background: "rgba(157,191,170,0.2)", border: "1px solid rgba(157,191,170,0.4)",
+                  borderRadius: "10px", padding: "6px 14px",
+                  fontSize: "0.78rem", fontWeight: 700, color: "#9dbfaa", letterSpacing: "0.02em",
+                }}>
+                  Save $72/year vs monthly
+                </span>
               </div>
             )}
             <ul className="lp-price-features" style={{ color: "rgba(255,255,255,0.8)" }}>
