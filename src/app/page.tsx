@@ -542,11 +542,6 @@ export default function LandingPage() {
               <div className="lp-price-amount" style={{ color: "#A8893E", opacity: 0.4, textDecoration: "line-through", fontSize: "1.4rem" }}>$60</div>
             </div>
             <div className="lp-price-period" style={{ color: "#A8893E", opacity: 0.7 }}>one-time payment</div>
-            {lifetimeSpotsRemaining !== null && lifetimeSpotsRemaining > 0 && (
-              <div className="lp-spots-remaining">
-                {lifetimeSpotsRemaining} spots left
-              </div>
-            )}
             <ul className="lp-price-features">
               <li style={{ fontWeight: 700 }}><span className="lp-check" style={{ color: "#A8893E" }}>✓</span>Everything in Student, forever:</li>
               {["Unlimited searches", "Unlimited summaries", "Email checker", "Professor email finder", "Nearby professor access"].map((f) => (
