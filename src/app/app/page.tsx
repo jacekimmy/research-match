@@ -1894,11 +1894,11 @@ function AppPageInner() {
                   <button onClick={() => setUpgradeBilling("monthly")}
                     className={`mode-toggle-btn ${upgradeBilling === "monthly" ? "mode-toggle-btn-active" : ""}`}
                     style={{ padding: "10px 24px", fontSize: "0.85rem" }}
-                  >$5/mo</button>
+                  >$15/mo</button>
                   <button onClick={() => setUpgradeBilling("annual")}
                     className={`mode-toggle-btn ${upgradeBilling === "annual" ? "mode-toggle-btn-active" : ""}`}
                     style={{ padding: "10px 24px", fontSize: "0.85rem" }}
-                  >$49/yr</button>
+                  >$108/yr</button>
                 </div>
               </div>
               <ul style={{ listStyle: "none", padding: 0, marginBottom: "16px" }}>

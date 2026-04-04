@@ -806,7 +806,7 @@ export default function MobileLanding() {
               background: "#f4f0ea", color: "#2d5a3d", borderRadius: "14px", fontWeight: 700,
               fontFamily: "'Playfair Display', Georgia, serif",
             }}>
-              Upgrade to Student, $5/mo
+              Upgrade to Student, $15/mo
             </Link>
           </div>
 
