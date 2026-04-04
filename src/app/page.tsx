@@ -528,16 +528,24 @@ export default function LandingPage() {
                 )}
               </div>
             </div>
-            <div className="price-roller-wrap" style={{ minHeight: "20px", marginBottom: "4px" }}>
+            <div className="price-roller-wrap" style={{ minHeight: "20px", marginBottom: billingCycle === "annual" ? "12px" : "24px" }}>
               {!priceAnimating && (
                 <div key={`period-${priceKey}`} className="price-roller price-roller-enter">
                   <div className="lp-price-period" style={{ color: "rgba(255,255,255,0.5)" }}>
                     /{billingCycle === "monthly" ? "month" : "year"}
-                    {billingCycle === "annual" && <span style={{ color: "#9dbfaa", marginLeft: "8px", fontSize: "0.75rem" }}>Save $72</span>}
                   </div>
                 </div>
               )}
             </div>
+            {billingCycle === "annual" && (
+              <div style={{
+                display: "inline-block", background: "rgba(157,191,170,0.2)", border: "1px solid rgba(157,191,170,0.4)",
+                borderRadius: "10px", padding: "8px 16px", marginBottom: "20px",
+                fontSize: "0.82rem", fontWeight: 700, color: "#9dbfaa", letterSpacing: "0.02em",
+              }}>
+                You save $72/year vs monthly
+              </div>
+            )}
             <ul className="lp-price-features" style={{ color: "rgba(255,255,255,0.8)" }}>
               <li style={{ color: "#fff", fontWeight: 700 }}><span className="lp-check" style={{ color: "#9dbfaa" }}>✓</span>Everything in Free, plus:</li>
               {["Unlimited research summaries", "Email checker", "Professor email finder", "Responsiveness indicator"].map((f) => (
