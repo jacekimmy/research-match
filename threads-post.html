@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Research Match — Threads Carousel</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,800;0,900;1,400;1,700;1,800;1,900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #111;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 60px;
+    padding: 40px;
+  }
+
+  .slide-label {
+    color: #666;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: -40px;
+  }
+
+  .slide {
+    width: 1080px;
+    height: 1350px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ===== SLIDE 1 — COVER ===== */
+  .slide-cover {
+    background: #F5F0E6;
+    padding: 80px 70px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .cover-top {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .cover-logo {
+    width: 52px;
+    height: 52px;
+    background: #1C7A56;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: #F5F0E6;
+    font-weight: 800;
+    font-family: 'Playfair Display', serif;
+  }
+
+  .cover-brand {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2C3E34;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .cover-middle {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 36px;
+  }
+
+  .cover-accent-line {
+    width: 60px;
+    height: 5px;
+    background: #1C7A56;
+    border-radius: 3px;
+  }
+
+  .cover-tag {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1C7A56;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+  }
+
+  .cover-headline {
+    font-family: 'Playfair Display', serif;
+    font-size: 108px;
+    font-weight: 900;
+    color: #1E1E1E;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+
+  .cover-headline em {
+    color: #1C7A56;
+    font-style: italic;
+  }
+
+  .cover-big-number {
+    position: absolute;
+    top: 100px;
+    right: 40px;
+    font-family: 'Playfair Display', serif;
+    font-size: 400px;
+    font-weight: 900;
+    color: rgba(28, 122, 86, 0.07);
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .cover-subtitle {
+    font-size: 28px;
+    color: #5A6B60;
+    line-height: 1.6;
+    max-width: 800px;
+  }
+
+  .cover-pills {
+    display: flex;
+    gap: 16px;
+  }
+
+  .cover-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 28px;
+    border-radius: 999px;
+    background: rgba(28, 122, 86, 0.08);
+    border: 1.5px solid rgba(28, 122, 86, 0.15);
+    font-size: 20px;
+    font-weight: 600;
+    color: #1C7A56;
+  }
+
+  /* ===== SLIDE 2-5 — DARK FEATURE SLIDES ===== */
+  .slide-dark {
+    background: linear-gradient(165deg, #1a1a1a 0%, #111 100%);
+    padding: 70px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dark-tool-label {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1C7A56;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .dark-tool-label::after {
+    content: '';
+    flex: 1;
+    height: 1.5px;
+    background: linear-gradient(90deg, rgba(28,122,86,0.4), transparent);
+  }
+
+  .dark-big-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 160px;
+    font-weight: 900;
+    color: rgba(28, 122, 86, 0.15);
+    line-height: 0.85;
+    margin-bottom: -10px;
+  }
+
+  .dark-feature-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 72px;
+    font-weight: 800;
+    font-style: italic;
+    color: #1C7A56;
+    margin-bottom: 24px;
+    line-height: 1.1;
+  }
+
+  .dark-link-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 22px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    font-size: 18px;
+    color: rgba(255,255,255,0.5);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    margin-bottom: 36px;
+  }
+
+  .dark-link-pill .link-icon {
+    font-size: 16px;
+    opacity: 0.6;
+  }
+
+  .dark-description {
+    font-size: 26px;
+    color: rgba(255,255,255,0.65);
+    line-height: 1.65;
+    margin-bottom: 50px;
+    max-width: 850px;
+  }
+
+  .dark-features {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: auto;
+  }
+
+  .dark-feature-item {
+    padding: 28px 0 28px 28px;
+    border-left: 4px solid #1C7A56;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .dark-feature-item:last-child {
+    border-bottom: none;
+  }
+
+  .dark-feature-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: #F5F0E6;
+    margin-bottom: 8px;
+  }
+
+  .dark-feature-desc {
+    font-size: 22px;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.5;
+  }
+
+  .dark-callout {
+    margin-top: 40px;
+    padding: 28px 32px;
+    background: rgba(28, 122, 86, 0.08);
+    border-left: 4px solid #1C7A56;
+    border-radius: 0 14px 14px 0;
+  }
+
+  .dark-callout-label {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1C7A56;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin-bottom: 12px;
+  }
+
+  .dark-callout-text {
+    font-size: 22px;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.6;
+  }
+
+  .dark-callout-text strong {
+    color: #F5F0E6;
+  }
+
+  /* Stats row */
+  .dark-stats {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 44px;
+  }
+
+  .dark-stat {
+    flex: 1;
+    padding: 24px;
+    border: 1.5px solid rgba(28, 122, 86, 0.25);
+    border-radius: 16px;
+    background: rgba(28, 122, 86, 0.06);
+    text-align: center;
+  }
+
+  .dark-stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 800;
+    color: #1C7A56;
+    margin-bottom: 6px;
+  }
+
+  .dark-stat-label {
+    font-size: 17px;
+    color: rgba(255,255,255,0.4);
+  }
+
+  /* ===== SLIDE 6 — CTA ===== */
+  .slide-cta {
+    background: #F5F0E6;
+    padding: 80px 70px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .cta-logo {
+    width: 80px;
+    height: 80px;
+    background: #1C7A56;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 42px;
+    color: #F5F0E6;
+    font-weight: 800;
+    font-family: 'Playfair Display', serif;
+    margin-bottom: 48px;
+  }
+
+  .cta-headline {
+    font-family: 'Playfair Display', serif;
+    font-size: 80px;
+    font-weight: 900;
+    color: #1E1E1E;
+    line-height: 1.1;
+    margin-bottom: 32px;
+    letter-spacing: -0.02em;
+  }
+
+  .cta-headline em {
+    color: #1C7A56;
+    font-style: italic;
+  }
+
+  .cta-sub {
+    font-size: 28px;
+    color: #5A6B60;
+    line-height: 1.6;
+    max-width: 700px;
+    margin-bottom: 50px;
+  }
+
+  .cta-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 24px 56px;
+    background: #1C7A56;
+    color: #F5F0E6;
+    border-radius: 999px;
+    font-size: 26px;
+    font-weight: 700;
+    font-family: 'Playfair Display', serif;
+    text-decoration: none;
+    margin-bottom: 24px;
+  }
+
+  .cta-url {
+    font-size: 22px;
+    color: #95AD9D;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+
+  .cta-free {
+    margin-top: 40px;
+    font-size: 22px;
+    color: #7A8E80;
+  }
+
+  .page-num {
+    position: absolute;
+    bottom: 40px;
+    right: 50px;
+    font-size: 20px;
+    color: rgba(255,255,255,0.2);
+    font-weight: 600;
+  }
+
+  .page-num-light {
+    color: rgba(28, 122, 86, 0.2);
+  }
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1: COVER -->
+<p class="slide-label">Slide 1 — Cover</p>
+<div class="slide slide-cover">
+  <div class="cover-top">
+    <div class="cover-logo">R</div>
+    <span class="cover-brand">Research Match</span>
+  </div>
+  <div class="cover-big-number">R</div>
+  <div class="cover-middle">
+    <div class="cover-accent-line"></div>
+    <div class="cover-tag">Free Tool &middot; 2025</div>
+    <h1 class="cover-headline">
+      Find research professors in minutes, not <em>hours.</em>
+    </h1>
+    <p class="cover-subtitle">
+      The tool students are using to search 250M+ papers, understand professors' work, and write cold emails that actually get responses.
+    </p>
+  </div>
+  <div class="cover-pills">
+    <span class="cover-pill">&#128269; Search</span>
+    <span class="cover-pill">&#128218; Summaries</span>
+    <span class="cover-pill">&#9993;&#65039; Emails</span>
+  </div>
+  <span class="page-num page-num-light">1/6</span>
+</div>
+
+<!-- SLIDE 2: SEARCH -->
+<p class="slide-label">Slide 2 — Smart Search</p>
+<div class="slide slide-dark">
+  <div class="dark-tool-label">Feature 01</div>
+  <div class="dark-big-number">01</div>
+  <div class="dark-feature-name">Smart Search</div>
+  <div class="dark-link-pill">
+    <span class="link-icon">&#128279;</span>
+    researchmatch.net
+  </div>
+  <p class="dark-description">
+    Search by research interest or professor name. Filter by university. Find the right professor in under 2 minutes.
+  </p>
+
+  <div class="dark-stats">
+    <div class="dark-stat">
+      <div class="dark-stat-num">250M+</div>
+      <div class="dark-stat-label">papers indexed</div>
+    </div>
+    <div class="dark-stat">
+      <div class="dark-stat-num">2min</div>
+      <div class="dark-stat-label">avg. search time</div>
+    </div>
+    <div class="dark-stat">
+      <div class="dark-stat-num">Free</div>
+      <div class="dark-stat-label">to start</div>
+    </div>
+  </div>
+
+  <div class="dark-features">
+    <div class="dark-feature-item">
+      <div class="dark-feature-title">Topic or name search</div>
+      <div class="dark-feature-desc">Type "machine learning" or "Dr. Smith" &mdash; works both ways</div>
+    </div>
+    <div class="dark-feature-item">
+      <div class="dark-feature-title">University filter</div>
+      <div class="dark-feature-desc">Narrow results to MIT, Stanford, or any school</div>
+    </div>
+    <div class="dark-feature-item">
+      <div class="dark-feature-title">Author position labels</div>
+      <div class="dark-feature-desc">See if the professor led the research or just collaborated</div>
+    </div>
+  </div>
+
+  <div class="dark-callout">
+    <div class="dark-callout-label">Why it matters</div>
+    <div class="dark-callout-text">
+      Most students spend <strong>8+ hours</strong> Googling professors. This does it in minutes &mdash; and shows you who's actually active.
+    </div>
+  </div>
+  <span class="page-num">2/6</span>
+</div>
+
+<!-- SLIDE 3: PLAIN-ENGLISH SUMMARIES -->
+<p class="slide-label">Slide 3 — Research Summaries</p>
+<div class="slide slide-dark">
+  <div class="dark-tool-label">Feature 02</div>
+  <div class="dark-big-number">02</div>
+  <div class="dark-feature-name">Plain-English Summaries</div>
+  <div class="dark-link-pill">
+    <span class="link-icon">&#128279;</span>
+    researchmatch.net
+  </div>
+  <p class="dark-description">
+    AI reads a professor's recent papers and explains their work like a smart friend would &mdash; no jargon, no fluff.
+  </p>
+
+  <div class="dark-features">
+    <div class="dark-feature-item">
+      <div class="dark-feature-title">What they actually study</div>
+      <div class="dark-feature-desc">3-4 sentence summary of their real research focus, not a Wikipedia bio</div>
+    </div>
+    <div class="dark-feature-item">
+      <div class="dark-feature-title">Key findings highlighted</div>
+      <div class="dark-feature-desc">Specific results from their top papers &mdash; numbers, methods, breakthroughs</div>
+    </div>
+    <div class="dark-feature-item">
+      <div class="dark-feature-title">Suggested questions</div>
+      <div class="dark-feature-desc">3 conversation starters that reference their actual work &mdash; ready to paste into your email</div>
+    </div>
+  </div>
+
+  <div class="dark-callout">
+    <div class="dark-callout-label">The problem it solves</div>
+    <div class="dark-callout-text">
+      Reading academic papers takes hours. <strong>Most students fake it &mdash; professors can tell.</strong> This lets you actually understand the work before reaching out.
+    </div>
+  </div>
+  <span class="page-num">3/6</span>
+</div>
+
+<!-- SLIDE 4: EMAIL TOOLS -->
+<p class="slide-label">Slide 4 — Email Tools</p>
+<div class="slide slide-dark">
+  <div class="dark-tool-label">Feature 03</div>
+  <div class="dark-big-number">03</div>
+  <div class="dark-feature-name">Email Toolkit</div>
+  <div class="dark-link-pill">
+    <span class="link-icon">&#128279;</span>
+    researchmatch.net
+  </div>
+  <p class="dark-description">
+    Find professor emails, check your draft for red flags, and get real guidance &mdash; not templates.
+  </p>
+
+  <div class="dark-features">
+    <div class="dark-feature-item">
+      <div class="dark-feature-title">Email finder</div>
+      <div class="dark-feature-desc">Pulls verified emails from ORCID and academic databases &mdash; not random guesses</div>
+    </div>
+    <div class="dark-feature-item">
+      <div class="dark-feature-title">Red flag checker</div>
+      <div class="dark-feature-desc">Scans your draft for generic phrasing, sycophantic tone, and AI-sounding language</div>
+    </div>
+    <div class="dark-feature-item">
+      <div class="dark-feature-title">Responsiveness indicator</div>
+      <div class="dark-feature-desc">See which professors collaborate often &mdash; a signal they're more likely to respond</div>
+    </div>
+  </div>
+
+  <div class="dark-callout">
+    <div class="dark-callout-label">Real talk</div>
+    <div class="dark-callout-text">
+      Professors told us: <strong>"If an email smells like AI, I delete it."</strong> Our checker catches the exact patterns they flag.
+    </div>
+  </div>
+  <span class="page-num">4/6</span>
+</div>
+
+<!-- SLIDE 5: SOCIAL PROOF -->
+<p class="slide-label">Slide 5 — Proof</p>
+<div class="slide slide-dark">
+  <div class="dark-tool-label">What people are saying</div>
+  <div class="dark-big-number">&#9733;</div>
+  <div class="dark-feature-name">Real Results</div>
+
+  <div style="display: flex; flex-direction: column; gap: 32px; margin-bottom: 50px; margin-top: 20px;">
+    <div style="padding: 36px 40px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px;">
+      <p style="font-size: 30px; color: rgba(255,255,255,0.85); line-height: 1.5; margin-bottom: 16px; font-family: 'Playfair Display', serif; font-style: italic;">
+        &ldquo;First time I&rsquo;ve gotten real advice on my emails. I&rsquo;ve sent 10 emails so far using this.&rdquo;
+      </p>
+      <p style="font-size: 18px; color: #1C7A56; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em;">&mdash; Student user</p>
+    </div>
+    <div style="padding: 36px 40px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px;">
+      <p style="font-size: 30px; color: rgba(255,255,255,0.85); line-height: 1.5; margin-bottom: 16px; font-family: 'Playfair Display', serif; font-style: italic;">
+        &ldquo;Endorse this advice 100%. If an email smells of AI I will not answer it.&rdquo;
+      </p>
+      <p style="font-size: 18px; color: #1C7A56; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em;">&mdash; Research Professor</p>
+    </div>
+    <div style="padding: 36px 40px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px;">
+      <p style="font-size: 30px; color: rgba(255,255,255,0.85); line-height: 1.5; margin-bottom: 16px; font-family: 'Playfair Display', serif; font-style: italic;">
+        &ldquo;This website is goated. I&rsquo;m saving this for future use.&rdquo;
+      </p>
+      <p style="font-size: 18px; color: #1C7A56; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em;">&mdash; Student user</p>
+    </div>
+  </div>
+
+  <div class="dark-callout">
+    <div class="dark-callout-label">Origin story</div>
+    <div class="dark-callout-text">
+      Built by a student who cold emailed 5 professors as a high school freshman. <strong>A Princeton astrophysics professor responded within 24 hours</strong> and said he was "way ahead of the curve."
+    </div>
+  </div>
+  <span class="page-num">5/6</span>
+</div>
+
+<!-- SLIDE 6: CTA -->
+<p class="slide-label">Slide 6 — CTA</p>
+<div class="slide slide-cta">
+  <div class="cta-logo">R</div>
+  <h2 class="cta-headline">
+    Stop Googling professors.<br>Start <em>matching.</em>
+  </h2>
+  <p class="cta-sub">
+    Free to start. No credit card. Search 250M+ papers and find professors who match your interests in minutes.
+  </p>
+  <div class="cta-button">Try Research Match &rarr;</div>
+  <div class="cta-url">researchmatch.net</div>
+  <p class="cta-free">Free &middot; No sign-up required &middot; Works instantly</p>
+  <span class="page-num page-num-light">6/6</span>
+</div>
+
+</body>
+</html>

@@ -379,6 +379,16 @@ function AppPageInner() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // After signup: auto-summarize the professor the anon user tried to unlock
+  useEffect(() => {
+    if (!user || results.length === 0) return;
+    const pending = sessionStorage.getItem("rm-pending-summarize");
+    if (!pending) return;
+    sessionStorage.removeItem("rm-pending-summarize");
+    const author = results.find(a => a.id.split("/").pop() === pending);
+    if (author) loadSummary(author);
+  }, [user, results.length]); // eslint-disable-line
+
   // Toast helper
   const showToast = useCallback((msg: string) => {
     setToast(msg);
@@ -468,6 +478,11 @@ function AppPageInner() {
 
   async function search() {
     if (!query) return;
+    // Free users who've used their one free search see the paywall on the next attempt
+    if (user && isFree && (profile?.summaries_used ?? 0) >= 1) {
+      setShowUpgradeModal(true);
+      return;
+    }
     setLoading(true);
     setError("");
     setResults([]);
@@ -475,6 +490,8 @@ function AppPageInner() {
     setResolvedTopic("");
     setResolvedInstitution("");
     setShowSaved(false);
+    // Log search (fire and forget)
+    fetch("/api/log-search", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ research_interest: query, university, is_authenticated: !!user }) }).catch(() => {});
     try {
       const resolveRes = await fetch("/api/resolve", {
         method: "POST",
@@ -703,6 +720,10 @@ function AppPageInner() {
 
   async function searchByName() {
     if (!profName.trim()) return;
+    if (user && isFree && (profile?.summaries_used ?? 0) >= 1) {
+      setShowUpgradeModal(true);
+      return;
+    }
     setLoading(true);
     setError("");
     setResults([]);
@@ -710,6 +731,7 @@ function AppPageInner() {
     setResolvedTopic("");
     setResolvedInstitution("");
     setShowSaved(false);
+    fetch("/api/log-search", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ research_interest: profName, university: null, is_authenticated: !!user }) }).catch(() => {});
     try {
       const res = await fetch(`https://api.openalex.org/authors?search=${encodeURIComponent(profName.trim())}&per_page=10&sort=cited_by_count:desc`);
       const data = await res.json();
@@ -1492,31 +1514,64 @@ function AppPageInner() {
                     )}
                   </div>
                 ) : (
-                  /* No summary loaded yet — show button or locked overlay */
-                  getSummariesRemaining() <= 0 && !isPaid ? (
+                  /* No summary loaded yet — anon preview, locked overlay, or summarize button */
+                  !user ? (
+                    /* Anon users: blurred preview with signup CTA */
+                    <div style={{ marginTop: "28px", position: "relative", borderRadius: "16px", overflow: "hidden" }}>
+                      <div style={{ padding: "24px 20px 48px", filter: "blur(5px)", userSelect: "none", pointerEvents: "none", background: "rgba(45,90,61,0.03)", border: "1px solid rgba(45,90,61,0.09)", borderRadius: "16px" }}>
+                        <p style={{ fontSize: "0.95rem", lineHeight: 1.75, color: "#6b7280", marginBottom: "14px" }}>
+                          This professor&apos;s work centers on {author.topics?.[0]?.display_name ?? "their primary research area"}, with a strong focus on novel methodologies and real-world applications. Their most-cited work has shaped how researchers approach the fundamental questions in the field.
+                        </p>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                          <div style={{ padding: "10px 14px", background: "rgba(255,255,255,0.7)", borderRadius: "10px", fontSize: "0.88rem", color: "#6b7280", borderLeft: "3px solid #9dbfaa" }}>What drew you to this specific area of {author.topics?.[0]?.display_name ?? "research"}?</div>
+                          <div style={{ padding: "10px 14px", background: "rgba(255,255,255,0.7)", borderRadius: "10px", fontSize: "0.88rem", color: "#6b7280", borderLeft: "3px solid #9dbfaa" }}>Are you currently accepting undergraduate research students?</div>
+                        </div>
+                      </div>
+                      <div style={{
+                        position: "absolute", inset: 0,
+                        background: "linear-gradient(to bottom, transparent 0%, rgba(245,240,230,0.96) 38%)",
+                        borderRadius: "16px", display: "flex", flexDirection: "column",
+                        alignItems: "center", justifyContent: "flex-end", padding: "20px 20px 24px", textAlign: "center",
+                      }}>
+                        <p style={{ fontWeight: 700, fontSize: "1rem", color: "#2d5a3d", marginBottom: "4px" }}>Create a free account to unlock full results</p>
+                        <p style={{ fontSize: "0.82rem", color: "#6b7280", marginBottom: "14px" }}>See the full summary, suggested questions, and email tips for this professor</p>
+                        <button
+                          onClick={() => {
+                            sessionStorage.setItem("rm-pending-summarize", id);
+                            setShowAuthModal(true);
+                            setAuthMode("signup");
+                            setAuthError("");
+                          }}
+                          className="rm-summarize-btn"
+                          style={{ width: "100%", maxWidth: "320px", justifyContent: "center" }}
+                        >
+                          Create free account →
+                        </button>
+                      </div>
+                    </div>
+                  ) : getSummariesRemaining() <= 0 && !isPaid ? (
+                    /* Free user, out of uses */
                     <div style={{ marginTop: "24px", position: "relative", borderRadius: "14px", overflow: "visible" }}>
                       <div style={{ padding: "80px 24px", filter: "blur(6px)", userSelect: "none", pointerEvents: "none", borderRadius: "14px", overflow: "hidden" }}>
                         <p style={{ fontSize: "1.05rem", lineHeight: 1.7, color: "#6b7280" }}>
                           This professor studies the intersection of computational methods and experimental techniques to advance understanding in their field. Their recent work focuses on developing novel approaches that combine interdisciplinary insights.
                         </p>
                       </div>
-                      <div className="locked-summary-overlay" style={{ paddingBottom: "28px" }} onClick={() => {
-                        if (!user) { setShowAuthModal(true); setAuthMode("signup"); setAuthError("Create a free account for 1 more free use."); }
-                        else { setShowUpgradeModal(true); }
-                      }}>
+                      <div className="locked-summary-overlay" style={{ paddingBottom: "28px" }} onClick={() => setShowUpgradeModal(true)}>
                         <span style={{ fontSize: "1.6rem", marginBottom: "10px" }}>&#128274;</span>
                         <p style={{ fontSize: "1rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "6px" }}>
-                          You&apos;ve used your free {!user ? "preview" : "previews"}
+                          You&apos;ve used your free preview
                         </p>
                         <p style={{ fontSize: "0.85rem", color: "#6b7280", marginBottom: "14px" }}>
-                          {!user ? "Sign up free to unlock 1 more professor" : "Upgrade for unlimited access to all professors"}
+                          Upgrade for unlimited access to all professors
                         </p>
                         <span className="locked-upgrade-btn" style={{ padding: "10px 24px", fontSize: "0.85rem" }}>
-                          {!user ? "Sign up free" : "Upgrade to Student"}
+                          Upgrade to Student
                         </span>
                       </div>
                     </div>
                   ) : (
+                    /* Has remaining uses: show Summarize button */
                     <div style={{ marginTop: "28px" }}>
                       <button onClick={() => loadSummary(author)} disabled={isLoadingSummary} className="rm-summarize-btn">
                         {isLoadingSummary ? (
@@ -1857,8 +1912,8 @@ function AppPageInner() {
                 if (!user) { setShowUpgradeModal(false); setShowAuthModal(true); setAuthMode("signup"); return; }
                 try {
                   const priceId = upgradeBilling === "monthly"
-                    ? (process.env.NEXT_PUBLIC_STRIPE_PRICE_STUDENT_MONTHLY || "price_1TG2YqFINW44xCyFP7rxZdtl")
-                    : (process.env.NEXT_PUBLIC_STRIPE_PRICE_STUDENT_ANNUAL || "price_1TG2Z4FINW44xCyFgg0IJOfX");
+                    ? (process.env.NEXT_PUBLIC_STRIPE_PRICE_STUDENT_MONTHLY || "price_1TILWJFINW44xCyFvz5iMPMB")
+                    : (process.env.NEXT_PUBLIC_STRIPE_PRICE_STUDENT_ANNUAL || "price_1TILWlFINW44xCyFMSVTFHLZ");
                   const res = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ priceId, userId: user.id }) });
                   const data = await res.json();
                   if (data.url) window.location.href = data.url;

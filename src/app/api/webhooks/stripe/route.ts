@@ -49,8 +49,10 @@ export async function POST(req: NextRequest) {
         session.subscription as string
       );
       const priceId = sub.items.data[0]?.price.id;
-      if (priceId === (process.env.STRIPE_PRICE_STUDENT_ANNUAL || "price_1TG2Z4FINW44xCyFgg0IJOfX")) {
+      if (priceId === (process.env.STRIPE_PRICE_STUDENT_ANNUAL || "price_1TILWlFINW44xCyFMSVTFHLZ")) {
         planType = "student_annual";
+      } else if (priceId === (process.env.STRIPE_PRICE_STUDENT_MONTHLY || "price_1TILWJFINW44xCyFvz5iMPMB")) {
+        planType = "student_monthly";
       }
     }
 

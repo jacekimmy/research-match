@@ -158,8 +158,7 @@ export default function LandingPage() {
           </h1>
 
           <p className="lp-hero-sub">
-            Search any research interest. Understand their work.<br />
-            Write the email that actually gets a response.
+            Find the right professor, understand their research, and craft an email built on advice from real professors, in under 10 minutes.
           </p>
 
           {/* Hero search */}
@@ -397,28 +396,6 @@ export default function LandingPage() {
       </section>
 
       {/* ══════════════════════════════════════════
-          TESTIMONIALS
-      ══════════════════════════════════════════ */}
-      <section className="lp-social-section" data-reveal>
-        <div className="lp-social-label">What students say</div>
-        <div className="lp-quotes-grid">
-          {[
-            { quote: "A Princeton professor responded to a high school freshman within 24 hours.", author: "Founder experience" },
-            { quote: "First time I've gotten real advice on my emails. I've sent 10 emails so far using this.", author: "Student user" },
-            { quote: "I got a reply in 3 days. Never happened before.", author: "Undergraduate student" },
-            { quote: "Endorse this advice 💯. If an email smells of AI I will not answer it.", author: "Research Professor" },
-            { quote: "This website is goated. I'm saving this for future use.", author: "Student user" },
-          ].map((item, i) => (
-            <div key={i} className="lp-quote-card">
-              <div className="lp-quote-mark">"</div>
-              <p className="lp-quote-text">{item.quote}</p>
-              <p className="lp-quote-author">— {item.author}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════
           FOUNDER NOTE
       ══════════════════════════════════════════ */}
       <section className="lp-founder-section" data-reveal>
@@ -440,12 +417,40 @@ export default function LandingPage() {
       </section>
 
       {/* ══════════════════════════════════════════
+          TESTIMONIALS (directly above pricing)
+      ══════════════════════════════════════════ */}
+      <section className="lp-social-section" data-reveal>
+        <div className="lp-social-label">What students say</div>
+        <div className="lp-quotes-grid">
+          {[
+            { quote: "I got a reply in 3 days. Never happened before.", author: "Undergraduate student" },
+            { quote: "A Princeton professor responded to a high school freshman within 24 hours.", author: "Founder experience" },
+            { quote: "Endorse this advice 💯. If an email smells of AI I will not answer it.", author: "Research Professor" },
+            { quote: "First time I've gotten real advice on my emails. I've sent 10 emails so far using this.", author: "Student user" },
+            { quote: "This website is goated. I'm saving this for future use.", author: "Student user" },
+          ].map((item, i) => (
+            <div key={i} className="lp-quote-card">
+              <div className="lp-quote-mark">"</div>
+              <p className="lp-quote-text">{item.quote}</p>
+              <p className="lp-quote-author">— {item.author}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════
           PRICING
       ══════════════════════════════════════════ */}
       <section id="pricing" className="lp-pricing-section" data-reveal>
+        {/* Urgency banner */}
+        <div className="lp-urgency-banner">
+          Most students start professor outreach 60 days before application deadlines.
+        </div>
+
         <div className="lp-pricing-header">
+          <p className="lp-risk-reversal-top">Try it risk-free. Full refund if it doesn&apos;t work.</p>
           <h2 className="lp-pricing-title">Simple, honest pricing.</h2>
-          <p className="lp-pricing-sub">Free to start. Because we know what it&apos;s like to search with zero budget.</p>
+          <p className="lp-pricing-sub">One research position can change your entire career. We charge $15.</p>
         </div>
 
         {/* Billing toggle */}
@@ -480,22 +485,33 @@ export default function LandingPage() {
         </div>
 
         <div className="lp-pricing-grid">
-          {/* Free */}
-          <div className="lp-price-card">
-            <div className="lp-price-tier">Free</div>
-            <div className="lp-price-amount">$0</div>
-            <div className="lp-price-period">forever</div>
+          {/* Lifetime — featured, most prominent */}
+          <div className="lp-price-card lp-price-card-lifetime lp-price-card-lifetime-hero">
+            <div className="lp-best-value-badge">Best Value</div>
+            <div className="lp-price-tier" style={{ color: "#A8893E" }}>Lifetime</div>
+            <div style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
+              <div className="lp-price-amount" style={{ color: "#A8893E" }}>$25</div>
+              <div className="lp-price-amount" style={{ color: "#A8893E", opacity: 0.4, textDecoration: "line-through", fontSize: "1.4rem" }}>$60</div>
+            </div>
+            <div className="lp-price-period" style={{ color: "#A8893E", opacity: 0.7 }}>one-time payment</div>
+            <p className="lp-lifetime-tagline">Less than 2 months of monthly. Yours forever.</p>
             <ul className="lp-price-features">
-              {["Unlimited professor searches", "2 research summaries", "Author position labels", "Save professors", "Paper links"].map((f) => (
-                <li key={f}><span className="lp-check">✓</span>{f}</li>
+              <li style={{ fontWeight: 700 }}><span className="lp-check" style={{ color: "#A8893E" }}>✓</span>Everything in Student, forever:</li>
+              {["Unlimited searches", "Unlimited summaries", "Email checker", "Professor email finder", "Nearby professor access"].map((f) => (
+                <li key={f}><span className="lp-check" style={{ color: "#A8893E" }}>✓</span>{f}</li>
               ))}
             </ul>
-            <Link href="/app" className="lp-price-btn lp-price-btn-ghost">
-              Start free
-            </Link>
+            <p className="lp-refund-note">Not satisfied in 30 days? Full refund. No questions asked.</p>
+            {lifetimeSpotsRemaining === 0 ? (
+              <button disabled className="lp-price-btn" style={{ background: "#e5e7eb", color: "#9ca3af", cursor: "not-allowed" }}>Sold out</button>
+            ) : (
+              <Link href="/app?upgrade=lifetime" className="lp-price-btn lp-price-btn-gold">
+                Claim your spot
+              </Link>
+            )}
           </div>
 
-          {/* Student — featured */}
+          {/* Student — monthly/annual */}
           <div className="lp-price-card lp-price-card-featured">
             <div className="lp-price-tier" style={{ color: "#9dbfaa" }}>Student</div>
             <div style={{ display: "flex", alignItems: "baseline", gap: "2px" }}>
@@ -528,33 +544,25 @@ export default function LandingPage() {
                 <li key={f}><span className="lp-check" style={{ color: "#9dbfaa" }}>✓</span>{f}</li>
               ))}
             </ul>
+            <p className="lp-refund-note" style={{ color: "rgba(255,255,255,0.5)" }}>Not satisfied in 30 days? Full refund. No questions asked.</p>
             <Link href="/app?upgrade=true" className="lp-price-btn lp-price-btn-white">
               Upgrade to Student
             </Link>
           </div>
 
-          {/* Lifetime */}
-          <div className="lp-price-card lp-price-card-lifetime">
-
-            <div className="lp-price-tier" style={{ color: "#A8893E" }}>Lifetime</div>
-            <div style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
-              <div className="lp-price-amount" style={{ color: "#A8893E" }}>$25</div>
-              <div className="lp-price-amount" style={{ color: "#A8893E", opacity: 0.4, textDecoration: "line-through", fontSize: "1.4rem" }}>$60</div>
-            </div>
-            <div className="lp-price-period" style={{ color: "#A8893E", opacity: 0.7 }}>one-time payment</div>
+          {/* Free — smallest, least prominent */}
+          <div className="lp-price-card lp-price-card-free">
+            <div className="lp-price-tier">Free</div>
+            <div className="lp-price-amount">$0</div>
+            <div className="lp-price-period">forever</div>
             <ul className="lp-price-features">
-              <li style={{ fontWeight: 700 }}><span className="lp-check" style={{ color: "#A8893E" }}>✓</span>Everything in Student, forever:</li>
-              {["Unlimited searches", "Unlimited summaries", "Email checker", "Professor email finder", "Nearby professor access"].map((f) => (
-                <li key={f}><span className="lp-check" style={{ color: "#A8893E" }}>✓</span>{f}</li>
+              {["Unlimited professor searches", "2 research summaries", "Author position labels", "Save professors", "Paper links"].map((f) => (
+                <li key={f}><span className="lp-check">✓</span>{f}</li>
               ))}
             </ul>
-            {lifetimeSpotsRemaining === 0 ? (
-              <button disabled className="lp-price-btn" style={{ background: "#e5e7eb", color: "#9ca3af", cursor: "not-allowed" }}>Sold out</button>
-            ) : (
-              <Link href="/app?upgrade=lifetime" className="lp-price-btn lp-price-btn-gold">
-                Claim your spot
-              </Link>
-            )}
+            <Link href="/app" className="lp-price-btn lp-price-btn-ghost">
+              Start free
+            </Link>
           </div>
         </div>
 
