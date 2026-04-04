@@ -519,11 +519,11 @@ export default function LandingPage() {
               <div className="price-roller-wrap">
                 {priceAnimating ? (
                   <div className="price-roller price-roller-exit">
-                    <span className="lp-price-amount" style={{ color: "#fff" }}>{billingCycle === "monthly" ? "5" : "49"}</span>
+                    <span className="lp-price-amount" style={{ color: "#fff" }}>{billingCycle === "monthly" ? "15" : "108"}</span>
                   </div>
                 ) : (
                   <div key={priceKey} className="price-roller price-roller-enter">
-                    <span className="lp-price-amount" style={{ color: "#fff" }}>{billingCycle === "monthly" ? "5" : "49"}</span>
+                    <span className="lp-price-amount" style={{ color: "#fff" }}>{billingCycle === "monthly" ? "15" : "108"}</span>
                   </div>
                 )}
               </div>
@@ -533,7 +533,7 @@ export default function LandingPage() {
                 <div key={`period-${priceKey}`} className="price-roller price-roller-enter">
                   <div className="lp-price-period" style={{ color: "rgba(255,255,255,0.5)" }}>
                     /{billingCycle === "monthly" ? "month" : "year"}
-                    {billingCycle === "annual" && <span style={{ color: "#9dbfaa", marginLeft: "8px", fontSize: "0.75rem" }}>Save $11</span>}
+                    {billingCycle === "annual" && <span style={{ color: "#9dbfaa", marginLeft: "8px", fontSize: "0.75rem" }}>Save $72</span>}
                   </div>
                 </div>
               )}
