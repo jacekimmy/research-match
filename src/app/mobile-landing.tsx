@@ -20,24 +20,6 @@ export default function MobileLanding() {
   const [heroQuery, setHeroQuery] = useState("");
   const [heroUni, setHeroUni] = useState("");
   const [placeholderIdx, setPlaceholderIdx] = useState(0);
-  const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
-  const [priceAnimating, setPriceAnimating] = useState(false);
-  const billingToggleRef = useRef<HTMLDivElement>(null);
-  const btnMonthlyRef = useRef<HTMLButtonElement>(null);
-  const btnAnnualRef = useRef<HTMLButtonElement>(null);
-  const [, setBillingMounted] = useState(false);
-  useEffect(() => { setBillingMounted(true); }, []);
-
-  const [priceKey, setPriceKey] = useState(0);
-  function switchBilling(cycle: "monthly" | "annual") {
-    if (cycle === billingCycle) return;
-    setPriceAnimating(true);
-    setTimeout(() => {
-      setBillingCycle(cycle);
-      setPriceKey(k => k + 1);
-      setPriceAnimating(false);
-    }, 250);
-  }
   const [waitlistEmail, setWaitlistEmail] = useState("");
   const [waitlistTier, setWaitlistTier] = useState<"research_pro" | "pro" | null>(null);
   const [waitlistDone, setWaitlistDone] = useState(false);
@@ -600,7 +582,7 @@ export default function MobileLanding() {
         <p style={{
           fontSize: "0.9rem", color: "#6b7280", textAlign: "center", marginBottom: "8px",
         }}>
-          If you&apos;re emailing professors regularly, the Student plan pays for itself with one response.
+          One research position can change your entire career. One semester is all it takes.
         </p>
         <div style={{
           width: 60, height: 3, margin: "0 auto 32px",
@@ -608,39 +590,8 @@ export default function MobileLanding() {
           borderRadius: 2,
         }} />
 
-        {/* Billing toggle — slider style */}
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: "32px" }}>
-          <div className="mode-toggle" ref={billingToggleRef} style={{ marginBottom: 0 }}>
-            <div
-              className="mode-toggle-slider"
-              style={{
-                left: billingCycle === "monthly"
-                  ? (btnMonthlyRef.current?.offsetLeft ?? 4) + "px"
-                  : (btnAnnualRef.current?.offsetLeft ?? 100) + "px",
-                width: billingCycle === "monthly"
-                  ? (btnMonthlyRef.current?.offsetWidth ?? 110) + "px"
-                  : (btnAnnualRef.current?.offsetWidth ?? 95) + "px",
-              }}
-            />
-            <button
-              ref={btnMonthlyRef}
-              onClick={() => switchBilling("monthly")}
-              className={`mode-toggle-btn ${billingCycle === "monthly" ? "mode-toggle-btn-active" : ""}`}
-            >
-              Monthly
-            </button>
-            <button
-              ref={btnAnnualRef}
-              onClick={() => switchBilling("annual")}
-              className={`mode-toggle-btn ${billingCycle === "annual" ? "mode-toggle-btn-active" : ""}`}
-            >
-              Annual
-            </button>
-          </div>
-        </div>
-
         <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
-          {/* Lifetime — Gold Premium (first on mobile) */}
+          {/* Lifetime — Gold Premium (first on mobile, Best Value) */}
           <div
             ref={(el) => { pricingRefs.current[0] = el; }}
             className={`mobile-card-enter `}
@@ -661,42 +612,38 @@ export default function MobileLanding() {
               padding: "6px 16px", borderRadius: "999px", textTransform: "uppercase", letterSpacing: "0.1em",
               whiteSpace: "nowrap",
               boxShadow: "0 2px 12px rgba(196, 162, 101, 0.3)",
-            }}>Limited. First 200 users only</span>
+            }}>Best Value</span>
             <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#A8893E", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Lifetime</p>
-            <div style={{ display: "flex", alignItems: "baseline", gap: "10px", marginBottom: "4px" }}>
-              <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#A8893E", letterSpacing: "-0.02em" }}>$25</p>
-              <p style={{ fontSize: "1.1rem", color: "#A8893E", textDecoration: "line-through", fontWeight: 600 }}>$60</p>
-            </div>
-            <p style={{ fontSize: "0.8rem", color: "#A8893E", marginBottom: "8px", fontWeight: 600 }}>one-time</p>
-            {lifetimeSpotsRemaining !== null && lifetimeSpotsRemaining > 0 && (
-              <div style={{ marginBottom: "16px" }}>
-                <p style={{
-                  fontSize: "0.8rem", color: "#A8893E", fontWeight: 700,
-                  background: "rgba(196, 162, 101,0.1)",
-                  padding: "4px 12px", borderRadius: "8px", display: "inline-block",
-                }}>
-                  Limited to first 200 users
-                </p>
-                <p style={{ fontSize: "0.75rem", color: "#6b7280", fontStyle: "italic", marginTop: "6px" }}>
-                  This deal won&apos;t last forever.
-                </p>
-              </div>
-            )}
-            <ul style={{ listStyle: "none", padding: 0, marginBottom: "24px" }}>
-              <li style={{ fontSize: "0.9rem", color: "#1a1a1a", padding: "7px 0", fontWeight: 700 }}>Everything in Student, forever:</li>
+            <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#A8893E", letterSpacing: "-0.02em", marginBottom: "4px" }}>$59</p>
+            <p style={{ fontSize: "0.8rem", color: "#A8893E", marginBottom: "4px", fontWeight: 600 }}>One payment. Yours forever.</p>
+            <p style={{ fontSize: "0.78rem", color: "#9b8040", marginBottom: "16px" }}>That&apos;s less than 2 semesters. Never pay again.</p>
+            <ul style={{ listStyle: "none", padding: 0, marginBottom: "16px" }}>
+              <li style={{ fontSize: "0.9rem", color: "#1a1a1a", padding: "7px 0", fontWeight: 700 }}>Everything in Semester, forever:</li>
               {[
                 "Unlimited searches",
                 "Unlimited research summaries",
                 "Email checker",
                 "Professor email finder",
                 "Nearby professor access",
-                "One payment, lifetime access",
+                "Responsiveness indicator",
               ].map((f) => (
                 <li key={f} style={{ fontSize: "0.9rem", color: "#6b7280", padding: "7px 0", display: "flex", gap: "10px", alignItems: "flex-start" }}>
                   <span style={{ color: "#A8893E", flexShrink: 0, fontSize: "0.85rem" }}>{"\u2713"}</span> {f}
                 </li>
               ))}
             </ul>
+            <div style={{ borderTop: "1px solid rgba(168,137,62,0.2)", paddingTop: "12px", marginBottom: "20px" }}>
+              <p style={{ fontSize: "0.68rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#A8893E", marginBottom: "8px" }}>Free Bonuses Included:</p>
+              {[
+                "Cold Email Swipe File — 2 real emails that got replies, fully annotated",
+                "Research Statement Framework — the paragraph professors actually read",
+                "Response Decoder + Follow Up Formula (coming soon)",
+              ].map((f) => (
+                <p key={f} style={{ fontSize: "0.82rem", color: "#6b7280", padding: "4px 0", display: "flex", gap: "8px", alignItems: "flex-start" }}>
+                  <span style={{ color: "#A8893E", flexShrink: 0 }}>✓</span> {f}
+                </p>
+              ))}
+            </div>
             {lifetimeSpotsRemaining === 0 ? (
               <button disabled className="mobile-btn" style={{
                 display: "block", textAlign: "center", padding: "16px", fontSize: "1rem",
@@ -716,12 +663,13 @@ export default function MobileLanding() {
                 boxShadow: "0 4px 16px rgba(196, 162, 101, 0.3)",
                 minHeight: "48px", lineHeight: "48px", paddingTop: 0, paddingBottom: 0,
               }}>
-                Claim your spot
+                Claim Lifetime Access — $59
               </Link>
             )}
+            <p style={{ fontSize: "0.72rem", color: "#9b8040", fontStyle: "italic", textAlign: "center", marginTop: "10px" }}>Not satisfied in 30 days? Full refund. No questions asked.</p>
           </div>
 
-          {/* Student — dark card */}
+          {/* Semester — dark card */}
           <div
             ref={(el) => { pricingRefs.current[1] = el; }}
             className={`mobile-card-enter `}
@@ -733,62 +681,11 @@ export default function MobileLanding() {
               overflow: "visible",
             }}
           >
-            <span style={{
-              position: "absolute", top: "-13px", left: "50%", transform: "translateX(-50%)",
-              background: "#f4f0ea", color: "#2d5a3d", fontSize: "0.65rem", fontWeight: 700,
-              padding: "5px 16px", borderRadius: "999px", textTransform: "uppercase", letterSpacing: "0.1em",
-              whiteSpace: "nowrap",
-            }}>Most Popular</span>
-            <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "rgba(245,240,230,0.6)", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Student</p>
-            <div style={{ display: "flex", alignItems: "baseline", gap: "2px", marginBottom: "4px" }}>
-              <span style={{ fontSize: "2.6rem", fontWeight: 800, color: "#ffffff", letterSpacing: "-0.02em" }}>$</span>
-              <div className="price-roller-wrap">
-                {priceAnimating ? (
-                  <div className="price-roller price-roller-exit">
-                    <span style={{ fontSize: "2.6rem", fontWeight: 800, color: "#ffffff", letterSpacing: "-0.02em" }}>
-                      {billingCycle === "monthly" ? "5" : "49"}
-                    </span>
-                  </div>
-                ) : (
-                  <div key={priceKey} className="price-roller price-roller-enter">
-                    <span style={{ fontSize: "2.6rem", fontWeight: 800, color: "#ffffff", letterSpacing: "-0.02em" }}>
-                      {billingCycle === "monthly" ? "5" : "49"}
-                    </span>
-                  </div>
-                )}
-              </div>
-              <div className="price-roller-wrap" style={{ marginLeft: "4px" }}>
-                {priceAnimating ? (
-                  <div className="price-roller price-roller-exit">
-                    <span style={{ fontSize: "1rem", fontWeight: 400, color: "rgba(245,240,230,0.5)" }}>
-                      /{billingCycle === "monthly" ? "mo" : "yr"}
-                    </span>
-                  </div>
-                ) : (
-                  <div key={`suffix-${priceKey}`} className="price-roller price-roller-enter">
-                    <span style={{ fontSize: "1rem", fontWeight: 400, color: "rgba(245,240,230,0.5)" }}>
-                      /{billingCycle === "monthly" ? "mo" : "yr"}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="price-roller-wrap" style={{ height: "20px" }}>
-              {priceAnimating ? (
-                <div className="price-roller price-roller-exit">
-                  <div style={{ height: "20px" }} />
-                </div>
-              ) : (
-                <div key={`save-${priceKey}`} className="price-roller price-roller-enter" style={{ animationDelay: "0.08s" }}>
-                  {billingCycle === "annual" ? (
-                    <p style={{ fontSize: "0.8rem", color: "#9dbfaa", fontWeight: 600 }}>Save $11 vs monthly</p>
-                  ) : (
-                    <div style={{ height: "20px" }} />
-                  )}
-                </div>
-              )}
-            </div>
-            <ul style={{ listStyle: "none", padding: 0, marginBottom: "24px" }}>
+            <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "rgba(245,240,230,0.6)", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Semester</p>
+            <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#ffffff", letterSpacing: "-0.02em", marginBottom: "4px" }}>$29</p>
+            <p style={{ fontSize: "0.85rem", color: "rgba(245,240,230,0.5)", marginBottom: "4px" }}>4 months of full access</p>
+            <p style={{ fontSize: "0.78rem", color: "rgba(245,240,230,0.65)", marginBottom: "16px" }}>One semester. Everything you need to land a position.</p>
+            <ul style={{ listStyle: "none", padding: 0, marginBottom: "16px" }}>
               <li style={{ fontSize: "0.9rem", color: "rgba(245,240,230,0.7)", padding: "7px 0", fontWeight: 700 }}>Everything in Free, plus:</li>
               {[
                 "Unlimited research summaries",
@@ -801,13 +698,26 @@ export default function MobileLanding() {
                 </li>
               ))}
             </ul>
+            <div style={{ borderTop: "1px solid rgba(157,191,170,0.25)", paddingTop: "12px", marginBottom: "20px" }}>
+              <p style={{ fontSize: "0.68rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#9dbfaa", marginBottom: "8px" }}>Free Bonuses Included:</p>
+              {[
+                "Cold Email Swipe File — 2 real emails that got replies, fully annotated",
+                "Research Statement Framework — the paragraph professors actually read",
+                "Response Decoder + Follow Up Formula (coming soon)",
+              ].map((f) => (
+                <p key={f} style={{ fontSize: "0.82rem", color: "rgba(245,240,230,0.7)", padding: "4px 0", display: "flex", gap: "8px", alignItems: "flex-start" }}>
+                  <span style={{ color: "#9dbfaa", flexShrink: 0 }}>✓</span> {f}
+                </p>
+              ))}
+            </div>
             <Link href="/app?upgrade=true" className="mobile-btn" style={{
               display: "block", textAlign: "center", padding: "16px", textDecoration: "none", fontSize: "1rem", width: "100%", minHeight: "48px",
               background: "#f4f0ea", color: "#2d5a3d", borderRadius: "14px", fontWeight: 700,
               fontFamily: "'Playfair Display', Georgia, serif",
             }}>
-              Upgrade to Student, $15/mo
+              Get Semester Access — $29
             </Link>
+            <p style={{ fontSize: "0.72rem", color: "rgba(245,240,230,0.4)", fontStyle: "italic", textAlign: "center", marginTop: "10px" }}>Not satisfied in 30 days? Full refund. No questions asked.</p>
           </div>
 
           {/* Free */}

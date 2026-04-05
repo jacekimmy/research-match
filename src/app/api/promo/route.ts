@@ -30,10 +30,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "This promo code has expired" }, { status: 400 });
     }
 
-    // Apply the promo: set user to student_monthly (unlimited access)
+    // Apply the promo: set user to semester (unlimited access)
     const { error: updateError } = await supabaseAdmin
       .from("profiles")
-      .update({ plan_type: "student_monthly" })
+      .update({ plan_type: "semester" })
       .eq("id", userId);
 
     if (updateError) {
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
       .update({ uses_remaining: promo.uses_remaining - 1 })
       .eq("code", normalizedCode);
 
-    return NextResponse.json({ success: true, plan: "student_monthly" });
+    return NextResponse.json({ success: true, plan: "semester" });
   } catch (err) {
     console.error("promo error:", err);
     return NextResponse.json({ error: String(err) }, { status: 500 });

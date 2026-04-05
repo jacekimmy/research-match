@@ -40,11 +40,11 @@ export default function ProfilePage() {
     );
   }
 
-  const isPaid = profile?.plan_type === "student_monthly" || profile?.plan_type === "student_annual" || profile?.plan_type === "lifetime";
+  const isPaid = profile?.plan_type === "semester" || profile?.plan_type === "student_monthly" || profile?.plan_type === "student_annual" || profile?.plan_type === "lifetime";
   const planLabel = profile?.plan_type === "lifetime"
     ? "Lifetime"
-    : isPaid
-      ? profile?.plan_type === "student_annual" ? "Student (Annual)" : "Student (Monthly)"
+    : profile?.plan_type === "semester" || profile?.plan_type === "student_monthly" || profile?.plan_type === "student_annual"
+      ? "Semester"
       : "Free";
   const summariesUsed = profile?.searches_used ?? 0;
   const summariesLeft = isPaid ? "Unlimited" : `${Math.max(0, 3 - summariesUsed)} of 3`;
@@ -185,7 +185,7 @@ export default function ProfilePage() {
           {!isPaid && profile?.plan_type !== "lifetime" && (
             <button
               onClick={async () => {
-                const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_STUDENT_MONTHLY || "price_1TILWJFINW44xCyFvz5iMPMB";
+                const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_SEMESTER || "price_1TIuAlFINW44xCyFcxqgQpeV";
                 const res = await fetch("/api/checkout", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
@@ -200,7 +200,7 @@ export default function ProfilePage() {
                 marginTop: "24px", fontSize: "0.95rem", border: "none", cursor: "pointer",
               }}
             >
-              Upgrade to Student — $15/mo
+              Get Semester Access — $29
             </button>
           )}
         </div>

@@ -33,27 +33,20 @@ export async function POST(req: NextRequest) {
     if (!userId)
       return NextResponse.json({ error: "No userId" }, { status: 400 });
 
-    // Determine plan type from the subscription/payment
-    let planType = "student_monthly";
-    const lifetimePriceId = process.env.STRIPE_PRICE_LIFETIME || "price_1TG2ZRFINW44xCyFw7Io529q";
+    const semesterPriceId = process.env.STRIPE_PRICE_SEMESTER || "price_1TIuAlFINW44xCyFcxqgQpeV";
+    const lifetimePriceId = process.env.STRIPE_PRICE_LIFETIME || "price_1TIuBBFINW44xCyFoSCtUpFN";
+
+    let planType = "semester";
 
     if (session.mode === "payment") {
-      // One-time payment — check if it's the lifetime price
+      // One-time payment — lifetime
       const lineItems = await stripe.checkout.sessions.listLineItems(session.id, { limit: 1 });
       const paidPriceId = lineItems.data[0]?.price?.id;
-      if (paidPriceId === lifetimePriceId) {
-        planType = "lifetime";
-      }
+      planType = paidPriceId === lifetimePriceId ? "lifetime" : "semester";
     } else if (session.mode === "subscription" && session.subscription) {
-      const sub = await stripe.subscriptions.retrieve(
-        session.subscription as string
-      );
+      const sub = await stripe.subscriptions.retrieve(session.subscription as string);
       const priceId = sub.items.data[0]?.price.id;
-      if (priceId === (process.env.STRIPE_PRICE_STUDENT_ANNUAL || "price_1TILWlFINW44xCyFMSVTFHLZ")) {
-        planType = "student_annual";
-      } else if (priceId === (process.env.STRIPE_PRICE_STUDENT_MONTHLY || "price_1TILWJFINW44xCyFvz5iMPMB")) {
-        planType = "student_monthly";
-      }
+      planType = priceId === semesterPriceId ? "semester" : "semester";
     }
 
     await supabaseAdmin
@@ -84,6 +77,7 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // When a semester subscription expires/is cancelled → downgrade to free
   if (event.type === "customer.subscription.deleted") {
     const sub = event.data.object as Stripe.Subscription;
     const sessions = await stripe.checkout.sessions.list({

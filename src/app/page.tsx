@@ -20,12 +20,6 @@ export default function LandingPage() {
   const [heroUni, setHeroUni] = useState("");
   const [heroFocused, setHeroFocused] = useState(false);
   const [placeholderIdx, setPlaceholderIdx] = useState(0);
-  const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
-  const [priceAnimating, setPriceAnimating] = useState(false);
-  const [priceKey, setPriceKey] = useState(0);
-  const billingToggleRef = useRef<HTMLDivElement>(null);
-  const btnMonthlyRef = useRef<HTMLButtonElement>(null);
-  const btnAnnualRef = useRef<HTMLButtonElement>(null);
   const [, setBillingMounted] = useState(false);
   const [inlineWaitlistEmail, setInlineWaitlistEmail] = useState("");
   const [inlineWaitlistDone, setInlineWaitlistDone] = useState(false);
@@ -43,16 +37,6 @@ export default function LandingPage() {
   useEffect(() => {
     fetch("/api/stats").then(r => r.json()).then(d => setSearchCount(d.searches)).catch(() => {});
   }, []);
-
-  function switchBilling(cycle: "monthly" | "annual") {
-    if (cycle === billingCycle) return;
-    setPriceAnimating(true);
-    setTimeout(() => {
-      setBillingCycle(cycle);
-      setPriceKey(k => k + 1);
-      setPriceAnimating(false);
-    }, 220);
-  }
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -471,114 +455,77 @@ export default function LandingPage() {
         <div className="lp-pricing-header">
           <p className="lp-risk-reversal-top">Try it risk-free. Full refund if it doesn&apos;t work.</p>
           <h2 className="lp-pricing-title">Simple, honest pricing.</h2>
-          <p className="lp-pricing-sub">One research position can change your entire career. We charge $15.</p>
-        </div>
-
-        {/* Billing toggle */}
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: "44px" }}>
-          <div className="mode-toggle" ref={billingToggleRef} style={{ marginBottom: 0 }}>
-            <div
-              className="mode-toggle-slider"
-              style={{
-                left: billingCycle === "monthly"
-                  ? (btnMonthlyRef.current?.offsetLeft ?? 4) + "px"
-                  : (btnAnnualRef.current?.offsetLeft ?? 100) + "px",
-                width: billingCycle === "monthly"
-                  ? (btnMonthlyRef.current?.offsetWidth ?? 110) + "px"
-                  : (btnAnnualRef.current?.offsetWidth ?? 95) + "px",
-              }}
-            />
-            <button
-              ref={btnMonthlyRef}
-              onClick={() => switchBilling("monthly")}
-              className={`mode-toggle-btn ${billingCycle === "monthly" ? "mode-toggle-btn-active" : ""}`}
-            >
-              Monthly
-            </button>
-            <button
-              ref={btnAnnualRef}
-              onClick={() => switchBilling("annual")}
-              className={`mode-toggle-btn ${billingCycle === "annual" ? "mode-toggle-btn-active" : ""}`}
-            >
-              Annual
-            </button>
-          </div>
+          <p className="lp-pricing-sub">One research position can change your entire career. One semester is all it takes.</p>
         </div>
 
         <div className="lp-pricing-grid">
-          {/* Lifetime — featured, most prominent */}
+          {/* Lifetime — largest, most prominent, Best Value */}
           <div className="lp-price-card lp-price-card-lifetime lp-price-card-lifetime-hero">
             <div className="lp-best-value-badge">Best Value</div>
             <div className="lp-price-tier" style={{ color: "#A8893E" }}>Lifetime</div>
-            <div style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
-              <div className="lp-price-amount" style={{ color: "#A8893E" }}>$25</div>
-              <div className="lp-price-amount" style={{ color: "#A8893E", opacity: 0.4, textDecoration: "line-through", fontSize: "1.4rem" }}>$60</div>
-            </div>
-            <div className="lp-price-period" style={{ color: "#A8893E", opacity: 0.7 }}>one-time payment</div>
-            <p className="lp-lifetime-tagline">Less than 2 months of monthly. Yours forever.</p>
+            <div className="lp-price-amount" style={{ color: "#A8893E" }}>$59</div>
+            <div className="lp-price-period" style={{ color: "#A8893E", opacity: 0.7 }}>One payment. Yours forever.</div>
+            <p className="lp-lifetime-tagline">That&apos;s less than 2 semesters. Never pay again.</p>
             <ul className="lp-price-features">
-              <li style={{ fontWeight: 700 }}><span className="lp-check" style={{ color: "#A8893E" }}>✓</span>Everything in Student, forever:</li>
-              {["Unlimited searches", "Unlimited summaries", "Email checker", "Professor email finder", "Nearby professor access"].map((f) => (
+              <li style={{ fontWeight: 700 }}><span className="lp-check" style={{ color: "#A8893E" }}>✓</span>Everything in Semester, forever:</li>
+              {["Unlimited searches", "Unlimited summaries", "Email checker", "Professor email finder", "Nearby professor access", "Responsiveness indicator"].map((f) => (
                 <li key={f}><span className="lp-check" style={{ color: "#A8893E" }}>✓</span>{f}</li>
               ))}
             </ul>
+            {/* Bonuses */}
+            <div className="lp-bonuses-section">
+              <div className="lp-bonuses-divider" />
+              <p className="lp-bonuses-title" style={{ color: "#A8893E" }}>Free Bonuses Included:</p>
+              <ul className="lp-price-features">
+                {[
+                  "Cold Email Swipe File — 2 real emails that got replies, fully annotated",
+                  "Research Statement Framework — the paragraph professors actually read",
+                  "Response Decoder + Follow Up Formula (coming soon)",
+                ].map((f) => (
+                  <li key={f}><span className="lp-check" style={{ color: "#A8893E" }}>✓</span>{f}</li>
+                ))}
+              </ul>
+            </div>
             {lifetimeSpotsRemaining === 0 ? (
               <button disabled className="lp-price-btn" style={{ background: "#e5e7eb", color: "#9ca3af", cursor: "not-allowed" }}>Sold out</button>
             ) : (
               <Link href="/app?upgrade=lifetime" className="lp-price-btn lp-price-btn-gold">
-                Claim your spot
+                Claim your spot — $59
               </Link>
             )}
-            <p className="lp-refund-note">Not satisfied in 30 days? Full refund.</p>
+            <p className="lp-refund-note">Not satisfied in 30 days? Full refund. No questions asked.</p>
           </div>
 
-          {/* Student — monthly/annual */}
+          {/* Semester */}
           <div className="lp-price-card lp-price-card-featured">
-            <div className="lp-price-tier" style={{ color: "#9dbfaa" }}>Student</div>
-            <div style={{ display: "flex", alignItems: "baseline", gap: "2px" }}>
-              <span className="lp-price-dollar">$</span>
-              <div className="price-roller-wrap">
-                {priceAnimating ? (
-                  <div className="price-roller price-roller-exit">
-                    <span className="lp-price-amount" style={{ color: "#fff" }}>{billingCycle === "monthly" ? "15" : "108"}</span>
-                  </div>
-                ) : (
-                  <div key={priceKey} className="price-roller price-roller-enter">
-                    <span className="lp-price-amount" style={{ color: "#fff" }}>{billingCycle === "monthly" ? "15" : "108"}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="price-roller-wrap" style={{ minHeight: "20px", marginBottom: billingCycle === "annual" ? "12px" : "24px" }}>
-              {!priceAnimating && (
-                <div key={`period-${priceKey}`} className="price-roller price-roller-enter">
-                  <div className="lp-price-period" style={{ color: "rgba(255,255,255,0.5)" }}>
-                    /{billingCycle === "monthly" ? "month" : "year"}
-                  </div>
-                </div>
-              )}
-            </div>
-            {billingCycle === "annual" && (
-              <div style={{ marginBottom: "20px" }}>
-                <span style={{
-                  display: "inline-block", background: "rgba(157,191,170,0.2)", border: "1px solid rgba(157,191,170,0.4)",
-                  borderRadius: "10px", padding: "6px 14px",
-                  fontSize: "0.78rem", fontWeight: 700, color: "#9dbfaa", letterSpacing: "0.02em",
-                }}>
-                  Save $72/year vs monthly
-                </span>
-              </div>
-            )}
+            <div className="lp-price-tier" style={{ color: "#9dbfaa" }}>Semester</div>
+            <div className="lp-price-amount" style={{ color: "#fff" }}>$29</div>
+            <div className="lp-price-period" style={{ color: "rgba(255,255,255,0.5)" }}>4 months of full access</div>
+            <p className="lp-lifetime-tagline" style={{ color: "rgba(255,255,255,0.7)" }}>One semester. Everything you need to land a position.</p>
             <ul className="lp-price-features" style={{ color: "rgba(255,255,255,0.8)" }}>
               <li style={{ color: "#fff", fontWeight: 700 }}><span className="lp-check" style={{ color: "#9dbfaa" }}>✓</span>Everything in Free, plus:</li>
               {["Unlimited research summaries", "Email checker", "Professor email finder", "Responsiveness indicator"].map((f) => (
                 <li key={f}><span className="lp-check" style={{ color: "#9dbfaa" }}>✓</span>{f}</li>
               ))}
             </ul>
+            {/* Bonuses */}
+            <div className="lp-bonuses-section" style={{ borderColor: "rgba(157,191,170,0.25)" }}>
+              <div className="lp-bonuses-divider" style={{ background: "rgba(157,191,170,0.25)" }} />
+              <p className="lp-bonuses-title" style={{ color: "#9dbfaa" }}>Free Bonuses Included:</p>
+              <ul className="lp-price-features" style={{ color: "rgba(255,255,255,0.7)" }}>
+                {[
+                  "Cold Email Swipe File — 2 real emails that got replies, fully annotated",
+                  "Research Statement Framework — the paragraph professors actually read",
+                  "Response Decoder + Follow Up Formula (coming soon)",
+                ].map((f) => (
+                  <li key={f}><span className="lp-check" style={{ color: "#9dbfaa" }}>✓</span>{f}</li>
+                ))}
+              </ul>
+            </div>
             <Link href="/app?upgrade=true" className="lp-price-btn lp-price-btn-white">
-              Upgrade to Student
+              Get Semester Access — $29
             </Link>
-            <p className="lp-refund-note" style={{ color: "rgba(255,255,255,0.5)" }}>Not satisfied in 30 days? Full refund.</p>
+            <p className="lp-refund-note" style={{ color: "rgba(255,255,255,0.5)" }}>Not satisfied in 30 days? Full refund. No questions asked.</p>
           </div>
 
           {/* Free — smallest, least prominent */}
@@ -587,7 +534,7 @@ export default function LandingPage() {
             <div className="lp-price-amount">$0</div>
             <div className="lp-price-period">forever</div>
             <ul className="lp-price-features">
-              {["Unlimited professor searches", "2 research summaries", "Author position labels", "Save professors", "Paper links"].map((f) => (
+              {["Unlimited professor searches", "1 full summary after signup", "Author position labels", "Save professors", "Paper links"].map((f) => (
                 <li key={f}><span className="lp-check">✓</span>{f}</li>
               ))}
             </ul>

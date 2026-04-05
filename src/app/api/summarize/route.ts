@@ -36,7 +36,8 @@ export async function POST(req: NextRequest) {
         .eq("id", userId)
         .single();
 
-      const isPaid = profile?.plan_type === "student_monthly" ||
+      const isPaid = profile?.plan_type === "semester" ||
+        profile?.plan_type === "student_monthly" ||
         profile?.plan_type === "student_annual" ||
         profile?.plan_type === "lifetime";
 

@@ -4089,6 +4089,23 @@ body::after {
   text-align: center;
   margin-top: 12px;
 }
+.lp-bonuses-section {
+  margin-top: 4px;
+  padding: 14px 0 4px;
+}
+.lp-bonuses-divider {
+  height: 1px;
+  background: rgba(168, 137, 62, 0.2);
+  margin-bottom: 12px;
+}
+.lp-bonuses-title {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #A8893E;
+  margin-bottom: 8px;
+}
 .lp-price-card-free {
   opacity: 0.82;
   transform: scale(0.97);

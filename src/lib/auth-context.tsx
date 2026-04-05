@@ -6,7 +6,7 @@ import type { User, AuthError } from "@supabase/supabase-js";
 interface Profile {
   id: string;
   email: string;
-  plan_type: "free" | "student_monthly" | "student_annual" | "lifetime";
+  plan_type: "free" | "semester" | "student_monthly" | "student_annual" | "lifetime";
   searches_used: number;
   searches_reset_at: string;
   summaries_used: number;
