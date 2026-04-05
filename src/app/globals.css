@@ -2499,6 +2499,51 @@ body::after {
 
 .rm-nav-spacer { flex: 1; }
 
+/* ===== SEARCH TAG CHIPS ===== */
+.rm-tag-input-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+.rm-tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(45, 90, 61, 0.1);
+  border: 1px solid rgba(45, 90, 61, 0.25);
+  color: #2d5a3d;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 3px 6px 3px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-family: 'Playfair Display', Georgia, serif;
+}
+.rm-tag-chip-x {
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  opacity: 0.5;
+  background: none;
+  border: none;
+  color: #2d5a3d;
+  padding: 0 2px;
+  transition: opacity 0.15s;
+}
+.rm-tag-chip-x:hover { opacity: 1; }
+.rm-tag-input {
+  flex: 1;
+  min-width: 80px;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  padding-left: 0 !important;
+}
+
 .rm-nav-link {
   font-size: 0.85rem;
   font-weight: 600;

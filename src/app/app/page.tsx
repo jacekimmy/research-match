@@ -227,7 +227,9 @@ function AppPageInner() {
   const searchParams = useSearchParams();
   const [searchMode, setSearchMode] = useState<"interest" | "name">("interest");
   const [query, setQuery] = useState("");
+  const [queryTags, setQueryTags] = useState<string[]>([]);
   const [university, setUniversity] = useState("");
+  const [uniTags, setUniTags] = useState<string[]>([]);
   const [profName, setProfName] = useState("");
   const [results, setResults] = useState<Author[]>([]);
   const [loading, setLoading] = useState(false);
@@ -288,6 +290,20 @@ function AppPageInner() {
   // Plan helpers
   const isPaid = profile?.plan_type === "student_monthly" || profile?.plan_type === "student_annual" || profile?.plan_type === "lifetime";
   const isFree = !isPaid;
+
+  // Tag helpers
+  function addQueryTag() {
+    const val = query.trim();
+    if (val && !queryTags.includes(val)) setQueryTags(prev => [...prev, val]);
+    setQuery("");
+  }
+  function addUniTag() {
+    const val = university.trim();
+    if (val && !uniTags.includes(val)) setUniTags(prev => [...prev, val]);
+    setUniversity("");
+  }
+  function removeQueryTag(idx: number) { setQueryTags(prev => prev.filter((_, i) => i !== idx)); }
+  function removeUniTag(idx: number) { setUniTags(prev => prev.filter((_, i) => i !== idx)); }
 
   // Force re-render after mount so toggle slider refs are measured
   const [, setMounted] = useState(false);
@@ -492,7 +508,10 @@ function AppPageInner() {
   }
 
   async function search() {
-    if (!query) return;
+    // Collect all topics and universities (tags + current input)
+    const allTopics = [...queryTags, ...(query.trim() ? [query.trim()] : [])];
+    const allUnis = [...uniTags, ...(university.trim() ? [university.trim()] : [])];
+    if (allTopics.length === 0) return;
     // Free users who've used their one free search see the paywall on the next attempt
     if (user && isFree && (profile?.summaries_used ?? 0) >= 1) {
       setShowUpgradeModal(true);
@@ -506,24 +525,25 @@ function AppPageInner() {
     setResolvedInstitution("");
     setShowSaved(false);
     // Log search (fire and forget)
-    fetch("/api/log-search", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ research_interest: query, university, is_authenticated: !!user }) }).catch(() => {});
+    fetch("/api/log-search", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ research_interest: allTopics.join(", "), university: allUnis.join(", "), is_authenticated: !!user }) }).catch(() => {});
     try {
       const resolveRes = await fetch("/api/resolve", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic: query, university }),
+        body: JSON.stringify({ topics: allTopics, universities: allUnis }),
       });
       const resolved = await resolveRes.json();
       if (!resolveRes.ok) { setError(resolved.error || "Failed to resolve search terms."); setLoading(false); return; }
-      const { topicId, topicName, institutionId, institutionName } = resolved;
-      setResolvedTopic(topicName);
-      if (institutionName) setResolvedInstitution(institutionName);
+      const { topicIds, topicNames, institutionIds, institutionNames } = resolved;
+      setResolvedTopic(topicNames.join(", ") || allTopics.join(", "));
+      if (institutionNames.length > 0) setResolvedInstitution(institutionNames.join(", "));
 
       let authors: Author[] = [];
 
-      if (!topicId) {
-        const instFilter = institutionId ? `&filter=authorships.institutions.id:${institutionId}` : "";
-        const worksRes = await fetch(`https://api.openalex.org/works?search=${encodeURIComponent(query)}${instFilter}&sort=publication_date:desc&per_page=20&select=authorships`);
+      if (topicIds.length === 0) {
+        // Text search fallback — use first topic
+        const instFilter = institutionIds.length > 0 ? `&filter=authorships.institutions.id:${institutionIds[0]}` : "";
+        const worksRes = await fetch(`https://api.openalex.org/works?search=${encodeURIComponent(allTopics[0])}${instFilter}&sort=publication_date:desc&per_page=20&select=authorships`);
         const worksData = await worksRes.json();
         const works = worksData.results ?? [];
         const authorMap = new Map<string, Author>();
@@ -531,11 +551,11 @@ function AppPageInner() {
           for (const authorship of (work.authorships ?? [])) {
             const authorId = authorship.author?.id;
             if (!authorId || authorMap.has(authorId)) continue;
-            if (institutionId && authorship.institutions?.[0]?.id !== `https://openalex.org/${institutionId}`) continue;
+            if (institutionIds.length > 0 && !institutionIds.some((id: string) => authorship.institutions?.[0]?.id === `https://openalex.org/${id}`)) continue;
             const authorRes = await fetch(`https://api.openalex.org/authors/${authorId.split("/").pop()}?select=id,display_name,last_known_institutions,works_count,cited_by_count,topics`);
             if (authorRes.ok) {
               const authorData = await authorRes.json();
-              if (institutionId && authorData.last_known_institutions?.[0]?.id !== `https://openalex.org/${institutionId}`) continue;
+              if (institutionIds.length > 0 && !institutionIds.some((id: string) => authorData.last_known_institutions?.[0]?.id === `https://openalex.org/${id}`)) continue;
               authorMap.set(authorId, authorData);
             }
             if (authorMap.size >= 10) break;
@@ -544,24 +564,27 @@ function AppPageInner() {
         }
         authors = Array.from(authorMap.values()).sort((a, b) => b.cited_by_count - a.cited_by_count);
       } else {
-        const institutionFilter = institutionId ? `,last_known_institutions.id:${institutionId}` : "";
-        const res = await fetch(`https://api.openalex.org/authors?filter=topics.id:${topicId}${institutionFilter}&per_page=20&sort=cited_by_count:desc`);
+        // OR filter across all resolved topic IDs and institution IDs
+        const topicFilter = topicIds.join("|");
+        const institutionFilter = institutionIds.length > 0 ? `,last_known_institutions.id:${institutionIds.join("|")}` : "";
+        const res = await fetch(`https://api.openalex.org/authors?filter=topics.id:${topicFilter}${institutionFilter}&per_page=30&sort=cited_by_count:desc`);
         const data = await res.json();
         authors = data.results || [];
-        if (institutionId) {
-          const fullInstId = `https://openalex.org/${institutionId}`;
-          authors = authors.filter((a) => a.last_known_institutions?.[0]?.id === fullInstId);
+        if (institutionIds.length > 0) {
+          const fullInstIds = institutionIds.map((id: string) => `https://openalex.org/${id}`);
+          authors = authors.filter((a) => fullInstIds.includes(a.last_known_institutions?.[0]?.id));
         }
-        if (authors.length === 0 && institutionId) {
-          const broadRes = await fetch(`https://api.openalex.org/topics?search=${encodeURIComponent(query)}&per_page=10`);
+        // If no results with institution filter, try broader topic alternatives
+        if (authors.length === 0 && institutionIds.length > 0) {
+          const broadRes = await fetch(`https://api.openalex.org/topics?search=${encodeURIComponent(allTopics[0])}&per_page=10`);
           const broadData = await broadRes.json();
-          const allTopicIds = (broadData.results ?? []).map((t: any) => t.id.split("/").pop()).filter((id: string) => id !== topicId);
-          for (const altId of allTopicIds.slice(0, 5)) {
-            const altRes = await fetch(`https://api.openalex.org/authors?filter=topics.id:${altId},last_known_institutions.id:${institutionId}&per_page=20&sort=cited_by_count:desc`);
+          const altTopicIds = (broadData.results ?? []).map((t: any) => t.id.split("/").pop()).filter((id: string) => !topicIds.includes(id));
+          for (const altId of altTopicIds.slice(0, 5)) {
+            const altRes = await fetch(`https://api.openalex.org/authors?filter=topics.id:${altId},last_known_institutions.id:${institutionIds.join("|")}&per_page=20&sort=cited_by_count:desc`);
             const altData = await altRes.json();
             let altAuthors: Author[] = altData.results || [];
-            const fullInstId = `https://openalex.org/${institutionId}`;
-            altAuthors = altAuthors.filter((a) => a.last_known_institutions?.[0]?.id === fullInstId);
+            const fullInstIds = institutionIds.map((id: string) => `https://openalex.org/${id}`);
+            altAuthors = altAuthors.filter((a) => fullInstIds.includes(a.last_known_institutions?.[0]?.id));
             if (altAuthors.length > 0) {
               const altTopic = (broadData.results ?? []).find((t: any) => t.id.split("/").pop() === altId);
               if (altTopic) setResolvedTopic(altTopic.display_name);
@@ -597,19 +620,18 @@ function AppPageInner() {
           authors = authors.filter((a) => a.works_count >= 10);
         }
       }
-      if (authors.length === 0) setError(`No professors found for "${topicName}"${institutionName ? ` at ${institutionName}` : ""}. Try a more specific topic like "machine learning" or "quantum computing".`);
-      // searches are now unlimited
+      if (authors.length === 0) setError(`No professors found for "${topicNames.join(", ") || allTopics.join(", ")}"${institutionNames.length > 0 ? ` at ${institutionNames.join(", ")}` : ""}. Try a more specific topic like "machine learning" or "quantum computing".`);
       setResults(authors);
       // Fetch responsiveness badges in background
       if (authors.length > 0) fetchResponsiveness(authors);
-      // Fetch nearby professors (different universities, same topic) in background
-      if (authors.length > 0 && institutionId && institutionName) {
+      // Fetch nearby professors — only when searching a single institution
+      if (authors.length > 0 && institutionIds.length === 1 && institutionNames.length === 1) {
         setNearbyProfs([]);
         setNearbyLoading(true);
-        const resolveTopicId = topicId ?? await fetch(`https://api.openalex.org/topics?search=${encodeURIComponent(query)}&per_page=1`)
+        const resolveTopicId = topicIds[0] ?? await fetch(`https://api.openalex.org/topics?search=${encodeURIComponent(allTopics[0])}&per_page=1`)
           .then(r => r.json()).then(d => d.results?.[0]?.id?.split("/").pop() ?? null).catch(() => null);
         if (resolveTopicId) {
-          fetchNearby(resolveTopicId, institutionName, authors.map(a => a.id));
+          fetchNearby(resolveTopicId, institutionNames[0], authors.map(a => a.id));
         } else {
           setNearbyLoading(false);
           setNearbyProfs([]);
@@ -1237,14 +1259,23 @@ function AppPageInner() {
               <div className="glass-search rm-search rm-hero-search">
                 <div className="rm-search-input-wrap" ref={suggestionsRef} style={{ position: "relative" }}>
                   <label className="rm-search-label">Research Interest</label>
-                  <input
-                    value={query}
-                    onChange={(e) => { setQuery(e.target.value); setShowSuggestions(true); }}
-                    onFocus={() => setShowSuggestions(true)}
-                    onKeyDown={(e) => { if (e.key === "Enter") { setShowSuggestions(false); triggerSearch(); } }}
-                    placeholder={PLACEHOLDER_EXAMPLES[placeholderIdx]}
-                    className="rm-search-input"
-                  />
+                  <div className="rm-tag-input-row">
+                    {queryTags.map((tag, i) => (
+                      <span key={i} className="rm-tag-chip">{tag}<button onClick={() => removeQueryTag(i)} className="rm-tag-chip-x">×</button></span>
+                    ))}
+                    <input
+                      value={query}
+                      onChange={(e) => { setQuery(e.target.value); setShowSuggestions(true); }}
+                      onFocus={() => setShowSuggestions(true)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") { setShowSuggestions(false); if (query.trim()) addQueryTag(); else triggerSearch(); }
+                        else if (e.key === ",") { e.preventDefault(); addQueryTag(); }
+                        else if (e.key === "Backspace" && !query && queryTags.length > 0) removeQueryTag(queryTags.length - 1);
+                      }}
+                      placeholder={queryTags.length === 0 ? PLACEHOLDER_EXAMPLES[placeholderIdx] : "Add another..."}
+                      className="rm-search-input rm-tag-input"
+                    />
+                  </div>
                   {showSuggestions && filteredSuggestions.length > 0 && (
                     <div className="suggestions-dropdown">
                       {filteredSuggestions.map((s, i) => (
@@ -1256,7 +1287,19 @@ function AppPageInner() {
                 <div className="rm-search-divider" />
                 <div className="rm-uni-field">
                   <label className="rm-search-label">University</label>
-                  <input value={university} onChange={(e) => setUniversity(e.target.value)} onKeyDown={(e) => e.key === "Enter" && triggerSearch()} placeholder="e.g. MIT, Stanford..." className="rm-search-input" />
+                  <div className="rm-tag-input-row">
+                    {uniTags.map((tag, i) => (
+                      <span key={i} className="rm-tag-chip">{tag}<button onClick={() => removeUniTag(i)} className="rm-tag-chip-x">×</button></span>
+                    ))}
+                    <input value={university} onChange={(e) => setUniversity(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") { if (university.trim()) addUniTag(); else triggerSearch(); }
+                        else if (e.key === ",") { e.preventDefault(); addUniTag(); }
+                        else if (e.key === "Backspace" && !university && uniTags.length > 0) removeUniTag(uniTags.length - 1);
+                      }}
+                      placeholder={uniTags.length === 0 ? "e.g. MIT, Stanford..." : "Add another..."}
+                      className="rm-search-input rm-tag-input" />
+                  </div>
                 </div>
                 <button data-search-btn onClick={triggerSearch} className="btn-cta rm-search-btn">Search</button>
               </div>
@@ -1298,14 +1341,23 @@ function AppPageInner() {
                     <div className="glass-search rm-search">
                       <div className="rm-search-input-wrap" ref={suggestionsRef} style={{ position: "relative" }}>
                         <label className="rm-search-label">Research Interest</label>
-                        <input
-                          value={query}
-                          onChange={(e) => { setQuery(e.target.value); setShowSuggestions(true); }}
-                          onFocus={() => setShowSuggestions(true)}
-                          onKeyDown={(e) => { if (e.key === "Enter") { setShowSuggestions(false); search(); } }}
-                          placeholder={PLACEHOLDER_EXAMPLES[placeholderIdx]}
-                          className="rm-search-input"
-                        />
+                        <div className="rm-tag-input-row">
+                          {queryTags.map((tag, i) => (
+                            <span key={i} className="rm-tag-chip">{tag}<button onClick={() => removeQueryTag(i)} className="rm-tag-chip-x">×</button></span>
+                          ))}
+                          <input
+                            value={query}
+                            onChange={(e) => { setQuery(e.target.value); setShowSuggestions(true); }}
+                            onFocus={() => setShowSuggestions(true)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") { setShowSuggestions(false); if (query.trim()) addQueryTag(); else search(); }
+                              else if (e.key === ",") { e.preventDefault(); addQueryTag(); }
+                              else if (e.key === "Backspace" && !query && queryTags.length > 0) removeQueryTag(queryTags.length - 1);
+                            }}
+                            placeholder={queryTags.length === 0 ? PLACEHOLDER_EXAMPLES[placeholderIdx] : "Add another..."}
+                            className="rm-search-input rm-tag-input"
+                          />
+                        </div>
                         {showSuggestions && filteredSuggestions.length > 0 && (
                           <div className="suggestions-dropdown">
                             {filteredSuggestions.map((s, i) => (
@@ -1317,7 +1369,19 @@ function AppPageInner() {
                       <div className="rm-search-divider" />
                       <div className="rm-uni-field">
                         <label className="rm-search-label">University</label>
-                        <input value={university} onChange={(e) => setUniversity(e.target.value)} onKeyDown={(e) => e.key === "Enter" && search()} placeholder="e.g. MIT, Stanford..." className="rm-search-input" />
+                        <div className="rm-tag-input-row">
+                          {uniTags.map((tag, i) => (
+                            <span key={i} className="rm-tag-chip">{tag}<button onClick={() => removeUniTag(i)} className="rm-tag-chip-x">×</button></span>
+                          ))}
+                          <input value={university} onChange={(e) => setUniversity(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") { if (university.trim()) addUniTag(); else search(); }
+                              else if (e.key === ",") { e.preventDefault(); addUniTag(); }
+                              else if (e.key === "Backspace" && !university && uniTags.length > 0) removeUniTag(uniTags.length - 1);
+                            }}
+                            placeholder={uniTags.length === 0 ? "e.g. MIT, Stanford..." : "Add another..."}
+                            className="rm-search-input rm-tag-input" />
+                        </div>
                       </div>
                       <button data-search-btn onClick={search} className="btn-cta rm-search-btn">Search</button>
                     </div>
