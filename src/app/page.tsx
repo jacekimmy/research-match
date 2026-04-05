@@ -221,7 +221,7 @@ export default function LandingPage() {
         {[
           { num: "250M+", label: "papers indexed" },
           { num: "1,000+", label: "universities" },
-          { num: searchCount !== null ? `${searchCount.toLocaleString()}+` : "400+", label: "students served" },
+          { num: searchCount !== null ? `${Math.max(400, searchCount).toLocaleString()}+` : "400+", label: "students served" },
           { num: "< 24h", label: "first professor response" },
         ].map((s, i) => (
           <div key={i} className="lp-proof-item">
