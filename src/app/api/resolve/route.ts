@@ -71,26 +71,6 @@ export async function POST(req: NextRequest) {
     const resolvedTopics = topicResults.filter(Boolean) as { id: string; name: string }[];
     const resolvedUnis = uniResults.filter(Boolean) as { id: string; name: string }[];
 
-    // Legacy single-topic response for backward compat
-    if (topics.length === 1 && universities.length <= 1) {
-      const topic = resolvedTopics[0] ?? null;
-      const uni = resolvedUnis[0] ?? null;
-      if (universities.length === 1 && !uni) {
-        return NextResponse.json({ error: "University not found." }, { status: 404 });
-      }
-      return NextResponse.json({
-        topicId: topic?.id ?? null,
-        topicName: topic?.name ?? topics[0],
-        institutionId: uni?.id ?? null,
-        institutionName: uni?.name ?? null,
-        // Also include arrays for new callers
-        topicIds: topic ? [topic.id] : [],
-        topicNames: topic ? [topic.name] : [],
-        institutionIds: uni ? [uni.id] : [],
-        institutionNames: uni ? [uni.name] : [],
-      });
-    }
-
     return NextResponse.json({
       topicIds: resolvedTopics.map(t => t.id),
       topicNames: resolvedTopics.map(t => t.name),

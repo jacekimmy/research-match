@@ -537,6 +537,10 @@ function AppPageInner() {
       const { topicIds, topicNames, institutionIds, institutionNames } = resolved;
       setResolvedTopic(topicNames.join(", ") || allTopics.join(", "));
       if (institutionNames.length > 0) setResolvedInstitution(institutionNames.join(", "));
+      // If universities were typed but none resolved, note it in the institution display
+      if (allUnis.length > 0 && institutionIds.length === 0) {
+        setResolvedInstitution(`"${allUnis.join(", ")}" not found — searching all universities`);
+      }
 
       let authors: Author[] = [];
 
