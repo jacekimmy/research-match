@@ -272,6 +272,7 @@ function AppPageInner() {
   const [emailFlags, setEmailFlags] = useState<EmailFlag[]>([]);
   const [checkingEmail, setCheckingEmail] = useState(false);
   const [hasChecked, setHasChecked] = useState(false);
+  const [showFramework, setShowFramework] = useState(false);
 
   // Email finder
   const [emailLookup, setEmailLookup] = useState<Record<string, { emails: { email: string; source: string; confidence: string }[]; searchUrls: { google: string; scholar: string; directory: string | null }; homepageUrl: string | null; orcidUrl: string | null } | null>>({});
@@ -1153,25 +1154,37 @@ function AppPageInner() {
           {/* Dropdown menu */}
           <div className={`rm-nav-dropdown${showMenu ? " rm-nav-dropdown-open" : ""}`}>
             <div className="rm-nav-dropdown-inner">
-              <Link href="/profile" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
-                <span className="rm-nav-dropdown-icon">⚙</span>
-                Account Settings
+              <Link href="/how-it-works" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
+                <span className="rm-nav-dropdown-icon">◎</span>
+                How It Works
               </Link>
               <Link href="/examples" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
                 <span className="rm-nav-dropdown-icon">✦</span>
-                Examples
+                Swipe File
+              </Link>
+              <Link href="/framework" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
+                <span className="rm-nav-dropdown-icon">✉</span>
+                Email Framework
               </Link>
               <Link href="/feedback" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
-                <span className="rm-nav-dropdown-icon">✉</span>
+                <span className="rm-nav-dropdown-icon">↗</span>
                 Feedback
               </Link>
               <Link href="/blog" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
                 <span className="rm-nav-dropdown-icon">✒</span>
                 Blog
               </Link>
-              <Link href="/#pricing" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
+              <Link href="/?#pricing" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
                 <span className="rm-nav-dropdown-icon">◈</span>
                 Pricing
+              </Link>
+              <Link href="/contact" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
+                <span className="rm-nav-dropdown-icon">◇</span>
+                Contact
+              </Link>
+              <Link href="/profile" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
+                <span className="rm-nav-dropdown-icon">⚙</span>
+                Account Settings
               </Link>
               {user && (
                 <>
@@ -1796,10 +1809,68 @@ function AppPageInner() {
                   </div>
 
                   {/* Volunteer framing tip */}
-                  <div style={{ padding: "12px 18px", background: "rgba(45, 90, 61,0.12)", border: "1px solid rgba(45, 90, 61,0.25)", borderRadius: "14px", marginBottom: "20px" }}>
+                  <div style={{ padding: "12px 18px", background: "rgba(45, 90, 61,0.12)", border: "1px solid rgba(45, 90, 61,0.25)", borderRadius: "14px", marginBottom: "16px" }}>
                     <p style={{ fontSize: "0.82rem", color: "#2d5a3d", lineHeight: 1.6 }}>
                       <strong>Tip:</strong> Consider saying you&apos;d like to <em>volunteer</em> rather than asking for a position. It lowers the commitment for professors and makes them more likely to say yes.
                     </p>
+                  </div>
+
+                  {/* Email Framework toggle */}
+                  <div style={{ marginBottom: "16px" }}>
+                    <button
+                      onClick={() => setShowFramework(v => !v)}
+                      style={{
+                        width: "100%", padding: "10px 18px",
+                        display: "flex", alignItems: "center", justifyContent: "space-between",
+                        background: "transparent",
+                        border: "1.5px solid rgba(45,90,61,0.35)",
+                        borderRadius: "12px", cursor: "pointer",
+                        fontFamily: "DM Sans, Inter, sans-serif",
+                        fontSize: "0.88rem", fontWeight: 600, color: "#2d5a3d",
+                        transition: "background 0.2s",
+                      }}
+                    >
+                      <span>✦ Email Framework</span>
+                      <span style={{ fontSize: "0.8rem", transition: "transform 0.2s", transform: showFramework ? "rotate(180deg)" : "rotate(0deg)", display: "inline-block" }}>↓</span>
+                    </button>
+
+                    {showFramework && (
+                      <div style={{
+                        marginTop: "10px",
+                        background: "rgba(255,255,255,0.7)",
+                        border: "1px solid rgba(45,90,61,0.15)",
+                        borderRadius: "14px", padding: "20px",
+                      }}>
+                        <p style={{ fontSize: "0.78rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "12px" }}>Template</p>
+                        <p style={{ fontSize: "0.85rem", lineHeight: 1.8, color: "#1a1a1a", marginBottom: "16px" }}>
+                          &ldquo;I came across your recent work on{" "}
+                          <span style={{ background: "rgba(45,90,61,0.1)", color: "#2d5a3d", padding: "2px 6px", borderRadius: "4px", fontWeight: 600 }}>[SPECIFIC TOPIC]</span>
+                          {" "}and was particularly struck by{" "}
+                          <span style={{ background: "rgba(45,90,61,0.1)", color: "#2d5a3d", padding: "2px 6px", borderRadius: "4px", fontWeight: 600 }}>[SPECIFIC FINDING]</span>
+                          . This connects directly to my interest in{" "}
+                          <span style={{ background: "rgba(45,90,61,0.1)", color: "#2d5a3d", padding: "2px 6px", borderRadius: "4px", fontWeight: 600 }}>[YOUR RESEARCH ANGLE]</span>
+                          {" "}because{" "}
+                          <span style={{ background: "rgba(45,90,61,0.1)", color: "#2d5a3d", padding: "2px 6px", borderRadius: "4px", fontWeight: 600 }}>[ONE GENUINE REASON]</span>
+                          . I&apos;m especially curious whether{" "}
+                          <span style={{ background: "rgba(45,90,61,0.1)", color: "#2d5a3d", padding: "2px 6px", borderRadius: "4px", fontWeight: 600 }}>[INTELLIGENT QUESTION]</span>
+                          .&rdquo;
+                        </p>
+                        <div style={{ height: "1px", background: "rgba(45,90,61,0.12)", marginBottom: "14px" }} />
+                        <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "#c45c5c", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "10px" }}>Avoid These Phrases</p>
+                        {[
+                          { phrase: "I found your work fascinating", reason: "Name the specific finding instead." },
+                          { phrase: "I am highly motivated", reason: "Show it through what you've done." },
+                          { phrase: "Your research aligns with my interests", reason: "Explain the specific connection." },
+                          { phrase: "I would love to learn from you", reason: "Ask about their research instead." },
+                          { phrase: "I am passionate about this field", reason: "Describe what you've actually done." },
+                        ].map((item, i) => (
+                          <div key={i} style={{ marginBottom: "8px" }}>
+                            <p style={{ fontSize: "0.82rem", fontStyle: "italic", color: "#9b2c2c", margin: "0 0 2px" }}>&ldquo;{item.phrase}&rdquo;</p>
+                            <p style={{ fontSize: "0.77rem", color: "#9ca3af", margin: 0 }}>{item.reason}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   <textarea value={emailDraft} onChange={(e) => { setEmailDraft(e.target.value); setHasChecked(false); }} placeholder={`Dear Professor ${emailTarget.display_name},\n\nI'm a [year] [major] student at [your university]...\n\nUse the reference panel to mention specific papers and research.`} className="modal-textarea" style={{ flex: 1, padding: "24px", lineHeight: 1.7 }} />

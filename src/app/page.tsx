@@ -232,6 +232,23 @@ export default function LandingPage() {
       </div>
 
       {/* ══════════════════════════════════════════
+          HOW IT WORKS — COMPACT CARDS
+      ══════════════════════════════════════════ */}
+      <section style={{ maxWidth: "1100px", margin: "0 auto", padding: "80px 24px 0", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "24px" }} className="lp-how-it-works-grid" data-reveal>
+        {[
+          { num: "01", title: "Search your interest", desc: "Type in any research topic and a university. We search 250M+ academic papers to find professors actively publishing in that area." },
+          { num: "02", title: "Understand their work", desc: "Get a plain-English summary of each professor's research, their recent papers, and what makes their work unique." },
+          { num: "03", title: "Write an email that works", desc: "Use our framework built on advice from real professors. No AI-generated emails, just the research you need to write your own." },
+        ].map((step, i) => (
+          <div key={i} style={{ background: "rgba(255,255,255,0.65)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", border: "1px solid rgba(255,255,255,0.65)", borderRadius: "20px", padding: "32px 28px", boxShadow: "0 4px 24px rgba(45,90,61,0.06)", display: "flex", flexDirection: "column", gap: "12px" }}>
+            <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "2rem", fontWeight: 800, color: "#2d5a3d", letterSpacing: "-0.02em", lineHeight: 1 }}>{step.num}</div>
+            <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "1.1rem", fontWeight: 700, color: "#1a1a1a", margin: 0, lineHeight: 1.3 }}>{step.title}</h3>
+            <p style={{ fontSize: "0.88rem", color: "#6b7280", lineHeight: 1.7, margin: 0 }}>{step.desc}</p>
+          </div>
+        ))}
+      </section>
+
+      {/* ══════════════════════════════════════════
           FEATURES
       ══════════════════════════════════════════ */}
       <section id="how" className="lp-features-section">

@@ -419,7 +419,7 @@ export default function ExamplesPage() {
                   lineHeight: 1.2,
                 }}
               >
-                Emails That Got Responses
+                Swipe File
               </h1>
               <p
                 style={{

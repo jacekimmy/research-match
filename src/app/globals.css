@@ -4590,3 +4590,11 @@ body::after {
     transform: none;
   }
 }
+
+
+/* How It Works compact grid — mobile responsive */
+@media (max-width: 600px) {
+  .lp-how-it-works-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
