@@ -55,17 +55,17 @@ export default function FrameworkPage() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#faf7f2", fontFamily: "DM Sans, Inter, sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "#f4f0ea", fontFamily: "DM Sans, Inter, sans-serif" }}>
       {/* Nav */}
       <nav style={{
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-        background: "rgba(250,247,242,0.92)", backdropFilter: "blur(16px)",
+        background: "rgba(244,240,234,0.92)", backdropFilter: "blur(16px)",
         WebkitBackdropFilter: "blur(16px)",
         borderBottom: "1px solid rgba(45,90,61,0.1)",
         padding: "0 24px", height: "60px",
         display: "flex", alignItems: "center", justifyContent: "space-between",
       }}>
-        <Link href="/" style={{
+        <Link href="/app" style={{
           fontSize: "0.95rem", fontWeight: 600, color: "#2d5a3d",
           textDecoration: "none", display: "flex", alignItems: "center", gap: "6px",
         }}>

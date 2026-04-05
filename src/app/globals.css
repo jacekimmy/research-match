@@ -2593,8 +2593,7 @@ body::after {
   background: #2d5a3d;
   border-radius: 999px;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   transform-origin: center;
 }
 
@@ -2604,7 +2603,7 @@ body::after {
 }
 .rm-hamburger-open .rm-hamburger-line:nth-child(2) {
   opacity: 0;
-  width: 0;
+  transform: scaleX(0);
 }
 .rm-hamburger-open .rm-hamburger-line:nth-child(3) {
   transform: translateY(-6.75px) rotate(-45deg);
