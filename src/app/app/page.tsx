@@ -1815,8 +1815,9 @@ function AppPageInner() {
                     </p>
                   </div>
 
-                  {/* Email Framework toggle */}
+                  {/* Email Framework toggle — paid only */}
                   <div style={{ marginBottom: "16px" }}>
+                    {isPaid ? (
                     <button
                       onClick={() => setShowFramework(v => !v)}
                       style={{
@@ -1833,6 +1834,24 @@ function AppPageInner() {
                       <span>✦ Email Framework</span>
                       <span style={{ fontSize: "0.8rem", transition: "transform 0.2s", transform: showFramework ? "rotate(180deg)" : "rotate(0deg)", display: "inline-block" }}>↓</span>
                     </button>
+                    ) : (
+                    <button
+                      onClick={() => setShowUpgradeModal(true)}
+                      style={{
+                        width: "100%", padding: "10px 18px",
+                        display: "flex", alignItems: "center", justifyContent: "space-between",
+                        background: "transparent",
+                        border: "1.5px solid rgba(196,162,101,0.35)",
+                        borderRadius: "12px", cursor: "pointer",
+                        fontFamily: "DM Sans, Inter, sans-serif",
+                        fontSize: "0.88rem", fontWeight: 600, color: "#A8893E",
+                        transition: "background 0.2s",
+                      }}
+                    >
+                      <span>✦ Email Framework</span>
+                      <span style={{ fontSize: "0.72rem", background: "rgba(196,162,101,0.15)", padding: "3px 10px", borderRadius: "999px", color: "#A8893E" }}>Student</span>
+                    </button>
+                    )}
 
                     {showFramework && (
                       <div style={{
