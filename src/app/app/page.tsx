@@ -256,6 +256,8 @@ function AppPageInner() {
   const [authPromoCode, setAuthPromoCode] = useState("");
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [upgradeBilling, setUpgradeBilling] = useState<"monthly" | "annual">("monthly");
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const PLACEHOLDER_EXAMPLES = [
     "e.g. neuroscience", "e.g. organic chemistry", "e.g. political science",
@@ -322,6 +324,18 @@ function AppPageInner() {
       }, 100);
     }
   }, [searchParams, autoSearched]);
+
+  // Close hamburger menu on outside click
+  useEffect(() => {
+    if (!showMenu) return;
+    function handleOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setShowMenu(false);
+      }
+    }
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, [showMenu]);
 
   // Grand reveal / welcome back
   const [revealPhase, setRevealPhase] = useState<"curtain" | "content" | "done">("curtain");
@@ -1074,9 +1088,22 @@ function AppPageInner() {
 
       {/* ====== FLOATING PILL NAV ====== */}
       <nav className="rm-floating-nav">
-        <div className="rm-nav-pill">
+        <div className="rm-nav-pill" ref={menuRef}>
+
+          {/* Hamburger */}
+          <button
+            className={`rm-hamburger${showMenu ? " rm-hamburger-open" : ""}`}
+            onClick={() => setShowMenu(v => !v)}
+            aria-label="Menu"
+          >
+            <span className="rm-hamburger-line" />
+            <span className="rm-hamburger-line" />
+            <span className="rm-hamburger-line" />
+          </button>
+
           <Link href="/" className="rm-nav-logo">&#128300; Research Match</Link>
           <div className="rm-nav-spacer" />
+
           {saved.length > 0 && (
             <button
               onClick={() => setShowSaved(!showSaved)}
@@ -1085,8 +1112,7 @@ function AppPageInner() {
               Saved ({saved.length})
             </button>
           )}
-          <Link href="/examples" className="rm-nav-link">Examples</Link>
-          <Link href="/feedback" className="rm-nav-link">Feedback</Link>
+
           {!user ? (
             <>
               <button onClick={() => { setShowAuthModal(true); setAuthMode("login"); setAuthError(""); }} className="rm-nav-btn">
@@ -1123,6 +1149,45 @@ function AppPageInner() {
               </Link>
             </div>
           )}
+
+          {/* Dropdown menu */}
+          <div className={`rm-nav-dropdown${showMenu ? " rm-nav-dropdown-open" : ""}`}>
+            <div className="rm-nav-dropdown-inner">
+              <Link href="/profile" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
+                <span className="rm-nav-dropdown-icon">⚙</span>
+                Account Settings
+              </Link>
+              <Link href="/examples" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
+                <span className="rm-nav-dropdown-icon">✦</span>
+                Examples
+              </Link>
+              <Link href="/feedback" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
+                <span className="rm-nav-dropdown-icon">✉</span>
+                Feedback
+              </Link>
+              <Link href="/blog" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
+                <span className="rm-nav-dropdown-icon">✒</span>
+                Blog
+              </Link>
+              <Link href="/#pricing" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
+                <span className="rm-nav-dropdown-icon">◈</span>
+                Pricing
+              </Link>
+              {user && (
+                <>
+                  <div className="rm-nav-dropdown-divider" />
+                  <button
+                    className="rm-nav-dropdown-item rm-nav-dropdown-logout"
+                    onClick={() => { signOut(); setShowMenu(false); }}
+                  >
+                    <span className="rm-nav-dropdown-icon">↩</span>
+                    Log Out
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+
         </div>
       </nav>
 
