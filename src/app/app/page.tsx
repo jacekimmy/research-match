@@ -594,6 +594,24 @@ function AppPageInner() {
           }
         }
       }
+      // Filter to only professors where the searched topic is in their top topics (specificity filter)
+      if (topicIds.length > 0 && authors.length > 0) {
+        const filterByTopN = (n: number) =>
+          authors.filter((a) => {
+            const topIds = (a.topics ?? []).slice(0, n).map((t: any) => t.id?.split("/").pop());
+            return topicIds.some((id: string) => topIds.includes(id));
+          });
+        const strict = filterByTopN(3);
+        if (strict.length >= 3) {
+          authors = strict;
+        } else {
+          const medium = filterByTopN(5);
+          if (medium.length >= 2) {
+            authors = medium;
+          }
+          // else keep all results — topic may be too niche to enforce strict matching
+        }
+      }
       // Score authors to filter out non-professors
       if (authors.length > 0) {
         try {
