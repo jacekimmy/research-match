@@ -36,9 +36,13 @@ export default function LandingPage() {
   const [waitlistDone, setWaitlistDone] = useState(false);
   const [waitlistLoading, setWaitlistLoading] = useState(false);
   const [heroVisible, setHeroVisible] = useState(false);
+  const [searchCount, setSearchCount] = useState<number | null>(null);
 
   useEffect(() => { setBillingMounted(true); }, []);
   useEffect(() => { setTimeout(() => setHeroVisible(true), 80); }, []);
+  useEffect(() => {
+    fetch("/api/stats").then(r => r.json()).then(d => setSearchCount(d.searches)).catch(() => {});
+  }, []);
 
   function switchBilling(cycle: "monthly" | "annual") {
     if (cycle === billingCycle) return;
@@ -217,7 +221,7 @@ export default function LandingPage() {
         {[
           { num: "250M+", label: "papers indexed" },
           { num: "1,000+", label: "universities" },
-          { num: "400+", label: "students served" },
+          { num: searchCount !== null ? `${searchCount.toLocaleString()}+` : "400+", label: "students served" },
           { num: "< 24h", label: "first professor response" },
         ].map((s, i) => (
           <div key={i} className="lp-proof-item">
