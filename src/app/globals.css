@@ -903,7 +903,8 @@ body::after {
   color: #1a1a1a;
   font-family: "Playfair Display", Georgia, serif;
   font-size: 0.95rem;
-  resize: none;
+  min-height: 200px;
+  resize: vertical;
   outline: none;
   transition: all 0.3s ease;
 }
@@ -1282,6 +1283,8 @@ body::after {
   display: flex;
   flex-direction: column;
   padding: 36px 40px;
+  overflow-y: auto;
+  min-width: 0;
 }
 
 .rm-modal-right {
