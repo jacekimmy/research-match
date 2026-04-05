@@ -509,8 +509,9 @@ function AppPageInner() {
 
   async function search() {
     // Collect all topics and universities (tags + current input)
-    const allTopics = [...queryTags, ...(query.trim() ? [query.trim()] : [])];
-    const allUnis = [...uniTags, ...(university.trim() ? [university.trim()] : [])];
+    // Split by comma so "UCI, UCLA, Caltech" works even without tagging each one
+    const allTopics = [...queryTags, ...query.split(",").map(s => s.trim()).filter(Boolean)];
+    const allUnis = [...uniTags, ...university.split(",").map(s => s.trim()).filter(Boolean)];
     if (allTopics.length === 0) return;
     // Free users who've used their one free search see the paywall on the next attempt
     if (user && isFree && (profile?.summaries_used ?? 0) >= 1) {
