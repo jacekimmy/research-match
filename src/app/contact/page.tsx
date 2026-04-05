@@ -7,10 +7,26 @@ export default function ContactPage() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSubmitted(true);
+    setSubmitting(true);
+    setSubmitError("");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, message }),
+      });
+      if (!res.ok) throw new Error("Failed");
+      setSubmitted(true);
+    } catch {
+      setSubmitError("Something went wrong. Try emailing us directly.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   const inputStyle: React.CSSProperties = {
@@ -159,19 +175,26 @@ export default function ContactPage() {
                   style={{ ...inputStyle, resize: "vertical", lineHeight: 1.6 }}
                 />
               </div>
+              {submitError && (
+                <p style={{ fontSize: "0.85rem", color: "#c45c5c", marginTop: "4px" }}>{submitError}</p>
+              )}
               <button
                 type="submit"
+                disabled={submitting}
                 style={{
                   background: "linear-gradient(135deg, #2d5a3d, #24956A)",
                   color: "#fff", padding: "14px 24px",
                   borderRadius: "12px", fontWeight: 700,
                   fontSize: "1rem", border: "none",
-                  cursor: "pointer", fontFamily: "DM Sans, Inter, sans-serif",
+                  cursor: submitting ? "not-allowed" : "pointer",
+                  opacity: submitting ? 0.7 : 1,
+                  fontFamily: "DM Sans, Inter, sans-serif",
                   boxShadow: "0 4px 16px rgba(45,90,61,0.25)",
                   marginTop: "4px",
+                  transition: "opacity 0.2s",
                 }}
               >
-                Send Message
+                {submitting ? "Sending..." : "Send Message"}
               </button>
             </form>
           )}
