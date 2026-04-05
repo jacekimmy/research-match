@@ -3011,6 +3011,41 @@ body::after {
   .suggestions-dropdown {
     border-radius: 12px;
   }
+
+  /* Tag chips — smaller on mobile so they don't overflow */
+  .rm-tag-chip {
+    font-size: 0.75rem;
+    padding: 3px 8px 3px 10px;
+    gap: 3px;
+  }
+  .rm-tag-input {
+    min-width: 60px;
+    font-size: 0.9rem;
+  }
+  .rm-tag-input-row {
+    gap: 4px;
+  }
+
+  /* Email modal full-width on mobile */
+  .rm-modal-content {
+    flex-direction: column !important;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .rm-modal-left {
+    min-width: unset !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(45,90,61,0.1);
+    padding-bottom: 20px;
+    overflow-y: visible !important;
+  }
+  .rm-modal-right {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-top: 20px;
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -4517,37 +4552,52 @@ body::after {
 
   /* ── Pricing ── */
   .lp-pricing-section {
-    padding: 56px 20px 48px;
+    padding: 48px 16px 40px;
   }
-  .lp-pricing-title { font-size: 1.8rem; }
-  .lp-pricing-sub { font-size: 0.88rem; }
+  .lp-pricing-header { margin-bottom: 32px; }
+  .lp-pricing-title { font-size: 1.7rem; }
+  .lp-pricing-sub { font-size: 0.86rem; }
+  .lp-urgency-banner { font-size: 0.78rem; padding: 10px 16px; margin-bottom: 24px; }
   .lp-pricing-grid {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
+  }
+  /* Lifetime card — reset extra desktop padding on mobile */
+  .lp-price-card-lifetime-hero {
+    padding: 28px 22px;
   }
   .lp-price-card {
     min-width: unset;
     max-width: 100%;
     width: 100%;
     flex-shrink: unset;
-    /* No hover on mobile */
+    padding: 26px 20px;
   }
   .lp-price-card:hover { transform: none; box-shadow: 0 4px 24px rgba(45,90,61,0.06); }
   .lp-price-card-featured:hover { transform: none; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
   .lp-price-card-lifetime:hover { transform: none; }
+  /* Tighter feature list on mobile */
+  .lp-price-features li { padding: 4px 0; font-size: 0.84rem; }
+  /* Bonuses section — compact on mobile */
+  .lp-bonuses-section { padding: 10px 0 2px; margin-top: 2px; }
+  .lp-bonuses-title { font-size: 0.65rem; margin-bottom: 6px; }
+  .lp-bonuses-section .lp-price-features li { font-size: 0.8rem; padding: 3px 0; }
+  /* Tagline — less margin on mobile */
+  .lp-lifetime-tagline { margin-bottom: 14px; font-size: 0.76rem; }
+  /* Price amount — slightly smaller */
+  .lp-price-amount { font-size: clamp(2.4rem, 8vw, 3rem); }
+  /* Refund note */
+  .lp-refund-note { font-size: 0.7rem; margin-top: 8px; }
+  /* Free card — even less prominent on mobile */
+  .lp-price-card-free { opacity: 0.78; transform: scale(0.96); }
   .lp-price-btn {
-    padding: 16px 20px;
-    min-height: 52px;
-    font-size: 1rem;
+    padding: 15px 20px;
+    min-height: 50px;
+    font-size: 0.95rem;
   }
   .lp-price-btn:hover { transform: none !important; }
   .lp-price-btn:active { transform: scale(0.98) !important; }
-
-  /* ── Billing toggle on mobile ── */
-  .lp-pricing-section .mode-toggle {
-    margin-bottom: 0;
-  }
 
   /* ── Waitlist ── */
   .lp-waitlist { margin-top: 40px; }
