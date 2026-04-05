@@ -1815,9 +1815,9 @@ function AppPageInner() {
                     </p>
                   </div>
 
-                  {/* Email Framework toggle — paid only */}
+                  {/* Email Framework toggle — requires account */}
                   <div style={{ marginBottom: "16px" }}>
-                    {isPaid ? (
+                    {user ? (
                     <button
                       onClick={() => setShowFramework(v => !v)}
                       style={{
@@ -1836,20 +1836,20 @@ function AppPageInner() {
                     </button>
                     ) : (
                     <button
-                      onClick={() => setShowUpgradeModal(true)}
+                      onClick={() => { setShowAuthModal(true); setAuthMode("signup"); setAuthError(""); }}
                       style={{
                         width: "100%", padding: "10px 18px",
                         display: "flex", alignItems: "center", justifyContent: "space-between",
                         background: "transparent",
-                        border: "1.5px solid rgba(196,162,101,0.35)",
+                        border: "1.5px solid rgba(45,90,61,0.2)",
                         borderRadius: "12px", cursor: "pointer",
                         fontFamily: "DM Sans, Inter, sans-serif",
-                        fontSize: "0.88rem", fontWeight: 600, color: "#A8893E",
+                        fontSize: "0.88rem", fontWeight: 600, color: "#6b7280",
                         transition: "background 0.2s",
                       }}
                     >
                       <span>✦ Email Framework</span>
-                      <span style={{ fontSize: "0.72rem", background: "rgba(196,162,101,0.15)", padding: "3px 10px", borderRadius: "999px", color: "#A8893E" }}>Student</span>
+                      <span style={{ fontSize: "0.72rem", background: "rgba(45,90,61,0.08)", padding: "3px 10px", borderRadius: "999px", color: "#2d5a3d" }}>Free with account</span>
                     </button>
                     )}
 

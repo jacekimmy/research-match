@@ -11,6 +11,7 @@ interface Profile {
   searches_reset_at: string;
   summaries_used: number;
   summaries_reset_at: string;
+  framework_used: boolean;
   created_at: string;
 }
 
