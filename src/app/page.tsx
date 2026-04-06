@@ -428,6 +428,7 @@ export default function LandingPage() {
         <div className="lp-social-label">What students say</div>
         <div className="lp-quotes-grid">
           {[
+            { quote: "Research Match saved me time for cold emailing professors. The paper summaries meant I didn't have to waste time finding key findings myself.", author: "Jedrek N., College Student" },
             { quote: "I got a reply in 3 days. Never happened before.", author: "Undergraduate student" },
             { quote: "A Princeton professor responded to a high school freshman within 24 hours.", author: "Founder experience" },
             { quote: "Endorse this advice 💯. If an email smells of AI I will not answer it.", author: "Research Professor" },
