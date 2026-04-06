@@ -2,151 +2,151 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Main pages -->
   <url>
-    <loc>https://researchmatch.me/</loc>
+    <loc>https://researchmatch.site/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://researchmatch.me/app</loc>
+    <loc>https://researchmatch.site/app</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://researchmatch.me/blog</loc>
+    <loc>https://researchmatch.site/blog</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://researchmatch.me/examples</loc>
+    <loc>https://researchmatch.site/examples</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://researchmatch.me/framework</loc>
+    <loc>https://researchmatch.site/framework</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://researchmatch.me/how-it-works</loc>
+    <loc>https://researchmatch.site/how-it-works</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://researchmatch.me/feedback</loc>
+    <loc>https://researchmatch.site/feedback</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://researchmatch.me/contact</loc>
+    <loc>https://researchmatch.site/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
 
   <!-- Blog posts -->
   <url>
-    <loc>https://researchmatch.me/blog/how-to-cold-email-a-professor</loc>
+    <loc>https://researchmatch.site/blog/how-to-cold-email-a-professor</loc>
     <lastmod>2026-03-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://researchmatch.me/blog/how-to-find-research-opportunities</loc>
+    <loc>https://researchmatch.site/blog/how-to-find-research-opportunities</loc>
     <lastmod>2026-03-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://researchmatch.me/blog/cold-email-mistakes</loc>
+    <loc>https://researchmatch.site/blog/cold-email-mistakes</loc>
     <lastmod>2026-03-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://researchmatch.me/blog/cold-email-professor-template</loc>
+    <loc>https://researchmatch.site/blog/cold-email-professor-template</loc>
     <lastmod>2026-03-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://researchmatch.me/blog/how-to-get-research-experience-undergrad</loc>
+    <loc>https://researchmatch.site/blog/how-to-get-research-experience-undergrad</loc>
     <lastmod>2026-03-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://researchmatch.me/blog/premed-research-experience</loc>
+    <loc>https://researchmatch.site/blog/premed-research-experience</loc>
     <lastmod>2026-03-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://researchmatch.me/blog/how-to-find-a-research-mentor</loc>
+    <loc>https://researchmatch.site/blog/how-to-find-a-research-mentor</loc>
     <lastmod>2026-03-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://researchmatch.me/blog/do-professors-respond-to-cold-emails</loc>
+    <loc>https://researchmatch.site/blog/do-professors-respond-to-cold-emails</loc>
     <lastmod>2026-03-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://researchmatch.me/blog/research-opportunities-for-high-school-students</loc>
+    <loc>https://researchmatch.site/blog/research-opportunities-for-high-school-students</loc>
     <lastmod>2026-03-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://researchmatch.me/blog/how-to-email-a-professor-about-research</loc>
+    <loc>https://researchmatch.site/blog/how-to-email-a-professor-about-research</loc>
     <lastmod>2026-03-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://researchmatch.me/blog/undergraduate-research-benefits</loc>
+    <loc>https://researchmatch.site/blog/undergraduate-research-benefits</loc>
     <lastmod>2026-03-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://researchmatch.me/blog/how-to-follow-up-with-a-professor</loc>
+    <loc>https://researchmatch.site/blog/how-to-follow-up-with-a-professor</loc>
     <lastmod>2026-03-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://researchmatch.me/blog/what-professors-look-for-in-research-students</loc>
+    <loc>https://researchmatch.site/blog/what-professors-look-for-in-research-students</loc>
     <lastmod>2026-03-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://researchmatch.me/blog/summer-research-opportunities</loc>
+    <loc>https://researchmatch.site/blog/summer-research-opportunities</loc>
     <lastmod>2026-03-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://researchmatch.me/blog/research-experience-for-phd-applications</loc>
+    <loc>https://researchmatch.site/blog/research-experience-for-phd-applications</loc>
     <lastmod>2026-03-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://researchmatch.me/blog/research-interest-statement</loc>
+    <loc>https://researchmatch.site/blog/research-interest-statement</loc>
     <lastmod>2026-04-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://researchmatch.me/blog/best-time-to-email-professors</loc>
+    <loc>https://researchmatch.site/blog/best-time-to-email-professors</loc>
     <lastmod>2026-04-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://researchmatch.me/blog/cold-email-vs-warm-intro</loc>
+    <loc>https://researchmatch.site/blog/cold-email-vs-warm-intro</loc>
     <lastmod>2026-04-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>

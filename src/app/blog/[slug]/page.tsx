@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: post.title,
       description: post.description,
       type: "article",
-      url: `https://researchmatch.me/blog/${post.slug}`,
+      url: `https://researchmatch.site/blog/${post.slug}`,
       publishedTime: post.datePublished,
       authors: ["Jace"],
       siteName: "Research Match",
@@ -61,8 +61,8 @@ export default async function BlogPost({ params }: Props) {
     },
     datePublished: post.datePublished,
     dateModified: post.datePublished,
-    url: `https://researchmatch.me/blog/${post.slug}`,
-    mainEntityOfPage: `https://researchmatch.me/blog/${post.slug}`,
+    url: `https://researchmatch.site/blog/${post.slug}`,
+    mainEntityOfPage: `https://researchmatch.site/blog/${post.slug}`,
   };
 
   return (

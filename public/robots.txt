@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://researchmatch.me/sitemap.xml
+Sitemap: https://researchmatch.site/sitemap.xml
