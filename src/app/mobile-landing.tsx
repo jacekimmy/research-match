@@ -635,9 +635,9 @@ export default function MobileLanding() {
             <div style={{ borderTop: "1px solid rgba(168,137,62,0.2)", paddingTop: "12px", marginBottom: "20px" }}>
               <p style={{ fontSize: "0.68rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#A8893E", marginBottom: "8px" }}>Free Bonuses Included:</p>
               {[
-                "Cold Email Swipe File — 2 real emails that got replies, fully annotated",
-                "Research Statement Framework — the paragraph professors actually read",
-                "Response Decoder + Follow Up Formula (coming soon)",
+                "Emails That Worked — 2 real emails that got replies, fully annotated",
+                "Email Template — the paragraph professors actually read",
+                "Follow-Up Guide (coming soon)",
               ].map((f) => (
                 <p key={f} style={{ fontSize: "0.82rem", color: "#6b7280", padding: "4px 0", display: "flex", gap: "8px", alignItems: "flex-start" }}>
                   <span style={{ color: "#A8893E", flexShrink: 0 }}>✓</span> {f}
@@ -701,9 +701,9 @@ export default function MobileLanding() {
             <div style={{ borderTop: "1px solid rgba(157,191,170,0.25)", paddingTop: "12px", marginBottom: "20px" }}>
               <p style={{ fontSize: "0.68rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#9dbfaa", marginBottom: "8px" }}>Free Bonuses Included:</p>
               {[
-                "Cold Email Swipe File — 2 real emails that got replies, fully annotated",
-                "Research Statement Framework — the paragraph professors actually read",
-                "Response Decoder + Follow Up Formula (coming soon)",
+                "Emails That Worked — 2 real emails that got replies, fully annotated",
+                "Email Template — the paragraph professors actually read",
+                "Follow-Up Guide (coming soon)",
               ].map((f) => (
                 <p key={f} style={{ fontSize: "0.82rem", color: "rgba(245,240,230,0.7)", padding: "4px 0", display: "flex", gap: "8px", alignItems: "flex-start" }}>
                   <span style={{ color: "#9dbfaa", flexShrink: 0 }}>✓</span> {f}

@@ -94,7 +94,7 @@ const STATS = [
   "Email framework built from real professor feedback",
   "AI email checker that catches generic tone before you hit send",
   "Follow-up timeline so you always know when and what to send next",
-  "Swipe file of real emails that got responses",
+  "Emails That Worked — real examples that got responses",
 ];
 
 export default function WelcomeScreen() {

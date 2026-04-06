@@ -2173,7 +2173,7 @@ function AppPageInner() {
               </div>
               <p style={{ fontSize: "0.8rem", color: "#9b8040", marginBottom: "12px" }}>That&apos;s less than 2 semesters. Never pay again.</p>
               <ul style={{ listStyle: "none", padding: 0, marginBottom: "16px" }}>
-                {["Everything in Semester, forever", "One payment, lifetime access", "Cold Email Swipe File + Research Framework"].map((f) => (
+                {["Everything in Semester, forever", "One payment, lifetime access", "Emails That Worked + Email Template"].map((f) => (
                   <li key={f} style={{ fontSize: "0.85rem", color: "#6b7280", padding: "4px 0", display: "flex", gap: "8px" }}>
                     <span style={{ color: "#A8893E" }}>✓</span> {f}
                   </li>
@@ -2201,7 +2201,7 @@ function AppPageInner() {
               </div>
               <p style={{ fontSize: "0.8rem", color: "#6b7280", marginBottom: "12px" }}>One semester. Everything you need to land a position.</p>
               <ul style={{ listStyle: "none", padding: 0, marginBottom: "16px" }}>
-                {["Unlimited research summaries", "Email checker with red-flag detection", "Professor email finder", "Professor responsiveness indicator", "Cold Email Swipe File + Research Framework"].map((f) => (
+                {["Unlimited research summaries", "Email checker with red-flag detection", "Professor email finder", "Professor responsiveness indicator", "Emails That Worked + Email Template"].map((f) => (
                   <li key={f} style={{ fontSize: "0.85rem", color: "#6b7280", padding: "4px 0", display: "flex", gap: "8px" }}>
                     <span style={{ color: "#2d5a3d" }}>✓</span> {f}
                   </li>

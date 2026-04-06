@@ -479,9 +479,9 @@ export default function LandingPage() {
               <p className="lp-bonuses-title" style={{ color: "#A8893E" }}>Free Bonuses Included:</p>
               <ul className="lp-price-features">
                 {[
-                  "Cold Email Swipe File — 2 real emails that got replies, fully annotated",
-                  "Research Statement Framework — the paragraph professors actually read",
-                  "Response Decoder + Follow Up Formula (coming soon)",
+                  "Emails That Worked — 2 real emails that got replies, fully annotated",
+                  "Email Template — the paragraph professors actually read",
+                  "Follow-Up Guide (coming soon)",
                 ].map((f) => (
                   <li key={f}><span className="lp-check" style={{ color: "#A8893E" }}>✓</span>{f}</li>
                 ))}
@@ -515,9 +515,9 @@ export default function LandingPage() {
               <p className="lp-bonuses-title" style={{ color: "#9dbfaa" }}>Free Bonuses Included:</p>
               <ul className="lp-price-features" style={{ color: "rgba(255,255,255,0.7)" }}>
                 {[
-                  "Cold Email Swipe File — 2 real emails that got replies, fully annotated",
-                  "Research Statement Framework — the paragraph professors actually read",
-                  "Response Decoder + Follow Up Formula (coming soon)",
+                  "Emails That Worked — 2 real emails that got replies, fully annotated",
+                  "Email Template — the paragraph professors actually read",
+                  "Follow-Up Guide (coming soon)",
                 ].map((f) => (
                   <li key={f}><span className="lp-check" style={{ color: "#9dbfaa" }}>✓</span>{f}</li>
                 ))}
