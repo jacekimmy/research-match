@@ -89,9 +89,12 @@ function launchConfetti(canvas: HTMLCanvasElement) {
 }
 
 const STATS = [
-  "250M+ papers searchable",
-  "AI-powered research summaries",
-  "Built on advice from real professors",
+  "Find professors actively publishing in your exact research area",
+  "Plain-English summaries of what their research actually means",
+  "Email framework built from real professor feedback",
+  "AI email checker that catches generic tone before you hit send",
+  "Follow-up timeline so you always know when and what to send next",
+  "Swipe file of real emails that got responses",
 ];
 
 export default function WelcomeScreen() {
@@ -152,19 +155,31 @@ export default function WelcomeScreen() {
         }
         .wc-stat-1 {
           opacity: 0;
-          animation: wc-fade-up 0.5s cubic-bezier(0.22,1,0.36,1) 1.4s forwards;
+          animation: wc-fade-up 0.45s cubic-bezier(0.22,1,0.36,1) 1.4s forwards;
         }
         .wc-stat-2 {
           opacity: 0;
-          animation: wc-fade-up 0.5s cubic-bezier(0.22,1,0.36,1) 1.65s forwards;
+          animation: wc-fade-up 0.45s cubic-bezier(0.22,1,0.36,1) 1.6s forwards;
         }
         .wc-stat-3 {
           opacity: 0;
-          animation: wc-fade-up 0.5s cubic-bezier(0.22,1,0.36,1) 1.9s forwards;
+          animation: wc-fade-up 0.45s cubic-bezier(0.22,1,0.36,1) 1.8s forwards;
+        }
+        .wc-stat-4 {
+          opacity: 0;
+          animation: wc-fade-up 0.45s cubic-bezier(0.22,1,0.36,1) 2.0s forwards;
+        }
+        .wc-stat-5 {
+          opacity: 0;
+          animation: wc-fade-up 0.45s cubic-bezier(0.22,1,0.36,1) 2.2s forwards;
+        }
+        .wc-stat-6 {
+          opacity: 0;
+          animation: wc-fade-up 0.45s cubic-bezier(0.22,1,0.36,1) 2.4s forwards;
         }
         .wc-cta {
           opacity: 0;
-          animation: wc-fade-up 0.65s cubic-bezier(0.22,1,0.36,1) 2.5s forwards;
+          animation: wc-fade-up 0.65s cubic-bezier(0.22,1,0.36,1) 2.95s forwards;
         }
 
         .wc-btn {
@@ -214,7 +229,8 @@ export default function WelcomeScreen() {
 
         @media (prefers-reduced-motion: reduce) {
           .wc-sparkle, .wc-headline, .wc-sub, .wc-divider,
-          .wc-stat-1, .wc-stat-2, .wc-stat-3, .wc-cta {
+          .wc-stat-1, .wc-stat-2, .wc-stat-3,
+          .wc-stat-4, .wc-stat-5, .wc-stat-6, .wc-cta {
             opacity: 1 !important;
             animation: none !important;
           }
