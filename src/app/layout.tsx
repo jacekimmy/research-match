@@ -4,18 +4,18 @@ import { Analytics } from "@vercel/analytics/next";
 import { AuthProvider } from "@/lib/auth-context";
 
 export const metadata: Metadata = {
-  title: "Research Match — Find the Right Research Professor, Fast",
-  description: "Find professors who match your research interests, understand their work in plain English, and write cold emails that actually get replies. Used by students at top universities.",
+  title: "Research Match - Find Research Professors in Minutes",
+  description: "Search any research interest and university. Get professor matches, plain-English paper summaries, and an email framework built on advice from real professors.",
   openGraph: {
-    title: "Research Match — Find the Right Research Professor, Fast",
-    description: "Find professors who match your research interests, understand their work in plain English, and write cold emails that actually get replies.",
+    title: "Research Match - Find Research Professors in Minutes",
+    description: "Search any research interest and university. Get professor matches, plain-English paper summaries, and an email framework built on advice from real professors.",
     type: "website",
     siteName: "Research Match",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Research Match — Find the Right Research Professor, Fast",
-    description: "Find professors who match your research interests, understand their work in plain English, and write cold emails that actually get replies.",
+    title: "Research Match - Find Research Professors in Minutes",
+    description: "Search any research interest and university. Get professor matches, plain-English paper summaries, and an email framework built on advice from real professors.",
   },
 };
 

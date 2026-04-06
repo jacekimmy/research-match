@@ -17,11 +17,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${post.title} | Research Match`,
     description: post.description,
     keywords: post.keyword,
+    authors: [{ name: "Jace" }],
     openGraph: {
       title: post.title,
       description: post.description,
       type: "article",
       url: `https://researchmatch.me/blog/${post.slug}`,
+      publishedTime: post.datePublished,
+      authors: ["Jace"],
+      siteName: "Research Match",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.description,
     },
   };
 }
@@ -35,8 +44,33 @@ export default async function BlogPost({ params }: Props) {
     .map((s) => posts.find((p) => p.slug === s))
     .filter(Boolean);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description: post.description,
+    author: {
+      "@type": "Person",
+      name: "Jace",
+      description: "15-year-old founder of Research Match. I've cold emailed professors at Princeton, ASU, and dozens of other universities to learn what actually gets a response.",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Research Match",
+      url: "https://researchmatch.me",
+    },
+    datePublished: post.datePublished,
+    dateModified: post.datePublished,
+    url: `https://researchmatch.me/blog/${post.slug}`,
+    mainEntityOfPage: `https://researchmatch.me/blog/${post.slug}`,
+  };
+
   return (
     <div style={{ minHeight: "100vh", padding: "40px 20px" }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div style={{ maxWidth: "720px", margin: "0 auto" }}>
         {/* Nav */}
         <nav style={{ marginBottom: "40px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -60,9 +94,23 @@ export default async function BlogPost({ params }: Props) {
           }}>
             {post.title}
           </h1>
-          <p style={{ fontSize: "0.85rem", color: "#8aaa96", marginBottom: "40px" }}>
-            Research Match Team
-          </p>
+
+          {/* Author + date */}
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "40px", paddingBottom: "24px", borderBottom: "1px solid rgba(45,90,61,0.1)" }}>
+            <div style={{ width: "38px", height: "38px", borderRadius: "50%", background: "linear-gradient(135deg, #2d5a3d, #2E9E72)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <span style={{ color: "#fff", fontWeight: 700, fontSize: "0.9rem" }}>J</span>
+            </div>
+            <div>
+              <p style={{ fontSize: "0.88rem", fontWeight: 700, color: "#2d5a3d", margin: 0, marginBottom: "2px" }}>Jace</p>
+              <p style={{ fontSize: "0.78rem", color: "#8aaa96", margin: 0 }}>
+                15-year-old founder of Research Match. Cold emailed professors at Princeton, ASU, and dozens of others to learn what actually gets a response.
+                {post.datePublished && (
+                  <> &middot; {new Date(post.datePublished).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</>
+                )}
+              </p>
+            </div>
+          </div>
+
           <div
             className="blog-content"
             dangerouslySetInnerHTML={{ __html: post.content }}

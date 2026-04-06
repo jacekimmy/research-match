@@ -5,6 +5,7 @@ export interface BlogPost {
   keyword: string;
   content: string;
   relatedSlugs: string[];
+  datePublished: string;
 }
 
 export const posts: BlogPost[] = [
@@ -55,6 +56,7 @@ export const posts: BlogPost[] = [
 <a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
 </div>`,
     relatedSlugs: ["cold-email-mistakes", "cold-email-professor-template", "do-professors-respond-to-cold-emails"],
+    datePublished: "2026-03-01",
   },
   {
     slug: "how-to-find-research-opportunities",
@@ -102,6 +104,7 @@ export const posts: BlogPost[] = [
 <a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
 </div>`,
     relatedSlugs: ["how-to-cold-email-a-professor", "research-opportunities-for-high-school-students", "summer-research-opportunities"],
+    datePublished: "2026-03-01",
   },
   {
     slug: "cold-email-mistakes",
@@ -154,6 +157,7 @@ export const posts: BlogPost[] = [
 <a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
 </div>`,
     relatedSlugs: ["how-to-cold-email-a-professor", "cold-email-professor-template", "what-professors-look-for-in-research-students"],
+    datePublished: "2026-03-01",
   },
   {
     slug: "cold-email-professor-template",
@@ -202,6 +206,7 @@ export const posts: BlogPost[] = [
 <a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
 </div>`,
     relatedSlugs: ["cold-email-mistakes", "how-to-cold-email-a-professor", "how-to-email-a-professor-about-research"],
+    datePublished: "2026-03-01",
   },
   {
     slug: "how-to-get-research-experience-undergrad",
@@ -254,6 +259,7 @@ export const posts: BlogPost[] = [
 <a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
 </div>`,
     relatedSlugs: ["undergraduate-research-benefits", "how-to-find-research-opportunities", "how-to-find-a-research-mentor"],
+    datePublished: "2026-03-01",
   },
   {
     slug: "premed-research-experience",
@@ -302,6 +308,7 @@ export const posts: BlogPost[] = [
 <a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
 </div>`,
     relatedSlugs: ["how-to-get-research-experience-undergrad", "how-to-cold-email-a-professor", "undergraduate-research-benefits"],
+    datePublished: "2026-03-01",
   },
   {
     slug: "how-to-find-a-research-mentor",
@@ -352,6 +359,7 @@ export const posts: BlogPost[] = [
 <a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
 </div>`,
     relatedSlugs: ["how-to-cold-email-a-professor", "what-professors-look-for-in-research-students", "how-to-get-research-experience-undergrad"],
+    datePublished: "2026-03-01",
   },
   {
     slug: "do-professors-respond-to-cold-emails",
@@ -399,6 +407,7 @@ export const posts: BlogPost[] = [
 <a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
 </div>`,
     relatedSlugs: ["how-to-cold-email-a-professor", "cold-email-mistakes", "how-to-follow-up-with-a-professor"],
+    datePublished: "2026-03-01",
   },
   {
     slug: "research-opportunities-for-high-school-students",
@@ -448,6 +457,7 @@ export const posts: BlogPost[] = [
 <a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
 </div>`,
     relatedSlugs: ["how-to-cold-email-a-professor", "how-to-find-research-opportunities", "summer-research-opportunities"],
+    datePublished: "2026-03-01",
   },
   {
     slug: "how-to-email-a-professor-about-research",
@@ -500,6 +510,7 @@ export const posts: BlogPost[] = [
 <a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
 </div>`,
     relatedSlugs: ["cold-email-professor-template", "cold-email-mistakes", "how-to-follow-up-with-a-professor"],
+    datePublished: "2026-03-01",
   },
   {
     slug: "undergraduate-research-benefits",
@@ -548,6 +559,7 @@ export const posts: BlogPost[] = [
 <a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
 </div>`,
     relatedSlugs: ["how-to-get-research-experience-undergrad", "how-to-find-a-research-mentor", "how-to-find-research-opportunities"],
+    datePublished: "2026-03-01",
   },
   {
     slug: "how-to-follow-up-with-a-professor",
@@ -602,6 +614,7 @@ export const posts: BlogPost[] = [
 <a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
 </div>`,
     relatedSlugs: ["how-to-cold-email-a-professor", "do-professors-respond-to-cold-emails", "how-to-email-a-professor-about-research"],
+    datePublished: "2026-03-01",
   },
   {
     slug: "what-professors-look-for-in-research-students",
@@ -654,6 +667,7 @@ export const posts: BlogPost[] = [
 <a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
 </div>`,
     relatedSlugs: ["how-to-cold-email-a-professor", "how-to-find-a-research-mentor", "cold-email-professor-template"],
+    datePublished: "2026-03-01",
   },
   {
     slug: "summer-research-opportunities",
@@ -708,6 +722,7 @@ export const posts: BlogPost[] = [
 <a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
 </div>`,
     relatedSlugs: ["how-to-find-research-opportunities", "research-opportunities-for-high-school-students", "how-to-get-research-experience-undergrad"],
+    datePublished: "2026-03-01",
   },
   {
     slug: "research-experience-for-phd-applications",
@@ -763,5 +778,159 @@ export const posts: BlogPost[] = [
 <a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
 </div>`,
     relatedSlugs: ["how-to-get-research-experience-undergrad", "undergraduate-research-benefits", "how-to-find-a-research-mentor"],
+    datePublished: "2026-03-01",
+  },
+  {
+    slug: "research-interest-statement",
+    title: "How to Write a Research Interest Statement for Cold Emails",
+    description: "A research interest statement is the paragraph that gets professors to actually read your email. Here is how to write one that sounds like a human, not a form.",
+    keyword: "research interest statement",
+    content: `<h2>What Is a Research Interest Statement?</h2>
+<p>A research interest statement is the core paragraph of your cold email to a professor. It is the part where you explain why you care about their specific research and what draws you to the questions they are working on. It is not a list of your accomplishments. It is not a generic "I am passionate about science" line. It is the "why you" paragraph, and it is the one that determines whether a professor keeps reading.</p>
+<p>Most students skip this entirely or write something so vague it might as well be skipped. They say things like "I have always been interested in biology" or "your work looks really fascinating." That is not a research interest statement. That is filler. Professors can tell the difference in about three seconds.</p>
+<p>The good news is that writing a solid research interest statement is not hard once you understand what it actually needs to do. You do not need to have years of experience or a strong research background. You just need to have read one paper carefully and thought about it honestly.</p>
+
+<h2>Why It Matters So Much</h2>
+<p>When a professor opens a cold email from a student they have never met, they are trying to answer one question: is this person actually interested in my research, or are they just applying to every lab they can find?</p>
+<p>The research interest statement is your answer to that question. If it is specific, honest, and shows that you engaged with their actual work, the professor reads on. If it is generic or AI-sounding, the email gets closed. It really is that binary.</p>
+<blockquote>"I get a lot of emails from students. The ones I respond to are the ones where I can tell the student actually thought about my research specifically. When someone references a finding from a paper I published last year and says something interesting about it, I pay attention." -- Assistant Professor, Cognitive Science</blockquote>
+<p>This is also why writing one research interest statement and reusing it for every professor does not work. Each statement needs to be about that professor's specific work. There is no shortcut here, but the payoff is real. Check out our full guide on <a href="/blog/how-to-cold-email-a-professor">how to cold email a professor</a> for the complete framework.</p>
+
+<h2>What to Include</h2>
+<p>A strong research interest statement has three parts, and it only needs to be two or three sentences long. First, name something specific from their research. A paper, a finding, a method, a question they are working on. Not the topic broadly. Something concrete.</p>
+<p>Second, say why that specific thing interests you. Did it connect to something you learned in a class? Did it raise a question you had not thought about before? Did it change how you understood something? Be honest here. You do not need to have a profound insight. You just need to have actually thought about it.</p>
+<p>Third, connect it to your own background or curiosity in a natural way. This does not mean listing credentials. It means showing how your experience or interests point toward their work. Even if you have no lab experience, you probably have relevant coursework, personal curiosity, or something you read that brought you here.</p>
+<p>That is it. Two to three sentences covering those three things. No more.</p>
+
+<h2>What NOT to Do</h2>
+<p>Do not write generic enthusiasm. "I have always been passionate about neuroscience" says nothing. Every student applying to neuroscience labs says this. It does not help you stand out, and it wastes space in an email where every sentence counts.</p>
+<p>Do not list your credentials up front. Your GPA, your awards, your class rank. None of that belongs in the research interest statement. That information can go in the next paragraph if it is relevant. The research interest statement is about their work, not your resume.</p>
+<p>Do not use AI language. Phrases like "groundbreaking research," "cutting-edge methodologies," "I am eager to contribute to your esteemed lab" are instant red flags. They sound nothing like how a student actually talks. Professors see these phrases constantly now and they know what they mean. Write in your actual voice.</p>
+<p>Do not summarize the paper. You are not writing an abstract. You are expressing a reaction to the work. There is a big difference between "In your 2024 paper you studied X and found Y" and "Your finding that Y made me wonder whether Z, which I had not considered before." The second one is a research interest statement. The first is just showing you can read.</p>
+
+<h2>A Good Example vs a Bad Example</h2>
+<p>Here is a bad research interest statement: "I am very interested in your research on climate change and how it affects ecosystems. I think this is a really important area and I would love to learn more about it."</p>
+<p>This could be sent to any of the hundreds of professors who study climate and ecosystems. It shows no engagement with the professor's actual work. It gives the professor no reason to believe this student is different from anyone else.</p>
+<p>Here is a better one: "I read your 2025 paper on how drought stress affects mycorrhizal networks in ponderosa pine forests, and I was surprised by the finding that network connectivity actually increased under moderate drought conditions. I had assumed stress would reduce connectivity, so I am curious about what is driving that pattern and whether it holds under more severe conditions."</p>
+<p>This is specific. It references a real finding. It shows the student had a reaction to the work. It raises a genuine question. It takes maybe 30 minutes to write if you actually read the paper, but it will get a response from a professor who has been ignoring generic emails all week.</p>
+
+<h2>How to Connect Your Background Without Lab Experience</h2>
+<p>A lot of students worry that their research interest statement will fall flat because they do not have any research experience. This is not actually a problem. Professors do not expect undergrads to have done research before. What they want is evidence of curiosity and relevant background, not a CV.</p>
+<p>Relevant background can be a class you took where you encountered a related question. It can be something you read outside of class. It can be a personal experience that made you care about the topic. It can be a skill you have that connects to the method. You almost always have something to work with.</p>
+<p>If you took a genetics class and the professor studies epigenetics, mention what you learned about gene regulation and why the epigenetics angle caught your interest. If you built something in a programming class and the professor uses computational modeling, mention that. The connection does not need to be perfect. It just needs to be honest and specific.</p>
+<p>Once you have a solid research interest statement, the rest of the email comes together much more easily. Read our <a href="/blog/cold-email-professor-template">cold email structure guide</a> for how to build the full email around it.</p>
+
+<div class="blog-cta">
+<h2>Find Your Professor Match</h2>
+<p>Research Match helps you find the right professor in 5 minutes. Search by interest, read their papers in plain English, and check your email before sending.</p>
+<a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
+</div>`,
+    relatedSlugs: ["how-to-cold-email-a-professor", "cold-email-professor-template", "what-professors-look-for-in-research-students"],
+    datePublished: "2026-04-01",
+  },
+  {
+    slug: "best-time-to-email-professors",
+    title: "Best Time to Email Professors About Research (and When to Never Send)",
+    description: "Timing your email wrong can get you ignored even if the email is great. Here is exactly when to send and when to hold off.",
+    keyword: "when to email professors",
+    content: `<h2>Timing Your Email Is More Important Than Most Students Realize</h2>
+<p>You can write a perfect cold email and still get ignored because you sent it at the wrong time. A professor buried under finals grading, conference travel, or the first week of semester chaos is not reading student emails carefully, if at all. Your email lands in a full inbox and never gets back to the top.</p>
+<p>This is not about professors being difficult. It is about how email actually works for people who receive 100 or more messages a day. When you send matters almost as much as what you send. Get the timing right and you dramatically increase your chances of a response.</p>
+
+<h2>Best Days of the Week</h2>
+<p>Tuesday, Wednesday, and Thursday are the best days to send cold emails to professors. Monday inboxes are a disaster. Professors come in from the weekend to a pile of messages and your email competes with everything that accumulated over Saturday and Sunday. By Tuesday, they have cleared the backlog and are more likely to actually read new messages.</p>
+<p>Friday is almost as bad as Monday. A lot of professors work from home on Fridays or use the day to catch up on writing. Your email sits there over the weekend and gets buried under whatever arrives Saturday and Sunday. By Monday morning it is already old.</p>
+<p>Mid-week is consistently the sweet spot. A professor checking email on a calm Wednesday morning is much more likely to give your message real attention than one racing to clear their inbox on a Monday.</p>
+
+<h2>Best Time of Day</h2>
+<p>Send between 8 AM and 11 AM in the professor's time zone. Most academics check email first thing in the morning before their schedule fills up with meetings, classes, and office hours. An email that arrives at 9 AM is more likely to be read than one that arrives at 3 PM, when the day has already gotten away from them.</p>
+<p>The timezone point matters if you are reaching out to professors at institutions in a different part of the country. If you are on the East Coast emailing a professor at a California school, a 9 AM Eastern send time means your email arrives at 6 AM Pacific, before they are even awake. Aim for 9 to 11 AM in their local time.</p>
+<p>Late night sends are a bad idea. An email that arrives at 11 PM gets sorted into the pile of everything that came in overnight, and overnight piles get bulk-processed, not carefully read.</p>
+
+<h2>Worst Times to Send</h2>
+<p>There are certain windows where your email will almost certainly get ignored no matter how good it is. Avoid these periods if you can help it.</p>
+<p><strong>Finals week and the week before finals.</strong> Professors are grading, students are panicking, and everyone is slammed. Your email goes on the back burner and often never comes back.</p>
+<p><strong>The week before a new semester starts.</strong> Professors are prepping syllabi, setting up course management systems, and handling administrative chaos. New student emails are low priority.</p>
+<p><strong>Major conference season for their field.</strong> If you know a big conference in their area happens in October, do not email the week before or during. Professors are traveling, presenting, networking, and generally not sitting at their desks reading new inquiries.</p>
+<p><strong>Over winter break and summer if you want a fast response.</strong> Professors are still around but response times slow significantly. If you are targeting a fall position, do not wait until July to start reaching out and expect quick replies.</p>
+
+<h2>Best Months by Goal</h2>
+<p>When you want to start research matters for which months you should reach out. Here is a rough guide based on what most professors told us works.</p>
+<p>If you want a summer research position, start emailing in January or February. By March, many labs have already figured out their summer plans. If you are still reaching out in April, you are competing for the spots that were not filled earlier, which is a smaller pool.</p>
+<p>If you want a fall semester position, email in April or May. Professors are wrapping up the year and thinking about who they want in the lab next fall. This is a great window because they have mental bandwidth before summer hits.</p>
+<p>If you want a spring semester position, October or early November is the right time. This is mid-fall semester, professors are in a rhythm, and there is enough lead time to get things set up before January.</p>
+<p>The general rule is to reach out six to eight weeks before the start of the term you are targeting. Earlier is almost always better than later.</p>
+
+<h2>What If You Missed the Ideal Window?</h2>
+<p>Sending an email outside the ideal timing does not mean you should not send it. It means you should manage your expectations about response time and maybe follow up a bit more patiently.</p>
+<p>If you are emailing during finals or right before a semester starts, acknowledge the timing in your message. Something like "I know this is a busy time of year, so no rush on a response" goes a long way. It shows awareness and takes some pressure off the professor.</p>
+<p>The honest truth is that a great email sent at a mediocre time still beats a mediocre email sent at a perfect time. Timing is a multiplier. Start with a good email, as covered in our guide on <a href="/blog/how-to-cold-email-a-professor">how to cold email a professor</a>, and then use timing to give it the best chance.</p>
+
+<h2>How Timing Interacts with Follow-Up</h2>
+<p>If you send an email during a bad timing window and do not hear back, your follow-up strategy changes slightly. Wait a bit longer before following up. If you emailed during finals week, give it three weeks instead of two before sending a follow-up. The professor may simply not have processed new messages yet.</p>
+<p>Your follow-up can also acknowledge the timing indirectly. If you emailed in mid-December and are following up in early January, starting with "I hope your break went well" is natural and warm without being over-the-top. It contextualizes the gap without making the professor feel bad about not responding.</p>
+<p>Read our full guide on <a href="/blog/how-to-follow-up-with-a-professor">how to follow up with a professor</a> for the complete follow-up strategy including what to say and how to add new value in your second email.</p>
+
+<h2>One More Thing: Use Research Match to Find the Right Professors First</h2>
+<p>Timing only matters if you are emailing the right people. Before you worry about when to send, make sure you have a solid list of professors whose research genuinely interests you. Research Match helps you find professors by research area, read summaries of their recent work in plain English, and figure out who is worth reaching out to. Then you can time those emails perfectly.</p>
+
+<div class="blog-cta">
+<h2>Find Your Professor Match</h2>
+<p>Research Match helps you find the right professor in 5 minutes. Search by interest, read their papers in plain English, and check your email before sending.</p>
+<a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
+</div>`,
+    relatedSlugs: ["how-to-cold-email-a-professor", "how-to-follow-up-with-a-professor", "cold-email-mistakes"],
+    datePublished: "2026-04-01",
+  },
+  {
+    slug: "cold-email-vs-warm-intro",
+    title: "Cold Email vs Warm Intro: Which Works Better for Research?",
+    description: "A warm introduction from a grad student or professor can double your response rate. But most students do not have connections yet. Here is what actually works.",
+    keyword: "cold email professor vs introduction",
+    content: `<h2>The Honest Answer: Warm Intros Win, But Cold Emails Still Work</h2>
+<p>If someone who knows the professor forwards your email with a note saying "this student is great, you should meet them," you are going to get a response. Almost guaranteed. A warm introduction converts at a much higher rate than a cold email because it comes with built-in trust. The professor already has a relationship with the person vouching for you.</p>
+<p>Studies on professional email response rates consistently show that warm introductions outperform cold outreach by a significant margin. In academia specifically, where professors guard their time carefully, an email from a trusted colleague or grad student gets read differently than one from a stranger.</p>
+<p>But here is the thing most students miss: you do not have to choose. The right strategy is to pursue both at the same time, and cold emails are often how you start building the connections that eventually lead to warm intros.</p>
+
+<h2>What the Response Rate Difference Actually Looks Like</h2>
+<p>A well-written cold email from a student with no existing connection to the professor typically gets a response rate somewhere between 15 and 30 percent. That is good enough to land research positions if you send enough emails to the right people.</p>
+<p>A warm introduction from a grad student in the lab or a professor the PI respects? Response rates jump significantly, often to 60 or 70 percent or higher. The professor is not evaluating a stranger. They are responding to a recommendation from someone they know.</p>
+<blockquote>"When one of my grad students says 'hey, I talked to this undergrad and they seem really sharp, can I give them your email?' I almost always respond within a day. When I get an unsolicited cold email, I read it carefully but respond to maybe one in four." -- Associate Professor, Materials Science</blockquote>
+<p>That gap is real and it matters. But the question is how to actually get those warm introductions when you are starting from zero.</p>
+
+<h2>How to Get Warm Intros Without Knowing Anyone</h2>
+<p>Most undergrads assume warm introductions are only available to people who already have connections. This is not true. You can build the connections that lead to warm introductions relatively quickly if you know where to look.</p>
+<p>Start with TAs. If you are in a course where the TA is a grad student, that TA works in a lab. They know multiple professors in the department. If you do well in the class and show genuine interest in the material, asking a TA "do you know any labs that are looking for undergrads in this area?" is a completely natural conversation. TAs help undergrads all the time. It is part of their job description.</p>
+<p>Office hours for your professors are another underused path. Go to office hours, ask about the professor's research (not just about the homework), and mention that you are interested in finding a research position. Your professor may know other faculty who are actively looking for students. They might even offer to introduce you.</p>
+<p>Attend department seminars and research talks. You do not need to understand everything. Show up, sit toward the front, and ask one question at the end. Professors notice the undergrads who come to these events. A few visits and a brief conversation can turn into "hey, I think you should email Dr. Chen about their lab."</p>
+
+<h2>Why Cold Emails Still Work and Should Not Be Skipped</h2>
+<p>Warm intros are great when you can get them, but cold emails are available right now, to any professor in the world, and they work well enough to land you a research position if you do them right. Do not wait for perfect connections to materialize before reaching out.</p>
+<p>The students who struggle to find research are usually the ones who are waiting. Waiting for a friend to introduce them, waiting until they have more experience, waiting until the timing is perfect. The students who land positions are the ones who send emails.</p>
+<p>A personalized cold email that shows genuine engagement with the professor's research still converts at a meaningful rate. Check out our complete guide on <a href="/blog/how-to-find-a-research-mentor">how to find a research mentor</a> for a full breakdown of both cold and warm strategies working together.</p>
+
+<h2>How to Make Your Cold Email Feel Warmer</h2>
+<p>There is a spectrum between a cold email and a warm intro, and you can move your cold email closer to warm without needing a formal introduction. A few specific things help a lot.</p>
+<p>If you have any loose connection to the professor, mention it. Took a class with them two years ago? Mention it in one sentence. Heard them speak at a seminar? Say so. Saw them quoted in an article you were reading? That counts too. Even a thin connection is better than no connection, and naming it changes the tone of the email from "complete stranger" to "someone who has been paying attention."</p>
+<p>Mentioning a specific grad student or postdoc in their lab also helps. If you say "I read the recent paper from your lab by Dr. Kim and had a question about the methodology," the professor knows you engaged with their actual group, not just their name. It creates a sense of context even without a formal introduction.</p>
+
+<h2>The Hybrid Approach: Email the Grad Student First</h2>
+<p>One of the most effective strategies is to email a grad student in the lab before emailing the professor. This is not cold emailing in the traditional sense. Grad students are much more accessible, respond more reliably, and can become your warm intro to the PI.</p>
+<p>Find a grad student whose work interests you (most lab websites have bios and project descriptions), and send them a short email. Ask about their research, ask what it is like to work in the lab, and mention that you are interested in getting involved at some point. Keep it casual and low-pressure.</p>
+<p>If the grad student responds and the conversation goes well, you can ask if they think the professor might be open to having an undergrad help with related projects. At that point, the grad student either connects you directly or tells you what the process is. Either way, you are no longer a cold email. You are someone their lab member knows.</p>
+<p>This approach also gives you valuable information. A grad student can tell you honestly whether the PI is a good mentor, whether the lab culture is healthy, and what undergrads actually do in that environment. That is information you cannot get from a faculty profile page.</p>
+
+<h2>Realistic Expectations Either Way</h2>
+<p>Even with a warm intro, you might not get a position immediately. The professor might not have funding. They might be fully staffed. They might want to meet you first and see how a conversation goes. A warm intro opens the door, but you still have to walk through it well.</p>
+<p>And even with a cold email, plenty of students land great research positions. The hit rate is lower per email, which is why sending 10 to 15 carefully personalized emails beats sending 2 or 3 perfect ones. Read our guide on <a href="/blog/how-to-find-research-opportunities">how to find research opportunities</a> for the full playbook on combining all these strategies together.</p>
+<p>The bottom line: try to get warm intros whenever you can, but do not let the absence of connections stop you from sending cold emails today. Both paths work. Using both at the same time works best.</p>
+
+<div class="blog-cta">
+<h2>Find Your Professor Match</h2>
+<p>Research Match helps you find the right professor in 5 minutes. Search by interest, read their papers in plain English, and check your email before sending.</p>
+<a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
+</div>`,
+    relatedSlugs: ["how-to-cold-email-a-professor", "how-to-find-a-research-mentor", "how-to-find-research-opportunities"],
+    datePublished: "2026-04-01",
   },
 ];
