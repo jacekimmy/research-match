@@ -4356,7 +4356,7 @@ body::after {
     text-align: center;
   }
   .lp-hero-title {
-    font-size: clamp(1.85rem, 8.5vw, 2.8rem);
+    font-size: clamp(2.1rem, 9.5vw, 3rem);
     margin-bottom: 16px;
     letter-spacing: -0.03em;
   }
@@ -4675,7 +4675,7 @@ body::after {
 
 /* ── Extra small screens (≤ 390px) ── */
 @media (max-width: 390px) {
-  .lp-hero-title { font-size: 1.7rem; }
+  .lp-hero-title { font-size: 1.95rem; }
   .lp-nav-logo span.lp-nav-logo-mark { display: none; }
   .lp-proof-item { flex: 1 1 100%; border-right: none !important; }
   .lp-quote-card { width: 88vw; }

@@ -141,12 +141,12 @@ export default function LandingPage() {
           </div>
 
           <h1 className="lp-hero-title">
-            Find your research professor.<br />
-            <em className="lp-hero-title-em">Understand their work in seconds.</em>
+            Find the professor<br />
+            <em className="lp-hero-title-em">who changes your life.</em>
           </h1>
 
           <p className="lp-hero-sub">
-            Research Match summarizes any professor&apos;s recent work so you can write a personalized email in minutes, not hours.
+            Find the right professor, understand their research, and craft an email built on advice from real professors, in under 10 minutes.
           </p>
 
           {/* Hero search */}
