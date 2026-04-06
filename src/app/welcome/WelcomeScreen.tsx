@@ -329,7 +329,7 @@ export default function WelcomeScreen() {
             }}
           >
             While other students are guessing which professors to email, you&rsquo;re
-            about to know exactly who to reach out to — and what to say.
+            about to know exactly who to reach out to, and what to say.
           </p>
 
           {/* Gold divider */}
