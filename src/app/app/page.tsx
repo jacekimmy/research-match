@@ -1233,7 +1233,7 @@ function AppPageInner() {
               </Link>
               <Link href="/examples" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
                 <span className="rm-nav-dropdown-icon">✦</span>
-                Swipe File
+                Emails That Worked
               </Link>
               <Link href="/framework" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
                 <span className="rm-nav-dropdown-icon">✉</span>
