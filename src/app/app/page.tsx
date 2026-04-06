@@ -204,10 +204,39 @@ const RESEARCH_SUGGESTIONS = [
 interface Author {
   id: string;
   display_name: string;
-  last_known_institutions: { id: string; display_name: string; country_code: string }[];
+  last_known_institutions: { id: string; display_name: string; country_code: string; geo?: { city?: string; region?: string; country?: string } }[];
   works_count: number;
   cited_by_count: number;
   topics: { display_name: string }[];
+}
+
+const US_STATE_CODES: Record<string, string> = {
+  Alabama: "AL", Alaska: "AK", Arizona: "AZ", Arkansas: "AR", California: "CA",
+  Colorado: "CO", Connecticut: "CT", Delaware: "DE", Florida: "FL", Georgia: "GA",
+  Hawaii: "HI", Idaho: "ID", Illinois: "IL", Indiana: "IN", Iowa: "IA",
+  Kansas: "KS", Kentucky: "KY", Louisiana: "LA", Maine: "ME", Maryland: "MD",
+  Massachusetts: "MA", Michigan: "MI", Minnesota: "MN", Mississippi: "MS",
+  Missouri: "MO", Montana: "MT", Nebraska: "NE", Nevada: "NV", "New Hampshire": "NH",
+  "New Jersey": "NJ", "New Mexico": "NM", "New York": "NY", "North Carolina": "NC",
+  "North Dakota": "ND", Ohio: "OH", Oklahoma: "OK", Oregon: "OR", Pennsylvania: "PA",
+  "Rhode Island": "RI", "South Carolina": "SC", "South Dakota": "SD", Tennessee: "TN",
+  Texas: "TX", Utah: "UT", Vermont: "VT", Virginia: "VA", Washington: "WA",
+  "West Virginia": "WV", Wisconsin: "WI", Wyoming: "WY",
+};
+
+function formatInstitutionLocation(inst: Author["last_known_institutions"][0] | undefined): string {
+  if (!inst) return "";
+  const name = inst.display_name;
+  const city = inst.geo?.city;
+  const region = inst.geo?.region;
+  const country = inst.geo?.country;
+  const isUS = inst.country_code === "US";
+  if (!city && !region) return name;
+  if (isUS) {
+    const stateCode = region ? (US_STATE_CODES[region] ?? region) : "";
+    return city ? `${name}, ${city}${stateCode ? `, ${stateCode}` : ""}` : name;
+  }
+  return city && country ? `${name}, ${city}, ${country}` : name;
 }
 
 interface SummaryData {
@@ -556,7 +585,7 @@ function AppPageInner() {
             const authorId = authorship.author?.id;
             if (!authorId || authorMap.has(authorId)) continue;
             if (institutionIds.length > 0 && !institutionIds.some((id: string) => authorship.institutions?.[0]?.id === `https://openalex.org/${id}`)) continue;
-            const authorRes = await fetch(`https://api.openalex.org/authors/${authorId.split("/").pop()}?select=id,display_name,last_known_institutions,works_count,cited_by_count,topics`);
+            const authorRes = await fetch(`https://api.openalex.org/authors/${authorId.split("/").pop()}?select=id,display_name,last_known_institutions,works_count,cited_by_count,topics,geo`);
             if (authorRes.ok) {
               const authorData = await authorRes.json();
               if (institutionIds.length > 0 && !institutionIds.some((id: string) => authorData.last_known_institutions?.[0]?.id === `https://openalex.org/${id}`)) continue;
@@ -1497,7 +1526,7 @@ function AppPageInner() {
                       </button>
                     </div>
                     <p style={{ fontSize: "1rem", color: "#6b7280", marginTop: "4px" }}>
-                      {author.last_known_institutions?.[0]?.display_name || "Unknown institution"}
+                      {formatInstitutionLocation(author.last_known_institutions?.[0]) || "Unknown institution"}
                     </p>
                   </div>
                   <div className="rm-card-stats">
@@ -1830,7 +1859,7 @@ function AppPageInner() {
                     {author.display_name}
                   </a>
                   <p style={{ fontSize: "0.9rem", color: "#6b7280", marginBottom: "12px" }}>
-                    {author.last_known_institutions?.[0]?.display_name || ""}
+                    {formatInstitutionLocation(author.last_known_institutions?.[0])}
                   </p>
                   <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "12px" }}>
                     {author.topics?.slice(0, 3).map((t, j) => (
@@ -2023,7 +2052,7 @@ function AppPageInner() {
                   <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "24px" }}>Reference</p>
                   <div style={{ marginBottom: "24px" }}>
                     <p style={{ fontSize: "1.4rem", fontWeight: 700, color: "#1a1a1a" }}>{emailTarget.display_name}</p>
-                    <p style={{ fontSize: "0.9rem", color: "#6b7280", marginTop: "4px" }}>{emailTarget.last_known_institutions?.[0]?.display_name}</p>
+                    <p style={{ fontSize: "0.9rem", color: "#6b7280", marginTop: "4px" }}>{formatInstitutionLocation(emailTarget.last_known_institutions?.[0])}</p>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "12px" }}>
                       {emailTarget.topics?.slice(0, 4).map((t, i) => <span key={i} className="tag" style={{ fontSize: "0.7rem" }}>{t.display_name}</span>)}
                     </div>
