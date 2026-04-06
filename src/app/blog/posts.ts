@@ -446,7 +446,7 @@ export const posts: BlogPost[] = [
 <p>Do not expect to design your own experiments right away. The goal of your first research experience is to learn how research works, develop basic skills, and show that you are reliable. The interesting stuff comes once you have proven yourself.</p>
 <p>Commit to a regular schedule, even if it is just a few hours per week during the school year or full days during summer. Consistency matters more than total hours. A professor would rather have you for 5 reliable hours per week than 15 unpredictable hours.</p>
 
-<h2>Navigating Logistics</h2>
+<h2>The Logistics Side</h2>
 <p>Some practical things to think about as a high school student: you will likely need parental permission (some universities require signed consent forms for minors working in labs), transportation (can you get to the university regularly?), and time management (research on top of homework and extracurriculars is a lot).</p>
 <p>Talk to your parents about this before you start emailing professors. Having a plan for logistics shows maturity and makes it easier for a professor to say yes.</p>
 <p>For more strategies on finding research opportunities, check out our main guide on <a href="/blog/how-to-find-research-opportunities">how to find research opportunities as a student</a>. And when you are ready to start reaching out, our guide on <a href="/blog/summer-research-opportunities">summer research opportunities</a> covers the timeline and best programs available.</p>
@@ -473,7 +473,7 @@ export const posts: BlogPost[] = [
 <p><strong>Opening (1-2 sentences):</strong> Jump straight into why you are emailing. Reference something specific about their research. A paper you read, a project on their lab website, or a talk you attended. Do not start with your name or your year in school.</p>
 <p><strong>Middle (2-3 sentences):</strong> Briefly explain your relevant background and why you are a good fit for their lab. Mention specific skills, coursework, or experiences that connect to their research. This is not your resume. Pick the 2-3 most relevant things.</p>
 <p><strong>Close (1-2 sentences):</strong> Make your ask clear. Say you are interested in opportunities to contribute to their research. Ask if they have time for a brief meeting or if they are taking students. Mention when you are available to start.</p>
-<p>For a deeper dive into this structure with examples, check out our guide on <a href="/blog/cold-email-professor-template">cold email templates that actually get responses</a>.</p>
+<p>For a full breakdown of this structure with examples, check out our guide on <a href="/blog/cold-email-professor-template">cold email templates that actually get responses</a>.</p>
 
 <h2>Getting the Tone Right</h2>
 <p>The tone should be professional but not stiff. Think of it as talking to someone you respect but are not afraid of. "Dr. Smith" is the right level of formality. "Dear Esteemed Professor Smith" is too much. "Hey Professor" is too little.</p>
@@ -550,7 +550,7 @@ export const posts: BlogPost[] = [
 <p><strong>Week 2:</strong> For each professor, read the abstract of one recent paper. Note one thing that interests or confuses you. This is your conversation starter for the cold email.</p>
 <p><strong>Week 3:</strong> Write and send personalized cold emails to all 10 professors. Follow the structure in our guide on <a href="/blog/how-to-cold-email-a-professor">how to cold email a professor</a>. Expect 2-3 responses.</p>
 <p><strong>Week 4:</strong> Follow up with anyone who has not responded. Set up meetings with anyone who did respond. If you struck out, make a new list and try again.</p>
-<p>The biggest barrier to research is not talent, qualifications, or connections. It is simply reaching out. Most students never email a professor, which means the few who do have very little competition. For a deeper dive into strategies, read our complete guide on <a href="/blog/how-to-get-research-experience-undergrad">how to get research experience as an undergrad</a>.</p>
+<p>The biggest barrier to research is not talent, qualifications, or connections. It is simply reaching out. Most students never email a professor, which means the few who do have very little competition. For more strategies, read our complete guide on <a href="/blog/how-to-get-research-experience-undergrad">how to get research experience as an undergrad</a>.</p>
 <p>Finding the right mentor is also key. Read our guide on <a href="/blog/how-to-find-a-research-mentor">how to find a research mentor</a> for strategies on building that relationship.</p>
 
 <div class="blog-cta">
