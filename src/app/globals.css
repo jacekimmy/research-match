@@ -4712,3 +4712,140 @@ body::after {
     grid-template-columns: 1fr !important;
   }
 }
+
+
+/* ===== FOLLOW-UP TOOL ===== */
+
+@keyframes fu-shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes fu-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fu-timeline-enter {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fu-card-enter {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.fu-btn-gold {
+  background: linear-gradient(135deg, #b8860b 0%, #d4a017 40%, #c9940f 70%, #b8860b 100%);
+  background-size: 200% auto;
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  padding: 15px 28px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  box-shadow: 0 4px 20px rgba(184,134,11,0.35);
+  transition: box-shadow 0.2s, transform 0.15s;
+  animation: fu-shimmer 3s linear infinite;
+}
+.fu-btn-gold:hover {
+  box-shadow: 0 6px 28px rgba(184,134,11,0.5);
+  transform: translateY(-1px);
+}
+.fu-btn-gold:active { transform: scale(0.97); }
+.fu-btn-gold:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  animation: none;
+  transform: none;
+}
+
+.fu-btn-green {
+  background: #2d5a3d;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 13px 24px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 3px 14px rgba(45,90,61,0.25);
+}
+.fu-btn-green:hover {
+  background: #3a7050;
+  box-shadow: 0 5px 20px rgba(45,90,61,0.35);
+  transform: translateY(-1px);
+}
+.fu-btn-green:active { transform: scale(0.97); }
+
+.fu-copy-btn {
+  background: rgba(184,134,11,0.1);
+  color: #b8860b;
+  border: 1.5px solid rgba(184,134,11,0.3);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.fu-copy-btn:hover {
+  background: rgba(184,134,11,0.18);
+  border-color: rgba(184,134,11,0.5);
+}
+
+.fu-copy-btn-green {
+  background: rgba(45,90,61,0.08);
+  color: #2d5a3d;
+  border: 1.5px solid rgba(45,90,61,0.2);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.fu-copy-btn-green:hover {
+  background: rgba(45,90,61,0.14);
+  border-color: rgba(45,90,61,0.35);
+}
+
+.fu-spinner {
+  width: 22px;
+  height: 22px;
+  border: 3px solid rgba(255,255,255,0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  display: inline-block;
+  animation: fu-spin 0.75s linear infinite;
+}
+
+.fu-timeline-enter {
+  animation: fu-timeline-enter 0.45s ease both;
+}
+
+.fu-card-enter-1 {
+  animation: fu-card-enter 0.4s ease 0.1s both;
+}
+
+.fu-card-enter-2 {
+  animation: fu-card-enter 0.4s ease 0.25s both;
+}
+
+.fu-card-enter-3 {
+  animation: fu-card-enter 0.4s ease 0.4s both;
+}
+
+@media (max-width: 640px) {
+  .fu-btn-gold {
+    width: 100%;
+    padding: 15px 20px;
+    font-size: 0.95rem;
+  }
+  .fu-btn-green {
+    width: 100%;
+  }
+}

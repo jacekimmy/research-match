@@ -1239,6 +1239,10 @@ function AppPageInner() {
                 <span className="rm-nav-dropdown-icon">✉</span>
                 Email Framework
               </Link>
+              <Link href="/follow-up" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
+                <span className="rm-nav-dropdown-icon">↩</span>
+                Follow-Up Tool
+              </Link>
               <Link href="/feedback" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
                 <span className="rm-nav-dropdown-icon">↗</span>
                 Feedback
