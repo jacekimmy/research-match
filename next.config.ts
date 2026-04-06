@@ -1,7 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "research-match-three.vercel.app" }],
+        destination: "https://researchmatch.site/:path*",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
