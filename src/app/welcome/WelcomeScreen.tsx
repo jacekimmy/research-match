@@ -89,12 +89,12 @@ function launchConfetti(canvas: HTMLCanvasElement) {
 }
 
 const STATS = [
-  "Find professors actively publishing in your exact research area",
-  "Plain-English summaries of what their research actually means",
-  "Email framework built from real professor feedback",
-  "AI email checker that catches generic tone before you hit send",
-  "Follow-up timeline so you always know when and what to send next",
-  "Emails That Worked — real examples that got responses",
+  "Professor Search",
+  "Research Summaries",
+  "Email Template",
+  "Email Checker",
+  "Follow-Up Tool",
+  "Emails That Worked",
 ];
 
 export default function WelcomeScreen() {
