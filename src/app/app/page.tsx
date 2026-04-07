@@ -1472,12 +1472,77 @@ function AppPageInner() {
 
         {/* CARDS */}
         <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-          {displayList.map((author) => {
+          {displayList.map((author, authorIndex) => {
             const id = author.id.split("/").pop()!;
             const summary = summaries[id];
             const isLoadingSummary = loadingSummary[id];
             const resp = responsiveness[id];
             const summaryLocked = !isPaid && summary && getSummariesRemaining() <= 0 && !summaries[id];
+
+            // Free logged-in user: professor 4+ gets a locked stub card
+            const isLockedStub = user && isFree && !showSaved && authorIndex >= 3;
+            if (isLockedStub) {
+              return (
+                <div key={author.id} className="glass-card card-enter rm-card" style={{ position: "relative", overflow: "hidden" }}>
+                  {/* Blurred content behind */}
+                  <div style={{ filter: "blur(5px)", userSelect: "none", pointerEvents: "none", opacity: 0.5 }}>
+                    <div className="rm-card-top">
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                          <span className="rm-card-name" style={{ cursor: "default" }}>{author.display_name}</span>
+                        </div>
+                        <p style={{ fontSize: "0.9rem", color: "#6b7280", marginTop: "6px" }}>
+                          {formatInstitutionLocation(author.last_known_institutions?.[0]) || "Unknown institution"}
+                        </p>
+                      </div>
+                      <div className="rm-card-stats">
+                        <div className="rm-stat-pill">
+                          <span className="rm-stat-num">{author.works_count.toLocaleString()}</span>
+                          <span className="rm-stat-label">papers</span>
+                        </div>
+                      </div>
+                    </div>
+                    {author.topics?.length > 0 && (
+                      <>
+                        <hr className="rm-card-divider" />
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                          {author.topics.slice(0, 4).map((t: any, i: number) => <span key={i} className="tag">{t.display_name}</span>)}
+                        </div>
+                      </>
+                    )}
+                    <div style={{ marginTop: "28px", height: "60px", background: "rgba(45,90,61,0.06)", borderRadius: "12px" }} />
+                  </div>
+                  {/* Lock overlay */}
+                  <div
+                    onClick={() => setShowUpgradeModal(true)}
+                    style={{
+                      position: "absolute", inset: 0,
+                      background: "linear-gradient(to bottom, rgba(245,240,230,0.55) 0%, rgba(245,240,230,0.97) 50%)",
+                      display: "flex", flexDirection: "column",
+                      alignItems: "center", justifyContent: "center",
+                      cursor: "pointer", padding: "20px",
+                    }}
+                  >
+                    <span style={{ fontSize: "1.4rem", marginBottom: "8px" }}>🔒</span>
+                    <p style={{ fontWeight: 700, fontSize: "0.95rem", color: "#2d5a3d", marginBottom: "4px", textAlign: "center" }}>
+                      {author.display_name}
+                    </p>
+                    <p style={{ fontSize: "0.82rem", color: "#6b7280", marginBottom: "12px", textAlign: "center" }}>
+                      {formatInstitutionLocation(author.last_known_institutions?.[0]) || "Unknown institution"}
+                    </p>
+                    <span
+                      style={{
+                        background: "#2d5a3d", color: "#fff", fontSize: "0.8rem", fontWeight: 700,
+                        padding: "8px 20px", borderRadius: "10px",
+                      }}
+                    >
+                      Upgrade to unlock →
+                    </span>
+                  </div>
+                </div>
+              );
+            }
+
             return (
               <div key={author.id} className="glass-card card-enter rm-card">
                 <div className="rm-card-top">
@@ -1798,6 +1863,45 @@ function AppPageInner() {
             );
           })}
         </div>
+
+        {/* FREE USER UPGRADE PROMPT — shown when there are locked professors */}
+        {user && isFree && !showSaved && displayList.length > 3 && (
+          <div style={{
+            marginTop: "8px",
+            background: "linear-gradient(135deg, rgba(45,90,61,0.06) 0%, rgba(45,90,61,0.03) 100%)",
+            border: "1.5px solid rgba(45,90,61,0.15)",
+            borderRadius: "20px",
+            padding: "32px 28px",
+            textAlign: "center",
+          }}>
+            <p style={{ fontSize: "1.4rem", marginBottom: "12px" }}>🔒</p>
+            <p style={{ fontWeight: 700, fontSize: "1.05rem", color: "#2d5a3d", marginBottom: "8px" }}>
+              {displayList.length - 3} more professor{displayList.length - 3 === 1 ? "" : "s"} found for your search
+            </p>
+            <p style={{ fontSize: "0.9rem", color: "#6b7280", marginBottom: "22px", maxWidth: "420px", margin: "0 auto 22px" }}>
+              Upgrade to see all results, get unlimited searches, and access every email tool.
+            </p>
+            <button
+              onClick={() => setShowUpgradeModal(true)}
+              style={{
+                background: "#2d5a3d",
+                color: "#fff",
+                border: "none",
+                borderRadius: "14px",
+                padding: "14px 32px",
+                fontSize: "0.95rem",
+                fontWeight: 700,
+                cursor: "pointer",
+                boxShadow: "0 4px 16px rgba(45,90,61,0.25)",
+                transition: "transform 0.15s, box-shadow 0.15s",
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-2px)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 8px 24px rgba(45,90,61,0.35)"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform = ""; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(45,90,61,0.25)"; }}
+            >
+              Unlock all {displayList.length} professors →
+            </button>
+          </div>
+        )}
 
         {/* NEARBY PROFESSORS */}
         {!showSaved && results.length > 0 && (nearbyLoading || nearbyProfs.length > 0) && (
