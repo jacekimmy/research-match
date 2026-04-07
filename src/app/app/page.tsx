@@ -438,15 +438,11 @@ function AppPageInner() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // After signup: auto-summarize the professor the anon user tried to unlock
+  // After signup: clear any pending summarize flag (don't auto-fire — let user click manually so it properly deducts their credit)
   useEffect(() => {
-    if (!user || results.length === 0) return;
-    const pending = sessionStorage.getItem("rm-pending-summarize");
-    if (!pending) return;
+    if (!user) return;
     sessionStorage.removeItem("rm-pending-summarize");
-    const author = results.find(a => a.id.split("/").pop() === pending);
-    if (author) loadSummary(author);
-  }, [user, results.length]); // eslint-disable-line
+  }, [user]);
 
   // Toast helper
   const showToast = useCallback((msg: string) => {
@@ -1469,6 +1465,39 @@ function AppPageInner() {
               </p>
             )}
             {showSaved && <p style={{ fontSize: "1rem", color: "#6b7280", marginBottom: "32px" }}>Your saved professors ({saved.length})</p>}
+
+        {/* ANON TEASER BANNER */}
+        {!user && results.length > 0 && !showSaved && (
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "16px",
+            flexWrap: "wrap",
+            background: "linear-gradient(135deg, rgba(45,90,61,0.07) 0%, rgba(45,90,61,0.03) 100%)",
+            border: "1.5px solid rgba(45,90,61,0.15)",
+            borderRadius: "16px",
+            padding: "18px 22px",
+            marginBottom: "8px",
+          }}>
+            <p style={{ fontSize: "0.95rem", color: "#2d5a3d", fontWeight: 600, margin: 0 }}>
+              🎓 You have <strong>{results.length} professor{results.length === 1 ? "" : "s"}</strong> ready.{" "}
+              <span style={{ fontWeight: 400, color: "#6b7280" }}>Create a free account to read their research and write your email in minutes.</span>
+            </p>
+            <button
+              onClick={() => { setShowAuthModal(true); setAuthMode("signup"); setAuthError(""); }}
+              style={{
+                background: "#2d5a3d", color: "#fff", border: "none",
+                borderRadius: "10px", padding: "10px 20px",
+                fontSize: "0.88rem", fontWeight: 700, cursor: "pointer",
+                whiteSpace: "nowrap", flexShrink: 0,
+                boxShadow: "0 3px 12px rgba(45,90,61,0.25)",
+              }}
+            >
+              Create free account →
+            </button>
+          </div>
+        )}
 
         {/* CARDS */}
         <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
