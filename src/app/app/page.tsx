@@ -1580,13 +1580,7 @@ function AppPageInner() {
                       cursor: "pointer", padding: "20px",
                     }}
                   >
-                    <span style={{ fontSize: "1.4rem", marginBottom: "8px" }}>🔒</span>
-                    <p style={{ fontWeight: 700, fontSize: "0.95rem", color: "#2d5a3d", marginBottom: "4px", textAlign: "center" }}>
-                      {author.display_name}
-                    </p>
-                    <p style={{ fontSize: "0.82rem", color: "#6b7280", marginBottom: "12px", textAlign: "center" }}>
-                      {formatInstitutionLocation(author.last_known_institutions?.[0]) || "Unknown institution"}
-                    </p>
+                    <span style={{ fontSize: "1.4rem", marginBottom: "12px" }}>🔒</span>
                     <span
                       style={{
                         background: "#2d5a3d", color: "#fff", fontSize: "0.8rem", fontWeight: 700,
