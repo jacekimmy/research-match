@@ -593,52 +593,80 @@ function AppPageInner() {
         }
         authors = Array.from(authorMap.values()).sort((a, b) => b.cited_by_count - a.cited_by_count);
       } else {
-        // OR filter across all resolved topic IDs and institution IDs
+        // OR filter across all resolved topic IDs (now up to 4 per query = broad synonym coverage)
         const topicFilter = topicIds.join("|");
-        const institutionFilter = institutionIds.length > 0 ? `,last_known_institutions.id:${institutionIds.join("|")}` : "";
-        const res = await fetch(`https://api.openalex.org/authors?filter=topics.id:${topicFilter}${institutionFilter}&per_page=30&sort=cited_by_count:desc`);
-        const data = await res.json();
-        authors = data.results || [];
+        const fullInstIds = institutionIds.map((id: string) => `https://openalex.org/${id}`);
+
         if (institutionIds.length > 0) {
-          const fullInstIds = institutionIds.map((id: string) => `https://openalex.org/${id}`);
-          authors = authors.filter((a) => fullInstIds.includes(a.last_known_institutions?.[0]?.id));
-        }
-        // If no results with institution filter, try broader topic alternatives
-        if (authors.length === 0 && institutionIds.length > 0) {
-          const broadRes = await fetch(`https://api.openalex.org/topics?search=${encodeURIComponent(allTopics[0])}&per_page=10`);
-          const broadData = await broadRes.json();
-          const altTopicIds = (broadData.results ?? []).map((t: any) => t.id.split("/").pop()).filter((id: string) => !topicIds.includes(id));
-          for (const altId of altTopicIds.slice(0, 5)) {
-            const altRes = await fetch(`https://api.openalex.org/authors?filter=topics.id:${altId},last_known_institutions.id:${institutionIds.join("|")}&per_page=20&sort=cited_by_count:desc`);
-            const altData = await altRes.json();
-            let altAuthors: Author[] = altData.results || [];
-            const fullInstIds = institutionIds.map((id: string) => `https://openalex.org/${id}`);
-            altAuthors = altAuthors.filter((a) => fullInstIds.includes(a.last_known_institutions?.[0]?.id));
-            if (altAuthors.length > 0) {
-              const altTopic = (broadData.results ?? []).find((t: any) => t.id.split("/").pop() === altId);
-              if (altTopic) setResolvedTopic(altTopic.display_name);
-              authors = altAuthors;
-              break;
+          // Search WITH institution filter first
+          const instFilter = `last_known_institutions.id:${institutionIds.join("|")}`;
+          const res = await fetch(`https://api.openalex.org/authors?filter=topics.id:${topicFilter},${instFilter}&per_page=50&sort=cited_by_count:desc`);
+          const data = await res.json();
+          authors = (data.results || []).filter((a: Author) => fullInstIds.includes(a.last_known_institutions?.[0]?.id));
+
+          // If still no results, try a text-based works search at that institution
+          if (authors.length === 0) {
+            const worksRes = await fetch(`https://api.openalex.org/works?search=${encodeURIComponent(allTopics[0])}&filter=authorships.institutions.id:${institutionIds.join("|")}&sort=cited_by_count:desc&per_page=50&select=authorships`);
+            const worksData = await worksRes.json();
+            const authorMap = new Map<string, Author>();
+            for (const work of (worksData.results ?? [])) {
+              for (const authorship of (work.authorships ?? [])) {
+                const authorId = authorship.author?.id;
+                if (!authorId || authorMap.has(authorId)) continue;
+                if (!authorship.institutions?.some((inst: any) => fullInstIds.includes(inst.id))) continue;
+                const authorRes = await fetch(`https://api.openalex.org/authors/${authorId.split("/").pop()}?select=id,display_name,last_known_institutions,works_count,cited_by_count,topics,geo`);
+                if (authorRes.ok) {
+                  const authorData = await authorRes.json();
+                  if (fullInstIds.includes(authorData.last_known_institutions?.[0]?.id)) {
+                    authorMap.set(authorId, authorData);
+                  }
+                }
+                if (authorMap.size >= 15) break;
+              }
+              if (authorMap.size >= 15) break;
+            }
+            authors = Array.from(authorMap.values()).sort((a, b) => b.cited_by_count - a.cited_by_count);
+          }
+
+          // If still nothing, fall back to global results with a note
+          if (authors.length === 0) {
+            const globalRes = await fetch(`https://api.openalex.org/authors?filter=topics.id:${topicFilter}&per_page=20&sort=cited_by_count:desc`);
+            const globalData = await globalRes.json();
+            authors = globalData.results || [];
+            if (authors.length > 0) {
+              setResolvedInstitution(`No professors found at ${institutionNames.join(", ")} for this topic — showing top professors at other universities`);
             }
           }
+        } else {
+          // No institution filter — global search
+          const res = await fetch(`https://api.openalex.org/authors?filter=topics.id:${topicFilter}&per_page=50&sort=cited_by_count:desc`);
+          const data = await res.json();
+          authors = data.results || [];
         }
       }
-      // Filter to only professors where the searched topic is in their top topics (specificity filter)
+      // Specificity filter: keep professors where the searched topic appears in their top topics.
+      // Be more lenient when searching a specific university (smaller faculty pool).
+      // With multiple topic IDs (synonyms), this is already much broader than before.
       if (topicIds.length > 0 && authors.length > 0) {
         const filterByTopN = (n: number) =>
           authors.filter((a) => {
             const topIds = (a.topics ?? []).slice(0, n).map((t: any) => t.id?.split("/").pop());
             return topicIds.some((id: string) => topIds.includes(id));
           });
-        const strict = filterByTopN(3);
-        if (strict.length >= 3) {
+        // When searching a university, use a wider window since faculty at smaller
+        // schools may have the topic further down their list
+        const topNStrict = institutionIds.length > 0 ? 5 : 3;
+        const topNMedium = institutionIds.length > 0 ? 10 : 5;
+        const minStrict = institutionIds.length > 0 ? 2 : 3;
+        const strict = filterByTopN(topNStrict);
+        if (strict.length >= minStrict) {
           authors = strict;
         } else {
-          const medium = filterByTopN(5);
-          if (medium.length >= 2) {
+          const medium = filterByTopN(topNMedium);
+          if (medium.length >= 1) {
             authors = medium;
           }
-          // else keep all results — topic may be too niche to enforce strict matching
+          // else keep all — topic too niche to enforce
         }
       }
       // Score authors to filter out non-professors
