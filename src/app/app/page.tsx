@@ -1543,10 +1543,7 @@ function AppPageInner() {
                   </div>
                   {/* Lock overlay */}
                   <div
-                    onClick={() => {
-                      if (!user) { setShowAuthModal(true); setAuthMode("signup"); setAuthError(""); }
-                      else setShowUpgradeModal(true);
-                    }}
+                    onClick={() => setShowUpgradeModal(true)}
                     style={{
                       position: "absolute", inset: 0,
                       background: "linear-gradient(to bottom, rgba(245,240,230,0.55) 0%, rgba(245,240,230,0.97) 50%)",
@@ -1568,7 +1565,7 @@ function AppPageInner() {
                         padding: "8px 20px", borderRadius: "10px",
                       }}
                     >
-                      {!user ? "Create free account →" : "Upgrade to unlock →"}
+                      Upgrade to unlock →
                     </span>
                   </div>
                 </div>
@@ -1911,15 +1908,10 @@ function AppPageInner() {
               {displayList.length - 3} more professor{displayList.length - 3 === 1 ? "" : "s"} found for your search
             </p>
             <p style={{ fontSize: "0.9rem", color: "#6b7280", marginBottom: "22px", maxWidth: "420px", margin: "0 auto 22px" }}>
-              {!user
-                ? "Create a free account to unlock all results and get 1 free research summary."
-                : "Upgrade to see all results, get unlimited searches, and access every email tool."}
+              Upgrade to see all results, get unlimited searches, and access every email tool.
             </p>
             <button
-              onClick={() => {
-                if (!user) { setShowAuthModal(true); setAuthMode("signup"); setAuthError(""); }
-                else setShowUpgradeModal(true);
-              }}
+              onClick={() => setShowUpgradeModal(true)}
               style={{
                 background: "#2d5a3d",
                 color: "#fff",
@@ -1935,7 +1927,7 @@ function AppPageInner() {
               onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-2px)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 8px 24px rgba(45,90,61,0.35)"; }}
               onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform = ""; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(45,90,61,0.25)"; }}
             >
-              {!user ? "Create free account →" : `Unlock all ${displayList.length} professors →`}
+              {`Unlock all ${displayList.length} professors →`}
             </button>
           </div>
         )}
