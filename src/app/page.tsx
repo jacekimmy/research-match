@@ -481,7 +481,7 @@ export default function LandingPage() {
                 {[
                   "Emails That Worked — 2 real emails that got replies, fully annotated",
                   "Email Template — the paragraph professors actually read",
-                  "Follow-Up Guide (coming soon)",
+                  "Follow-Up Guide",
                 ].map((f) => (
                   <li key={f}><span className="lp-check" style={{ color: "#A8893E" }}>✓</span>{f}</li>
                 ))}
@@ -517,7 +517,7 @@ export default function LandingPage() {
                 {[
                   "Emails That Worked — 2 real emails that got replies, fully annotated",
                   "Email Template — the paragraph professors actually read",
-                  "Follow-Up Guide (coming soon)",
+                  "Follow-Up Guide",
                 ].map((f) => (
                   <li key={f}><span className="lp-check" style={{ color: "#9dbfaa" }}>✓</span>{f}</li>
                 ))}
