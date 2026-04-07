@@ -3,6 +3,45 @@ import Groq from "groq-sdk";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
+// Step 1: Use LLM to expand a user query into OpenAlex-friendly search terms.
+// OpenAlex's topic taxonomy uses specific academic phrases — "applied math" doesn't
+// exist but "mathematical modeling", "numerical analysis", etc. do.
+async function expandToSearchTerms(topic: string): Promise<string[]> {
+  try {
+    const chat = await groq.chat.completions.create({
+      model: "llama-3.3-70b-versatile",
+      messages: [
+        {
+          role: "system",
+          content: `You convert informal research topic queries into 3-5 formal academic search terms that would appear in an academic paper database taxonomy. Return only a JSON array of strings. No explanation. Examples:
+- "applied math" → ["mathematics", "mathematical modeling", "numerical analysis", "computational mathematics"]
+- "bio" → ["biology", "biochemistry", "biomedical engineering", "molecular biology"]
+- "CS" → ["computer science", "software engineering", "algorithms", "computing"]
+- "econ" → ["economics", "econometrics", "economic policy"]
+- "ML" → ["machine learning", "deep learning", "artificial intelligence"]
+- "physics" → ["physics", "applied physics", "theoretical physics"]
+Use full formal names, not abbreviations.`,
+        },
+        {
+          role: "user",
+          content: `Research topic query: "${topic}"\n\nReturn 3-5 formal academic search terms as a JSON array.`,
+        },
+      ],
+      max_tokens: 100,
+      temperature: 0,
+      response_format: { type: "json_object" },
+    });
+    const raw = chat.choices[0]?.message?.content ?? "{}";
+    const parsed = JSON.parse(raw);
+    // Accept array at root or under any key
+    const arr = Array.isArray(parsed) ? parsed : Object.values(parsed).find(Array.isArray) as string[] ?? [];
+    return arr.filter((s): s is string => typeof s === "string").slice(0, 5);
+  } catch {
+    // Fallback: just return the original query
+    return [topic];
+  }
+}
+
 async function pickBestIndices(
   query: string,
   candidates: { id: string; display_name: string }[],
@@ -19,7 +58,7 @@ async function pickBestIndices(
       },
       {
         role: "user",
-        content: `Query: "${query}"\n\nCandidates:\n${list}\n\nWhich indices best match the ${entityType}, including the main match plus closely related variations and synonyms? Return up to ${maxPick} comma-separated indices, or -1 if nothing matches.`,
+        content: `Original user query: "${query}"\n\nCandidates:\n${list}\n\nWhich indices best match the ${entityType} for this query, including closely related variations? Return up to ${maxPick} comma-separated indices, or -1 if nothing matches.`,
       },
     ],
     max_tokens: 20,
@@ -33,16 +72,39 @@ async function pickBestIndices(
 
 async function resolveTopic(topic: string): Promise<{ ids: string[]; names: string[] }> {
   try {
-    const res = await fetch(`https://api.openalex.org/topics?search=${encodeURIComponent(topic)}&per_page=10`);
-    const data = await res.json();
-    const candidates: { id: string; display_name: string }[] = data.results ?? [];
-    if (candidates.length === 0) return { ids: [], names: [] };
-    // Pick up to 4 matching topic IDs so we get broad coverage (synonyms, related fields)
-    const indices = await pickBestIndices(topic, candidates, "research topic", 4);
+    // First expand to formal academic terms so OpenAlex can actually find them
+    const searchTerms = await expandToSearchTerms(topic);
+
+    // Search OpenAlex for each expanded term in parallel
+    const allCandidates: { id: string; display_name: string }[] = [];
+    const seenIds = new Set<string>();
+
+    const termResults = await Promise.all(
+      searchTerms.map(term =>
+        fetch(`https://api.openalex.org/topics?search=${encodeURIComponent(term)}&per_page=5`)
+          .then(r => r.json())
+          .catch(() => ({ results: [] }))
+      )
+    );
+
+    for (const data of termResults) {
+      for (const topic of (data.results ?? [])) {
+        if (!seenIds.has(topic.id)) {
+          seenIds.add(topic.id);
+          allCandidates.push(topic);
+        }
+      }
+    }
+
+    if (allCandidates.length === 0) return { ids: [], names: [] };
+
+    // Let LLM pick the best 4 from all candidates
+    const indices = await pickBestIndices(topic, allCandidates, "research topic", 4);
     if (indices.length === 0) return { ids: [], names: [] };
+
     return {
-      ids: indices.map(i => candidates[i].id.split("/").pop()!),
-      names: indices.map(i => candidates[i].display_name),
+      ids: indices.map(i => allCandidates[i].id.split("/").pop()!),
+      names: indices.map(i => allCandidates[i].display_name),
     };
   } catch { return { ids: [], names: [] }; }
 }
@@ -72,7 +134,7 @@ export async function POST(req: NextRequest) {
       Promise.all(universities.map(resolveUniversity)),
     ]);
 
-    // Flatten and deduplicate all resolved topic IDs across all queries
+    // Flatten and deduplicate all resolved topic IDs
     const allTopicIds: string[] = [];
     const allTopicNames: string[] = [];
     for (const r of topicResults) {
