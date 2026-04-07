@@ -1515,7 +1515,6 @@ function AppPageInner() {
             // Free account: locked stub with upgrade prompt
             const isLockedStub = !isPaid && !showSaved && authorIndex >= 3;
             if (isLockedStub) {
-              if (!user) return null; // Anon sees exactly 3 professors, no blur, no lock icons
               return (
                 <div key={author.id} className="glass-card card-enter rm-card" style={{ position: "relative", overflow: "hidden" }}>
                   {/* Blurred content behind */}
@@ -1906,8 +1905,8 @@ function AppPageInner() {
           })}
         </div>
 
-        {/* LOCKED PROFESSORS PROMPT — shown when there are more than 3 results (logged-in free users only) */}
-        {!isPaid && !!user && !showSaved && displayList.length > 3 && (
+        {/* LOCKED PROFESSORS PROMPT — shown when there are more than 3 results */}
+        {!isPaid && !showSaved && displayList.length > 3 && (
           <div style={{
             marginTop: "8px",
             background: "linear-gradient(135deg, rgba(45,90,61,0.06) 0%, rgba(45,90,61,0.03) 100%)",
