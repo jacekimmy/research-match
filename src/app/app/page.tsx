@@ -286,6 +286,9 @@ function AppPageInner() {
   const [authLoading, setAuthLoading] = useState(false);
   const [authPromoCode, setAuthPromoCode] = useState("");
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [upgradeModalTitle, setUpgradeModalTitle] = useState("");
+  const [upgradeModalSubtitle, setUpgradeModalSubtitle] = useState("");
+  const [authModalCopy, setAuthModalCopy] = useState("");
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -444,6 +447,10 @@ function AppPageInner() {
     sessionStorage.removeItem("rm-pending-summarize");
   }, [user]);
 
+  // Reset modal copy state when modals close
+  useEffect(() => { if (!showAuthModal) setAuthModalCopy(""); }, [showAuthModal]);
+  useEffect(() => { if (!showUpgradeModal) { setUpgradeModalTitle(""); setUpgradeModalSubtitle(""); } }, [showUpgradeModal]);
+
   // Toast helper
   const showToast = useCallback((msg: string) => {
     setToast(msg);
@@ -467,38 +474,44 @@ function AppPageInner() {
     return saved.some((a) => a.id === author.id);
   }
 
-  // Summary limit: no account = 1 total (localStorage), free account = 2 total (1 anon + 1 extra)
-  // Clicking Summarize unlocks ALL features for that one professor.
+  // Summary limit:
+  //   Anon: 1 free summary tracked via hasViewedFreeSummary localStorage flag
+  //   Free account: 1 summary total before upgrade paywall
+  //   Paid: unlimited
   function getSummariesRemaining(): number {
     if (isPaid) return Infinity;
     if (!user) {
-      const used = parseInt(localStorage.getItem("research-match-summaries") || "0", 10);
-      return Math.max(0, 1 - used);
+      const hasViewed = localStorage.getItem("hasViewedFreeSummary") === "true";
+      return hasViewed ? 0 : 1;
     }
-    // Free account: check reset
+    // Free account: 1 use total
     if (profile?.summaries_reset_at && new Date() > new Date(profile.summaries_reset_at)) {
       return 1; // will reset on next use
     }
-    return Math.max(0, 2 - (profile?.summaries_used ?? 0));
+    return Math.max(0, 1 - (profile?.summaries_used ?? 0));
   }
 
   function canSummarize(): boolean {
     if (isPaid) return true;
     if (!user) {
-      const used = parseInt(localStorage.getItem("research-match-summaries") || "0", 10);
-      if (used >= 1) {
+      const hasViewed = localStorage.getItem("hasViewedFreeSummary") === "true";
+      if (hasViewed) {
+        // Returning anon who already viewed their free summary — gate behind signup
+        setAuthModalCopy("Your summary is ready. Create a free account to check your email before you send it.");
         setShowAuthModal(true);
         setAuthMode("signup");
-        setAuthError("Create a free account for 1 more free use.");
+        setAuthError("");
         return false;
       }
       return true;
     }
-    // Free account: 2 uses total (1 anon + 1 post-signup)
+    // Free account: 1 use total
     if (profile?.summaries_reset_at && new Date() > new Date(profile.summaries_reset_at)) {
       return true; // reset period passed
     }
-    if (profile && (profile.summaries_used ?? 0) >= 2) {
+    if (profile && (profile.summaries_used ?? 0) >= 1) {
+      setUpgradeModalTitle("You've used your free summary.");
+      setUpgradeModalSubtitle("Upgrade to unlock unlimited professors, questions, and email checking.");
       setShowUpgradeModal(true);
       return false;
     }
@@ -537,11 +550,6 @@ function AppPageInner() {
     const allTopics = [...queryTags, ...query.split(",").map(s => s.trim()).filter(Boolean)];
     const allUnis = [...uniTags, ...university.split(",").map(s => s.trim()).filter(Boolean)];
     if (allTopics.length === 0) return;
-    // Free users who've used their one free search see the paywall on the next attempt
-    if (user && isFree && (profile?.summaries_used ?? 0) >= 1) {
-      setShowUpgradeModal(true);
-      return;
-    }
     setLoading(true);
     setError("");
     setResults([]);
@@ -832,10 +840,6 @@ function AppPageInner() {
 
   async function searchByName() {
     if (!profName.trim()) return;
-    if (user && isFree && (profile?.summaries_used ?? 0) >= 1) {
-      setShowUpgradeModal(true);
-      return;
-    }
     setLoading(true);
     setError("");
     setResults([]);
@@ -882,6 +886,8 @@ function AppPageInner() {
       const summaryText = data.summary || data.error || "Summary unavailable. Try again or visit their faculty page.";
       const highlights = data.highlights || [];
       setSummaries((prev) => ({ ...prev, [id]: { summary: summaryText, highlights, questions: data.questions || [] } }));
+      // Mark that anon has viewed their free summary
+      if (!user) localStorage.setItem("hasViewedFreeSummary", "true");
       // Refresh profile so client UI reflects updated count
       if (highlights.length > 0 && !data.error) refreshProfile();
     } catch { setSummaries((prev) => ({ ...prev, [id]: { summary: "Summary unavailable. Try again or visit their faculty page.", highlights: [], questions: [] } })); }
@@ -1494,38 +1500,6 @@ function AppPageInner() {
             )}
             {showSaved && <p style={{ fontSize: "1rem", color: "#6b7280", marginBottom: "32px" }}>Your saved professors ({saved.length})</p>}
 
-        {/* ANON TEASER BANNER */}
-        {!user && results.length > 0 && !showSaved && (
-          <div style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "16px",
-            flexWrap: "wrap",
-            background: "linear-gradient(135deg, rgba(45,90,61,0.07) 0%, rgba(45,90,61,0.03) 100%)",
-            border: "1.5px solid rgba(45,90,61,0.15)",
-            borderRadius: "16px",
-            padding: "18px 22px",
-            marginBottom: "8px",
-          }}>
-            <p style={{ fontSize: "0.95rem", color: "#2d5a3d", fontWeight: 600, margin: 0 }}>
-              🎓 You have <strong>{results.length} professor{results.length === 1 ? "" : "s"}</strong> ready.{" "}
-              <span style={{ fontWeight: 400, color: "#6b7280" }}>Create a free account to read their research and write your email in minutes.</span>
-            </p>
-            <button
-              onClick={() => { setShowAuthModal(true); setAuthMode("signup"); setAuthError(""); }}
-              style={{
-                background: "#2d5a3d", color: "#fff", border: "none",
-                borderRadius: "10px", padding: "10px 20px",
-                fontSize: "0.88rem", fontWeight: 700, cursor: "pointer",
-                whiteSpace: "nowrap", flexShrink: 0,
-                boxShadow: "0 3px 12px rgba(45,90,61,0.25)",
-              }}
-            >
-              Create free account →
-            </button>
-          </div>
-        )}
 
         {/* CARDS */}
         <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
@@ -1536,9 +1510,12 @@ function AppPageInner() {
             const resp = responsiveness[id];
             const summaryLocked = !isPaid && summary && getSummariesRemaining() <= 0 && !summaries[id];
 
-            // Non-paid users (anon or free account): professor 4+ gets a locked stub card
+            // Non-paid users: professor 4+ gets restricted
+            // Anon users: completely hidden (show exactly 3, no friction)
+            // Free account: locked stub with upgrade prompt
             const isLockedStub = !isPaid && !showSaved && authorIndex >= 3;
             if (isLockedStub) {
+              if (!user) return null; // Anon sees exactly 3 professors, no blur, no lock icons
               return (
                 <div key={author.id} className="glass-card card-enter rm-card" style={{ position: "relative", overflow: "hidden" }}>
                   {/* Blurred content behind */}
@@ -1801,14 +1778,40 @@ function AppPageInner() {
                         ))}
                       </div>
                     )}
-                    {/* Suggested questions — locked when summary is locked for free */}
+                    {/* Suggested questions — free for logged-in users, gated for anon (Step 3) */}
                     {summary.questions.length > 0 && (
-                      <div style={{ marginTop: "24px" }}>
-                        <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "14px" }}>Questions to Ask</p>
-                        {summary.questions.map((q, i) => (
-                          <p key={i} style={{ fontSize: "1rem", color: "#6b7280", paddingLeft: "20px", borderLeft: "3px solid #9dbfaa", marginBottom: "12px", lineHeight: 1.6 }}>{q}</p>
-                        ))}
-                      </div>
+                      !user ? (
+                        <div style={{ marginTop: "24px", position: "relative", borderRadius: "12px", overflow: "hidden" }}>
+                          <div style={{ filter: "blur(5px)", userSelect: "none", pointerEvents: "none", padding: "4px 0" }}>
+                            <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "14px" }}>Questions to Ask</p>
+                            {summary.questions.map((q, i) => (
+                              <p key={i} style={{ fontSize: "1rem", color: "#6b7280", paddingLeft: "20px", borderLeft: "3px solid #9dbfaa", marginBottom: "12px", lineHeight: 1.6 }}>{q}</p>
+                            ))}
+                          </div>
+                          <div style={{
+                            position: "absolute", inset: 0,
+                            background: "linear-gradient(to bottom, transparent 0%, rgba(245,240,230,0.97) 38%)",
+                            borderRadius: "12px", display: "flex", flexDirection: "column",
+                            alignItems: "center", justifyContent: "flex-end",
+                            padding: "16px 20px 20px", textAlign: "center",
+                          }}>
+                            <button
+                              onClick={() => { setAuthModalCopy("Your summary is ready. Create a free account to check your email before you send it."); setShowAuthModal(true); setAuthMode("signup"); setAuthError(""); }}
+                              className="rm-summarize-btn"
+                              style={{ width: "100%", maxWidth: "340px", justifyContent: "center" }}
+                            >
+                              Create free account →
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div style={{ marginTop: "24px" }}>
+                          <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "14px" }}>Questions to Ask</p>
+                          {summary.questions.map((q, i) => (
+                            <p key={i} style={{ fontSize: "1rem", color: "#6b7280", paddingLeft: "20px", borderLeft: "3px solid #9dbfaa", marginBottom: "12px", lineHeight: 1.6 }}>{q}</p>
+                          ))}
+                        </div>
+                      )
                     )}
                     {/* Closing tip — only if highlights exist */}
                     {summary.highlights.length > 0 && (
@@ -1819,10 +1822,18 @@ function AppPageInner() {
                         </p>
                       </div>
                     )}
-                    {/* Email checker — unlocked for paid or after summarizing */}
-                    {(isPaid || !!summaries[id]) ? (
+                    {/* Email checker — anon with summary triggers signup (Step 3); logged-in unlocks fully */}
+                    {isPaid || (!!summaries[id] && !!user) ? (
                       <button onClick={() => openEmailDraft(author)} className="btn-secondary" style={{ marginTop: "16px", padding: "12px 28px", fontSize: "0.95rem" }}>
                         Draft email to professor &rarr;
+                      </button>
+                    ) : !user && !!summaries[id] ? (
+                      <button
+                        onClick={() => { setAuthModalCopy("Your summary is ready. Create a free account to check your email before you send it."); setShowAuthModal(true); setAuthMode("signup"); setAuthError(""); }}
+                        className="btn-secondary"
+                        style={{ marginTop: "16px", padding: "12px 28px", fontSize: "0.95rem" }}
+                      >
+                        Check email before you send &rarr;
                       </button>
                     ) : (
                       <div className="rm-locked-row" style={{ marginTop: "16px" }}>
@@ -1833,40 +1844,20 @@ function AppPageInner() {
                     )}
                   </div>
                 ) : (
-                  /* No summary loaded yet — anon preview, locked overlay, or summarize button */
+                  /* No summary loaded yet — show summarize button (free for all), or upgrade overlay */
                   !user ? (
-                    /* Anon users: blurred preview with signup CTA */
-                    <div style={{ marginTop: "28px", position: "relative", borderRadius: "16px", overflow: "hidden" }}>
-                      <div style={{ padding: "24px 20px 48px", filter: "blur(5px)", userSelect: "none", pointerEvents: "none", background: "rgba(45,90,61,0.03)", border: "1px solid rgba(45,90,61,0.09)", borderRadius: "16px" }}>
-                        <p style={{ fontSize: "0.95rem", lineHeight: 1.75, color: "#6b7280", marginBottom: "14px" }}>
-                          This professor&apos;s work centers on {author.topics?.[0]?.display_name ?? "their primary research area"}, with a strong focus on novel methodologies and real-world applications. Their most-cited work has shaped how researchers approach the fundamental questions in the field.
-                        </p>
-                        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                          <div style={{ padding: "10px 14px", background: "rgba(255,255,255,0.7)", borderRadius: "10px", fontSize: "0.88rem", color: "#6b7280", borderLeft: "3px solid #9dbfaa" }}>What drew you to this specific area of {author.topics?.[0]?.display_name ?? "research"}?</div>
-                          <div style={{ padding: "10px 14px", background: "rgba(255,255,255,0.7)", borderRadius: "10px", fontSize: "0.88rem", color: "#6b7280", borderLeft: "3px solid #9dbfaa" }}>Are you currently accepting undergraduate research students?</div>
-                        </div>
-                      </div>
-                      <div style={{
-                        position: "absolute", inset: 0,
-                        background: "linear-gradient(to bottom, transparent 0%, rgba(245,240,230,0.96) 38%)",
-                        borderRadius: "16px", display: "flex", flexDirection: "column",
-                        alignItems: "center", justifyContent: "flex-end", padding: "20px 20px 24px", textAlign: "center",
-                      }}>
-                        <p style={{ fontWeight: 700, fontSize: "1rem", color: "#2d5a3d", marginBottom: "4px" }}>Create a free account to unlock full results</p>
-                        <p style={{ fontSize: "0.82rem", color: "#6b7280", marginBottom: "14px" }}>See the full summary, suggested questions, and email tips for this professor</p>
-                        <button
-                          onClick={() => {
-                            sessionStorage.setItem("rm-pending-summarize", id);
-                            setShowAuthModal(true);
-                            setAuthMode("signup");
-                            setAuthError("");
-                          }}
-                          className="rm-summarize-btn"
-                          style={{ width: "100%", maxWidth: "320px", justifyContent: "center" }}
-                        >
-                          Create free account →
-                        </button>
-                      </div>
+                    /* Anon users: show real summarize button — full summary is the wow moment */
+                    <div style={{ marginTop: "28px" }}>
+                      <button onClick={() => loadSummary(author)} disabled={isLoadingSummary} className="rm-summarize-btn">
+                        {isLoadingSummary ? (
+                          <>
+                            <span className="loading-spinner" style={{ fontSize: "1rem" }}>&#127807;</span>
+                            Generating summary...
+                          </>
+                        ) : (
+                          <>Summarize research <span style={{ fontSize: "1.1em", marginLeft: "2px" }}>→</span></>
+                        )}
+                      </button>
                     </div>
                   ) : getSummariesRemaining() <= 0 && !isPaid ? (
                     /* Free user, out of uses */
@@ -1915,8 +1906,8 @@ function AppPageInner() {
           })}
         </div>
 
-        {/* LOCKED PROFESSORS PROMPT — shown when there are more than 3 results */}
-        {!isPaid && !showSaved && displayList.length > 3 && (
+        {/* LOCKED PROFESSORS PROMPT — shown when there are more than 3 results (logged-in free users only) */}
+        {!isPaid && !!user && !showSaved && displayList.length > 3 && (
           <div style={{
             marginTop: "8px",
             background: "linear-gradient(135deg, rgba(45,90,61,0.06) 0%, rgba(45,90,61,0.03) 100%)",
@@ -2272,10 +2263,10 @@ function AppPageInner() {
         <div style={{ position: "fixed", inset: 0, zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(245,240,230,0.85)", backdropFilter: "blur(12px)" }} onClick={() => setShowAuthModal(false)}>
           <div className="glass-card" style={{ padding: "40px", maxWidth: "400px", width: "90%" }} onClick={(e) => e.stopPropagation()}>
             <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "8px" }}>
-              {authMode === "signup" ? "Create your account" : "Welcome back"}
+              {authMode === "signup" ? "Create your free account" : "Welcome back"}
             </h3>
             <p style={{ fontSize: "0.9rem", color: "#6b7280", marginBottom: "24px" }}>
-              {authMode === "signup" ? "Unlimited searches + 1 extra free summary." : "Log in to your account."}
+              {authModalCopy || (authMode === "signup" ? "Free access to research summaries, email checker, and more." : "Log in to your account.")}
             </p>
             {authError && <p style={{ fontSize: "0.85rem", color: "#c45c5c", marginBottom: "16px", background: "rgba(196, 92, 92,0.08)", padding: "10px 14px", borderRadius: "10px" }}>{authError}</p>}
             <input type="email" placeholder="Email" value={authEmail} onChange={(e) => setAuthEmail(e.target.value)} style={{ width: "100%", padding: "12px 16px", fontSize: "1rem", border: "1.5px solid rgba(45, 90, 61,0.4)", borderRadius: "12px", background: "rgba(255,255,255,0.5)", color: "#1a1a1a", fontFamily: "inherit", marginBottom: "12px", outline: "none" }} />
@@ -2313,8 +2304,8 @@ function AppPageInner() {
       {showUpgradeModal && (
         <div style={{ position: "fixed", inset: 0, zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(245,240,230,0.85)", backdropFilter: "blur(12px)" }} onClick={() => setShowUpgradeModal(false)}>
           <div className="glass-card" style={{ padding: "40px", maxWidth: "540px", width: "90%" }} onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "8px" }}>Upgrade your plan</h3>
-            <p style={{ fontSize: "0.9rem", color: "#6b7280", marginBottom: "24px" }}>Unlimited summaries, email checker, and professor email finder.</p>
+            <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "8px" }}>{upgradeModalTitle || "Upgrade your plan"}</h3>
+            <p style={{ fontSize: "0.9rem", color: "#6b7280", marginBottom: "24px" }}>{upgradeModalSubtitle || "Unlimited summaries, email checker, and professor email finder."}</p>
 
             {/* Lifetime option — featured on top */}
             <div style={{ marginBottom: "16px", padding: "20px", borderRadius: "14px", border: "2px solid rgba(168,137,62,0.5)", boxShadow: "0 0 20px rgba(168,137,62,0.1)", background: "rgba(168,137,62,0.05)" }}>
@@ -2375,7 +2366,17 @@ function AppPageInner() {
               </button>
             </div>
 
-            <p style={{ fontSize: "0.75rem", color: "#9b8040", textAlign: "center", marginTop: "12px" }}>Not satisfied in 30 days? Full refund. No questions asked.</p>
+            <div style={{ marginTop: "16px", padding: "12px 16px", background: "rgba(45,90,61,0.04)", borderRadius: "10px", border: "1px solid rgba(45,90,61,0.1)" }}>
+              <p style={{ fontSize: "0.75rem", color: "#2d5a3d", fontWeight: 700, marginBottom: "6px" }}>Included with every plan:</p>
+              <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+                {["Email Template (professor-tested)", "Emails That Worked (real examples)", "Follow-Up Guide"].map((b) => (
+                  <p key={b} style={{ fontSize: "0.75rem", color: "#6b7280", display: "flex", gap: "6px" }}>
+                    <span style={{ color: "#A8893E" }}>✓</span> {b}
+                  </p>
+                ))}
+              </div>
+            </div>
+            <p style={{ fontSize: "0.78rem", color: "#9b8040", textAlign: "center", marginTop: "12px", fontWeight: 600 }}>Get a professor reply in 30 days or your money back.</p>
             <p style={{ fontSize: "0.72rem", color: "#9ca3af", textAlign: "center", marginTop: "4px" }}>Powered by Stripe.</p>
           </div>
         </div>
