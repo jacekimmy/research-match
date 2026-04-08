@@ -33,7 +33,7 @@ export default function LandingPage() {
   const [searchCount, setSearchCount] = useState<number | null>(null);
 
   useEffect(() => { setBillingMounted(true); }, []);
-  useEffect(() => { setTimeout(() => setHeroVisible(true), 80); }, []);
+  useEffect(() => { setHeroVisible(true); }, []);
   useEffect(() => {
     fetch("/api/stats").then(r => r.json()).then(d => setSearchCount(d.searches)).catch(() => {});
   }, []);
@@ -225,8 +225,8 @@ export default function LandingPage() {
           { num: "03", title: "Write an email that works", desc: "Use our framework built on advice from real professors. No AI-generated emails, just the research you need to write your own." },
         ].map((step, i) => (
           <div key={i} style={{ background: "rgba(255,255,255,0.65)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", border: "1px solid rgba(255,255,255,0.65)", borderRadius: "20px", padding: "32px 28px", boxShadow: "0 4px 24px rgba(45,90,61,0.06)", display: "flex", flexDirection: "column", gap: "12px" }}>
-            <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "2rem", fontWeight: 800, color: "#2d5a3d", letterSpacing: "-0.02em", lineHeight: 1 }}>{step.num}</div>
-            <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "1.1rem", fontWeight: 700, color: "#1a1a1a", margin: 0, lineHeight: 1.3 }}>{step.title}</h3>
+            <div style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "2rem", fontWeight: 800, color: "#2d5a3d", letterSpacing: "-0.02em", lineHeight: 1 }}>{step.num}</div>
+            <h3 style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "1.1rem", fontWeight: 700, color: "#1a1a1a", margin: 0, lineHeight: 1.3 }}>{step.title}</h3>
             <p style={{ fontSize: "0.88rem", color: "#6b7280", lineHeight: 1.7, margin: 0 }}>{step.desc}</p>
           </div>
         ))}

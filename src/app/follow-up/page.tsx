@@ -87,7 +87,7 @@ export default function FollowUpPage() {
           <Link href="/app" style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: "0.82rem", color: "#6b7280", textDecoration: "none", fontWeight: 500, padding: "8px 0", transition: "color 0.2s" }}>
             <span style={{ fontSize: "1rem" }}>←</span> Back to search
           </Link>
-          <Link href="/" style={{ fontSize: "1.2rem", fontWeight: 800, color: "#2d5a3d", textDecoration: "none", fontFamily: "'Playfair Display', Georgia, serif" }}>
+          <Link href="/" style={{ fontSize: "1.2rem", fontWeight: 800, color: "#2d5a3d", textDecoration: "none", fontFamily: "var(--font-playfair), Georgia, serif" }}>
             Research Match
           </Link>
         </nav>
@@ -97,7 +97,7 @@ export default function FollowUpPage() {
           <div style={{ display: "inline-block", fontSize: "0.68rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.14em", color: "#C4A265", background: "rgba(196,162,101,0.1)", border: "1px solid rgba(196,162,101,0.25)", borderRadius: 999, padding: "5px 16px", marginBottom: 18 }}>
             Follow-Up Timeline
           </div>
-          <h1 style={{ fontSize: "clamp(2rem, 5vw, 3rem)", fontWeight: 800, color: "#1a2e1f", letterSpacing: "-0.025em", lineHeight: 1.15, marginBottom: 16, fontFamily: "'Playfair Display', Georgia, serif" }}>
+          <h1 style={{ fontSize: "clamp(2rem, 5vw, 3rem)", fontWeight: 800, color: "#1a2e1f", letterSpacing: "-0.025em", lineHeight: 1.15, marginBottom: 16, fontFamily: "var(--font-playfair), Georgia, serif" }}>
             Don&apos;t let a good email<br />go to waste.
           </h1>
           <p style={{ fontSize: "1rem", color: "#6b7280", lineHeight: 1.7, maxWidth: 480, margin: "0 auto" }}>

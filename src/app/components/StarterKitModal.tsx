@@ -186,7 +186,7 @@ export default function StarterKitModal({ isOpen, onClose }: StarterKitModalProp
                 fontWeight: 800,
                 color: "#2d5a3d",
                 marginBottom: "6px",
-                fontFamily: "'Playfair Display', Georgia, serif",
+                fontFamily: "var(--font-playfair), Georgia, serif",
                 letterSpacing: "-0.02em",
               }}
             >
@@ -223,7 +223,7 @@ export default function StarterKitModal({ isOpen, onClose }: StarterKitModalProp
                   background: "rgba(255,255,255,0.6)",
                   color: "#1a1a1a",
                   outline: "none",
-                  fontFamily: "'Playfair Display', Georgia, serif",
+                  fontFamily: "var(--font-playfair), Georgia, serif",
                   transition: "border-color 0.2s, box-shadow 0.2s",
                   boxSizing: "border-box",
                   marginBottom: "12px",
@@ -266,7 +266,7 @@ export default function StarterKitModal({ isOpen, onClose }: StarterKitModalProp
                     : "linear-gradient(135deg, #2d5a3d, #3d7a52)",
                   color: "#ffffff",
                   cursor: loading ? "not-allowed" : "pointer",
-                  fontFamily: "'Playfair Display', Georgia, serif",
+                  fontFamily: "var(--font-playfair), Georgia, serif",
                   letterSpacing: "-0.01em",
                   transition: "all 0.2s ease",
                   boxShadow: "0 4px 16px rgba(45, 90, 61,0.18)",
@@ -335,7 +335,7 @@ export default function StarterKitModal({ isOpen, onClose }: StarterKitModalProp
                 fontWeight: 800,
                 color: "#2d5a3d",
                 marginBottom: "8px",
-                fontFamily: "'Playfair Display', Georgia, serif",
+                fontFamily: "var(--font-playfair), Georgia, serif",
               }}
             >
               You&apos;re all set!
@@ -363,7 +363,7 @@ export default function StarterKitModal({ isOpen, onClose }: StarterKitModalProp
                 background: "transparent",
                 color: "#2d5a3d",
                 cursor: "pointer",
-                fontFamily: "'Playfair Display', Georgia, serif",
+                fontFamily: "var(--font-playfair), Georgia, serif",
                 transition: "all 0.2s ease",
               }}
               onMouseEnter={(e) => {

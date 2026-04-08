@@ -58,7 +58,7 @@ export default function ContactPage() {
           ← Research Match
         </Link>
         <span style={{
-          fontFamily: "'Playfair Display', Georgia, serif",
+          fontFamily: "var(--font-playfair), Georgia, serif",
           fontSize: "1rem", fontWeight: 700, color: "#2d5a3d",
         }}>
           Contact
@@ -88,7 +88,7 @@ export default function ContactPage() {
           boxShadow: "0 8px 40px rgba(45,90,61,0.08)",
         }}>
           <h1 style={{
-            fontFamily: "'Playfair Display', Georgia, serif",
+            fontFamily: "var(--font-playfair), Georgia, serif",
             fontSize: "2rem", fontWeight: 800,
             color: "#2d5a3d", marginBottom: "10px",
             letterSpacing: "-0.02em",
@@ -125,7 +125,7 @@ export default function ContactPage() {
             }}>
               <p style={{ fontSize: "1.5rem", marginBottom: "12px" }}>&#10003;</p>
               <p style={{
-                fontFamily: "'Playfair Display', Georgia, serif",
+                fontFamily: "var(--font-playfair), Georgia, serif",
                 fontSize: "1.1rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "8px",
               }}>
                 Thanks! We&apos;ll get back to you soon.

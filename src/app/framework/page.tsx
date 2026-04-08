@@ -72,7 +72,7 @@ export default function FrameworkPage() {
           ← Research Match
         </Link>
         <span style={{
-          fontFamily: "'Playfair Display', Georgia, serif",
+          fontFamily: "var(--font-playfair), Georgia, serif",
           fontSize: "1rem", fontWeight: 700, color: "#2d5a3d",
         }}>
           Email Framework
@@ -91,7 +91,7 @@ export default function FrameworkPage() {
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: "48px" }}>
           <h1 style={{
-            fontFamily: "'Playfair Display', Georgia, serif",
+            fontFamily: "var(--font-playfair), Georgia, serif",
             fontSize: "clamp(2rem, 5vw, 3rem)", fontWeight: 800,
             color: "#2d5a3d", letterSpacing: "-0.02em", marginBottom: "16px", lineHeight: 1.2,
           }}>
@@ -185,7 +185,7 @@ export default function FrameworkPage() {
           boxShadow: "0 8px 32px rgba(45,90,61,0.08)",
         }}>
           <h2 style={{
-            fontFamily: "'Playfair Display', Georgia, serif",
+            fontFamily: "var(--font-playfair), Georgia, serif",
             fontSize: "1.5rem", fontWeight: 700,
             color: "#2d5a3d", marginBottom: "8px",
           }}>

@@ -47,7 +47,7 @@ export default function HowItWorksPage() {
           ← Research Match
         </Link>
         <span style={{
-          fontFamily: "'Playfair Display', Georgia, serif",
+          fontFamily: "var(--font-playfair), Georgia, serif",
           fontSize: "1rem", fontWeight: 700, color: "#2d5a3d",
         }}>
           How It Works
@@ -66,7 +66,7 @@ export default function HowItWorksPage() {
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: "64px" }}>
           <h1 style={{
-            fontFamily: "'Playfair Display', Georgia, serif",
+            fontFamily: "var(--font-playfair), Georgia, serif",
             fontSize: "clamp(2rem, 5vw, 3rem)", fontWeight: 800,
             color: "#2d5a3d", letterSpacing: "-0.02em", marginBottom: "16px", lineHeight: 1.2,
           }}>
@@ -104,14 +104,14 @@ export default function HowItWorksPage() {
               }}
             >
               <div style={{
-                fontFamily: "'Playfair Display', Georgia, serif",
+                fontFamily: "var(--font-playfair), Georgia, serif",
                 fontSize: "2.8rem", fontWeight: 800,
                 color: "#2d5a3d", letterSpacing: "-0.04em", lineHeight: 1,
               }}>
                 {step.num}
               </div>
               <h2 style={{
-                fontFamily: "'Playfair Display', Georgia, serif",
+                fontFamily: "var(--font-playfair), Georgia, serif",
                 fontSize: "1.2rem", fontWeight: 700,
                 color: "#1a1a1a", margin: 0, lineHeight: 1.35,
               }}>

@@ -197,7 +197,7 @@ export default function WelcomeScreen() {
           background-size: 250% auto;
           color: #1a1209;
           font-size: clamp(0.95rem, 2.5vw, 1.1rem);
-          font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+          font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, sans-serif;
           font-weight: 700;
           padding: 18px 44px;
           border-radius: 18px;
@@ -336,7 +336,7 @@ export default function WelcomeScreen() {
           <p
             className="wc-sub"
             style={{
-              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+              fontFamily: "var(--font-inter), -apple-system, BlinkMacSystemFont, sans-serif",
               fontSize: "clamp(0.98rem, 2.4vw, 1.15rem)",
               color: "rgba(245,239,224,0.76)",
               lineHeight: 1.7,
@@ -378,7 +378,7 @@ export default function WelcomeScreen() {
                   display: "flex",
                   alignItems: "center",
                   gap: "11px",
-                  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+                  fontFamily: "var(--font-inter), -apple-system, BlinkMacSystemFont, sans-serif",
                   fontSize: "clamp(0.9rem, 2.2vw, 1rem)",
                   color: "rgba(245,239,224,0.82)",
                   letterSpacing: "0.005em",

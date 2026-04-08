@@ -188,7 +188,7 @@ export default function FeedbackPage() {
               style={{
                 padding: "10px 16px", fontSize: "0.9rem", borderRadius: "12px",
                 border: "1.5px solid rgba(45, 90, 61,0.35)", background: "rgba(255,255,255,0.5)",
-                color: "#1a1a1a", fontFamily: "'Playfair Display', Georgia, serif",
+                color: "#1a1a1a", fontFamily: "var(--font-playfair), Georgia, serif",
                 cursor: "pointer", outline: "none", transition: "all 0.3s ease",
               }}
               onFocus={(e) => { e.currentTarget.style.borderColor = "#2d5a3d"; e.currentTarget.style.boxShadow = "0 0 0 4px rgba(45, 90, 61,0.08)"; }}
@@ -203,7 +203,7 @@ export default function FeedbackPage() {
               style={{
                 padding: "10px 16px", fontSize: "0.9rem", borderRadius: "12px",
                 border: "1.5px solid rgba(45, 90, 61,0.35)", background: "rgba(255,255,255,0.5)",
-                color: "#1a1a1a", fontFamily: "'Playfair Display', Georgia, serif",
+                color: "#1a1a1a", fontFamily: "var(--font-playfair), Georgia, serif",
                 outline: "none", flex: 1, minWidth: "150px", transition: "all 0.3s ease",
               }}
               onFocus={(e) => { e.currentTarget.style.borderColor = "#2d5a3d"; e.currentTarget.style.boxShadow = "0 0 0 4px rgba(45, 90, 61,0.08)"; }}
@@ -308,7 +308,7 @@ export default function FeedbackPage() {
                   <span style={{
                     fontSize: "1rem", fontWeight: 700,
                     color: hasVoted ? "#2d5a3d" : "#1a1a1a",
-                    fontFamily: "'Playfair Display', Georgia, serif",
+                    fontFamily: "var(--font-playfair), Georgia, serif",
                     transition: "all 0.3s ease",
                   }}>{item.upvotes}</span>
                 </button>

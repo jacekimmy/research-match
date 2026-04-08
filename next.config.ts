@@ -25,7 +25,7 @@ const nextConfig: NextConfig = {
     ];
   },
   experimental: {
-    optimizeCss: false,
+    optimizeCss: true,
   },
 };
 

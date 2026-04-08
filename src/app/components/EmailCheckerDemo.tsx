@@ -369,7 +369,7 @@ export default function EmailCheckerDemo() {
               color: "#1a1a1a",
               minHeight: "180px",
               whiteSpace: "pre-wrap",
-              fontFamily: "'Playfair Display', Georgia, serif",
+              fontFamily: "var(--font-playfair), Georgia, serif",
             }}
           >
             {showCursor ? (

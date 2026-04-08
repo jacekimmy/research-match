@@ -1229,7 +1229,7 @@ function AppPageInner() {
           ) : (
             <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
               {isFree && (
-                <button onClick={() => setShowUpgradeModal(true)} style={{ fontSize: "0.78rem", fontWeight: 700, color: "#A8893E", background: "rgba(196, 162, 101, 0.12)", padding: "7px 14px", borderRadius: "999px", border: "1px solid rgba(196, 162, 101, 0.25)", cursor: "pointer", transition: "all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)", fontFamily: "'Playfair Display', Georgia, serif", whiteSpace: "nowrap" }}>
+                <button onClick={() => setShowUpgradeModal(true)} style={{ fontSize: "0.78rem", fontWeight: 700, color: "#A8893E", background: "rgba(196, 162, 101, 0.12)", padding: "7px 14px", borderRadius: "999px", border: "1px solid rgba(196, 162, 101, 0.25)", cursor: "pointer", transition: "all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)", fontFamily: "var(--font-playfair), Georgia, serif", whiteSpace: "nowrap" }}>
                   Upgrade
                 </button>
               )}
@@ -1751,7 +1751,7 @@ function AppPageInner() {
                               const el = e.currentTarget.nextElementSibling as HTMLElement;
                               if (el) el.style.display = el.style.display === "none" ? "block" : "none";
                             }}
-                            style={{ fontSize: "0.7rem", fontWeight: 700, color: "#6b7280", cursor: "pointer", background: "rgba(45, 90, 61,0.15)", border: "1px solid #8aaa96", borderRadius: "999px", width: "18px", height: "18px", display: "inline-flex", alignItems: "center", justifyContent: "center", fontFamily: "'Playfair Display', Georgia, serif", transition: "all 0.2s ease" }}
+                            style={{ fontSize: "0.7rem", fontWeight: 700, color: "#6b7280", cursor: "pointer", background: "rgba(45, 90, 61,0.15)", border: "1px solid #8aaa96", borderRadius: "999px", width: "18px", height: "18px", display: "inline-flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-playfair), Georgia, serif", transition: "all 0.2s ease" }}
                           >?</button>
                           <div style={{ display: "none", padding: "14px 18px", background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)", border: "1px solid rgba(45, 90, 61,0.3)", borderRadius: "12px", fontSize: "0.85rem", color: "#6b7280", lineHeight: 1.6, marginTop: "4px", marginBottom: "8px" }}>
                             In most lab sciences (biology, chemistry, medicine, etc.), <strong>1st author</strong> did the hands-on work and <strong>last author</strong> runs the lab. In many other fields (math, CS, economics, humanities), author order is often alphabetical and doesn&apos;t indicate contribution level. When in doubt, check if the professor lists the paper prominently on their own website — that usually means it&apos;s important to them.
@@ -2166,7 +2166,7 @@ function AppPageInner() {
                         </span>
                       ) : "Check my email"}
                     </button>
-                    <button onClick={handleCopy} disabled={!emailDraft.trim()} style={{ fontSize: "1rem", color: "#6b7280", background: "none", border: "none", cursor: emailDraft.trim() ? "pointer" : "default", opacity: emailDraft.trim() ? 1 : 0.3, fontFamily: "'Playfair Display', Georgia, serif", transition: "color 0.2s" }}
+                    <button onClick={handleCopy} disabled={!emailDraft.trim()} style={{ fontSize: "1rem", color: "#6b7280", background: "none", border: "none", cursor: emailDraft.trim() ? "pointer" : "default", opacity: emailDraft.trim() ? 1 : 0.3, fontFamily: "var(--font-playfair), Georgia, serif", transition: "color 0.2s" }}
                       onMouseEnter={e => { if (emailDraft.trim()) e.currentTarget.style.color = "#2d5a3d"; }}
                       onMouseLeave={e => { e.currentTarget.style.color = "#6b7280"; }}
                     >

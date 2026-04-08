@@ -179,7 +179,7 @@ export default function MobileLanding() {
           padding: "8px 18px", fontSize: "0.8rem", textDecoration: "none",
           whiteSpace: "nowrap", flexShrink: 0,
           background: "#C4A265", color: "#ffffff", borderRadius: "999px",
-          fontWeight: 700, fontFamily: "'Playfair Display', Georgia, serif",
+          fontWeight: 700, fontFamily: "var(--font-playfair), Georgia, serif",
         }}>
           Start Searching
         </Link>
@@ -193,7 +193,7 @@ export default function MobileLanding() {
           fontSize: "1.9rem", fontWeight: 800,
           color: "#2d5a3d", lineHeight: 1.12, marginBottom: "20px",
           letterSpacing: "-0.03em",
-          fontFamily: "'Playfair Display', Georgia, serif",
+          fontFamily: "var(--font-playfair), Georgia, serif",
         }}>
           Land Your Next Research Position.
         </h1>
@@ -223,7 +223,7 @@ export default function MobileLanding() {
                 width: "100%", padding: "14px 16px", fontSize: "1rem",
                 border: "1.5px solid rgba(45, 90, 61,0.4)", borderRadius: "14px",
                 background: "rgba(255,255,255,0.5)", color: "#1a1a1a",
-                fontFamily: "'Playfair Display', Georgia, serif", outline: "none",
+                fontFamily: "var(--font-playfair), Georgia, serif", outline: "none",
                 minHeight: "48px",
                 transition: "border-color 0.2s, box-shadow 0.2s",
               }}
@@ -246,7 +246,7 @@ export default function MobileLanding() {
                 width: "100%", padding: "14px 16px", fontSize: "1rem",
                 border: "1.5px solid rgba(45, 90, 61,0.4)", borderRadius: "14px",
                 background: "rgba(255,255,255,0.5)", color: "#1a1a1a",
-                fontFamily: "'Playfair Display', Georgia, serif", outline: "none",
+                fontFamily: "var(--font-playfair), Georgia, serif", outline: "none",
                 minHeight: "48px",
                 transition: "border-color 0.2s, box-shadow 0.2s",
               }}
@@ -257,7 +257,7 @@ export default function MobileLanding() {
             className="mobile-btn btn-cta"
             style={{
               width: "100%", padding: "16px", fontSize: "1.1rem", fontWeight: 700,
-              fontFamily: "'Playfair Display', Georgia, serif",
+              fontFamily: "var(--font-playfair), Georgia, serif",
               border: "none", borderRadius: "14px", cursor: "pointer",
               color: "#ffffff", background: "#C4A265",
               minHeight: "48px",
@@ -286,7 +286,7 @@ export default function MobileLanding() {
             <div style={{
               fontSize: "1.8rem", fontWeight: 800, color: "#2d5a3d",
               letterSpacing: "-0.03em",
-              fontFamily: "'Playfair Display', Georgia, serif",
+              fontFamily: "var(--font-playfair), Georgia, serif",
             }}>{stat.num}</div>
             <div style={{ fontSize: "0.85rem", color: "#6b7280", marginTop: "2px" }}>{stat.label}</div>
           </div>
@@ -319,7 +319,7 @@ export default function MobileLanding() {
         <h2 style={{
           fontSize: "1.6rem", fontWeight: 700, color: "#2d5a3d",
           textAlign: "center", marginBottom: "12px",
-          fontFamily: "'Playfair Display', Georgia, serif",
+          fontFamily: "var(--font-playfair), Georgia, serif",
         }}>
           How it works
         </h2>
@@ -413,7 +413,7 @@ export default function MobileLanding() {
           backdropFilter: "blur(16px)",
           WebkitBackdropFilter: "blur(16px)",
         }}>
-          <h3 style={{ fontSize: "1.35rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "14px", fontFamily: "'Playfair Display', Georgia, serif" }}>
+          <h3 style={{ fontSize: "1.35rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "14px", fontFamily: "var(--font-playfair), Georgia, serif" }}>
             Sound like yourself, not a chatbot
           </h3>
           <p style={{ fontSize: "1rem", color: "#6b7280", lineHeight: 1.7 }}>
@@ -427,7 +427,7 @@ export default function MobileLanding() {
         <h2 style={{
           fontSize: "1.5rem", fontWeight: 700, color: "#2d5a3d",
           textAlign: "center", marginBottom: "12px",
-          fontFamily: "'Playfair Display', Georgia, serif",
+          fontFamily: "var(--font-playfair), Georgia, serif",
         }}>
           Most cold emails to professors get ignored. Here&apos;s why.
         </h2>
@@ -476,7 +476,7 @@ export default function MobileLanding() {
           backdropFilter: "blur(16px)",
           WebkitBackdropFilter: "blur(16px)",
         }}>
-          <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "10px", fontFamily: "'Playfair Display', Georgia, serif" }}>
+          <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "10px", fontFamily: "var(--font-playfair), Georgia, serif" }}>
             Free: The Research Position Starter Kit
           </h3>
           <p style={{ fontSize: "0.9rem", color: "#6b7280", lineHeight: 1.7, marginBottom: "18px" }}>
@@ -486,7 +486,7 @@ export default function MobileLanding() {
             onClick={() => setShowStarterKit(true)}
             style={{
               padding: "14px 32px", fontSize: "0.95rem", fontWeight: 700,
-              fontFamily: "'Playfair Display', Georgia, serif",
+              fontFamily: "var(--font-playfair), Georgia, serif",
               border: "none", borderRadius: "14px", cursor: "pointer",
               color: "#ffffff", background: "#2d5a3d",
               width: "100%", minHeight: "48px",
@@ -502,7 +502,7 @@ export default function MobileLanding() {
         <h2 style={{
           fontSize: "1.5rem", fontWeight: 700, color: "#2d5a3d",
           textAlign: "center", marginBottom: "12px",
-          fontFamily: "'Playfair Display', Georgia, serif",
+          fontFamily: "var(--font-playfair), Georgia, serif",
         }}>
           What people are saying
         </h2>
@@ -570,7 +570,7 @@ export default function MobileLanding() {
         <h2 style={{
           fontSize: "1.6rem", fontWeight: 700, color: "#2d5a3d",
           textAlign: "center", marginBottom: "12px",
-          fontFamily: "'Playfair Display', Georgia, serif",
+          fontFamily: "var(--font-playfair), Georgia, serif",
         }}>
           Simple pricing
         </h2>
@@ -649,7 +649,7 @@ export default function MobileLanding() {
                 display: "block", textAlign: "center", padding: "16px", fontSize: "1rem",
                 width: "100%", background: "#6b7280", color: "#ffffff", border: "none",
                 borderRadius: "14px", cursor: "not-allowed", fontWeight: 700,
-                fontFamily: "'Playfair Display', Georgia, serif", minHeight: "48px",
+                fontFamily: "var(--font-playfair), Georgia, serif", minHeight: "48px",
               }}>
                 Sold out
               </button>
@@ -659,7 +659,7 @@ export default function MobileLanding() {
                 textDecoration: "none", fontSize: "1rem", width: "100%",
                 background: "linear-gradient(135deg, #A8893E, #C4A265)",
                 color: "#ffffff", borderRadius: "14px", fontWeight: 700,
-                fontFamily: "'Playfair Display', Georgia, serif",
+                fontFamily: "var(--font-playfair), Georgia, serif",
                 boxShadow: "0 4px 16px rgba(196, 162, 101, 0.3)",
                 minHeight: "48px", lineHeight: "48px", paddingTop: 0, paddingBottom: 0,
               }}>
@@ -713,7 +713,7 @@ export default function MobileLanding() {
             <Link href="/app?upgrade=true" className="mobile-btn" style={{
               display: "block", textAlign: "center", padding: "16px", textDecoration: "none", fontSize: "1rem", width: "100%", minHeight: "48px",
               background: "#f4f0ea", color: "#2d5a3d", borderRadius: "14px", fontWeight: 700,
-              fontFamily: "'Playfair Display', Georgia, serif",
+              fontFamily: "var(--font-playfair), Georgia, serif",
             }}>
               Get Semester Access — $29
             </Link>
