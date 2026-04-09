@@ -1780,28 +1780,22 @@ function AppPageInner() {
                     {/* Suggested questions — free for logged-in users, gated for anon (Step 3) */}
                     {summary.questions.length > 0 && (
                       !user ? (
-                        <div style={{ marginTop: "24px", position: "relative", borderRadius: "12px", overflow: "hidden" }}>
-                          <div style={{ filter: "blur(5px)", userSelect: "none", pointerEvents: "none", padding: "4px 0" }}>
-                            <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "14px" }}>Questions to Ask</p>
-                            {summary.questions.map((q, i) => (
-                              <p key={i} style={{ fontSize: "1rem", color: "#6b7280", paddingLeft: "20px", borderLeft: "3px solid #9dbfaa", marginBottom: "12px", lineHeight: 1.6 }}>{q}</p>
-                            ))}
+                        <div style={{ marginTop: "24px" }}>
+                          {/* Show one blurred question as a teaser */}
+                          <div style={{ position: "relative", borderRadius: "12px", overflow: "hidden", maxHeight: "72px" }}>
+                            <div style={{ filter: "blur(5px)", userSelect: "none", pointerEvents: "none", padding: "4px 0" }}>
+                              <p style={{ fontSize: "1rem", color: "#6b7280", paddingLeft: "20px", borderLeft: "3px solid #9dbfaa", lineHeight: 1.6 }}>{summary.questions[0]}</p>
+                            </div>
+                            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, transparent 0%, rgba(245,240,230,0.98) 60%)", borderRadius: "12px" }} />
                           </div>
-                          <div style={{
-                            position: "absolute", inset: 0,
-                            background: "linear-gradient(to bottom, transparent 0%, rgba(245,240,230,0.97) 38%)",
-                            borderRadius: "12px", display: "flex", flexDirection: "column",
-                            alignItems: "center", justifyContent: "flex-end",
-                            padding: "16px 20px 20px", textAlign: "center",
-                          }}>
-                            <button
-                              onClick={() => { setAuthModalCopy("Your summary is ready. Create a free account to check your email before you send it."); setShowAuthModal(true); setAuthMode("signup"); setAuthError(""); }}
-                              className="rm-summarize-btn"
-                              style={{ width: "100%", maxWidth: "340px", justifyContent: "center" }}
-                            >
-                              Create free account →
-                            </button>
-                          </div>
+                          {/* CTA always visible below the blur */}
+                          <button
+                            onClick={() => { setAuthModalCopy("Your summary is ready. Create a free account to check your email before you send it."); setShowAuthModal(true); setAuthMode("signup"); setAuthError(""); }}
+                            className="rm-summarize-btn"
+                            style={{ width: "100%", marginTop: "12px", justifyContent: "center" }}
+                          >
+                            Create free account →
+                          </button>
                         </div>
                       ) : (
                         <div style={{ marginTop: "24px" }}>
