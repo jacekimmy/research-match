@@ -1780,11 +1780,9 @@ function AppPageInner() {
                     {/* Suggested questions — free for logged-in users, gated for anon (Step 3) */}
                     {summary.questions.length > 0 && (
                       !user ? (
-                        <div style={{ marginTop: "24px" }}>
-                          <div className="rm-locked-row" style={{ marginBottom: "12px" }}>
-                            <span style={{ fontSize: "0.9rem", opacity: 0.6 }}>&#128274;</span>
-                            <span style={{ fontSize: "0.85rem", color: "#6b7280", flex: 1 }}>Questions to Ask ({summary.questions.length})</span>
-                          </div>
+                        <div style={{ marginTop: "24px", padding: "20px", background: "rgba(45,90,61,0.04)", border: "1px solid rgba(45,90,61,0.12)", borderRadius: "14px", textAlign: "center" }}>
+                          <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "6px" }}>Questions to Ask</p>
+                          <p style={{ fontSize: "0.85rem", color: "#6b7280", marginBottom: "16px" }}>{summary.questions.length} personalized questions — unlocked after signup</p>
                           <button
                             onClick={() => { setAuthModalCopy("Your summary is ready. Create a free account to check your email before you send it."); setShowAuthModal(true); setAuthMode("signup"); setAuthError(""); }}
                             className="rm-summarize-btn"
