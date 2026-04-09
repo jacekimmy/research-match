@@ -1781,18 +1781,14 @@ function AppPageInner() {
                     {summary.questions.length > 0 && (
                       !user ? (
                         <div style={{ marginTop: "24px" }}>
-                          {/* Show one blurred question as a teaser */}
-                          <div style={{ position: "relative", borderRadius: "12px", overflow: "hidden", maxHeight: "72px" }}>
-                            <div style={{ filter: "blur(5px)", userSelect: "none", pointerEvents: "none", padding: "4px 0" }}>
-                              <p style={{ fontSize: "1rem", color: "#6b7280", paddingLeft: "20px", borderLeft: "3px solid #9dbfaa", lineHeight: 1.6 }}>{summary.questions[0]}</p>
-                            </div>
-                            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, transparent 0%, rgba(245,240,230,0.98) 60%)", borderRadius: "12px" }} />
+                          <div className="rm-locked-row" style={{ marginBottom: "12px" }}>
+                            <span style={{ fontSize: "0.9rem", opacity: 0.6 }}>&#128274;</span>
+                            <span style={{ fontSize: "0.85rem", color: "#6b7280", flex: 1 }}>Questions to Ask ({summary.questions.length})</span>
                           </div>
-                          {/* CTA always visible below the blur */}
                           <button
                             onClick={() => { setAuthModalCopy("Your summary is ready. Create a free account to check your email before you send it."); setShowAuthModal(true); setAuthMode("signup"); setAuthError(""); }}
                             className="rm-summarize-btn"
-                            style={{ width: "100%", marginTop: "12px", justifyContent: "center" }}
+                            style={{ width: "100%", justifyContent: "center" }}
                           >
                             Create free account →
                           </button>
