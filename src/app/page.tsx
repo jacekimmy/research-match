@@ -1,8 +1,10 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, startTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import StarterKitModal from "./components/StarterKitModal";
+import dynamic from "next/dynamic";
+
+const StarterKitModal = dynamic(() => import("./components/StarterKitModal"), { ssr: false });
 
 const HERO_PLACEHOLDERS = [
   "e.g. machine learning",
@@ -35,12 +37,14 @@ export default function LandingPage() {
   useEffect(() => { setBillingMounted(true); }, []);
   useEffect(() => { setHeroVisible(true); }, []);
   useEffect(() => {
-    fetch("/api/stats").then(r => r.json()).then(d => setSearchCount(d.searches)).catch(() => {});
+    fetch("/api/stats").then(r => r.json()).then(d => {
+      startTransition(() => setSearchCount(d.searches));
+    }).catch(() => {});
   }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setPlaceholderIdx((i) => (i + 1) % HERO_PLACEHOLDERS.length);
+      startTransition(() => setPlaceholderIdx((i) => (i + 1) % HERO_PLACEHOLDERS.length));
     }, 3000);
     return () => clearInterval(interval);
   }, []);
@@ -48,8 +52,8 @@ export default function LandingPage() {
   useEffect(() => {
     fetch("/api/lifetime-spots")
       .then((r) => r.json())
-      .then((d) => setLifetimeSpotsRemaining(d.remaining ?? 200))
-      .catch(() => setLifetimeSpotsRemaining(200));
+      .then((d) => { startTransition(() => setLifetimeSpotsRemaining(d.remaining ?? 200)); })
+      .catch(() => { startTransition(() => setLifetimeSpotsRemaining(200)); });
   }, []);
 
   useEffect(() => {

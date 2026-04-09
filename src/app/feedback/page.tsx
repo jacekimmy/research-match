@@ -1,6 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback, useRef } from "react";
-import confetti from "canvas-confetti";
+import { useState, useEffect, useCallback, useRef, startTransition } from "react";
 import { useAuth } from "@/lib/auth-context";
 
 interface FeedbackItem {
@@ -66,7 +65,7 @@ export default function FeedbackPage() {
     try {
       const res = await fetch(`/api/feedback?sort=${sort}`);
       const data = await res.json();
-      if (Array.isArray(data)) setItems(data);
+      if (Array.isArray(data)) startTransition(() => setItems(data));
     } catch { /* ignore */ }
     finally { setLoading(false); }
   }
@@ -90,14 +89,14 @@ export default function FeedbackPage() {
         setTimeout(() => setSubmitted(false), 3000);
         fetchFeedback();
         showToast("Feedback posted!");
-        // Mini celebration
-        confetti({
+        // Mini celebration — lazy load so it doesn't block initial page
+        import("canvas-confetti").then(({ default: confetti }) => confetti({
           particleCount: 40,
           spread: 60,
           origin: { y: 0.7 },
           colors: ["#2d5a3d", "#8aaa96", "#9dbfaa"],
           gravity: 1.2,
-        });
+        }));
       }
     } catch { /* ignore */ }
     finally { setSubmitting(false); }
