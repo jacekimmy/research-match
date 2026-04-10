@@ -1351,13 +1351,6 @@ function AppPageInner() {
             {/* Hero search */}
             {searchMode === "interest" ? (
               <div className="glass-search rm-search rm-hero-search">
-                <svg width="24" height="24" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0, marginLeft: "4px", opacity: 0.85 }} aria-hidden="true">
-                  <circle cx="80" cy="80" r="52" fill="none" stroke="#2d5a3d" strokeWidth="7"/>
-                  <path d="M118 118 L155 155" fill="none" stroke="#2d5a3d" strokeWidth="8" strokeLinecap="round"/>
-                  <line x1="64" y1="64" x2="96" y2="64" stroke="#C4A265" strokeWidth="5" strokeLinecap="round"/>
-                  <line x1="64" y1="80" x2="96" y2="80" stroke="#C4A265" strokeWidth="5" strokeLinecap="round"/>
-                  <line x1="64" y1="96" x2="96" y2="96" stroke="#C4A265" strokeWidth="5" strokeLinecap="round"/>
-                </svg>
                 <div className="rm-search-input-wrap" ref={suggestionsRef} style={{ position: "relative" }}>
                   <label className="rm-search-label">Research Interest</label>
                   <div className="rm-tag-input-row">
@@ -1406,13 +1399,6 @@ function AppPageInner() {
               </div>
             ) : (
               <div className="glass-search rm-search rm-hero-search">
-                <svg width="24" height="24" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0, marginLeft: "4px", opacity: 0.85 }} aria-hidden="true">
-                  <circle cx="80" cy="80" r="52" fill="none" stroke="#2d5a3d" strokeWidth="7"/>
-                  <path d="M118 118 L155 155" fill="none" stroke="#2d5a3d" strokeWidth="8" strokeLinecap="round"/>
-                  <line x1="64" y1="64" x2="96" y2="64" stroke="#C4A265" strokeWidth="5" strokeLinecap="round"/>
-                  <line x1="64" y1="80" x2="96" y2="80" stroke="#C4A265" strokeWidth="5" strokeLinecap="round"/>
-                  <line x1="64" y1="96" x2="96" y2="96" stroke="#C4A265" strokeWidth="5" strokeLinecap="round"/>
-                </svg>
                 <div className="rm-search-input-wrap" style={{ flex: 1 }}>
                   <label className="rm-search-label">Professor Name</label>
                   <input value={profName} onChange={(e) => setProfName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && triggerSearchByName()} placeholder="e.g. Geoffrey Hinton, Fei-Fei Li..." className="rm-search-input" />
