@@ -2271,7 +2271,7 @@ function AppPageInner() {
       {/* AUTH MODAL */}
       {showAuthModal && (
         <div style={{ position: "fixed", inset: 0, zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(245,240,230,0.85)", backdropFilter: "blur(12px)" }} onClick={() => setShowAuthModal(false)}>
-          <div className="glass-card" style={{ padding: "40px", maxWidth: "400px", width: "90%" }} onClick={(e) => e.stopPropagation()}>
+          <div className="glass-card rm-modal-card" style={{ padding: "40px", maxWidth: "400px", width: "90%" }} onClick={(e) => e.stopPropagation()}>
             <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "8px" }}>
               {authMode === "signup" ? "Create your free account" : "Welcome back"}
             </h3>
@@ -2313,7 +2313,7 @@ function AppPageInner() {
       {/* UPGRADE MODAL */}
       {showUpgradeModal && (
         <div style={{ position: "fixed", inset: 0, zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(245,240,230,0.85)", backdropFilter: "blur(12px)" }} onClick={() => setShowUpgradeModal(false)}>
-          <div className="glass-card" style={{ padding: "40px", maxWidth: "540px", width: "90%" }} onClick={(e) => e.stopPropagation()}>
+          <div className="glass-card rm-modal-card" style={{ padding: "40px", maxWidth: "540px", width: "90%" }} onClick={(e) => e.stopPropagation()}>
             <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "8px" }}>{upgradeModalTitle || "Upgrade your plan"}</h3>
             <p style={{ fontSize: "0.9rem", color: "#6b7280", marginBottom: "24px" }}>{upgradeModalSubtitle || "Unlimited summaries, email checker, and professor email finder."}</p>
 

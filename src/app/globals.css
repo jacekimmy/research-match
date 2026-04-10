@@ -2951,9 +2951,15 @@ body::after {
     max-width: 300px;
   }
 
-  /* Shrink nav logo text on very small screens */
+  /* Shrink nav logo on mobile */
   .rm-nav-logo {
     font-size: 0.9rem;
+    flex-shrink: 1;
+    min-width: 0;
+  }
+  .rm-nav-logo svg {
+    max-width: 140px;
+    height: auto;
   }
 
   .rm-hero {
@@ -4329,6 +4335,12 @@ body::after {
   .lp-nav-links { display: none; }
   .lp-nav-logo {
     font-size: 0.9rem;
+    flex-shrink: 1;
+    min-width: 0;
+  }
+  .lp-nav-logo svg {
+    max-width: 140px;
+    height: auto;
   }
   .lp-nav-cta {
     padding: 9px 16px;
@@ -4680,6 +4692,15 @@ body::after {
   .lp-proof-item { flex: 1 1 100%; border-right: none !important; }
   .lp-quote-card { width: 88vw; }
   .lp-price-card { padding: 28px 22px; }
+  /* Further shrink logos on small phones */
+  .lp-nav-logo svg,
+  .rm-nav-logo svg {
+    max-width: 120px;
+  }
+  /* Upgrade/auth modals — tighter padding on small phones */
+  .rm-modal-card {
+    padding: 28px 20px !important;
+  }
 }
 
 /* ===== TOUCH DEVICES — disable all hover states ===== */
