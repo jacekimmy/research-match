@@ -117,8 +117,14 @@ export default function LandingPage() {
       <nav className="lp-nav">
         <div className="lp-nav-pill">
           <Link href="/" className="lp-nav-logo">
-            <span className="lp-nav-logo-mark">&#128300;</span>
-            Research Match
+            <svg width="180" height="32" viewBox="0 0 280 50" xmlns="http://www.w3.org/2000/svg" aria-label="Research Match">
+              <circle cx="22" cy="22" r="15" fill="none" stroke="#2d5a3d" strokeWidth="4"/>
+              <path d="M33 33 L43 43" fill="none" stroke="#2d5a3d" strokeWidth="4.5" strokeLinecap="round"/>
+              <line x1="16" y1="16" x2="28" y2="16" stroke="#C4A265" strokeWidth="3" strokeLinecap="round"/>
+              <line x1="16" y1="22" x2="28" y2="22" stroke="#C4A265" strokeWidth="3" strokeLinecap="round"/>
+              <line x1="16" y1="28" x2="28" y2="28" stroke="#C4A265" strokeWidth="3" strokeLinecap="round"/>
+              <text x="52" y="30" fontFamily="Georgia, 'Times New Roman', serif" fontSize="22" fontWeight="700" fill="#2d5a3d">Research Match</text>
+            </svg>
           </Link>
           <div className="lp-nav-spacer" />
           <div className="lp-nav-links">

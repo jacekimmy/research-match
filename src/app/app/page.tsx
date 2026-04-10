@@ -1205,7 +1205,16 @@ function AppPageInner() {
             <span className="rm-hamburger-line" />
           </button>
 
-          <Link href="/" className="rm-nav-logo">&#128300; Research Match</Link>
+          <Link href="/" className="rm-nav-logo">
+            <svg width="180" height="32" viewBox="0 0 280 50" xmlns="http://www.w3.org/2000/svg" aria-label="Research Match">
+              <circle cx="22" cy="22" r="15" fill="none" stroke="#2d5a3d" strokeWidth="4"/>
+              <path d="M33 33 L43 43" fill="none" stroke="#2d5a3d" strokeWidth="4.5" strokeLinecap="round"/>
+              <line x1="16" y1="16" x2="28" y2="16" stroke="#C4A265" strokeWidth="3" strokeLinecap="round"/>
+              <line x1="16" y1="22" x2="28" y2="22" stroke="#C4A265" strokeWidth="3" strokeLinecap="round"/>
+              <line x1="16" y1="28" x2="28" y2="28" stroke="#C4A265" strokeWidth="3" strokeLinecap="round"/>
+              <text x="52" y="30" fontFamily="Georgia, 'Times New Roman', serif" fontSize="22" fontWeight="700" fill="#2d5a3d">Research Match</text>
+            </svg>
+          </Link>
           <div className="rm-nav-spacer" />
 
           {saved.length > 0 && (
@@ -1342,6 +1351,13 @@ function AppPageInner() {
             {/* Hero search */}
             {searchMode === "interest" ? (
               <div className="glass-search rm-search rm-hero-search">
+                <svg width="24" height="24" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0, marginLeft: "4px", opacity: 0.85 }} aria-hidden="true">
+                  <circle cx="80" cy="80" r="52" fill="none" stroke="#2d5a3d" strokeWidth="7"/>
+                  <path d="M118 118 L155 155" fill="none" stroke="#2d5a3d" strokeWidth="8" strokeLinecap="round"/>
+                  <line x1="64" y1="64" x2="96" y2="64" stroke="#C4A265" strokeWidth="5" strokeLinecap="round"/>
+                  <line x1="64" y1="80" x2="96" y2="80" stroke="#C4A265" strokeWidth="5" strokeLinecap="round"/>
+                  <line x1="64" y1="96" x2="96" y2="96" stroke="#C4A265" strokeWidth="5" strokeLinecap="round"/>
+                </svg>
                 <div className="rm-search-input-wrap" ref={suggestionsRef} style={{ position: "relative" }}>
                   <label className="rm-search-label">Research Interest</label>
                   <div className="rm-tag-input-row">
@@ -1390,6 +1406,13 @@ function AppPageInner() {
               </div>
             ) : (
               <div className="glass-search rm-search rm-hero-search">
+                <svg width="24" height="24" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0, marginLeft: "4px", opacity: 0.85 }} aria-hidden="true">
+                  <circle cx="80" cy="80" r="52" fill="none" stroke="#2d5a3d" strokeWidth="7"/>
+                  <path d="M118 118 L155 155" fill="none" stroke="#2d5a3d" strokeWidth="8" strokeLinecap="round"/>
+                  <line x1="64" y1="64" x2="96" y2="64" stroke="#C4A265" strokeWidth="5" strokeLinecap="round"/>
+                  <line x1="64" y1="80" x2="96" y2="80" stroke="#C4A265" strokeWidth="5" strokeLinecap="round"/>
+                  <line x1="64" y1="96" x2="96" y2="96" stroke="#C4A265" strokeWidth="5" strokeLinecap="round"/>
+                </svg>
                 <div className="rm-search-input-wrap" style={{ flex: 1 }}>
                   <label className="rm-search-label">Professor Name</label>
                   <input value={profName} onChange={(e) => setProfName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && triggerSearchByName()} placeholder="e.g. Geoffrey Hinton, Fei-Fei Li..." className="rm-search-input" />
@@ -1424,6 +1447,13 @@ function AppPageInner() {
                   </div>
                   {searchMode === "interest" ? (
                     <div className="glass-search rm-search">
+                      <svg width="24" height="24" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0, marginLeft: "4px", opacity: 0.85 }} aria-hidden="true">
+                        <circle cx="80" cy="80" r="52" fill="none" stroke="#2d5a3d" strokeWidth="7"/>
+                        <path d="M118 118 L155 155" fill="none" stroke="#2d5a3d" strokeWidth="8" strokeLinecap="round"/>
+                        <line x1="64" y1="64" x2="96" y2="64" stroke="#C4A265" strokeWidth="5" strokeLinecap="round"/>
+                        <line x1="64" y1="80" x2="96" y2="80" stroke="#C4A265" strokeWidth="5" strokeLinecap="round"/>
+                        <line x1="64" y1="96" x2="96" y2="96" stroke="#C4A265" strokeWidth="5" strokeLinecap="round"/>
+                      </svg>
                       <div className="rm-search-input-wrap" ref={suggestionsRef} style={{ position: "relative" }}>
                         <label className="rm-search-label">Research Interest</label>
                         <div className="rm-tag-input-row">
@@ -1472,6 +1502,13 @@ function AppPageInner() {
                     </div>
                   ) : (
                     <div className="glass-search rm-search">
+                      <svg width="24" height="24" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0, marginLeft: "4px", opacity: 0.85 }} aria-hidden="true">
+                        <circle cx="80" cy="80" r="52" fill="none" stroke="#2d5a3d" strokeWidth="7"/>
+                        <path d="M118 118 L155 155" fill="none" stroke="#2d5a3d" strokeWidth="8" strokeLinecap="round"/>
+                        <line x1="64" y1="64" x2="96" y2="64" stroke="#C4A265" strokeWidth="5" strokeLinecap="round"/>
+                        <line x1="64" y1="80" x2="96" y2="80" stroke="#C4A265" strokeWidth="5" strokeLinecap="round"/>
+                        <line x1="64" y1="96" x2="96" y2="96" stroke="#C4A265" strokeWidth="5" strokeLinecap="round"/>
+                      </svg>
                       <div className="rm-search-input-wrap" style={{ flex: 1 }}>
                         <label className="rm-search-label">Professor Name</label>
                         <input value={profName} onChange={(e) => setProfName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && searchByName()} placeholder="e.g. Geoffrey Hinton, Fei-Fei Li..." className="rm-search-input" />
