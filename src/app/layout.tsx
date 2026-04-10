@@ -23,6 +23,10 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   title: "Research Match - Find Research Professors in Minutes",
   description: "Search any research interest and university. Get professor matches, plain-English paper summaries, and an email framework built on advice from real professors.",
+  icons: {
+    icon: "/favicon.svg",
+    apple: "/apple-touch-icon.png",
+  },
   openGraph: {
     title: "Research Match - Find Research Professors in Minutes",
     description: "Search any research interest and university. Get professor matches, plain-English paper summaries, and an email framework built on advice from real professors.",
