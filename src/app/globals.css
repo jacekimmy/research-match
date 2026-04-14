@@ -4734,10 +4734,23 @@ body::after {
   }
 }
 
-/* Why not ChatGPT grid — mobile responsive */
+/* Why not ChatGPT comparison table — mobile responsive */
 @media (max-width: 600px) {
-  .lp-chatgpt-grid {
+  .lp-vs-header {
+    display: none !important;
+  }
+  .lp-vs-row {
     grid-template-columns: 1fr !important;
+  }
+  .lp-vs-row > div:first-child {
+    padding: 20px 0 12px 0 !important;
+    border-bottom: none !important;
+    border-left: none !important;
+  }
+  .lp-vs-row > div:last-child {
+    padding: 12px 0 20px 0 !important;
+    border-left: none !important;
+    border-bottom: 1px solid rgba(45,90,61,0.15) !important;
   }
 }
 
