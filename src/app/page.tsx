@@ -250,12 +250,12 @@ export default function LandingPage() {
             good: "Every professor and paper is pulled from 250M+ verified academic works. All real.",
           },
           {
-            bad: "Writes your email for you — professors delete those instantly.",
-            good: "Gives you the research so you write the email yourself. That's why it gets replies.",
+            bad: "Writes your email for you; professors delete those instantly.",
+            good: "Gives you the research so you write the email yourself; that's why it gets replies.",
           },
           {
             bad: "Takes 20 back-and-forth prompts to find professors and read their work.",
-            good: "One search. Professors, summaries, email checker — all in front of you.",
+            good: "One search; professors, summaries, and email checker all in front of you.",
           },
         ].map((row, i) => (
           <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0" }} className="lp-vs-row">
