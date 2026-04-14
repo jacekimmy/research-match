@@ -226,6 +226,36 @@ export default function LandingPage() {
       </div>
 
       {/* ══════════════════════════════════════════
+          WHY NOT CHATGPT
+      ══════════════════════════════════════════ */}
+      <section style={{ maxWidth: "1100px", margin: "0 auto", padding: "80px 24px 0" }} data-reveal>
+        <h2 style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "clamp(1.6rem, 3vw, 2.2rem)", fontWeight: 700, color: "#2d5a3d", textAlign: "center", marginBottom: "40px", letterSpacing: "-0.02em" }}>
+          Why not just use ChatGPT?
+        </h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "24px" }} className="lp-chatgpt-grid">
+          {[
+            {
+              headline: "ChatGPT makes up professors.",
+              body: "It hallucinates names, fake papers, and wrong citation counts. Research Match pulls from a database of 250M+ verified academic works. Every professor and paper is real.",
+            },
+            {
+              headline: "ChatGPT writes your email for you.",
+              body: "Professors told us they delete AI-written emails instantly. Research Match gives you the research so you can write the email yourself. That's why it actually gets replies.",
+            },
+            {
+              headline: "ChatGPT takes 20 prompts. We take one search.",
+              body: "Finding professors, reading their papers, checking your email. In ChatGPT that's a whole conversation. Here it's one search and everything is in front of you.",
+            },
+          ].map((card, i) => (
+            <div key={i} style={{ background: "rgba(255,255,255,0.65)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", border: "1px solid rgba(255,255,255,0.65)", borderRadius: "20px", padding: "32px 28px", boxShadow: "0 4px 24px rgba(45,90,61,0.06)", display: "flex", flexDirection: "column", gap: "12px" }}>
+              <h3 style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "1.05rem", fontWeight: 700, color: "#1a1a1a", margin: 0, lineHeight: 1.35 }}>{card.headline}</h3>
+              <p style={{ fontSize: "0.88rem", color: "#6b7280", lineHeight: 1.7, margin: 0 }}>{card.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════
           HOW IT WORKS — COMPACT CARDS
       ══════════════════════════════════════════ */}
       <section style={{ maxWidth: "1100px", margin: "0 auto", padding: "80px 24px 0", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "24px" }} className="lp-how-it-works-grid" data-reveal>

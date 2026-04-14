@@ -4734,6 +4734,13 @@ body::after {
   }
 }
 
+/* Why not ChatGPT grid — mobile responsive */
+@media (max-width: 600px) {
+  .lp-chatgpt-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
 
 /* ===== FOLLOW-UP TOOL ===== */
 
