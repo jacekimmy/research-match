@@ -290,6 +290,7 @@ function AppPageInner() {
   const [upgradeModalSubtitle, setUpgradeModalSubtitle] = useState("");
   const [authModalCopy, setAuthModalCopy] = useState("");
   const [showMenu, setShowMenu] = useState(false);
+  const [showEmailPlaybookMenu, setShowEmailPlaybookMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const PLACEHOLDER_EXAMPLES = [
@@ -383,6 +384,10 @@ function AppPageInner() {
     }
     document.addEventListener("mousedown", handleOutside);
     return () => document.removeEventListener("mousedown", handleOutside);
+  }, [showMenu]);
+
+  useEffect(() => {
+    if (!showMenu) setShowEmailPlaybookMenu(false);
   }, [showMenu]);
 
   // Grand reveal / welcome back
@@ -1270,6 +1275,34 @@ function AppPageInner() {
                 <span className="rm-nav-dropdown-icon">◎</span>
                 How It Works
               </Link>
+              <button
+                type="button"
+                className="rm-nav-dropdown-item"
+                onClick={() => setShowEmailPlaybookMenu((v) => !v)}
+              >
+                <span className="rm-nav-dropdown-icon">✉</span>
+                <span style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+                  <span>Email Playbook</span>
+                  <span style={{ fontSize: "0.85rem", opacity: 0.8 }}>{showEmailPlaybookMenu ? "▾" : "▸"}</span>
+                </span>
+              </button>
+
+              {showEmailPlaybookMenu && (
+                <div style={{ display: "flex", flexDirection: "column", gap: "6px", margin: "4px 0 6px 34px" }}>
+                  <Link href="/examples" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
+                    <span className="rm-nav-dropdown-icon">✦</span>
+                    Emails That Worked
+                  </Link>
+                  <Link href="/framework" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
+                    <span className="rm-nav-dropdown-icon">◇</span>
+                    Email Framework
+                  </Link>
+                  <Link href="/follow-up" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
+                    <span className="rm-nav-dropdown-icon">↩</span>
+                    Follow-Up Tool
+                  </Link>
+                </div>
+              )}
               <Link href="/feedback" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
                 <span className="rm-nav-dropdown-icon">↗</span>
                 Feedback
