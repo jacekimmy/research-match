@@ -3935,7 +3935,7 @@ body::after {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 24px;
-  align-items: start;
+  align-items: stretch;
 }
 
 .lp-price-card {
@@ -3950,6 +3950,9 @@ body::after {
     inset 0 1px 0 rgba(255,255,255,0.85);
   transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 .lp-price-card:hover {
   transform: translateY(-6px);
@@ -4016,6 +4019,7 @@ body::after {
   border: none;
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   width: 100%;
+  margin-top: auto;
 }
 .lp-price-btn-ghost {
   background: rgba(45,90,61,0.06);

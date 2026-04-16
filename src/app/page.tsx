@@ -516,7 +516,25 @@ export default function LandingPage() {
         </div>
 
         <div className="lp-pricing-grid">
-          {/* Lifetime — largest, most prominent, Best Value */}
+          {/* Semester */}
+          <div className="lp-price-card lp-price-card-featured">
+            <div className="lp-price-tier" style={{ color: "#9dbfaa" }}>Semester</div>
+            <div className="lp-price-amount" style={{ color: "#fff" }}>$29</div>
+            <div className="lp-price-period" style={{ color: "rgba(255,255,255,0.5)" }}>4 months access</div>
+            
+            <ul className="lp-price-features" style={{ color: "rgba(255,255,255,0.8)" }}>
+              <li style={{ color: "#fff", fontWeight: 700 }}><span className="lp-check" style={{ color: "#9dbfaa" }}>✓</span>Everything in Free, plus:</li>
+              {["Unlimited research summaries", "Email checker", "Professor email finder", "Responsiveness indicator"].map((f) => (
+                <li key={f}><span className="lp-check" style={{ color: "#9dbfaa" }}>✓</span>{f}</li>
+              ))}
+            </ul>
+            
+            <Link href="/app?upgrade=true" className="lp-price-btn lp-price-btn-white">
+              Get Semester Access — $29
+            </Link>
+          </div>
+
+          {/* Lifetime */}
           <div className="lp-price-card lp-price-card-lifetime lp-price-card-lifetime-hero">
             <div className="lp-best-value-badge">Best Value</div>
             <div className="lp-price-tier" style={{ color: "#A8893E" }}>Lifetime</div>
@@ -552,30 +570,12 @@ export default function LandingPage() {
               ))}
             </ul>
             
-            <Link href="/app?upgrade=weekly" className="lp-price-btn" style={{ background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "1px solid rgba(45, 90, 61, 0.2)", marginTop: "auto" }}>
+            <Link href="/app?upgrade=weekly" className="lp-price-btn" style={{ background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "1px solid rgba(45, 90, 61, 0.2)" }}>
               Start 1-Week Sprint — $9
             </Link>
           </div>
 
-          {/* Semester */}
-          <div className="lp-price-card lp-price-card-featured">
-            <div className="lp-price-tier" style={{ color: "#9dbfaa" }}>Semester</div>
-            <div className="lp-price-amount" style={{ color: "#fff" }}>$29</div>
-            <div className="lp-price-period" style={{ color: "rgba(255,255,255,0.5)" }}>4 months access</div>
-            
-            <ul className="lp-price-features" style={{ color: "rgba(255,255,255,0.8)" }}>
-              <li style={{ color: "#fff", fontWeight: 700 }}><span className="lp-check" style={{ color: "#9dbfaa" }}>✓</span>Everything in Free, plus:</li>
-              {["Unlimited research summaries", "Email checker", "Professor email finder", "Responsiveness indicator"].map((f) => (
-                <li key={f}><span className="lp-check" style={{ color: "#9dbfaa" }}>✓</span>{f}</li>
-              ))}
-            </ul>
-            
-            <Link href="/app?upgrade=true" className="lp-price-btn lp-price-btn-white">
-              Get Semester Access — $29
-            </Link>
-          </div>
-
-          {/* Free — smallest, least prominent */}
+          {/* Free */}
           <div className="lp-price-card lp-price-card-free">
             <div className="lp-price-tier">Free</div>
             <div className="lp-price-amount">$0</div>
