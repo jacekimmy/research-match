@@ -521,28 +521,15 @@ export default function LandingPage() {
             <div className="lp-best-value-badge">Best Value</div>
             <div className="lp-price-tier" style={{ color: "#A8893E" }}>Lifetime</div>
             <div className="lp-price-amount" style={{ color: "#A8893E" }}>$59</div>
-            <div className="lp-price-period" style={{ color: "#A8893E", opacity: 0.7 }}>One payment. Yours forever.</div>
-            <p className="lp-lifetime-tagline">That&apos;s less than 2 semesters. Never pay again.</p>
+            <div className="lp-price-period" style={{ color: "#A8893E", opacity: 0.7 }}>Yours forever.</div>
+            
             <ul className="lp-price-features">
-              <li style={{ fontWeight: 700 }}><span className="lp-check" style={{ color: "#A8893E" }}>✓</span>Everything in Semester, forever:</li>
-              {["Unlimited searches", "Unlimited summaries", "Email checker", "Professor email finder", "Nearby professor access", "Responsiveness indicator"].map((f) => (
+              <li style={{ fontWeight: 700 }}><span className="lp-check" style={{ color: "#A8893E" }}>✓</span>Everything in Semester, plus:</li>
+              {["Never pay again", "Unlimited searches & summaries", "Email checker", "Professor email finder", "Nearby professor access", "Responsiveness indicator"].map((f) => (
                 <li key={f}><span className="lp-check" style={{ color: "#A8893E" }}>✓</span>{f}</li>
               ))}
             </ul>
-            {/* Bonuses */}
-            <div className="lp-bonuses-section">
-              <div className="lp-bonuses-divider" />
-              <p className="lp-bonuses-title" style={{ color: "#A8893E" }}>Free Bonuses Included:</p>
-              <ul className="lp-price-features">
-                {[
-                  "Emails That Worked — 2 real emails that got replies, fully annotated",
-                  "Email Template — the paragraph professors actually read",
-                  "Follow-Up Guide",
-                ].map((f) => (
-                  <li key={f}><span className="lp-check" style={{ color: "#A8893E" }}>✓</span>{f}</li>
-                ))}
-              </ul>
-            </div>
+            
             {lifetimeSpotsRemaining === 0 ? (
               <button disabled className="lp-price-btn" style={{ background: "#e5e7eb", color: "#9ca3af", cursor: "not-allowed" }}>Sold out</button>
             ) : (
@@ -550,39 +537,24 @@ export default function LandingPage() {
                 Claim your spot — $59
               </Link>
             )}
-            <p className="lp-refund-note">Not satisfied in 30 days? Full refund. No questions asked.</p>
           </div>
 
           {/* Semester */}
           <div className="lp-price-card lp-price-card-featured">
             <div className="lp-price-tier" style={{ color: "#9dbfaa" }}>Semester</div>
             <div className="lp-price-amount" style={{ color: "#fff" }}>$29</div>
-            <div className="lp-price-period" style={{ color: "rgba(255,255,255,0.5)" }}>4 months of full access</div>
-            <p className="lp-lifetime-tagline" style={{ color: "rgba(255,255,255,0.7)" }}>One semester. Everything you need to land a position.</p>
+            <div className="lp-price-period" style={{ color: "rgba(255,255,255,0.5)" }}>4 months access</div>
+            
             <ul className="lp-price-features" style={{ color: "rgba(255,255,255,0.8)" }}>
               <li style={{ color: "#fff", fontWeight: 700 }}><span className="lp-check" style={{ color: "#9dbfaa" }}>✓</span>Everything in Free, plus:</li>
               {["Unlimited research summaries", "Email checker", "Professor email finder", "Responsiveness indicator"].map((f) => (
                 <li key={f}><span className="lp-check" style={{ color: "#9dbfaa" }}>✓</span>{f}</li>
               ))}
             </ul>
-            {/* Bonuses */}
-            <div className="lp-bonuses-section" style={{ borderColor: "rgba(157,191,170,0.25)" }}>
-              <div className="lp-bonuses-divider" style={{ background: "rgba(157,191,170,0.25)" }} />
-              <p className="lp-bonuses-title" style={{ color: "#9dbfaa" }}>Free Bonuses Included:</p>
-              <ul className="lp-price-features" style={{ color: "rgba(255,255,255,0.7)" }}>
-                {[
-                  "Emails That Worked — 2 real emails that got replies, fully annotated",
-                  "Email Template — the paragraph professors actually read",
-                  "Follow-Up Guide",
-                ].map((f) => (
-                  <li key={f}><span className="lp-check" style={{ color: "#9dbfaa" }}>✓</span>{f}</li>
-                ))}
-              </ul>
-            </div>
+            
             <Link href="/app?upgrade=true" className="lp-price-btn lp-price-btn-white">
               Get Semester Access — $29
             </Link>
-            <p className="lp-refund-note" style={{ color: "rgba(255,255,255,0.5)" }}>Not satisfied in 30 days? Full refund. No questions asked.</p>
           </div>
 
           {/* Free — smallest, least prominent */}
@@ -599,6 +571,14 @@ export default function LandingPage() {
               Start free
             </Link>
           </div>
+        </div>
+
+        {/* Global Bonus Strip (Moved out of cards for a cleaner UI) */}
+        <div style={{ maxWidth: "800px", margin: "40px auto 30px", padding: "20px 24px", background: "rgba(45, 90, 61, 0.03)", borderRadius: "16px", border: "1px solid rgba(45, 90, 61, 0.1)", textAlign: "center" }} data-reveal>
+          <p style={{ fontSize: "0.8rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "#2d5a3d", marginBottom: "8px" }}>🎁 Included with Paid Plans</p>
+          <p style={{ fontSize: "1.05rem", color: "#1a1a1a", fontWeight: 500, margin: 0 }}>
+            The <strong>Cold Email Playbook</strong>: Annotated winning emails, a proven paragraph template, and the follow-up guide.
+          </p>
         </div>
 
         {/* Inline waitlist */}
