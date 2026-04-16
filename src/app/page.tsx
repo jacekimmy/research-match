@@ -539,6 +539,24 @@ export default function LandingPage() {
             )}
           </div>
 
+          {/* Weekly Sprint */}
+          <div className="lp-price-card">
+            <div className="lp-price-tier">Weekly Sprint</div>
+            <div className="lp-price-amount" style={{ color: "#2d5a3d" }}>$9</div>
+            <div className="lp-price-period" style={{ opacity: 0.7 }}>1 week access</div>
+            
+            <ul className="lp-price-features">
+              <li style={{ fontWeight: 700 }}><span className="lp-check">✓</span>Software access:</li>
+              {["Unlimited research summaries", "Email checker", "Professor email finder", "Responsiveness indicator"].map((f) => (
+                <li key={f}><span className="lp-check">✓</span>{f}</li>
+              ))}
+            </ul>
+            
+            <Link href="/app?upgrade=weekly" className="lp-price-btn" style={{ background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "1px solid rgba(45, 90, 61, 0.2)", marginTop: "auto" }}>
+              Start 1-Week Sprint — $9
+            </Link>
+          </div>
+
           {/* Semester */}
           <div className="lp-price-card lp-price-card-featured">
             <div className="lp-price-tier" style={{ color: "#9dbfaa" }}>Semester</div>

@@ -35,6 +35,7 @@ export async function POST(req: NextRequest) {
 
     const semesterPriceId = process.env.STRIPE_PRICE_SEMESTER || "price_1TIuAlFINW44xCyFcxqgQpeV";
     const lifetimePriceId = process.env.STRIPE_PRICE_LIFETIME || "price_1TIuBBFINW44xCyFoSCtUpFN";
+    const weeklyPriceId = process.env.STRIPE_PRICE_WEEKLY || "price_1TMxDSFINW44xCyFWrm6ZTOo";
 
     let planType = "semester";
 
@@ -46,7 +47,11 @@ export async function POST(req: NextRequest) {
     } else if (session.mode === "subscription" && session.subscription) {
       const sub = await stripe.subscriptions.retrieve(session.subscription as string);
       const priceId = sub.items.data[0]?.price.id;
-      planType = priceId === semesterPriceId ? "semester" : "semester";
+      if (priceId === weeklyPriceId) {
+        planType = "weekly";
+      } else {
+        planType = "semester";
+      }
     }
 
     await supabaseAdmin

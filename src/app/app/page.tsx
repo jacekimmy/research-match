@@ -320,7 +320,7 @@ function AppPageInner() {
   const [responsiveness, setResponsiveness] = useState<Record<string, { level: "green" | "yellow" | "red"; label: string; tooltip: string }>>({});
 
   // Plan helpers
-  const isPaid = profile?.plan_type === "semester" || profile?.plan_type === "student_monthly" || profile?.plan_type === "student_annual" || profile?.plan_type === "lifetime";
+  const isPaid = profile?.plan_type === "weekly" || profile?.plan_type === "semester" || profile?.plan_type === "student_monthly" || profile?.plan_type === "student_annual" || profile?.plan_type === "lifetime";
   const isFree = !isPaid;
 
   // Tag helpers
@@ -2418,6 +2418,28 @@ function AppPageInner() {
                 } catch { showToast("Something went wrong. Try again."); }
               }} className="btn-cta rm-search-btn" style={{ width: "100%", padding: "12px", fontSize: "0.95rem" }}>
                 Get Semester Access — $29
+              </button>
+            </div>
+
+            {/* Weekly Sprint option */}
+            <div style={{ marginTop: "16px", padding: "16px", borderRadius: "14px", border: "1px solid rgba(45,90,61,0.15)", background: "rgba(255,255,255,0.6)" }}>
+              <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "4px" }}>Weekly Sprint</p>
+              <div style={{ display: "flex", alignItems: "baseline", gap: "8px", marginBottom: "2px" }}>
+                <span style={{ fontSize: "1.6rem", fontWeight: 800, color: "#2d5a3d" }}>$9</span>
+                <span style={{ fontSize: "0.80rem", color: "#6b7280", fontWeight: 500 }}>/ 1 week</span>
+              </div>
+              <p style={{ fontSize: "0.75rem", color: "#6b7280", marginBottom: "12px" }}>Crunch time. Software access for 7 days.</p>
+              
+              <button onClick={async () => {
+                if (!user) { setShowUpgradeModal(false); setShowAuthModal(true); setAuthMode("signup"); return; }
+                try {
+                  const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_WEEKLY || "price_1TMxDSFINW44xCyFWrm6ZTOo";
+                  const res = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ priceId, userId: user.id }) });
+                  const data = await res.json();
+                  if (data.url) window.location.href = data.url;
+                } catch { showToast("Something went wrong. Try again."); }
+              }} className="btn-cta" style={{ width: "100%", padding: "10px", fontSize: "0.85rem", background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "none" }}>
+                Start 1-Week Sprint — $9
               </button>
             </div>
 
