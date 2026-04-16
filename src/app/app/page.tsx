@@ -588,23 +588,34 @@ function AppPageInner() {
         const worksRes = await fetch(`https://api.openalex.org/works?search=${encodeURIComponent(allTopics[0])}${instFilter}&sort=publication_date:desc&per_page=20&select=authorships`);
         const worksData = await worksRes.json();
         const works = worksData.results ?? [];
-        const authorMap = new Map<string, Author>();
+        
+        const authorIdsToFetch = new Map<string, string>();
         for (const work of works) {
           for (const authorship of (work.authorships ?? [])) {
             const authorId = authorship.author?.id;
-            if (!authorId || authorMap.has(authorId)) continue;
+            if (!authorId) continue;
+            const shortId = authorId.split("/").pop()!;
             if (institutionIds.length > 0 && !institutionIds.some((id: string) => authorship.institutions?.[0]?.id === `https://openalex.org/${id}`)) continue;
-            const authorRes = await fetch(`https://api.openalex.org/authors/${authorId.split("/").pop()}?select=id,display_name,last_known_institutions,works_count,cited_by_count,topics,geo`);
-            if (authorRes.ok) {
-              const authorData = await authorRes.json();
-              if (institutionIds.length > 0 && !institutionIds.some((id: string) => authorData.last_known_institutions?.[0]?.id === `https://openalex.org/${id}`)) continue;
-              authorMap.set(authorId, authorData);
-            }
-            if (authorMap.size >= 10) break;
+            if (!authorIdsToFetch.has(shortId)) authorIdsToFetch.set(shortId, authorId);
+            if (authorIdsToFetch.size >= 20) break;
           }
-          if (authorMap.size >= 10) break;
+          if (authorIdsToFetch.size >= 20) break;
         }
-        authors = Array.from(authorMap.values()).sort((a, b) => b.cited_by_count - a.cited_by_count);
+
+        const shortIds = Array.from(authorIdsToFetch.keys());
+        if (shortIds.length > 0) {
+          const fetches = shortIds.map(id => fetch(`https://api.openalex.org/authors/${id}?select=id,display_name,last_known_institutions,works_count,cited_by_count,topics,geo`).then(r => r.ok ? r.json() : null));
+          const results = await Promise.all(fetches);
+          
+          const authorMap = new Map<string, Author>();
+          for (const authorData of results) {
+            if (authorData && authorData.id) {
+               if (institutionIds.length > 0 && !institutionIds.some((id: string) => authorData.last_known_institutions?.[0]?.id === `https://openalex.org/${id}`)) continue;
+               authorMap.set(authorData.id, authorData);
+            }
+          }
+          authors = Array.from(authorMap.values()).sort((a, b) => b.cited_by_count - a.cited_by_count);
+        }
       } else {
         // OR filter across all resolved topic IDs (now up to 4 per query = broad synonym coverage)
         const topicFilter = topicIds.join("|");
@@ -621,24 +632,35 @@ function AppPageInner() {
           if (authors.length === 0) {
             const worksRes = await fetch(`https://api.openalex.org/works?search=${encodeURIComponent(allTopics[0])}&filter=authorships.institutions.id:${institutionIds.join("|")}&sort=cited_by_count:desc&per_page=50&select=authorships`);
             const worksData = await worksRes.json();
-            const authorMap = new Map<string, Author>();
+            
+            const authorIdsToFetch = new Map<string, string>();
             for (const work of (worksData.results ?? [])) {
               for (const authorship of (work.authorships ?? [])) {
                 const authorId = authorship.author?.id;
-                if (!authorId || authorMap.has(authorId)) continue;
+                if (!authorId) continue;
+                const shortId = authorId.split("/").pop()!;
                 if (!authorship.institutions?.some((inst: any) => fullInstIds.includes(inst.id))) continue;
-                const authorRes = await fetch(`https://api.openalex.org/authors/${authorId.split("/").pop()}?select=id,display_name,last_known_institutions,works_count,cited_by_count,topics,geo`);
-                if (authorRes.ok) {
-                  const authorData = await authorRes.json();
+                if (!authorIdsToFetch.has(shortId)) authorIdsToFetch.set(shortId, authorId);
+                if (authorIdsToFetch.size >= 20) break;
+              }
+              if (authorIdsToFetch.size >= 20) break;
+            }
+
+            const shortIds = Array.from(authorIdsToFetch.keys());
+            if (shortIds.length > 0) {
+              const fetches = shortIds.map(id => fetch(`https://api.openalex.org/authors/${id}?select=id,display_name,last_known_institutions,works_count,cited_by_count,topics,geo`).then(r => r.ok ? r.json() : null));
+              const results = await Promise.all(fetches);
+              
+              const authorMap = new Map<string, Author>();
+              for (const authorData of results) {
+                if (authorData && authorData.id) {
                   if (fullInstIds.includes(authorData.last_known_institutions?.[0]?.id)) {
-                    authorMap.set(authorId, authorData);
+                    authorMap.set(authorData.id, authorData);
                   }
                 }
-                if (authorMap.size >= 15) break;
               }
-              if (authorMap.size >= 15) break;
+              authors = Array.from(authorMap.values()).sort((a, b) => b.cited_by_count - a.cited_by_count);
             }
-            authors = Array.from(authorMap.values()).sort((a, b) => b.cited_by_count - a.cited_by_count);
           }
 
           // If still nothing, fall back to global results with a note
