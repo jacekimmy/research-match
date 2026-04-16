@@ -5002,3 +5002,8 @@ body::after {
     width: 100%;
   }
 }
+
+.lp-how-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 60px rgba(45,90,61,0.08) !important;
+}

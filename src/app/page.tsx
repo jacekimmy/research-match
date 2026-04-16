@@ -235,73 +235,85 @@ export default function LandingPage() {
       </div>
 
       {/* ══════════════════════════════════════════
-          WHY NOT CHATGPT
+          HOW IT WORKS — COMPACT CARDS
       ══════════════════════════════════════════ */}
-      <section style={{ maxWidth: "900px", margin: "0 auto", padding: "80px 24px 0" }} data-reveal>
-        <h2 style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "clamp(1.6rem, 3vw, 2.2rem)", fontWeight: 700, color: "#2d5a3d", textAlign: "center", marginBottom: "48px", letterSpacing: "-0.02em" }}>
-          Why not just use ChatGPT?
-        </h2>
-
-        {/* Column headers */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0", marginBottom: "0", paddingBottom: "0" }} className="lp-vs-header">
-          <div style={{ padding: "12px 28px 12px 0", borderBottom: "2px solid #e5e7eb" }}>
-            <span style={{ fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#9ca3af" }}>ChatGPT</span>
-          </div>
-          <div style={{ padding: "12px 0 12px 28px", borderBottom: "2px solid #2d5a3d", borderLeft: "none" }}>
-            <span style={{ fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#2d5a3d" }}>Research Match</span>
-          </div>
+      <section id="how" style={{ maxWidth: "1100px", margin: "120px auto", padding: "0 24px" }} data-reveal>
+        <div style={{ textAlign: "center", marginBottom: "64px" }}>
+          <p style={{ fontSize: "0.75rem", fontWeight: 800, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: "16px" }}>The Process</p>
+          <h2 style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "clamp(2rem, 4vw, 2.8rem)", fontWeight: 700, color: "#1a1a1a", margin: 0, letterSpacing: "-0.02em" }}>
+            How it works
+          </h2>
         </div>
-
-        {/* Rows */}
-        {[
-          {
-            bad: "Hallucinates professors, fake papers, and wrong citation counts.",
-            good: "Every professor and paper is pulled from 250M+ verified academic works. All real.",
-          },
-          {
-            bad: "Writes your email for you; professors delete those instantly.",
-            good: "Gives you the research so you write the email yourself; that's why it gets replies.",
-          },
-          {
-            bad: "Takes 20 back-and-forth prompts to find professors and read their work.",
-            good: "One search; professors, summaries, and email checker all in front of you.",
-          },
-        ].map((row, i) => (
-          <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0" }} className="lp-vs-row">
-            <div style={{ padding: "24px 28px 24px 0", borderBottom: "1px solid #e5e7eb", display: "flex", gap: "12px", alignItems: "flex-start" }}>
-              <span style={{ flexShrink: 0, marginTop: "2px", fontSize: "0.75rem", color: "#d1d5db", fontWeight: 700 }}>✕</span>
-              <p style={{ margin: 0, fontSize: "0.88rem", color: "#9ca3af", lineHeight: 1.65 }}>{row.bad}</p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "24px" }} className="lp-how-it-works-grid">
+          {[
+            { num: "01", title: "Search your interest", desc: "Type in any research topic and a university. We search 250M+ academic papers to find professors actively publishing in that area." },
+            { num: "02", title: "Understand their work", desc: "Get a plain-English summary of each professor's research, their recent papers, and what makes their work unique." },
+            { num: "03", title: "Write an email that works", desc: "Use our framework built on advice from real professors. No AI-generated emails, just the research you need to write your own." },
+          ].map((step, i) => (
+            <div key={i} style={{ background: "rgba(255,255,255,0.8)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", border: "1px solid rgba(255,255,255,0.9)", borderRadius: "24px", padding: "40px 32px", boxShadow: "0 10px 40px rgba(45,90,61,0.06)", display: "flex", flexDirection: "column", gap: "16px", transition: "transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)", cursor: "default" }} className="lp-how-card">
+              <div style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "2.4rem", fontWeight: 800, color: "#2d5a3d", letterSpacing: "-0.02em", lineHeight: 1 }}>{step.num}</div>
+              <h3 style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "1.3rem", fontWeight: 700, color: "#1a1a1a", margin: 0, lineHeight: 1.2 }}>{step.title}</h3>
+              <p style={{ fontSize: "0.95rem", color: "#6b7280", lineHeight: 1.7, margin: 0 }}>{step.desc}</p>
             </div>
-            <div style={{ padding: "24px 0 24px 28px", borderBottom: "1px solid rgba(45,90,61,0.12)", borderLeft: "1px solid rgba(45,90,61,0.15)", display: "flex", gap: "12px", alignItems: "flex-start" }}>
-              <span style={{ flexShrink: 0, marginTop: "2px", fontSize: "0.75rem", color: "#2d5a3d", fontWeight: 700 }}>✓</span>
-              <p style={{ margin: 0, fontSize: "0.88rem", color: "#374151", lineHeight: 1.65 }}>{row.good}</p>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </section>
 
       {/* ══════════════════════════════════════════
-          HOW IT WORKS — COMPACT CARDS
+          WHY NOT CHATGPT
       ══════════════════════════════════════════ */}
-      <section style={{ maxWidth: "1100px", margin: "0 auto", padding: "80px 24px 0", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "24px" }} className="lp-how-it-works-grid" data-reveal>
-        {[
-          { num: "01", title: "Search your interest", desc: "Type in any research topic and a university. We search 250M+ academic papers to find professors actively publishing in that area." },
-          { num: "02", title: "Understand their work", desc: "Get a plain-English summary of each professor's research, their recent papers, and what makes their work unique." },
-          { num: "03", title: "Write an email that works", desc: "Use our framework built on advice from real professors. No AI-generated emails, just the research you need to write your own." },
-        ].map((step, i) => (
-          <div key={i} style={{ background: "rgba(255,255,255,0.65)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", border: "1px solid rgba(255,255,255,0.65)", borderRadius: "20px", padding: "32px 28px", boxShadow: "0 4px 24px rgba(45,90,61,0.06)", display: "flex", flexDirection: "column", gap: "12px" }}>
-            <div style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "2rem", fontWeight: 800, color: "#2d5a3d", letterSpacing: "-0.02em", lineHeight: 1 }}>{step.num}</div>
-            <h3 style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "1.1rem", fontWeight: 700, color: "#1a1a1a", margin: 0, lineHeight: 1.3 }}>{step.title}</h3>
-            <p style={{ fontSize: "0.88rem", color: "#6b7280", lineHeight: 1.7, margin: 0 }}>{step.desc}</p>
+      <section style={{ background: "linear-gradient(to bottom, #ffffff, rgba(255,255,255,0))", padding: "100px 24px", margin: "0 0 100px 0", borderTop: "1px solid rgba(45,90,61,0.06)", borderBottom: "1px solid rgba(45,90,61,0.06)" }}>
+        <div style={{ maxWidth: "900px", margin: "0 auto" }} data-reveal>
+          <h2 style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "clamp(1.8rem, 3vw, 2.4rem)", fontWeight: 700, color: "#2d5a3d", textAlign: "center", marginBottom: "64px", letterSpacing: "-0.02em" }}>
+            Why not just use ChatGPT?
+          </h2>
+
+          <div style={{ background: "#ffffff", borderRadius: "24px", padding: "40px 48px", boxShadow: "0 20px 60px rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.05)" }}>
+            {/* Column headers */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0", marginBottom: "0", paddingBottom: "0" }} className="lp-vs-header">
+              <div style={{ padding: "0 28px 20px 0", borderBottom: "2px solid #e5e7eb" }}>
+                <span style={{ fontSize: "0.75rem", fontWeight: 800, letterSpacing: "0.15em", textTransform: "uppercase", color: "#9ca3af" }}>ChatGPT</span>
+              </div>
+              <div style={{ padding: "0 0 20px 28px", borderBottom: "2px solid #2d5a3d", borderLeft: "none" }}>
+                <span style={{ fontSize: "0.75rem", fontWeight: 800, letterSpacing: "0.15em", textTransform: "uppercase", color: "#2d5a3d" }}>Research Match</span>
+              </div>
+            </div>
+
+            {/* Rows */}
+            {[
+              {
+                bad: "Hallucinates professors, fake papers, and wrong citation counts.",
+                good: "Every professor and paper is pulled from 250M+ verified academic works. All real.",
+              },
+              {
+                bad: "Writes your email for you; professors delete those instantly.",
+                good: "Gives you the research so you write the email yourself; that's why it gets replies.",
+              },
+              {
+                bad: "Takes 20 back-and-forth prompts to find professors and read their work.",
+                good: "One search; professors, summaries, and email checker all in front of you.",
+              },
+            ].map((row, i) => (
+              <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0" }} className="lp-vs-row">
+                <div style={{ padding: "32px 28px 32px 0", borderBottom: i === 2 ? "none" : "1px solid #f3f4f6", display: "flex", gap: "16px", alignItems: "flex-start" }}>
+                  <span style={{ flexShrink: 0, marginTop: "3px", fontSize: "0.85rem", color: "#d1d5db", fontWeight: 700 }}>✕</span>
+                  <p style={{ margin: 0, fontSize: "0.95rem", color: "#9ca3af", lineHeight: 1.7 }}>{row.bad}</p>
+                </div>
+                <div style={{ padding: "32px 0 32px 28px", borderBottom: i === 2 ? "none" : "1px solid rgba(45,90,61,0.08)", borderLeft: "1px solid rgba(45,90,61,0.08)", display: "flex", gap: "16px", alignItems: "flex-start" }}>
+                  <span style={{ flexShrink: 0, marginTop: "3px", fontSize: "0.85rem", color: "#2d5a3d", fontWeight: 700 }}>✓</span>
+                  <p style={{ margin: 0, fontSize: "0.95rem", color: "#1a1a1a", lineHeight: 1.7, fontWeight: 500 }}>{row.good}</p>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
       </section>
 
       {/* ══════════════════════════════════════════
           FEATURES
       ══════════════════════════════════════════ */}
-      <section id="how" className="lp-features-section">
-        <div className="lp-features-label" data-reveal>How it works</div>
+      <section className="lp-features-section">
+        <div className="lp-features-label" data-reveal>The Platform</div>
 
         {/* Feature 1 */}
         <div className="lp-feature" data-reveal>
