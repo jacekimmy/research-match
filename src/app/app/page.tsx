@@ -707,11 +707,13 @@ function AppPageInner() {
       // Score authors to filter out non-professors
       if (authors.length > 0) {
         try {
+          // Drastically reduce OpenAlex API bottleneck by only scoring top 15 candidates
+          const authorsToScore = authors.slice(0, 15);
           const scoreRes = await fetch("/api/score-authors", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              authors: authors.map((a) => ({
+              authors: authorsToScore.map((a) => ({
                 id: a.id,
                 works_count: a.works_count,
                 cited_by_count: a.cited_by_count,
@@ -722,12 +724,12 @@ function AppPageInner() {
           const scoreData = await scoreRes.json();
           const scoreMap = new Map<string, number>();
           for (const s of scoreData.scored ?? []) scoreMap.set(s.id, s.score);
-          authors = authors
+          authors = authorsToScore
             .filter((a) => (scoreMap.get(a.id) ?? 0) >= 1)
             .sort((a, b) => (scoreMap.get(b.id) ?? 0) - (scoreMap.get(a.id) ?? 0));
         } catch {
           // Fallback: simple filter if scoring fails
-          authors = authors.filter((a) => a.works_count >= 10);
+          authors = authors.slice(0, 15).filter((a) => a.works_count >= 10);
         }
       }
       if (authors.length === 0) setError(`No professors found for "${topicNames.join(", ") || allTopics.join(", ")}"${institutionNames.length > 0 ? ` at ${institutionNames.join(", ")}` : ""}. Try a more specific topic like "machine learning" or "quantum computing".`);
