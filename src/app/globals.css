@@ -4016,6 +4016,36 @@ body::after {
   transform: none;
 }
 
+@media (max-width: 768px) {
+  .lp-carousel-card {
+    max-width: 330px;
+  }
+  .lp-carousel-card[data-pos="prev"] {
+    transform: translateX(-40%) scale(0.85) rotateY(15deg);
+  }
+  .lp-carousel-card[data-pos="next"] {
+    transform: translateX(40%) scale(0.85) rotateY(-15deg);
+  }
+}
+
+@media (max-width: 480px) {
+  .lp-carousel-card {
+    max-width: 290px;
+  }
+  .lp-carousel-card[data-pos="prev"] {
+    transform: translateX(-20%) scale(0.85) rotateY(10deg);
+    opacity: 0.2;
+  }
+  .lp-carousel-card[data-pos="next"] {
+    transform: translateX(20%) scale(0.85) rotateY(-10deg);
+    opacity: 0.2;
+  }
+  .lp-carousel-controls {
+    margin-top: 24px;
+    gap: 16px;
+  }
+}
+
 .lp-price-card {
   background: rgba(255,255,255,0.7);
   backdrop-filter: blur(24px) saturate(1.5);
