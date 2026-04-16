@@ -319,6 +319,9 @@ function AppPageInner() {
   // Professor responsiveness badges
   const [responsiveness, setResponsiveness] = useState<Record<string, { level: "green" | "yellow" | "red"; label: string; tooltip: string }>>({});
 
+  // Funding Pulse — cached statuses keyed by short OpenAlex ID
+  const [fundingStatus, setFundingStatus] = useState<Record<string, "ACTIVE" | "NOT_RECENT" | "UNKNOWN">>({});
+
   // Plan helpers
   const isPaid = profile?.plan_type === "semester" || profile?.plan_type === "student_monthly" || profile?.plan_type === "student_annual" || profile?.plan_type === "lifetime";
   const isFree = !isPaid;
@@ -510,16 +513,7 @@ function AppPageInner() {
       }
       return true;
     }
-    // Free account: 1 use total
-    if (profile?.summaries_reset_at && new Date() > new Date(profile.summaries_reset_at)) {
-      return true; // reset period passed
-    }
-    if (profile && (profile.summaries_used ?? 0) >= 1) {
-      setUpgradeModalTitle("You've used your free summary.");
-      setUpgradeModalSubtitle("Upgrade to unlock unlimited professors, questions, and email checking.");
-      setShowUpgradeModal(true);
-      return false;
-    }
+    // Free accounts can always summarize — paywall is at email checker
     return true;
   }
 
@@ -710,8 +704,8 @@ function AppPageInner() {
       }
       if (authors.length === 0) setError(`No professors found for "${topicNames.join(", ") || allTopics.join(", ")}"${institutionNames.length > 0 ? ` at ${institutionNames.join(", ")}` : ""}. Try a more specific topic like "machine learning" or "quantum computing".`);
       setResults(authors);
-      // Fetch responsiveness badges in background
-      if (authors.length > 0) fetchResponsiveness(authors);
+      // Fetch responsiveness and funding badges in background
+      if (authors.length > 0) { fetchResponsiveness(authors); fetchFundingStatus(authors); }
       // Fetch nearby professors — only when searching a single institution
       if (authors.length > 0 && institutionIds.length === 1 && institutionNames.length === 1) {
         setNearbyProfs([]);
@@ -742,6 +736,25 @@ function AppPageInner() {
       setNearbyProfs(data.authors ?? []);
     } catch { /* ignore nearby failures */ }
     finally { setNearbyLoading(false); }
+  }
+
+  // Fetch funding status for a batch of professors from our cached DB
+  async function fetchFundingStatus(authors: Author[]) {
+    try {
+      const professors = authors.map((a) => ({
+        id: a.id.split("/").pop()!,
+        name: a.display_name,
+        institution: a.last_known_institutions?.[0]?.display_name ?? "",
+      }));
+      const res = await fetch("/api/funding-pulse", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ professors }),
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      setFundingStatus((prev) => ({ ...prev, ...(data.statuses ?? {}) }));
+    } catch { /* silent — funding badge just won't appear */ }
   }
 
   async function fetchResponsiveness(authors: Author[]) {
@@ -860,7 +873,7 @@ function AppPageInner() {
       if (authors.length === 0) setError(`No professors found matching "${profName}".`);
       // searches are now unlimited
       setResults(authors);
-      if (authors.length > 0) fetchResponsiveness(authors);
+      if (authors.length > 0) { fetchResponsiveness(authors); fetchFundingStatus(authors); }
     } catch { setError("Something went wrong. Please try again."); }
     finally { setLoading(false); }
   }
@@ -907,6 +920,13 @@ function AppPageInner() {
 
   async function checkEmail() {
     if (!emailTarget || !emailDraft.trim()) return;
+    // Email checker is a paid feature — free users see upgrade modal
+    if (!isPaid) {
+      setUpgradeModalTitle("Unlock Email Checker");
+      setUpgradeModalSubtitle("Get instant feedback on your cold email — red flags, AI-sounding language, and exactly what to fix.");
+      setShowUpgradeModal(true);
+      return;
+    }
     const id = emailTarget.id.split("/").pop()!;
     const summary = summaries[id];
     setCheckingEmail(true);
@@ -1669,15 +1689,42 @@ function AppPageInner() {
                       {formatInstitutionLocation(author.last_known_institutions?.[0]) || "Unknown institution"}
                     </p>
                   </div>
-                  <div className="rm-card-stats">
-                    <div className="rm-stat-pill">
-                      <span className="rm-stat-num">{author.works_count.toLocaleString()}</span>
-                      <span className="rm-stat-label">papers</span>
+                  {/* Stats + Funding Pulse — stacked right-aligned column */}
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "10px", flexShrink: 0 }}>
+                    <div className="rm-card-stats">
+                      <div className="rm-stat-pill">
+                        <span className="rm-stat-num">{author.works_count.toLocaleString()}</span>
+                        <span className="rm-stat-label">papers</span>
+                      </div>
+                      <div className="rm-stat-pill">
+                        <span className="rm-stat-num">{author.cited_by_count.toLocaleString()}</span>
+                        <span className="rm-stat-label">citations</span>
+                      </div>
                     </div>
-                    <div className="rm-stat-pill">
-                      <span className="rm-stat-num">{author.cited_by_count.toLocaleString()}</span>
-                      <span className="rm-stat-label">citations</span>
-                    </div>
+
+                    {/* Funding Pulse badge */}
+                    {isFree ? (
+                      <button
+                        onClick={() => {
+                          setUpgradeModalTitle("Unlock Funding Pulse");
+                          setUpgradeModalSubtitle("See whether this professor has active NIH or NSF grants — updated automatically.");
+                          setShowUpgradeModal(true);
+                        }}
+                        className="funding-badge funding-badge-locked"
+                      >
+                        <svg width="8" height="10" viewBox="0 0 8 10" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+                          <rect x="1" y="4.5" width="6" height="5" rx="1" stroke="currentColor" strokeWidth="1.1" />
+                          <path d="M2.5 4.5V3C2.5 1.9 5.5 1.9 5.5 3V4.5" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" />
+                        </svg>
+                        <span>Funding Status</span>
+                        <span className="funding-badge-upgrade">Upgrade</span>
+                      </button>
+                    ) : fundingStatus[id] ? (
+                      <span className={`funding-badge ${fundingStatus[id] === "ACTIVE" ? "funding-badge-active" : fundingStatus[id] === "NOT_RECENT" ? "funding-badge-not-recent" : "funding-badge-unknown"}`}>
+                        {fundingStatus[id] === "ACTIVE" && <span className="funding-dot-active" />}
+                        {fundingStatus[id] === "ACTIVE" ? "Actively Funded" : fundingStatus[id] === "NOT_RECENT" ? "Not Recently Funded" : "Funding Unknown"}
+                      </span>
+                    ) : null}
                   </div>
                 </div>
 
@@ -2333,25 +2380,26 @@ function AppPageInner() {
 
       {/* UPGRADE MODAL */}
       {showUpgradeModal && (
-        <div style={{ position: "fixed", inset: 0, zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(245,240,230,0.85)", backdropFilter: "blur(12px)" }} onClick={() => setShowUpgradeModal(false)}>
-          <div className="glass-card rm-modal-card" style={{ padding: "40px", maxWidth: "540px", width: "90%" }} onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "8px" }}>{upgradeModalTitle || "Upgrade your plan"}</h3>
-            <p style={{ fontSize: "0.9rem", color: "#6b7280", marginBottom: "24px" }}>{upgradeModalSubtitle || "Unlimited summaries, email checker, and professor email finder."}</p>
+        <div style={{ position: "fixed", inset: 0, zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", padding: "24px", background: "rgba(245,240,230,0.7)", backdropFilter: "blur(8px)" }} onClick={() => setShowUpgradeModal(false)}>
+          <div className="glass-card rm-modal-card" style={{ padding: "28px 28px 24px", maxWidth: "480px", width: "100%", maxHeight: "85vh", overflowY: "auto", position: "relative" }} onClick={(e) => e.stopPropagation()}>
+            <button onClick={() => setShowUpgradeModal(false)} style={{ position: "absolute", top: "16px", right: "16px", background: "none", border: "none", cursor: "pointer", fontSize: "1.1rem", color: "#9ca3af", lineHeight: 1 }}>✕</button>
+            <h3 style={{ fontSize: "1.2rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "6px", paddingRight: "24px" }}>{upgradeModalTitle || "Upgrade your plan"}</h3>
+            <p style={{ fontSize: "0.85rem", color: "#6b7280", marginBottom: "16px" }}>{upgradeModalSubtitle || "Unlimited summaries, email checker, and professor email finder."}</p>
 
             {/* Lifetime option — featured on top */}
-            <div style={{ marginBottom: "16px", padding: "20px", borderRadius: "14px", border: "2px solid rgba(168,137,62,0.5)", boxShadow: "0 0 20px rgba(168,137,62,0.1)", background: "rgba(168,137,62,0.05)" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
-                <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#A8893E", textTransform: "uppercase", letterSpacing: "0.1em" }}>Lifetime</p>
-                <span style={{ fontSize: "0.6rem", fontWeight: 700, color: "#fff", background: "linear-gradient(135deg, #A8893E, #c9a84c)", padding: "3px 10px", borderRadius: "999px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Best Value</span>
+            <div style={{ marginBottom: "12px", padding: "16px", borderRadius: "14px", border: "2px solid rgba(168,137,62,0.5)", boxShadow: "0 0 20px rgba(168,137,62,0.1)", background: "rgba(168,137,62,0.05)" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
+                <p style={{ fontSize: "0.68rem", fontWeight: 700, color: "#A8893E", textTransform: "uppercase", letterSpacing: "0.1em" }}>Lifetime</p>
+                <span style={{ fontSize: "0.58rem", fontWeight: 700, color: "#fff", background: "linear-gradient(135deg, #A8893E, #c9a84c)", padding: "3px 9px", borderRadius: "999px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Best Value</span>
               </div>
-              <div style={{ display: "flex", alignItems: "baseline", gap: "8px", marginBottom: "2px" }}>
-                <span style={{ fontSize: "2rem", fontWeight: 800, color: "#A8893E" }}>$59</span>
-                <span style={{ fontSize: "0.85rem", color: "#A8893E", fontWeight: 600 }}>one-time</span>
+              <div style={{ display: "flex", alignItems: "baseline", gap: "6px", marginBottom: "2px" }}>
+                <span style={{ fontSize: "1.7rem", fontWeight: 800, color: "#A8893E" }}>$59</span>
+                <span style={{ fontSize: "0.8rem", color: "#A8893E", fontWeight: 600 }}>one-time</span>
               </div>
-              <p style={{ fontSize: "0.8rem", color: "#9b8040", marginBottom: "12px" }}>That&apos;s less than 2 semesters. Never pay again.</p>
-              <ul style={{ listStyle: "none", padding: 0, marginBottom: "16px" }}>
+              <p style={{ fontSize: "0.75rem", color: "#9b8040", marginBottom: "10px" }}>That&apos;s less than 2 semesters. Never pay again.</p>
+              <ul style={{ listStyle: "none", padding: 0, marginBottom: "12px" }}>
                 {["Everything in Semester, forever", "One payment, lifetime access", "Emails That Worked + Email Template"].map((f) => (
-                  <li key={f} style={{ fontSize: "0.85rem", color: "#6b7280", padding: "4px 0", display: "flex", gap: "8px" }}>
+                  <li key={f} style={{ fontSize: "0.8rem", color: "#6b7280", padding: "3px 0", display: "flex", gap: "7px" }}>
                     <span style={{ color: "#A8893E" }}>✓</span> {f}
                   </li>
                 ))}
@@ -2370,16 +2418,16 @@ function AppPageInner() {
             </div>
 
             {/* Semester option */}
-            <div style={{ padding: "20px", borderRadius: "14px", border: "1.5px solid rgba(45,90,61,0.2)", background: "rgba(45,90,61,0.03)" }}>
-              <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "4px" }}>Semester</p>
-              <div style={{ display: "flex", alignItems: "baseline", gap: "8px", marginBottom: "2px" }}>
-                <span style={{ fontSize: "2rem", fontWeight: 800, color: "#2d5a3d" }}>$29</span>
-                <span style={{ fontSize: "0.85rem", color: "#2d5a3d", fontWeight: 500 }}>/ 4 months</span>
+            <div style={{ padding: "16px", borderRadius: "14px", border: "1.5px solid rgba(45,90,61,0.2)", background: "rgba(45,90,61,0.03)" }}>
+              <p style={{ fontSize: "0.68rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "4px" }}>Semester</p>
+              <div style={{ display: "flex", alignItems: "baseline", gap: "6px", marginBottom: "2px" }}>
+                <span style={{ fontSize: "1.7rem", fontWeight: 800, color: "#2d5a3d" }}>$29</span>
+                <span style={{ fontSize: "0.8rem", color: "#2d5a3d", fontWeight: 500 }}>/ 4 months</span>
               </div>
-              <p style={{ fontSize: "0.8rem", color: "#6b7280", marginBottom: "12px" }}>One semester. Everything you need to land a position.</p>
-              <ul style={{ listStyle: "none", padding: 0, marginBottom: "16px" }}>
+              <p style={{ fontSize: "0.75rem", color: "#6b7280", marginBottom: "10px" }}>One semester. Everything you need to land a position.</p>
+              <ul style={{ listStyle: "none", padding: 0, marginBottom: "12px" }}>
                 {["Unlimited research summaries", "Email checker with red-flag detection", "Professor email finder", "Professor responsiveness indicator", "Emails That Worked + Email Template"].map((f) => (
-                  <li key={f} style={{ fontSize: "0.85rem", color: "#6b7280", padding: "4px 0", display: "flex", gap: "8px" }}>
+                  <li key={f} style={{ fontSize: "0.8rem", color: "#6b7280", padding: "3px 0", display: "flex", gap: "7px" }}>
                     <span style={{ color: "#2d5a3d" }}>✓</span> {f}
                   </li>
                 ))}
@@ -2397,18 +2445,8 @@ function AppPageInner() {
               </button>
             </div>
 
-            <div style={{ marginTop: "16px", padding: "12px 16px", background: "rgba(45,90,61,0.04)", borderRadius: "10px", border: "1px solid rgba(45,90,61,0.1)" }}>
-              <p style={{ fontSize: "0.75rem", color: "#2d5a3d", fontWeight: 700, marginBottom: "6px" }}>Included with every plan:</p>
-              <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
-                {["Email Template (professor-tested)", "Emails That Worked (real examples)", "Follow-Up Guide"].map((b) => (
-                  <p key={b} style={{ fontSize: "0.75rem", color: "#6b7280", display: "flex", gap: "6px" }}>
-                    <span style={{ color: "#A8893E" }}>✓</span> {b}
-                  </p>
-                ))}
-              </div>
-            </div>
-            <p style={{ fontSize: "0.78rem", color: "#9b8040", textAlign: "center", marginTop: "12px", fontWeight: 600 }}>Get a professor reply in 30 days or your money back.</p>
-            <p style={{ fontSize: "0.72rem", color: "#9ca3af", textAlign: "center", marginTop: "4px" }}>Powered by Stripe.</p>
+            <p style={{ fontSize: "0.74rem", color: "#9b8040", textAlign: "center", marginTop: "14px", fontWeight: 600 }}>Get a professor reply in 30 days or your money back.</p>
+            <p style={{ fontSize: "0.68rem", color: "#9ca3af", textAlign: "center", marginTop: "3px" }}>Powered by Stripe.</p>
           </div>
         </div>
       )}
