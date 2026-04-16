@@ -341,11 +341,11 @@ function AppPageInner() {
   const [, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
 
-  // Handle ?upgrade=true or ?upgrade=lifetime from landing page
+  // Handle ?upgrade=true or ?upgrade=lifetime or ?upgrade=weekly from landing page
   useEffect(() => {
     if (authLoading2) return;
     const upgradeParam = searchParams.get("upgrade");
-    if (upgradeParam === "true" || upgradeParam === "lifetime") {
+    if (upgradeParam === "true" || upgradeParam === "lifetime" || upgradeParam === "weekly") {
       if (!user) {
         setShowAuthModal(true);
         setAuthMode("signup");

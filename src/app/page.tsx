@@ -559,19 +559,19 @@ export default function LandingPage() {
           </div>
 
           {/* Semester (2) */}
-          <div className="lp-price-card lp-price-card-featured lp-carousel-card" data-pos={getCarouselPos(2)}>
-            <div className="lp-price-tier" style={{ color: "#9dbfaa" }}>Semester</div>
-            <div className="lp-price-amount" style={{ color: "#fff" }}>$29</div>
-            <div className="lp-price-period" style={{ color: "rgba(255,255,255,0.5)" }}>4 months access</div>
+          <div className="lp-price-card lp-carousel-card" data-pos={getCarouselPos(2)}>
+            <div className="lp-price-tier">Semester</div>
+            <div className="lp-price-amount" style={{ color: "#2d5a3d" }}>$29</div>
+            <div className="lp-price-period" style={{ opacity: 0.7 }}>4 months access</div>
             
-            <ul className="lp-price-features" style={{ color: "rgba(255,255,255,0.8)" }}>
-              <li style={{ color: "#fff", fontWeight: 700 }}><span className="lp-check" style={{ color: "#9dbfaa" }}>✓</span>Everything in Free, plus:</li>
+            <ul className="lp-price-features">
+              <li style={{ fontWeight: 700 }}><span className="lp-check">✓</span>Everything in Free, plus:</li>
               {["Unlimited research summaries", "Email checker", "Professor email finder", "Responsiveness indicator"].map((f) => (
-                <li key={f}><span className="lp-check" style={{ color: "#9dbfaa" }}>✓</span>{f}</li>
+                <li key={f}><span className="lp-check">✓</span>{f}</li>
               ))}
             </ul>
             
-            <Link href="/app?upgrade=true" className="lp-price-btn lp-price-btn-white">
+            <Link href="/app?upgrade=true" className="lp-price-btn" style={{ background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "1px solid rgba(45, 90, 61, 0.2)" }}>
               Get Semester Access — $29
             </Link>
           </div>
