@@ -28,6 +28,7 @@ export default function MobileLanding() {
   const [inlineWaitlistDone, setInlineWaitlistDone] = useState(false);
   const [lifetimeSpotsRemaining, setLifetimeSpotsRemaining] = useState<number | null>(null);
   const [glowingCard, setGlowingCard] = useState<string | null>(null);
+  const [activePricingTab, setActivePricingTab] = useState<'lifetime' | 'semester' | 'free'>('lifetime');
   const [showStarterKit, setShowStarterKit] = useState(false);
   const splotchRefs = useRef<(HTMLDivElement | null)[]>([]);
   const timelineRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -157,6 +158,36 @@ export default function MobileLanding() {
 
   return (
     <div style={{ minHeight: "100vh", position: "relative", overflowX: "hidden" }}>
+      <style>{`
+        .pricing-layout-grid {
+          display: flex;
+          flex-direction: column;
+          gap: 28px;
+        }
+        .pricing-card-wrapper {
+          display: none;
+        }
+        .pricing-card-wrapper.active-tab {
+          display: block;
+        }
+        .pricing-tabs-container {
+          display: flex;
+        }
+        @media (min-width: 1024px) {
+          .pricing-layout-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            align-items: start;
+          }
+          .pricing-card-wrapper {
+            display: block !important;
+          }
+          .pricing-tabs-container {
+            display: none !important;
+          }
+        }
+      `}</style>
       {/* Background splotches with parallax */}
       <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "100%", pointerEvents: "none", zIndex: -1, overflow: "hidden", maxWidth: "100vw" }}>
         <div ref={(el) => { splotchRefs.current[0] = el; }} style={{ position: "absolute", top: "5%", right: "-10%", width: 160, height: 160, borderRadius: "50%", background: "radial-gradient(ellipse at 35% 40%, rgba(45, 90, 61,0.2) 0%, transparent 70%)", filter: "blur(80px)", willChange: "transform" }} />
@@ -590,12 +621,21 @@ export default function MobileLanding() {
           borderRadius: 2,
         }} />
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
+        <div className="pricing-tabs-container" style={{
+          background: "rgba(45,90,61,0.08)", borderRadius: "999px", padding: "4px", marginBottom: "28px"
+        }}>
+          <button onClick={() => setActivePricingTab('lifetime')} style={{ flex: 1, padding: "12px", borderRadius: "999px", border: "none", background: activePricingTab === 'lifetime' ? "#ffffff" : "transparent", color: activePricingTab === 'lifetime' ? "#A8893E" : "#6b7280", fontWeight: 700, fontSize: "0.85rem", boxShadow: activePricingTab === 'lifetime' ? "0 2px 8px rgba(0,0,0,0.05)" : "none", transition: "all 0.2s" }}>Lifetime</button>
+          <button onClick={() => setActivePricingTab('semester')} style={{ flex: 1, padding: "12px", borderRadius: "999px", border: "none", background: activePricingTab === 'semester' ? "#ffffff" : "transparent", color: activePricingTab === 'semester' ? "#2d5a3d" : "#6b7280", fontWeight: 700, fontSize: "0.85rem", boxShadow: activePricingTab === 'semester' ? "0 2px 8px rgba(0,0,0,0.05)" : "none", transition: "all 0.2s" }}>Semester</button>
+          <button onClick={() => setActivePricingTab('free')} style={{ flex: 1, padding: "12px", borderRadius: "999px", border: "none", background: activePricingTab === 'free' ? "#ffffff" : "transparent", color: activePricingTab === 'free' ? "#1a1a1a" : "#6b7280", fontWeight: 700, fontSize: "0.85rem", boxShadow: activePricingTab === 'free' ? "0 2px 8px rgba(0,0,0,0.05)" : "none", transition: "all 0.2s" }}>Free</button>
+        </div>
+
+        <div className="pricing-layout-grid">
           {/* Lifetime — Gold Premium (first on mobile, Best Value) */}
-          <div
-            ref={(el) => { pricingRefs.current[0] = el; }}
-            className={`mobile-card-enter `}
-            style={{
+          <div className={`pricing-card-wrapper ${activePricingTab === 'lifetime' ? 'active-tab' : ''}`}>
+            <div
+              ref={(el) => { pricingRefs.current[0] = el; }}
+              className={`mobile-card-enter `}
+              style={{
               padding: "36px 24px", position: "relative",
               border: "2px solid rgba(196, 162, 101, 0.5)",
               background: "linear-gradient(165deg, rgba(255,250,235,0.85) 0%, rgba(255,245,220,0.6) 50%, rgba(245,235,200,0.4) 100%)",
@@ -668,12 +708,14 @@ export default function MobileLanding() {
             )}
             <p style={{ fontSize: "0.72rem", color: "#9b8040", fontStyle: "italic", textAlign: "center", marginTop: "10px" }}>Not satisfied in 30 days? Full refund. No questions asked.</p>
           </div>
+          </div>
 
           {/* Semester — dark card */}
-          <div
-            ref={(el) => { pricingRefs.current[1] = el; }}
-            className={`mobile-card-enter `}
-            style={{
+          <div className={`pricing-card-wrapper ${activePricingTab === 'semester' ? 'active-tab' : ''}`}>
+            <div
+              ref={(el) => { pricingRefs.current[1] = el; }}
+              className={`mobile-card-enter `}
+              style={{
               padding: "36px 24px", position: "relative",
               background: "#2d5a3d",
               boxShadow: "0 12px 40px rgba(45, 90, 61,0.3)",
@@ -719,12 +761,14 @@ export default function MobileLanding() {
             </Link>
             <p style={{ fontSize: "0.72rem", color: "rgba(245,240,230,0.4)", fontStyle: "italic", textAlign: "center", marginTop: "10px" }}>Not satisfied in 30 days? Full refund. No questions asked.</p>
           </div>
+          </div>
 
           {/* Free */}
-          <div
-            ref={(el) => { pricingRefs.current[2] = el; }}
-            className={`mobile-card-enter `}
-            style={{
+          <div className={`pricing-card-wrapper ${activePricingTab === 'free' ? 'active-tab' : ''}`}>
+            <div
+              ref={(el) => { pricingRefs.current[2] = el; }}
+              className={`mobile-card-enter `}
+              style={{
               padding: "32px 24px",
               background: "rgba(255,255,255,0.55)",
               backdropFilter: "blur(16px) saturate(1.2)",
@@ -747,12 +791,13 @@ export default function MobileLanding() {
               Find a professor now, free
             </Link>
           </div>
+          </div>
         </div>
 
         {/* Inline waitlist */}
         <div style={{ textAlign: "center", marginTop: "36px" }}>
           <p style={{ fontSize: "0.95rem", color: "#6b7280", marginBottom: "14px" }}>
-            More plans coming soon. Want early access?
+            Guaranteed response plan coming soon, join the waitlist
           </p>
           {inlineWaitlistDone ? (
             <p style={{ fontSize: "0.95rem", color: "#2d5a3d", fontWeight: 600 }}>

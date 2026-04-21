@@ -34,6 +34,7 @@ export default function LandingPage() {
   const [heroVisible, setHeroVisible] = useState(false);
   const [searchCount, setSearchCount] = useState<number | null>(null);
   const [activePricingIndex, setActivePricingIndex] = useState(2);
+  const [activePricingTab, setActivePricingTab] = useState<"free" | "weekly" | "semester" | "lifetime">("semester");
 
   const getCarouselPos = (index: number) => {
     if (index === activePricingIndex) return "active";
@@ -510,9 +511,23 @@ export default function LandingPage() {
           <p className="lp-pricing-sub">One research position can change your entire career. One semester is all it takes.</p>
         </div>
 
-        <div className="lp-carousel-container" data-reveal>
-          {/* Free (0) */}
-          <div className="lp-price-card lp-price-card-free lp-carousel-card" data-pos={getCarouselPos(0)}>
+        {/* Mobile: Tab toggle */}
+        <div className="lp-pricing-tabs" data-reveal>
+          {(["free", "weekly", "semester", "lifetime"] as const).map((tab) => (
+            <button
+              key={tab}
+              className={`lp-pricing-tab${activePricingTab === tab ? " lp-pricing-tab-active" : ""}`}
+              onClick={() => setActivePricingTab(tab)}
+            >
+              {tab === "free" ? "Free" : tab === "weekly" ? "Weekly" : tab === "semester" ? "Semester" : "Lifetime"}
+            </button>
+          ))}
+        </div>
+
+        {/* Desktop: 4-column grid | Mobile: single active card */}
+        <div className="lp-pricing-grid" data-reveal>
+          {/* Free */}
+          <div className={`lp-price-card lp-price-card-free lp-pricing-grid-card${activePricingTab === "free" ? " lp-tab-active" : " lp-tab-hidden"}`}>
             <div className="lp-price-tier">Free</div>
             <div className="lp-price-amount">$0</div>
             <div className="lp-price-period">forever</div>
@@ -526,56 +541,50 @@ export default function LandingPage() {
             </Link>
           </div>
 
-          {/* Weekly Sprint (1) */}
-          <div className="lp-price-card lp-carousel-card" data-pos={getCarouselPos(1)}>
+          {/* Weekly Sprint */}
+          <div className={`lp-price-card lp-pricing-grid-card${activePricingTab === "weekly" ? " lp-tab-active" : " lp-tab-hidden"}`}>
             <div className="lp-price-tier">Weekly Sprint</div>
             <div className="lp-price-amount" style={{ color: "#2d5a3d" }}>$9</div>
             <div className="lp-price-period" style={{ opacity: 0.7 }}>1 week access</div>
-            
             <ul className="lp-price-features">
               <li style={{ fontWeight: 700 }}><span className="lp-check">✓</span>Software access:</li>
               {["Unlimited research summaries", "Email checker", "Professor email finder", "Responsiveness indicator"].map((f) => (
                 <li key={f}><span className="lp-check">✓</span>{f}</li>
               ))}
             </ul>
-            
             <Link href="/app?upgrade=weekly" className="lp-price-btn" style={{ background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "1px solid rgba(45, 90, 61, 0.2)" }}>
               Start 1-Week Sprint — $9
             </Link>
           </div>
 
-          {/* Semester (2) */}
-          <div className="lp-price-card lp-carousel-card" data-pos={getCarouselPos(2)}>
+          {/* Semester */}
+          <div className={`lp-price-card lp-pricing-grid-card${activePricingTab === "semester" ? " lp-tab-active" : " lp-tab-hidden"}`}>
             <div className="lp-price-tier">Semester</div>
             <div className="lp-price-amount" style={{ color: "#2d5a3d" }}>$29</div>
             <div className="lp-price-period" style={{ opacity: 0.7 }}>4 months access</div>
-            
             <ul className="lp-price-features">
               <li style={{ fontWeight: 700 }}><span className="lp-check">✓</span>Everything in Free, plus:</li>
               {["Unlimited research summaries", "Email checker", "Professor email finder", "Responsiveness indicator"].map((f) => (
                 <li key={f}><span className="lp-check">✓</span>{f}</li>
               ))}
             </ul>
-            
             <Link href="/app?upgrade=true" className="lp-price-btn" style={{ background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "1px solid rgba(45, 90, 61, 0.2)" }}>
               Get Semester Access — $29
             </Link>
           </div>
 
-          {/* Lifetime (3) */}
-          <div className="lp-price-card lp-price-card-lifetime lp-price-card-lifetime-hero lp-carousel-card" data-pos={getCarouselPos(3)}>
+          {/* Lifetime */}
+          <div className={`lp-price-card lp-price-card-lifetime lp-price-card-lifetime-hero lp-pricing-grid-card${activePricingTab === "lifetime" ? " lp-tab-active" : " lp-tab-hidden"}`}>
             <div className="lp-best-value-badge">Best Value</div>
             <div className="lp-price-tier" style={{ color: "#A8893E" }}>Lifetime</div>
             <div className="lp-price-amount" style={{ color: "#A8893E" }}>$59</div>
             <div className="lp-price-period" style={{ color: "#A8893E", opacity: 0.7 }}>Yours forever.</div>
-            
             <ul className="lp-price-features">
               <li style={{ fontWeight: 700 }}><span className="lp-check" style={{ color: "#A8893E" }}>✓</span>Everything in Semester, plus:</li>
               {["Never pay again", "Unlimited searches & summaries", "Email checker", "Professor email finder", "Nearby professor access", "Responsiveness indicator"].map((f) => (
                 <li key={f}><span className="lp-check" style={{ color: "#A8893E" }}>✓</span>{f}</li>
               ))}
             </ul>
-            
             {lifetimeSpotsRemaining === 0 ? (
               <button disabled className="lp-price-btn" style={{ background: "#e5e7eb", color: "#9ca3af", cursor: "not-allowed" }}>Sold out</button>
             ) : (
@@ -584,16 +593,6 @@ export default function LandingPage() {
               </Link>
             )}
           </div>
-        </div>
-
-        {/* Carousel Controls */}
-        <div className="lp-carousel-controls" data-reveal>
-          <button className="carousel-arrow" onClick={() => setActivePricingIndex(Math.max(0, activePricingIndex - 1))} disabled={activePricingIndex === 0}>
-            ←
-          </button>
-          <button className="carousel-arrow" onClick={() => setActivePricingIndex(Math.min(3, activePricingIndex + 1))} disabled={activePricingIndex === 3}>
-            →
-          </button>
         </div>
 
         {/* Global Bonus Strip (Moved out of cards for a cleaner UI) */}
@@ -606,7 +605,7 @@ export default function LandingPage() {
 
         {/* Inline waitlist */}
         <div className="lp-waitlist" data-reveal>
-          <p className="lp-waitlist-text">More plans coming. Want early access?</p>
+          <p className="lp-waitlist-text">Guaranteed response plan coming soon, join the waitlist</p>
           {inlineWaitlistDone ? (
             <p style={{ color: "#2d5a3d", fontWeight: 600 }}>You&apos;re on the list.</p>
           ) : (

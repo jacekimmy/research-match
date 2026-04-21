@@ -3930,6 +3930,71 @@ body::after {
   color: #6b7280;
   line-height: 1.6;
 }
+/* ── Pricing: Tab toggle (mobile) + 4-col grid (desktop) ── */
+.lp-pricing-tabs {
+  display: none;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.lp-pricing-tab {
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(45, 90, 61, 0.2);
+  background: transparent;
+  color: #2d5a3d;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.lp-pricing-tab-active {
+  background: #2d5a3d;
+  color: #fff;
+  border-color: #2d5a3d;
+}
+.lp-pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+  align-items: start;
+}
+.lp-pricing-grid-card {
+  width: 100%;
+}
+/* Mobile: hide non-active tabs via class, show tabs nav */
+@media (max-width: 900px) {
+  .lp-pricing-tabs {
+    display: flex;
+  }
+  .lp-pricing-grid {
+    display: block;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+  .lp-pricing-grid-card {
+    display: none;
+  }
+  .lp-pricing-grid-card.lp-tab-active {
+    display: flex;
+    flex-direction: column;
+  }
+}
+/* Desktop: always show all cards, ignore tab classes */
+@media (min-width: 901px) {
+  .lp-pricing-tabs {
+    display: none !important;
+  }
+  .lp-pricing-grid-card {
+    display: flex !important;
+    flex-direction: column;
+  }
+}
+
+
 
 .lp-carousel-container {
   display: grid;
