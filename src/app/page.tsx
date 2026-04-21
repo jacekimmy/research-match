@@ -165,7 +165,7 @@ export default function LandingPage() {
           </h1>
 
           <p className="lp-hero-sub">
-            Find the right professor, understand their research, and craft an email built on advice from real professors, in under 10 minutes.
+            Search 250M+ papers, find a professor who matches, and send an email worth replying to
           </p>
 
           {/* Hero search */}
@@ -214,6 +214,34 @@ export default function LandingPage() {
         {/* Scroll cue */}
         <div className="lp-scroll-cue">
           <div className="lp-scroll-line" />
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════
+          DARK CALLOUT
+      ══════════════════════════════════════════ */}
+      <section className="lp-dark-callout" data-reveal>
+        <div className="lp-dark-callout-inner">
+          <p className="lp-dark-callout-eyebrow">The truth about cold emails</p>
+          <h2 className="lp-dark-callout-title">
+            Professors delete 90% of student emails<br />
+            <span className="lp-dark-callout-em">before finishing the first line.</span>
+          </h2>
+          <div className="lp-dark-reasons">
+            {[
+              "Professors can spot AI-written emails instantly.",
+              "Generic emails that could be sent to anyone get ignored.",
+              "Name-dropping papers without understanding them backfires.",
+            ].map((r, i) => (
+              <div key={i} className="lp-dark-reason">
+                <span className="lp-dark-reason-x">✕</span>
+                <span>{r}</span>
+              </div>
+            ))}
+          </div>
+          <Link href="/app" className="lp-dark-cta">
+            Write one that gets read →
+          </Link>
         </div>
       </section>
 
@@ -446,34 +474,6 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════
-          DARK CALLOUT
-      ══════════════════════════════════════════ */}
-      <section className="lp-dark-callout" data-reveal>
-        <div className="lp-dark-callout-inner">
-          <p className="lp-dark-callout-eyebrow">The truth about cold emails</p>
-          <h2 className="lp-dark-callout-title">
-            Professors delete 90% of student emails<br />
-            <span className="lp-dark-callout-em">before finishing the first line.</span>
-          </h2>
-          <div className="lp-dark-reasons">
-            {[
-              "Professors can spot AI-written emails instantly.",
-              "Generic emails that could be sent to anyone get ignored.",
-              "Name-dropping papers without understanding them backfires.",
-            ].map((r, i) => (
-              <div key={i} className="lp-dark-reason">
-                <span className="lp-dark-reason-x">✕</span>
-                <span>{r}</span>
-              </div>
-            ))}
-          </div>
-          <Link href="/app" className="lp-dark-cta">
-            Write one that gets read →
-          </Link>
         </div>
       </section>
 
