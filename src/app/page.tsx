@@ -137,7 +137,6 @@ export default function LandingPage() {
           </Link>
           <div className="lp-nav-spacer" />
           <div className="lp-nav-links">
-            <a href="#how" className="lp-nav-link">How it works</a>
             <Link href="/blog" className="lp-nav-link">Blog</Link>
             <a href="#pricing" className="lp-nav-link">Pricing</a>
             <Link href="/feedback" className="lp-nav-link">Feedback</Link>
@@ -261,31 +260,6 @@ export default function LandingPage() {
           </div>
         ))}
       </div>
-
-      {/* ══════════════════════════════════════════
-          HOW IT WORKS — COMPACT CARDS
-      ══════════════════════════════════════════ */}
-      <section id="how" style={{ maxWidth: "1100px", margin: "120px auto", padding: "0 24px" }} data-reveal>
-        <div style={{ textAlign: "center", marginBottom: "64px" }}>
-          <p style={{ fontSize: "0.75rem", fontWeight: 800, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: "16px" }}>The Process</p>
-          <h2 style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "clamp(2rem, 4vw, 2.8rem)", fontWeight: 700, color: "#1a1a1a", margin: 0, letterSpacing: "-0.02em" }}>
-            How it works
-          </h2>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "24px" }} className="lp-how-it-works-grid">
-          {[
-            { num: "01", title: "Search your interest", desc: "Type in any research topic and a university. We search 250M+ academic papers to find professors actively publishing in that area." },
-            { num: "02", title: "Understand their work", desc: "Get a plain-English summary of each professor's research, their recent papers, and what makes their work unique." },
-            { num: "03", title: "Write an email that works", desc: "Use our framework built on advice from real professors. No AI-generated emails, just the research you need to write your own." },
-          ].map((step, i) => (
-            <div key={i} style={{ background: "rgba(255,255,255,0.8)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", border: "1px solid rgba(255,255,255,0.9)", borderRadius: "24px", padding: "40px 32px", boxShadow: "0 10px 40px rgba(45,90,61,0.06)", display: "flex", flexDirection: "column", gap: "16px", transition: "transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)", cursor: "default" }} className="lp-how-card">
-              <div style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "2.4rem", fontWeight: 800, color: "#2d5a3d", letterSpacing: "-0.02em", lineHeight: 1 }}>{step.num}</div>
-              <h3 style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "1.3rem", fontWeight: 700, color: "#1a1a1a", margin: 0, lineHeight: 1.2 }}>{step.title}</h3>
-              <p style={{ fontSize: "0.95rem", color: "#6b7280", lineHeight: 1.7, margin: 0 }}>{step.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
 
       {/* ══════════════════════════════════════════
           WHY NOT CHATGPT
