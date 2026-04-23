@@ -228,28 +228,28 @@ export default function LandingPage() {
 
         /* ── Desktop Layout (> 900px) ── */
         @media (min-width: 901px) {
-          body .lp-root .lp-pricing-slider-viewport {
+          #lp-pricing-slider-viewport {
             max-width: none !important;
             overflow: visible !important;
             padding-top: 0 !important;
             padding-bottom: 0 !important;
           }
-          body .lp-root .lp-pricing-slider-track {
+          #lp-pricing-slider-track {
             display: grid !important;
             grid-template-columns: repeat(4, 1fr) !important;
             gap: 24px !important;
             transform: none !important;
             width: auto !important;
           }
-          body .lp-root .lp-pricing-slider-slide {
+          .lp-pricing-slider-slide {
             flex: none !important;
             width: auto !important;
             padding: 0 !important;
           }
-          body .lp-root .lp-pricing-tabs {
+          #lp-mobile-pricing-tabs {
             display: none !important;
           }
-          body .lp-root .lp-pricing-dots {
+          #lp-mobile-pricing-dots {
             display: none !important;
           }
         }
@@ -651,6 +651,7 @@ export default function LandingPage() {
 
         {/* Mobile: Tab toggle */}
         <div 
+          id="lp-mobile-pricing-tabs"
           className="lp-pricing-tabs" 
           data-reveal
           style={{
@@ -724,8 +725,9 @@ export default function LandingPage() {
         </div>
 
         {/* Desktop: 4-column grid | Mobile: single active card */}
-        <div className="lp-pricing-slider-viewport" data-reveal>
+        <div id="lp-pricing-slider-viewport" className="lp-pricing-slider-viewport" data-reveal>
           <div 
+            id="lp-pricing-slider-track"
             className="lp-pricing-slider-track"
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
@@ -813,7 +815,7 @@ export default function LandingPage() {
         </div>
 
         {/* Dot Indicators */}
-        <div className="lp-pricing-dots">
+        <div id="lp-mobile-pricing-dots" className="lp-pricing-dots">
           {pricingOptions.map((_, idx) => (
             <div 
               key={idx} 
