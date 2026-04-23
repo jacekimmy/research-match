@@ -177,6 +177,29 @@ export default function LandingPage() {
           min-height: 540px !important;
         }
         
+        /* ── Desktop Grid Enforcements ── */
+        @media (min-width: 901px) {
+          .lp-pricing-slider-viewport {
+            overflow: visible !important;
+            padding-bottom: 0 !important;
+          }
+          .lp-pricing-slider-track {
+            display: grid !important;
+            grid-template-columns: repeat(4, 1fr) !important;
+            gap: 24px !important;
+            transform: none !important;
+            width: auto !important;
+          }
+          .lp-pricing-slider-slide {
+            flex: none !important;
+            width: auto !important;
+            padding: 0 !important;
+          }
+          .lp-pricing-tabs, .lp-pricing-dots {
+            display: none !important;
+          }
+        }
+        
         /* Hide old static tabs if they exist */
         .lp-pricing-tabs {
           display: flex !important;

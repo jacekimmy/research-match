@@ -3809,6 +3809,18 @@ body::after {
 /* Last row: center the remaining 2 cards */
 .lp-quotes-grid .lp-quote-card:nth-child(4) { grid-column: 1; }
 .lp-quotes-grid .lp-quote-card:nth-child(5) { grid-column: 2; }
+
+@media (max-width: 900px) {
+  .lp-quotes-grid {
+    grid-template-columns: 1fr;
+    padding: 0 20px;
+    gap: 16px;
+  }
+  .lp-quotes-grid .lp-quote-card:nth-child(4),
+  .lp-quotes-grid .lp-quote-card:nth-child(5) {
+    grid-column: auto;
+  }
+}
 .lp-quote-card {
   width: 100%;
   background: rgba(255, 255, 255, 0.65);
