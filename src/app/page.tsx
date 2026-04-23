@@ -145,7 +145,7 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="lp-root">
+    <div className="lp-root" style={{ overflowX: 'hidden' }}>
       <style>{`
         /* ── Universal Enforcements ── */
         .lp-pricing-slider-viewport {
@@ -182,6 +182,9 @@ export default function LandingPage() {
           border: none !important;
           box-shadow: none !important;
           margin: 0 !important;
+          padding: 0 !important;
+          font-size: clamp(0.65rem, 2.8vw, 0.85rem) !important;
+          flex: 1 1 0% !important;
         }
         .lp-pricing-tab.lp-pricing-tab-active {
           background: transparent !important;
@@ -225,28 +228,28 @@ export default function LandingPage() {
 
         /* ── Desktop Layout (> 900px) ── */
         @media (min-width: 901px) {
-          .lp-pricing-slider-viewport {
+          body .lp-root .lp-pricing-slider-viewport {
             max-width: none !important;
             overflow: visible !important;
             padding-top: 0 !important;
             padding-bottom: 0 !important;
           }
-          .lp-pricing-slider-track {
+          body .lp-root .lp-pricing-slider-track {
             display: grid !important;
             grid-template-columns: repeat(4, 1fr) !important;
             gap: 24px !important;
             transform: none !important;
             width: auto !important;
           }
-          .lp-pricing-slider-slide {
+          body .lp-root .lp-pricing-slider-slide {
             flex: none !important;
             width: auto !important;
             padding: 0 !important;
           }
-          .lp-pricing-tabs {
+          body .lp-root .lp-pricing-tabs {
             display: none !important;
           }
-          .lp-pricing-dots {
+          body .lp-root .lp-pricing-dots {
             display: none !important;
           }
         }
@@ -678,7 +681,8 @@ export default function LandingPage() {
               transition: 'transform 0.5s cubic-bezier(0.2, 1.6, 0.4, 1)',
               zIndex: 1,
               pointerEvents: 'none',
-              padding: '4px'
+              padding: '4px',
+              boxSizing: 'border-box'
             }} 
           >
             <div style={{
