@@ -3327,7 +3327,7 @@ body::after {
     0 2px 8px rgba(0, 0, 0, 0.04),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   position: relative;
 }
 .lp-search-focused {
@@ -3431,25 +3431,56 @@ body::after {
 .lp-ghost-btn:hover { color: #2d5a3d; }
 .lp-hero-divider-dot { color: #d1d5db; font-size: 0.7rem; }
 
-/* Scroll cue */
+/* Scroll cue — bouncing chevron */
 .lp-scroll-cue {
   position: absolute;
-  bottom: 40px;
+  bottom: 36px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-.lp-scroll-line {
-  width: 1px;
-  height: 56px;
-  background: linear-gradient(to bottom, rgba(45, 90, 61, 0.5), transparent);
-  animation: lpScrollLine 2s ease-in-out infinite;
+.lp-scroll-chevron {
+  opacity: 0.55;
+  animation: lpScrollBounce 2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  will-change: transform, opacity;
 }
-@keyframes lpScrollLine {
-  0%, 100% { opacity: 0.3; transform: scaleY(0.7) translateY(-4px); }
-  50% { opacity: 1; transform: scaleY(1) translateY(0); }
+@keyframes lpScrollBounce {
+  0%, 100% { transform: translateY(-4px); opacity: 0.35; }
+  50%       { transform: translateY(4px);  opacity: 0.75; }
+}
+
+/* Hero inline testimonial - clean left-border strip */
+.lp-hero-testimonial {
+  margin-top: 20px;
+  max-width: 580px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.42);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-left: 3px solid rgba(45, 90, 61, 0.35);
+  border-radius: 0 12px 12px 0;
+  padding: 12px 18px;
+  text-align: left;
+  box-shadow: 0 2px 12px rgba(45, 90, 61, 0.04);
+  animation: lpHeroIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.7s both;
+}
+.lp-hero-testimonial-text {
+  font-size: 0.85rem;
+  color: #4b5563;
+  line-height: 1.55;
+  margin: 0 0 5px;
+  font-style: italic;
+}
+.lp-hero-testimonial-author {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #2d5a3d;
+  margin: 0;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
 /* ── Scroll reveal ── */
@@ -4540,11 +4571,11 @@ body::after {
 
   /* ── Hero ── */
   .lp-hero {
-    padding: 90px 20px 60px;
+    padding: 80px 20px 60px;
     min-height: 100svh;
     min-height: 100vh; /* fallback */
     justify-content: flex-start;
-    padding-top: max(90px, env(safe-area-inset-top, 0px) + 80px);
+    padding-top: max(80px, env(safe-area-inset-top, 0px) + 70px);
   }
   .lp-hero-inner {
     gap: 0;
@@ -4623,7 +4654,17 @@ body::after {
     justify-content: center;
   }
 
-  /* Hide scroll cue on mobile — content starts immediately */
+  /* Hero testimonial - compact on mobile */
+  .lp-hero-testimonial {
+    margin-top: 14px;
+    padding: 10px 14px;
+    border-radius: 0 10px 10px 0;
+  }
+  .lp-hero-testimonial-text {
+    font-size: 0.8rem;
+  }
+
+  /* Hide scroll cue on mobile — hero content fills viewport */
   .lp-scroll-cue { display: none; }
 
   /* ── Proof strip ── */
@@ -4889,6 +4930,10 @@ body::after {
   /* Upgrade/auth modals — tighter padding on small phones */
   .rm-modal-card {
     padding: 28px 20px !important;
+  }
+  /* Hide hero testimonial on very small phones to keep search bar above fold */
+  .lp-hero-testimonial {
+    display: none;
   }
 }
 

@@ -294,7 +294,7 @@ export default function LandingPage() {
         <div className="lp-hero-inner">
           <div className="lp-hero-eyebrow">
             <span className="lp-eyebrow-dot" />
-            250M+ papers indexed · 1,000+ universities
+            Loved by students at Stanford{" & "}universities worldwide
           </div>
 
           <h1 className="lp-hero-title">
@@ -347,11 +347,21 @@ export default function LandingPage() {
               Browse without searching
             </Link>
           </div>
+
+          {/* Hero testimonial - Jedrek N. */}
+          <div className="lp-hero-testimonial">
+            <p className="lp-hero-testimonial-text">
+              &ldquo;Research Match saved me time. The paper summaries meant I didn&apos;t have to waste time finding key findings myself.&rdquo;
+            </p>
+            <p className="lp-hero-testimonial-author">Jedrek N., College Student</p>
+          </div>
         </div>
 
         {/* Scroll cue */}
         <div className="lp-scroll-cue">
-          <div className="lp-scroll-line" />
+          <svg className="lp-scroll-chevron" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 9l6 6 6-6" stroke="#2d5a3d" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
         </div>
       </section>
 
@@ -462,7 +472,7 @@ export default function LandingPage() {
             <div className="lp-feature-num">01</div>
             <h2 className="lp-feature-title">Search any research interest.</h2>
             <p className="lp-feature-desc">
-              Type what you care about — quantum computing, cognitive neuroscience, climate policy.
+              Type what you care about: quantum computing, cognitive neuroscience, climate policy.
               We surface the top professors publishing in that exact space, ranked by impact.
             </p>
             <Link href="/app" className="lp-feature-link">Try a search →</Link>
@@ -504,7 +514,7 @@ export default function LandingPage() {
             <div className="lp-feature-num">02</div>
             <h2 className="lp-feature-title">Understand their research in plain English.</h2>
             <p className="lp-feature-desc">
-              Every professor gets an AI summary of their key findings — written so a high schooler
+              Every professor gets an AI summary of their key findings, written so a high schooler
               can understand it and use it in their email. No more pretending to read papers.
             </p>
             <Link href="/app" className="lp-feature-link">See an example →</Link>
@@ -530,8 +540,8 @@ export default function LandingPage() {
                 <div className="lp-mock-finding">
                   <div className="lp-mock-finding-label">Key Finding</div>
                   <p className="lp-mock-finding-text">
-                    Theta oscillations during REM sleep increased memory consolidation by 34% —
-                    published 2024, first-author.
+                    Theta oscillations during REM sleep increased memory consolidation by 34%.
+                    Published 2024, first-author.
                   </p>
                 </div>
               </div>
@@ -545,7 +555,7 @@ export default function LandingPage() {
             <div className="lp-feature-num">03</div>
             <h2 className="lp-feature-title">Write emails that get read.</h2>
             <p className="lp-feature-desc">
-              Our email checker — built from real professor feedback — catches every mistake
+              Our email checker, built from real professor feedback, catches every mistake
               before you hit send. Generic tone, AI language, vague ask. Fixed before it costs you.
             </p>
             <Link href="/app" className="lp-feature-link">Check your email →</Link>
@@ -628,7 +638,7 @@ export default function LandingPage() {
             <div key={i} className="lp-quote-card">
               <div className="lp-quote-mark">"</div>
               <p className="lp-quote-text">{item.quote}</p>
-              <p className="lp-quote-author">— {item.author}</p>
+              <p className="lp-quote-author">{item.author}</p>
             </div>
           ))}
         </div>
