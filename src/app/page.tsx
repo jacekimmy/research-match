@@ -33,15 +33,43 @@ export default function LandingPage() {
   const [waitlistLoading, setWaitlistLoading] = useState(false);
   const [heroVisible, setHeroVisible] = useState(false);
   const [searchCount, setSearchCount] = useState<number | null>(null);
-  const [activePricingIndex, setActivePricingIndex] = useState(2);
-  const [activePricingTab, setActivePricingTab] = useState<"free" | "weekly" | "semester" | "lifetime">("semester");
+  const [activePricingIndex, setActivePricingIndex] = useState(0);
+  const [activePricingTab, setActivePricingTab] = useState<string>("free");
+  const pricingOptions = ["free", "weekly", "semester", "lifetime"] as const;
 
-  const getCarouselPos = (index: number) => {
-    if (index === activePricingIndex) return "active";
-    if (index === activePricingIndex - 1) return "prev";
-    if (index === activePricingIndex + 1) return "next";
-    if (index < activePricingIndex) return "hidden-left";
-    return "hidden-right";
+  const setPricingItem = (index: number) => {
+    setActivePricingIndex(index);
+    setActivePricingTab(pricingOptions[index]);
+  };
+
+  // Swipe handling
+  const touchStart = useRef<number | null>(null);
+  const touchEnd = useRef<number | null>(null);
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchEnd.current = null;
+    touchStart.current = e.targetTouches[0].clientX;
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    touchEnd.current = e.targetTouches[0].clientX;
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart.current || !touchEnd.current) return;
+    const distance = touchStart.current - touchEnd.current;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe && activePricingIndex < pricingOptions.length - 1) {
+      setPricingItem(activePricingIndex + 1);
+    }
+    if (isRightSwipe && activePricingIndex > 0) {
+      setPricingItem(activePricingIndex - 1);
+    }
+    touchStart.current = null;
+    touchEnd.current = null;
   };
 
   useEffect(() => { setBillingMounted(true); }, []);
@@ -49,7 +77,7 @@ export default function LandingPage() {
   useEffect(() => {
     fetch("/api/stats").then(r => r.json()).then(d => {
       startTransition(() => setSearchCount(d.searches));
-    }).catch(() => {});
+    }).catch(() => { });
   }, []);
 
   useEffect(() => {
@@ -118,6 +146,81 @@ export default function LandingPage() {
 
   return (
     <div className="lp-root">
+      <style>{`
+        /* ── Universal Slider Enforcements ── */
+        .lp-pricing-slider-viewport {
+          width: 100% !important;
+          max-width: 500px !important;
+          margin: 0 auto !important;
+          overflow: hidden !important;
+          position: relative !important;
+          padding-top: 24px !important;
+          padding-bottom: 40px !important;
+        }
+        .lp-pricing-slider-track {
+          display: flex !important;
+          flex-direction: row !important;
+          flex-wrap: nowrap !important;
+          width: 100% !important;
+          transition: transform 0.5s cubic-bezier(0.2, 1.6, 0.4, 1) !important;
+          will-change: transform !important;
+          align-items: stretch !important;
+        }
+        .lp-pricing-slider-slide {
+          flex: 0 0 100% !important;
+          width: 100% !important;
+          padding: 0 24px !important;
+          box-sizing: border-box !important;
+        }
+        .lp-price-card {
+          height: 100% !important;
+          min-height: 540px !important;
+        }
+        
+        /* Hide old static tabs if they exist */
+        .lp-pricing-tabs {
+          display: flex !important;
+          flex-direction: row !important;
+          flex-wrap: nowrap !important;
+        }
+        .lp-pricing-tab {
+          background: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+          margin: 0 !important;
+        }
+        .lp-pricing-tab.lp-pricing-tab-active {
+          background: transparent !important;
+          transform: none !important;
+          border: none !important;
+          box-shadow: none !important;
+        }
+
+        /* Dot Indicators */
+        .lp-pricing-dots {
+          display: flex !important;
+          justify-content: center !important;
+          align-items: center !important;
+          gap: 14px !important;
+          margin-top: 24px !important;
+          margin-bottom: 40px !important;
+        }
+        .lp-pricing-dot {
+          width: 10px !important;
+          height: 10px !important;
+          border-radius: 50% !important;
+          background: rgba(45, 90, 61, 0.15) !important;
+          cursor: pointer !important;
+          transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        }
+        .lp-pricing-dot.active {
+          background: #2d5a3d !important;
+          transform: scale(1.6) !important;
+          box-shadow: 0 0 12px rgba(45, 90, 61, 0.25) !important;
+        }
+      `}</style>
+
+
       {/* ── Animated background orbs ── */}
       <div className="lp-orb lp-orb-1" />
       <div className="lp-orb lp-orb-2" />
@@ -128,11 +231,11 @@ export default function LandingPage() {
         <div className="lp-nav-pill">
           <Link href="/" className="lp-nav-logo">
             <svg width="180" height="32" viewBox="0 0 280 50" xmlns="http://www.w3.org/2000/svg" aria-label="Research Match">
-              <circle cx="22" cy="22" r="15" fill="none" stroke="#2d5a3d" strokeWidth="4"/>
-              <path d="M33 33 L43 43" fill="none" stroke="#2d5a3d" strokeWidth="4.5" strokeLinecap="round"/>
-              <line x1="16" y1="16" x2="28" y2="16" stroke="#C4A265" strokeWidth="3" strokeLinecap="round"/>
-              <line x1="16" y1="22" x2="28" y2="22" stroke="#C4A265" strokeWidth="3" strokeLinecap="round"/>
-              <line x1="16" y1="28" x2="28" y2="28" stroke="#C4A265" strokeWidth="3" strokeLinecap="round"/>
+              <circle cx="22" cy="22" r="15" fill="none" stroke="#2d5a3d" strokeWidth="4" />
+              <path d="M33 33 L43 43" fill="none" stroke="#2d5a3d" strokeWidth="4.5" strokeLinecap="round" />
+              <line x1="16" y1="16" x2="28" y2="16" stroke="#C4A265" strokeWidth="3" strokeLinecap="round" />
+              <line x1="16" y1="22" x2="28" y2="22" stroke="#C4A265" strokeWidth="3" strokeLinecap="round" />
+              <line x1="16" y1="28" x2="28" y2="28" stroke="#C4A265" strokeWidth="3" strokeLinecap="round" />
               <text x="52" y="30" fontFamily="Georgia, 'Times New Roman', serif" fontSize="22" fontWeight="700" fill="#2d5a3d">Research Match</text>
             </svg>
           </Link>
@@ -512,87 +615,176 @@ export default function LandingPage() {
         </div>
 
         {/* Mobile: Tab toggle */}
-        <div className="lp-pricing-tabs" data-reveal>
-          {(["free", "weekly", "semester", "lifetime"] as const).map((tab) => (
+        <div 
+          className="lp-pricing-tabs" 
+          data-reveal
+          style={{
+            display: 'flex',
+            position: 'relative',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexWrap: 'nowrap',
+            background: 'rgba(45, 90, 61, 0.08)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(45, 90, 61, 0.1)',
+            borderRadius: '100px',
+            padding: '0',
+            margin: '0 auto 40px',
+            maxWidth: '440px',
+            width: 'calc(100% - 40px)',
+            overflow: 'hidden',
+            height: '52px'
+          }}
+        >
+          <div 
+            className="lp-pricing-tabs-highlight" 
+            style={{ 
+              position: 'absolute',
+              top: 0, bottom: 0, left: 0,
+              width: `${100 / pricingOptions.length}%`,
+              transform: `translateX(${activePricingIndex * 100}%)`,
+              transition: 'transform 0.5s cubic-bezier(0.2, 1.6, 0.4, 1)',
+              zIndex: 1,
+              pointerEvents: 'none',
+              padding: '4px'
+            }} 
+          >
+            <div style={{
+              width: '100%',
+              height: '100%',
+              background: '#2d5a3d',
+              borderRadius: '100px',
+              boxShadow: '0 4px 12px rgba(45, 90, 61, 0.3)'
+            }} />
+          </div>
+          {pricingOptions.map((tab, idx) => (
             <button
               key={tab}
               className={`lp-pricing-tab${activePricingTab === tab ? " lp-pricing-tab-active" : ""}`}
-              onClick={() => setActivePricingTab(tab)}
+              onClick={() => setPricingItem(idx)}
+              style={{
+                flex: '1',
+                position: 'relative',
+                zIndex: 2,
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: 'none',
+                background: 'transparent',
+                color: activePricingTab === tab ? '#ffffff' : '#4b5563',
+                fontWeight: '700',
+                fontSize: '0.85rem',
+                cursor: 'pointer',
+                transition: 'color 0.4s ease',
+                WebkitTapHighlightColor: 'transparent',
+                margin: 0,
+                boxShadow: 'none'
+              }}
             >
-              {tab === "free" ? "Free" : tab === "weekly" ? "Weekly" : tab === "semester" ? "Semester" : "Lifetime"}
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
           ))}
         </div>
 
         {/* Desktop: 4-column grid | Mobile: single active card */}
-        <div className="lp-pricing-grid" data-reveal>
-          {/* Free */}
-          <div className={`lp-price-card lp-price-card-free lp-pricing-grid-card${activePricingTab === "free" ? " lp-tab-active" : " lp-tab-hidden"}`}>
-            <div className="lp-price-tier">Free</div>
-            <div className="lp-price-amount">$0</div>
-            <div className="lp-price-period">forever</div>
-            <ul className="lp-price-features">
-              {["Unlimited professor searches", "1 full summary after signup", "Author position labels", "Save professors", "Paper links"].map((f) => (
-                <li key={f}><span className="lp-check">✓</span>{f}</li>
-              ))}
-            </ul>
-            <Link href="/app" className="lp-price-btn lp-price-btn-ghost">
-              Start free
-            </Link>
-          </div>
+        <div className="lp-pricing-slider-viewport" data-reveal>
+          <div 
+            className="lp-pricing-slider-track"
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+            style={{ 
+              transform: `translateX(-${activePricingIndex * 100}%)`,
+            }}
+          >
+            {/* Free */}
+            <div className="lp-pricing-slider-slide">
+              <div className="lp-price-card lp-price-card-free">
+                <div className="lp-price-tier">Free</div>
+                <div className="lp-price-amount">$0</div>
+                <div className="lp-price-period">forever</div>
+                <ul className="lp-price-features">
+                  {["Unlimited professor searches", "1 full summary after signup", "Author position labels", "Save professors", "Paper links"].map((f) => (
+                    <li key={f}><span className="lp-check">✓</span>{f}</li>
+                  ))}
+                </ul>
+                <Link href="/app" className="lp-price-btn lp-price-btn-ghost">
+                  Start free
+                </Link>
+              </div>
+            </div>
 
-          {/* Weekly Sprint */}
-          <div className={`lp-price-card lp-pricing-grid-card${activePricingTab === "weekly" ? " lp-tab-active" : " lp-tab-hidden"}`}>
-            <div className="lp-price-tier">Weekly Sprint</div>
-            <div className="lp-price-amount" style={{ color: "#2d5a3d" }}>$9</div>
-            <div className="lp-price-period" style={{ opacity: 0.7 }}>1 week access</div>
-            <ul className="lp-price-features">
-              <li style={{ fontWeight: 700 }}><span className="lp-check">✓</span>Software access:</li>
-              {["Unlimited research summaries", "Email checker", "Professor email finder", "Responsiveness indicator"].map((f) => (
-                <li key={f}><span className="lp-check">✓</span>{f}</li>
-              ))}
-            </ul>
-            <Link href="/app?upgrade=weekly" className="lp-price-btn" style={{ background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "1px solid rgba(45, 90, 61, 0.2)" }}>
-              Start 1-Week Sprint — $9
-            </Link>
-          </div>
+            {/* Weekly Sprint */}
+            <div className="lp-pricing-slider-slide">
+              <div className="lp-price-card">
+                <div className="lp-price-tier">Weekly Sprint</div>
+                <div className="lp-price-amount" style={{ color: "#2d5a3d" }}>$9</div>
+                <div className="lp-price-period" style={{ opacity: 0.7 }}>1 week access</div>
+                <ul className="lp-price-features">
+                  <li style={{ fontWeight: 700 }}><span className="lp-check">✓</span>Software access:</li>
+                  {["Unlimited research summaries", "Email checker", "Professor email finder", "Responsiveness indicator"].map((f) => (
+                    <li key={f}><span className="lp-check">✓</span>{f}</li>
+                  ))}
+                </ul>
+                <Link href="/app?upgrade=weekly" className="lp-price-btn" style={{ background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "1px solid rgba(45, 90, 61, 0.2)" }}>
+                  Start 1-Week Sprint — $9
+                </Link>
+              </div>
+            </div>
 
-          {/* Semester */}
-          <div className={`lp-price-card lp-pricing-grid-card${activePricingTab === "semester" ? " lp-tab-active" : " lp-tab-hidden"}`}>
-            <div className="lp-price-tier">Semester</div>
-            <div className="lp-price-amount" style={{ color: "#2d5a3d" }}>$29</div>
-            <div className="lp-price-period" style={{ opacity: 0.7 }}>4 months access</div>
-            <ul className="lp-price-features">
-              <li style={{ fontWeight: 700 }}><span className="lp-check">✓</span>Everything in Free, plus:</li>
-              {["Unlimited research summaries", "Email checker", "Professor email finder", "Responsiveness indicator"].map((f) => (
-                <li key={f}><span className="lp-check">✓</span>{f}</li>
-              ))}
-            </ul>
-            <Link href="/app?upgrade=true" className="lp-price-btn" style={{ background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "1px solid rgba(45, 90, 61, 0.2)" }}>
-              Get Semester Access — $29
-            </Link>
-          </div>
+            {/* Semester */}
+            <div className="lp-pricing-slider-slide">
+              <div className="lp-price-card">
+                <div className="lp-price-tier">Semester</div>
+                <div className="lp-price-amount" style={{ color: "#2d5a3d" }}>$29</div>
+                <div className="lp-price-period" style={{ opacity: 0.7 }}>4 months access</div>
+                <ul className="lp-price-features">
+                  <li style={{ fontWeight: 700 }}><span className="lp-check">✓</span>Everything in Free, plus:</li>
+                  {["Unlimited research summaries", "Email checker", "Professor email finder", "Responsiveness indicator"].map((f) => (
+                    <li key={f}><span className="lp-check">✓</span>{f}</li>
+                  ))}
+                </ul>
+                <Link href="/app?upgrade=true" className="lp-price-btn" style={{ background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "1px solid rgba(45, 90, 61, 0.2)" }}>
+                  Get Semester Access — $29
+                </Link>
+              </div>
+            </div>
 
-          {/* Lifetime */}
-          <div className={`lp-price-card lp-price-card-lifetime lp-price-card-lifetime-hero lp-pricing-grid-card${activePricingTab === "lifetime" ? " lp-tab-active" : " lp-tab-hidden"}`}>
-            <div className="lp-best-value-badge">Best Value</div>
-            <div className="lp-price-tier" style={{ color: "#A8893E" }}>Lifetime</div>
-            <div className="lp-price-amount" style={{ color: "#A8893E" }}>$59</div>
-            <div className="lp-price-period" style={{ color: "#A8893E", opacity: 0.7 }}>Yours forever.</div>
-            <ul className="lp-price-features">
-              <li style={{ fontWeight: 700 }}><span className="lp-check" style={{ color: "#A8893E" }}>✓</span>Everything in Semester, plus:</li>
-              {["Never pay again", "Unlimited searches & summaries", "Email checker", "Professor email finder", "Nearby professor access", "Responsiveness indicator"].map((f) => (
-                <li key={f}><span className="lp-check" style={{ color: "#A8893E" }}>✓</span>{f}</li>
-              ))}
-            </ul>
-            {lifetimeSpotsRemaining === 0 ? (
-              <button disabled className="lp-price-btn" style={{ background: "#e5e7eb", color: "#9ca3af", cursor: "not-allowed" }}>Sold out</button>
-            ) : (
-              <Link href="/app?upgrade=lifetime" className="lp-price-btn lp-price-btn-gold">
-                Claim your spot — $59
-              </Link>
-            )}
+            {/* Lifetime */}
+            <div className="lp-pricing-slider-slide">
+              <div className="lp-price-card lp-price-card-lifetime lp-price-card-lifetime-hero">
+                <div className="lp-best-value-badge">Best Value</div>
+                <div className="lp-price-tier" style={{ color: "#A8893E" }}>Lifetime</div>
+                <div className="lp-price-amount" style={{ color: "#A8893E" }}>$59</div>
+                <div className="lp-price-period" style={{ color: "#A8893E", opacity: 0.7 }}>Yours forever.</div>
+                <ul className="lp-price-features">
+                  <li style={{ fontWeight: 700 }}><span className="lp-check" style={{ color: "#A8893E" }}>✓</span>Everything in Semester, plus:</li>
+                  {["Never pay again", "Unlimited searches & summaries", "Email checker", "Professor email finder", "Nearby professor access", "Responsiveness indicator"].map((f) => (
+                    <li key={f}><span className="lp-check" style={{ color: "#A8893E" }}>✓</span>{f}</li>
+                  ))}
+                </ul>
+                {lifetimeSpotsRemaining === 0 ? (
+                  <button disabled className="lp-price-btn" style={{ background: "#e5e7eb", color: "#9ca3af", cursor: "not-allowed" }}>Sold out</button>
+                ) : (
+                  <Link href="/app?upgrade=lifetime" className="lp-price-btn lp-price-btn-gold">
+                    Claim your spot — $59
+                  </Link>
+                )}
+              </div>
+            </div>
           </div>
+        </div>
+
+        {/* Dot Indicators */}
+        <div className="lp-pricing-dots">
+          {pricingOptions.map((_, idx) => (
+            <div 
+              key={idx} 
+              className={`lp-pricing-dot ${activePricingIndex === idx ? 'active' : ''}`}
+              onClick={() => setPricingItem(idx)}
+            />
+          ))}
         </div>
 
         {/* Global Bonus Strip (Moved out of cards for a cleaner UI) */}
