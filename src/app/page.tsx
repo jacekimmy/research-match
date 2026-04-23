@@ -147,15 +147,10 @@ export default function LandingPage() {
   return (
     <div className="lp-root">
       <style>{`
-        /* ── Universal Slider Enforcements ── */
+        /* ── Universal Enforcements ── */
         .lp-pricing-slider-viewport {
           width: 100% !important;
-          max-width: 500px !important;
-          margin: 0 auto !important;
-          overflow: hidden !important;
           position: relative !important;
-          padding-top: 24px !important;
-          padding-bottom: 40px !important;
         }
         .lp-pricing-slider-track {
           display: flex !important;
@@ -177,30 +172,6 @@ export default function LandingPage() {
           min-height: 540px !important;
         }
         
-        /* ── Desktop Grid Enforcements ── */
-        @media (min-width: 901px) {
-          .lp-pricing-slider-viewport {
-            overflow: visible !important;
-            padding-bottom: 0 !important;
-          }
-          .lp-pricing-slider-track {
-            display: grid !important;
-            grid-template-columns: repeat(4, 1fr) !important;
-            gap: 24px !important;
-            transform: none !important;
-            width: auto !important;
-          }
-          .lp-pricing-slider-slide {
-            flex: none !important;
-            width: auto !important;
-            padding: 0 !important;
-          }
-          .lp-pricing-tabs, .lp-pricing-dots {
-            display: none !important;
-          }
-        }
-        
-        /* Hide old static tabs if they exist */
         .lp-pricing-tabs {
           display: flex !important;
           flex-direction: row !important;
@@ -219,7 +190,6 @@ export default function LandingPage() {
           box-shadow: none !important;
         }
 
-        /* Dot Indicators */
         .lp-pricing-dots {
           display: flex !important;
           justify-content: center !important;
@@ -240,6 +210,45 @@ export default function LandingPage() {
           background: #2d5a3d !important;
           transform: scale(1.6) !important;
           box-shadow: 0 0 12px rgba(45, 90, 61, 0.25) !important;
+        }
+
+        /* ── Mobile Layout (<= 900px) ── */
+        @media (max-width: 900px) {
+          .lp-pricing-slider-viewport {
+            max-width: 500px !important;
+            margin: 0 auto !important;
+            overflow: hidden !important;
+            padding-top: 24px !important;
+            padding-bottom: 40px !important;
+          }
+        }
+
+        /* ── Desktop Layout (> 900px) ── */
+        @media (min-width: 901px) {
+          .lp-pricing-slider-viewport {
+            max-width: none !important;
+            overflow: visible !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+          }
+          .lp-pricing-slider-track {
+            display: grid !important;
+            grid-template-columns: repeat(4, 1fr) !important;
+            gap: 24px !important;
+            transform: none !important;
+            width: auto !important;
+          }
+          .lp-pricing-slider-slide {
+            flex: none !important;
+            width: auto !important;
+            padding: 0 !important;
+          }
+          .lp-pricing-tabs {
+            display: none !important;
+          }
+          .lp-pricing-dots {
+            display: none !important;
+          }
         }
       `}</style>
 
