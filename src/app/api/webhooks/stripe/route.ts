@@ -54,17 +54,17 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const { error: updateError, count } = await supabaseAdmin
+    const { error: updateError, data: updatedRows } = await supabaseAdmin
       .from("profiles")
       .update({ plan_type: planType })
       .eq("id", userId)
-      .select("id", { count: "exact", head: true });
+      .select("id");
 
     if (updateError) {
       console.error("Supabase update error:", updateError);
       return NextResponse.json({ error: "DB update failed" }, { status: 500 });
     }
-    if (count === 0) {
+    if (!updatedRows || updatedRows.length === 0) {
       console.error(`No profile found for userId: ${userId}`);
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
@@ -134,10 +134,16 @@ export async function POST(req: NextRequest) {
 
   // Invoice payment failed — downgrade immediately on failed renewal
   if (event.type === "invoice.payment_failed") {
-    const invoice = event.data.object as Stripe.Invoice;
-    const subscriptionId = typeof invoice.subscription === "string"
-      ? invoice.subscription
-      : invoice.subscription?.id;
+    // In Stripe API version 2026-02-25, subscription reference is nested under invoice.parent
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const invoice = event.data.object as any;
+    const subscriptionId: string | undefined =
+      typeof invoice.subscription === "string"
+        ? invoice.subscription
+        : invoice.subscription?.id ??
+          (invoice.parent?.type === "subscription_details"
+            ? invoice.parent?.subscription_details?.subscription
+            : undefined);
     if (subscriptionId) {
       const userId = await userIdFromSubscription(subscriptionId);
       if (userId) {
