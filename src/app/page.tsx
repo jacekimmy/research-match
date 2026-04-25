@@ -168,8 +168,8 @@ export default function LandingPage() {
           box-sizing: border-box !important;
         }
         .lp-price-card {
-          height: 100% !important;
-          min-height: 540px !important;
+          width: 100% !important;
+          box-sizing: border-box !important;
         }
         
         .lp-pricing-tabs {

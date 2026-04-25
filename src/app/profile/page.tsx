@@ -122,22 +122,22 @@ export default function ProfilePage() {
 
         {/* Stats grid */}
         <div style={{
-          display: "grid", gridTemplateColumns: "repeat(3, 1fr)",
-          gap: "16px", marginBottom: "24px",
+          display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
+          gap: "12px", marginBottom: "24px",
         }}>
           {[
             { label: "Summaries left", value: summariesLeft, icon: "📄", sub: isPaid ? "No limits" : `Resets ${resetDate}` },
             { label: "Days active", value: daysActive.toString(), icon: "📅", sub: "Keep going!" },
-            { label: "Professors saved", value: (JSON.parse(localStorage.getItem("research-match-saved") || "[]")).length.toString(), icon: "⭐", sub: "Your picks" },
+            { label: "Saved", value: (JSON.parse(localStorage.getItem("research-match-saved") || "[]")).length.toString(), icon: "⭐", sub: "Your picks" },
           ].map((stat, i) => (
             <div key={stat.label} className={`glass-card ${animateIn ? "card-enter" : ""}`} style={{
-              padding: "28px 20px", textAlign: "center",
+              padding: "20px 12px", textAlign: "center",
               animationDelay: `${0.1 + i * 0.08}s`,
             }}>
-              <span style={{ fontSize: "1.6rem", display: "block", marginBottom: "10px" }}>{stat.icon}</span>
-              <p style={{ fontSize: "1.8rem", fontWeight: 800, color: "#2d5a3d", letterSpacing: "-0.02em" }}>{stat.value}</p>
-              <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "4px" }}>{stat.label}</p>
-              <p style={{ fontSize: "0.7rem", color: "#8aaa96", marginTop: "6px" }}>{stat.sub}</p>
+              <span style={{ fontSize: "1.4rem", display: "block", marginBottom: "8px" }}>{stat.icon}</span>
+              <p style={{ fontSize: "1.5rem", fontWeight: 800, color: "#2d5a3d", letterSpacing: "-0.02em" }}>{stat.value}</p>
+              <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.06em", marginTop: "4px", lineHeight: 1.3 }}>{stat.label}</p>
+              <p style={{ fontSize: "0.65rem", color: "#8aaa96", marginTop: "4px" }}>{stat.sub}</p>
             </div>
           ))}
         </div>
