@@ -2358,78 +2358,81 @@ function AppPageInner() {
       {/* UPGRADE MODAL */}
       {showUpgradeModal && (
         <div style={{ position: "fixed", inset: 0, zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(245,240,230,0.85)", backdropFilter: "blur(12px)" }} onClick={() => setShowUpgradeModal(false)}>
-          <div className="glass-card rm-modal-card" style={{ padding: "40px", maxWidth: "540px", width: "90%" }} onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "8px" }}>{upgradeModalTitle || "Upgrade your plan"}</h3>
-            <p style={{ fontSize: "0.9rem", color: "#6b7280", marginBottom: "24px" }}>{upgradeModalSubtitle || "Unlimited summaries, email checker, and professor email finder."}</p>
+          <div className="glass-card rm-modal-card" style={{ padding: "32px", maxWidth: "620px", width: "92%", maxHeight: "90vh", overflowY: "auto" }} onClick={(e) => e.stopPropagation()}>
+            <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "4px" }}>{upgradeModalTitle || "Upgrade your plan"}</h3>
+            <p style={{ fontSize: "0.85rem", color: "#6b7280", marginBottom: "20px" }}>{upgradeModalSubtitle || "Unlimited summaries, email checker, and professor email finder."}</p>
 
-            {/* Lifetime option — featured on top */}
-            <div style={{ marginBottom: "16px", padding: "20px", borderRadius: "14px", border: "2px solid rgba(168,137,62,0.5)", boxShadow: "0 0 20px rgba(168,137,62,0.1)", background: "rgba(168,137,62,0.05)" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
-                <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#A8893E", textTransform: "uppercase", letterSpacing: "0.1em" }}>Lifetime</p>
-                <span style={{ fontSize: "0.6rem", fontWeight: 700, color: "#fff", background: "linear-gradient(135deg, #A8893E, #c9a84c)", padding: "3px 10px", borderRadius: "999px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Best Value</span>
+            {/* Lifetime + Semester side by side on desktop */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "12px", marginBottom: "12px" }}>
+              {/* Lifetime */}
+              <div style={{ padding: "18px", borderRadius: "14px", border: "2px solid rgba(168,137,62,0.5)", boxShadow: "0 0 20px rgba(168,137,62,0.08)", background: "rgba(168,137,62,0.05)" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
+                  <p style={{ fontSize: "0.65rem", fontWeight: 700, color: "#A8893E", textTransform: "uppercase", letterSpacing: "0.1em" }}>Lifetime</p>
+                  <span style={{ fontSize: "0.55rem", fontWeight: 700, color: "#fff", background: "linear-gradient(135deg, #A8893E, #c9a84c)", padding: "2px 8px", borderRadius: "999px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Best Value</span>
+                </div>
+                <div style={{ display: "flex", alignItems: "baseline", gap: "6px", marginBottom: "2px" }}>
+                  <span style={{ fontSize: "1.8rem", fontWeight: 800, color: "#A8893E" }}>$59</span>
+                  <span style={{ fontSize: "0.8rem", color: "#A8893E", fontWeight: 600 }}>one-time</span>
+                </div>
+                <p style={{ fontSize: "0.75rem", color: "#9b8040", marginBottom: "10px" }}>Less than 2 semesters. Never pay again.</p>
+                <ul style={{ listStyle: "none", padding: 0, marginBottom: "14px" }}>
+                  {["Everything in Semester, forever", "One payment, lifetime access", "Emails That Worked + Email Template"].map((f) => (
+                    <li key={f} style={{ fontSize: "0.8rem", color: "#6b7280", padding: "3px 0", display: "flex", gap: "8px" }}>
+                      <span style={{ color: "#A8893E" }}>✓</span> {f}
+                    </li>
+                  ))}
+                </ul>
+                <button onClick={async () => {
+                  if (!user) { setShowUpgradeModal(false); setShowAuthModal(true); setAuthMode("signup"); return; }
+                  try {
+                    const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_LIFETIME || "price_1TIuBBFINW44xCyFoSCtUpFN";
+                    const res = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ priceId, userId: user.id }) });
+                    const data = await res.json();
+                    if (data.url) window.location.href = data.url;
+                  } catch { showToast("Something went wrong. Try again."); }
+                }} className="btn-cta rm-search-btn" style={{ width: "100%", padding: "10px", fontSize: "0.88rem", background: "linear-gradient(135deg, #A8893E, #c9a84c)" }}>
+                  Claim Lifetime — $59
+                </button>
               </div>
-              <div style={{ display: "flex", alignItems: "baseline", gap: "8px", marginBottom: "2px" }}>
-                <span style={{ fontSize: "2rem", fontWeight: 800, color: "#A8893E" }}>$59</span>
-                <span style={{ fontSize: "0.85rem", color: "#A8893E", fontWeight: 600 }}>one-time</span>
+
+              {/* Semester */}
+              <div style={{ padding: "18px", borderRadius: "14px", border: "1.5px solid rgba(45,90,61,0.2)", background: "rgba(45,90,61,0.03)" }}>
+                <p style={{ fontSize: "0.65rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "6px" }}>Semester</p>
+                <div style={{ display: "flex", alignItems: "baseline", gap: "6px", marginBottom: "2px" }}>
+                  <span style={{ fontSize: "1.8rem", fontWeight: 800, color: "#2d5a3d" }}>$29</span>
+                  <span style={{ fontSize: "0.8rem", color: "#2d5a3d", fontWeight: 500 }}>/ 4 months</span>
+                </div>
+                <p style={{ fontSize: "0.75rem", color: "#6b7280", marginBottom: "10px" }}>One semester. Everything you need to land a position.</p>
+                <ul style={{ listStyle: "none", padding: 0, marginBottom: "14px" }}>
+                  {["Unlimited research summaries", "Email checker with red-flag detection", "Professor email finder", "Professor responsiveness indicator", "Emails That Worked + Email Template"].map((f) => (
+                    <li key={f} style={{ fontSize: "0.8rem", color: "#6b7280", padding: "3px 0", display: "flex", gap: "8px" }}>
+                      <span style={{ color: "#2d5a3d" }}>✓</span> {f}
+                    </li>
+                  ))}
+                </ul>
+                <button onClick={async () => {
+                  if (!user) { setShowUpgradeModal(false); setShowAuthModal(true); setAuthMode("signup"); return; }
+                  try {
+                    const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_SEMESTER || "price_1TIuAlFINW44xCyFcxqgQpeV";
+                    const res = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ priceId, userId: user.id }) });
+                    const data = await res.json();
+                    if (data.url) window.location.href = data.url;
+                  } catch { showToast("Something went wrong. Try again."); }
+                }} className="btn-cta rm-search-btn" style={{ width: "100%", padding: "10px", fontSize: "0.88rem" }}>
+                  Get Semester — $29
+                </button>
               </div>
-              <p style={{ fontSize: "0.8rem", color: "#9b8040", marginBottom: "12px" }}>That&apos;s less than 2 semesters. Never pay again.</p>
-              <ul style={{ listStyle: "none", padding: 0, marginBottom: "16px" }}>
-                {["Everything in Semester, forever", "One payment, lifetime access", "Emails That Worked + Email Template"].map((f) => (
-                  <li key={f} style={{ fontSize: "0.85rem", color: "#6b7280", padding: "4px 0", display: "flex", gap: "8px" }}>
-                    <span style={{ color: "#A8893E" }}>✓</span> {f}
-                  </li>
-                ))}
-              </ul>
-              <button onClick={async () => {
-                if (!user) { setShowUpgradeModal(false); setShowAuthModal(true); setAuthMode("signup"); return; }
-                try {
-                  const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_LIFETIME || "price_1TIuBBFINW44xCyFoSCtUpFN";
-                  const res = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ priceId, userId: user.id }) });
-                  const data = await res.json();
-                  if (data.url) window.location.href = data.url;
-                } catch { showToast("Something went wrong. Try again."); }
-              }} className="btn-cta rm-search-btn" style={{ width: "100%", padding: "12px", fontSize: "0.95rem", background: "linear-gradient(135deg, #A8893E, #c9a84c)" }}>
-                Claim Lifetime Access — $59
-              </button>
             </div>
 
-            {/* Semester option */}
-            <div style={{ padding: "20px", borderRadius: "14px", border: "1.5px solid rgba(45,90,61,0.2)", background: "rgba(45,90,61,0.03)" }}>
-              <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "4px" }}>Semester</p>
-              <div style={{ display: "flex", alignItems: "baseline", gap: "8px", marginBottom: "2px" }}>
-                <span style={{ fontSize: "2rem", fontWeight: 800, color: "#2d5a3d" }}>$29</span>
-                <span style={{ fontSize: "0.85rem", color: "#2d5a3d", fontWeight: 500 }}>/ 4 months</span>
+            {/* Weekly Sprint — slim horizontal row */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "14px 18px", borderRadius: "12px", border: "1px solid rgba(45,90,61,0.15)", background: "rgba(255,255,255,0.6)", flexWrap: "wrap", marginBottom: "12px" }}>
+              <div>
+                <p style={{ fontSize: "0.65rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "2px" }}>Weekly Sprint</p>
+                <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
+                  <span style={{ fontSize: "1.3rem", fontWeight: 800, color: "#2d5a3d" }}>$9</span>
+                  <span style={{ fontSize: "0.78rem", color: "#6b7280" }}>/ week · Crunch time access for 7 days</span>
+                </div>
               </div>
-              <p style={{ fontSize: "0.8rem", color: "#6b7280", marginBottom: "12px" }}>One semester. Everything you need to land a position.</p>
-              <ul style={{ listStyle: "none", padding: 0, marginBottom: "16px" }}>
-                {["Unlimited research summaries", "Email checker with red-flag detection", "Professor email finder", "Professor responsiveness indicator", "Emails That Worked + Email Template"].map((f) => (
-                  <li key={f} style={{ fontSize: "0.85rem", color: "#6b7280", padding: "4px 0", display: "flex", gap: "8px" }}>
-                    <span style={{ color: "#2d5a3d" }}>✓</span> {f}
-                  </li>
-                ))}
-              </ul>
-              <button onClick={async () => {
-                if (!user) { setShowUpgradeModal(false); setShowAuthModal(true); setAuthMode("signup"); return; }
-                try {
-                  const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_SEMESTER || "price_1TIuAlFINW44xCyFcxqgQpeV";
-                  const res = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ priceId, userId: user.id }) });
-                  const data = await res.json();
-                  if (data.url) window.location.href = data.url;
-                } catch { showToast("Something went wrong. Try again."); }
-              }} className="btn-cta rm-search-btn" style={{ width: "100%", padding: "12px", fontSize: "0.95rem" }}>
-                Get Semester Access — $29
-              </button>
-            </div>
-
-            {/* Weekly Sprint option */}
-            <div style={{ marginTop: "16px", padding: "16px", borderRadius: "14px", border: "1px solid rgba(45,90,61,0.15)", background: "rgba(255,255,255,0.6)" }}>
-              <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "4px" }}>Weekly Sprint</p>
-              <div style={{ display: "flex", alignItems: "baseline", gap: "8px", marginBottom: "2px" }}>
-                <span style={{ fontSize: "1.6rem", fontWeight: 800, color: "#2d5a3d" }}>$9</span>
-                <span style={{ fontSize: "0.80rem", color: "#6b7280", fontWeight: 500 }}>/ 1 week</span>
-              </div>
-              <p style={{ fontSize: "0.75rem", color: "#6b7280", marginBottom: "12px" }}>Crunch time. Software access for 7 days.</p>
-              
               <button onClick={async () => {
                 if (!user) { setShowUpgradeModal(false); setShowAuthModal(true); setAuthMode("signup"); return; }
                 try {
@@ -2438,26 +2441,23 @@ function AppPageInner() {
                   const data = await res.json();
                   if (data.url) window.location.href = data.url;
                 } catch { showToast("Something went wrong. Try again."); }
-              }} className="btn-cta" style={{ width: "100%", padding: "10px", fontSize: "0.85rem", background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "none" }}>
-                Start 1-Week Sprint — $9
+              }} className="btn-cta" style={{ padding: "9px 20px", fontSize: "0.83rem", background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "none", whiteSpace: "nowrap" }}>
+                Start Sprint — $9
               </button>
             </div>
 
-            <div style={{ marginTop: "16px", padding: "12px 16px", background: "rgba(45,90,61,0.04)", borderRadius: "10px", border: "1px solid rgba(45,90,61,0.1)" }}>
-              <p style={{ fontSize: "0.75rem", color: "#2d5a3d", fontWeight: 700, marginBottom: "6px" }}>Included with every plan:</p>
-              <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
-                {["Email Template (professor-tested)", "Emails That Worked (real examples)", "Follow-Up Guide"].map((b) => (
-                  <p key={b} style={{ fontSize: "0.75rem", color: "#6b7280", display: "flex", gap: "6px" }}>
-                    <span style={{ color: "#A8893E" }}>✓</span> {b}
-                  </p>
-                ))}
-              </div>
+            <div style={{ padding: "10px 14px", background: "rgba(45,90,61,0.04)", borderRadius: "10px", border: "1px solid rgba(45,90,61,0.1)", display: "flex", gap: "16px", flexWrap: "wrap" }}>
+              {["Email Template (professor-tested)", "Emails That Worked (real examples)", "Follow-Up Guide"].map((b) => (
+                <p key={b} style={{ fontSize: "0.72rem", color: "#6b7280", display: "flex", gap: "5px", margin: 0 }}>
+                  <span style={{ color: "#A8893E" }}>✓</span> {b}
+                </p>
+              ))}
             </div>
-            <p style={{ fontSize: "0.78rem", color: "#9b8040", textAlign: "center", marginTop: "12px", fontWeight: 600 }}>Get a professor reply in 30 days or your money back.</p>
-            <p style={{ fontSize: "0.72rem", color: "#9ca3af", textAlign: "center", marginTop: "4px" }}>Powered by Stripe.</p>
+            <p style={{ fontSize: "0.75rem", color: "#9b8040", textAlign: "center", marginTop: "10px", fontWeight: 600 }}>Get a professor reply in 30 days or your money back.</p>
           </div>
         </div>
       )}
     </>
   );
 }
+
