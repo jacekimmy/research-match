@@ -36,7 +36,8 @@ export async function POST(req: NextRequest) {
         .eq("id", userId)
         .single();
 
-      const isPaid = profile?.plan_type === "semester" ||
+      const isPaid = profile?.plan_type === "weekly" ||
+        profile?.plan_type === "semester" ||
         profile?.plan_type === "student_monthly" ||
         profile?.plan_type === "student_annual" ||
         profile?.plan_type === "lifetime";
@@ -172,7 +173,9 @@ Return only valid JSON, no markdown, no explanation.`;
           .eq("id", userId)
           .single();
 
-        const isPaid = profile?.plan_type === "student_monthly" ||
+        const isPaid = profile?.plan_type === "weekly" ||
+          profile?.plan_type === "semester" ||
+          profile?.plan_type === "student_monthly" ||
           profile?.plan_type === "student_annual" ||
           profile?.plan_type === "lifetime";
 

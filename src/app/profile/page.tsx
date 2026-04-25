@@ -41,12 +41,14 @@ export default function ProfilePage() {
     );
   }
 
-  const isPaid = profile?.plan_type === "semester" || profile?.plan_type === "student_monthly" || profile?.plan_type === "student_annual" || profile?.plan_type === "lifetime";
+  const isPaid = profile?.plan_type === "weekly" || profile?.plan_type === "semester" || profile?.plan_type === "student_monthly" || profile?.plan_type === "student_annual" || profile?.plan_type === "lifetime";
   const planLabel = profile?.plan_type === "lifetime"
     ? "Lifetime"
-    : profile?.plan_type === "semester" || profile?.plan_type === "student_monthly" || profile?.plan_type === "student_annual"
-      ? "Semester"
-      : "Free";
+    : profile?.plan_type === "weekly"
+      ? "Weekly"
+      : profile?.plan_type === "semester" || profile?.plan_type === "student_monthly" || profile?.plan_type === "student_annual"
+        ? "Semester"
+        : "Free";
   const summariesUsed = profile?.searches_used ?? 0;
   const summariesLeft = isPaid ? "Unlimited" : `${Math.max(0, 3 - summariesUsed)} of 3`;
   const resetDate = profile?.searches_reset_at
