@@ -54,10 +54,22 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    await supabaseAdmin
+    const { error: updateError, count } = await supabaseAdmin
       .from("profiles")
       .update({ plan_type: planType })
-      .eq("id", userId);
+      .eq("id", userId)
+      .select("id", { count: "exact", head: true });
+
+    if (updateError) {
+      console.error("Supabase update error:", updateError);
+      return NextResponse.json({ error: "DB update failed" }, { status: 500 });
+    }
+    if (count === 0) {
+      console.error(`No profile found for userId: ${userId}`);
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    console.log(`✅ Plan updated to "${planType}" for userId: ${userId}`);
 
     // Increment lifetime spots counter if lifetime purchase
     if (planType === "lifetime") {
@@ -82,19 +94,59 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // When a semester subscription expires/is cancelled → downgrade to free
-  if (event.type === "customer.subscription.deleted") {
-    const sub = event.data.object as Stripe.Subscription;
+  // Helper: look up userId from a subscription ID via checkout session metadata
+  async function userIdFromSubscription(subscriptionId: string): Promise<string | null> {
     const sessions = await stripe.checkout.sessions.list({
-      subscription: sub.id,
+      subscription: subscriptionId,
       limit: 1,
     });
-    const userId = sessions.data[0]?.metadata?.userId;
+    return sessions.data[0]?.metadata?.userId ?? null;
+  }
+
+  // Subscription deleted (cancelled / reached end of billing period)
+  if (event.type === "customer.subscription.deleted") {
+    const sub = event.data.object as Stripe.Subscription;
+    const userId = await userIdFromSubscription(sub.id);
     if (userId) {
       await supabaseAdmin
         .from("profiles")
         .update({ plan_type: "free" })
         .eq("id", userId);
+      console.log(`⬇️  Subscription deleted → downgraded userId: ${userId} to free`);
+    }
+  }
+
+  // Subscription updated — catch status transitions like past_due, unpaid, canceled
+  if (event.type === "customer.subscription.updated") {
+    const sub = event.data.object as Stripe.Subscription;
+    const downgradeStatuses = ["past_due", "unpaid", "canceled", "incomplete_expired"];
+    if (downgradeStatuses.includes(sub.status)) {
+      const userId = await userIdFromSubscription(sub.id);
+      if (userId) {
+        await supabaseAdmin
+          .from("profiles")
+          .update({ plan_type: "free" })
+          .eq("id", userId);
+        console.log(`⬇️  Subscription status "${sub.status}" → downgraded userId: ${userId} to free`);
+      }
+    }
+  }
+
+  // Invoice payment failed — downgrade immediately on failed renewal
+  if (event.type === "invoice.payment_failed") {
+    const invoice = event.data.object as Stripe.Invoice;
+    const subscriptionId = typeof invoice.subscription === "string"
+      ? invoice.subscription
+      : invoice.subscription?.id;
+    if (subscriptionId) {
+      const userId = await userIdFromSubscription(subscriptionId);
+      if (userId) {
+        await supabaseAdmin
+          .from("profiles")
+          .update({ plan_type: "free" })
+          .eq("id", userId);
+        console.log(`⬇️  Payment failed → downgraded userId: ${userId} to free`);
+      }
     }
   }
 

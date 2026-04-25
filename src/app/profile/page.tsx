@@ -9,6 +9,7 @@ export default function ProfilePage() {
   const [memberSince, setMemberSince] = useState("");
   const [daysActive, setDaysActive] = useState(0);
   const [animateIn, setAnimateIn] = useState(false);
+  const [portalLoading, setPortalLoading] = useState(false);
 
   useEffect(() => {
     setAnimateIn(true);
@@ -218,6 +219,39 @@ export default function ProfilePage() {
             }}>
               Give feedback
             </Link>
+
+            {/* Manage / cancel subscription — only for active recurring paid users */}
+            {isPaid && profile?.plan_type !== "lifetime" && (
+              <button
+                id="manage-subscription-btn"
+                disabled={portalLoading}
+                onClick={async () => {
+                  setPortalLoading(true);
+                  try {
+                    const res = await fetch("/api/customer-portal", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ userId: user?.id }),
+                    });
+                    const data = await res.json();
+                    if (data.url) {
+                      window.location.href = data.url;
+                    } else {
+                      alert(data.error || "Could not open billing portal. Please contact support.");
+                    }
+                  } catch {
+                    alert("Something went wrong. Please try again.");
+                  } finally {
+                    setPortalLoading(false);
+                  }
+                }}
+                className="btn-secondary"
+                style={{ padding: "10px 22px", fontSize: "0.85rem", opacity: portalLoading ? 0.6 : 1 }}
+              >
+                {portalLoading ? "Opening…" : "Manage Subscription"}
+              </button>
+            )}
+
             <button
               onClick={async () => { await signOut(); window.location.href = "/"; }}
               className="btn-secondary"
