@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, startTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
+import { useAuth } from "@/lib/auth-context";
 
 const StarterKitModal = dynamic(() => import("./components/StarterKitModal"), { ssr: false });
 
@@ -18,6 +19,8 @@ const HERO_PLACEHOLDERS = [
 
 export default function LandingPage() {
   const router = useRouter();
+  const { user } = useAuth();
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
   const [heroQuery, setHeroQuery] = useState("");
   const [heroUni, setHeroUni] = useState("");
   const [heroFocused, setHeroFocused] = useState(false);
@@ -116,6 +119,33 @@ export default function LandingPage() {
     params.set("q", heroQuery.trim());
     if (heroUni.trim()) params.set("u", heroUni.trim());
     router.push(`/app?${params.toString()}`);
+  }
+
+  async function handleCheckout(plan: "weekly" | "semester" | "lifetime") {
+    if (!user) {
+      // Not logged in — send to app to sign up then upgrade
+      const param = plan === "semester" ? "true" : plan;
+      router.push(`/app?upgrade=${param}`);
+      return;
+    }
+    setCheckoutLoading(plan);
+    try {
+      const priceId =
+        plan === "weekly"   ? (process.env.NEXT_PUBLIC_STRIPE_PRICE_WEEKLY   || "price_1TMxDSFINW44xCyFWrm6ZTOo") :
+        plan === "semester" ? (process.env.NEXT_PUBLIC_STRIPE_PRICE_SEMESTER || "price_1TIuAlFINW44xCyFcxqgQpeV") :
+                              (process.env.NEXT_PUBLIC_STRIPE_PRICE_LIFETIME || "price_1TIuBBFINW44xCyFoSCtUpFN");
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ priceId, userId: user.id }),
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+    } catch {
+      router.push(`/app?upgrade=${plan === "semester" ? "true" : plan}`);
+    } finally {
+      setCheckoutLoading(null);
+    }
   }
 
   async function joinInlineWaitlist() {
@@ -775,9 +805,14 @@ export default function LandingPage() {
                     <li key={f}><span className="lp-check">✓</span>{f}</li>
                   ))}
                 </ul>
-                <a href="/api/checkout-redirect?plan=weekly" className="lp-price-btn" style={{ background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "1px solid rgba(45, 90, 61, 0.2)" }}>
-                  Start 1-Week Sprint — $9
-                </a>
+                <button
+                  onClick={() => handleCheckout("weekly")}
+                  disabled={checkoutLoading === "weekly"}
+                  className="lp-price-btn"
+                  style={{ background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "1px solid rgba(45, 90, 61, 0.2)", cursor: "pointer", width: "100%" }}
+                >
+                  {checkoutLoading === "weekly" ? "Loading…" : "Start 1-Week Sprint — $9"}
+                </button>
               </div>
             </div>
 
@@ -793,9 +828,14 @@ export default function LandingPage() {
                     <li key={f}><span className="lp-check">✓</span>{f}</li>
                   ))}
                 </ul>
-                <a href="/api/checkout-redirect?plan=semester" className="lp-price-btn" style={{ background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "1px solid rgba(45, 90, 61, 0.2)" }}>
-                  Get Semester Access — $29
-                </a>
+                <button
+                  onClick={() => handleCheckout("semester")}
+                  disabled={checkoutLoading === "semester"}
+                  className="lp-price-btn"
+                  style={{ background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "1px solid rgba(45, 90, 61, 0.2)", cursor: "pointer", width: "100%" }}
+                >
+                  {checkoutLoading === "semester" ? "Loading…" : "Get Semester Access — $29"}
+                </button>
               </div>
             </div>
 
@@ -815,9 +855,14 @@ export default function LandingPage() {
                 {lifetimeSpotsRemaining === 0 ? (
                   <button disabled className="lp-price-btn" style={{ background: "#e5e7eb", color: "#9ca3af", cursor: "not-allowed" }}>Sold out</button>
                 ) : (
-                  <a href="/api/checkout-redirect?plan=lifetime" className="lp-price-btn lp-price-btn-gold">
-                    Claim your spot — $59
-                  </a>
+                  <button
+                    onClick={() => handleCheckout("lifetime")}
+                    disabled={checkoutLoading === "lifetime"}
+                    className="lp-price-btn lp-price-btn-gold"
+                    style={{ cursor: "pointer", width: "100%" }}
+                  >
+                    {checkoutLoading === "lifetime" ? "Loading…" : "Claim your spot — $59"}
+                  </button>
                 )}
               </div>
             </div>
