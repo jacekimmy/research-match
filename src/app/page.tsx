@@ -775,9 +775,9 @@ export default function LandingPage() {
                     <li key={f}><span className="lp-check">✓</span>{f}</li>
                   ))}
                 </ul>
-                <Link href="/app?upgrade=weekly" className="lp-price-btn" style={{ background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "1px solid rgba(45, 90, 61, 0.2)" }}>
+                <a href="/api/checkout-redirect?plan=weekly" className="lp-price-btn" style={{ background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "1px solid rgba(45, 90, 61, 0.2)" }}>
                   Start 1-Week Sprint — $9
-                </Link>
+                </a>
               </div>
             </div>
 
@@ -793,9 +793,9 @@ export default function LandingPage() {
                     <li key={f}><span className="lp-check">✓</span>{f}</li>
                   ))}
                 </ul>
-                <Link href="/app?upgrade=true" className="lp-price-btn" style={{ background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "1px solid rgba(45, 90, 61, 0.2)" }}>
+                <a href="/api/checkout-redirect?plan=semester" className="lp-price-btn" style={{ background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "1px solid rgba(45, 90, 61, 0.2)" }}>
                   Get Semester Access — $29
-                </Link>
+                </a>
               </div>
             </div>
 
@@ -815,9 +815,9 @@ export default function LandingPage() {
                 {lifetimeSpotsRemaining === 0 ? (
                   <button disabled className="lp-price-btn" style={{ background: "#e5e7eb", color: "#9ca3af", cursor: "not-allowed" }}>Sold out</button>
                 ) : (
-                  <Link href="/app?upgrade=lifetime" className="lp-price-btn lp-price-btn-gold">
+                  <a href="/api/checkout-redirect?plan=lifetime" className="lp-price-btn lp-price-btn-gold">
                     Claim your spot — $59
-                  </Link>
+                  </a>
                 )}
               </div>
             </div>
