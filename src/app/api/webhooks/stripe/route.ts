@@ -117,17 +117,66 @@ export async function POST(req: NextRequest) {
   }
 
   // Subscription updated — catch status transitions like past_due, unpaid, canceled
+  // Also catch cancel_at_period_end=true (user pressed "Cancel" in portal —
+  // Stripe keeps status "active" until period ends but won't renew).
   if (event.type === "customer.subscription.updated") {
     const sub = event.data.object as Stripe.Subscription;
+    const prevSub = event.data.previous_attributes as Partial<Stripe.Subscription> | undefined;
     const downgradeStatuses = ["past_due", "unpaid", "canceled", "incomplete_expired"];
-    if (downgradeStatuses.includes(sub.status)) {
+
+    const justScheduledCancel =
+      sub.cancel_at_period_end === true &&
+      prevSub?.cancel_at_period_end === false;
+
+    if (downgradeStatuses.includes(sub.status) || justScheduledCancel) {
       const userId = await userIdFromSubscription(sub.id);
       if (userId) {
         await supabaseAdmin
           .from("profiles")
           .update({ plan_type: "free" })
           .eq("id", userId);
-        console.log(`⬇️  Subscription status "${sub.status}" → downgraded userId: ${userId} to free`);
+        console.log(
+          justScheduledCancel
+            ? `⬇️  Subscription cancellation scheduled (cancel_at_period_end) → downgraded userId: ${userId} to free`
+            : `⬇️  Subscription status "${sub.status}" → downgraded userId: ${userId} to free`
+        );
+      }
+    }
+  }
+
+  // Invoice payment succeeded — re-grant plan on successful renewal.
+  // This handles cases where a user re-subscribes after cancelling.
+  // We skip re-upgrading if the subscription is already scheduled to cancel
+  // (cancel_at_period_end=true), which would mean this is the last cycle.
+  if (event.type === "invoice.paid") {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const invoice = event.data.object as any;
+    // Only process renewal invoices (billing_reason = subscription_cycle), not the initial checkout
+    // (that's already handled by checkout.session.completed)
+    if (invoice.billing_reason === "subscription_cycle") {
+      const subscriptionId: string | undefined =
+        typeof invoice.subscription === "string"
+          ? invoice.subscription
+          : invoice.subscription?.id ??
+            (invoice.parent?.type === "subscription_details"
+              ? invoice.parent?.subscription_details?.subscription
+              : undefined);
+      if (subscriptionId) {
+        const sub = await stripe.subscriptions.retrieve(subscriptionId);
+        // Don't re-upgrade if the subscription is already scheduled to cancel
+        if (!sub.cancel_at_period_end) {
+          const userId = await userIdFromSubscription(subscriptionId);
+          if (userId) {
+            const weeklyPriceId = process.env.STRIPE_PRICE_WEEKLY || "price_1TMxDSFINW44xCyFWrm6ZTOo";
+            const priceId = sub.items.data[0]?.price.id;
+            const planType = priceId === weeklyPriceId ? "weekly" : "semester";
+            await supabaseAdmin
+              .from("profiles")
+              .update({ plan_type: planType })
+              .eq("id", userId);
+            console.log(`🔄  Renewal succeeded → kept userId: ${userId} on "${planType}"`);
+          }
+        }
       }
     }
   }
