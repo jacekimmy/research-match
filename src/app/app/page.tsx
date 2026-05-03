@@ -457,6 +457,21 @@ function AppPageInner() {
   useEffect(() => { if (!showAuthModal) setAuthModalCopy(""); }, [showAuthModal]);
   useEffect(() => { if (!showUpgradeModal) { setUpgradeModalTitle(""); setUpgradeModalSubtitle(""); } }, [showUpgradeModal]);
 
+  // Lock body scroll when email modal is open
+  useEffect(() => {
+    if (emailTarget) {
+      document.body.style.overflow = "hidden";
+      document.body.style.touchAction = "none";
+    } else {
+      document.body.style.overflow = "";
+      document.body.style.touchAction = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+      document.body.style.touchAction = "";
+    };
+  }, [emailTarget]);
+
   // Toast helper
   const showToast = useCallback((msg: string) => {
     setToast(msg);
@@ -1953,6 +1968,11 @@ function AppPageInner() {
                         <span className="rm-free-hint">
                           {getSummariesRemaining()} free {getSummariesRemaining() === 1 ? "use" : "uses"} remaining {"\u2014"} unlocks all features for this professor
                         </span>
+                      )}
+                      {isPaid && !isLoadingSummary && (
+                        <button onClick={() => openEmailDraft(author)} className="btn-secondary" style={{ marginTop: "12px", padding: "12px 28px", fontSize: "0.95rem", display: "block" }}>
+                          Draft email to professor &rarr;
+                        </button>
                       )}
                     </div>
                   )
