@@ -309,6 +309,19 @@ function AppPageInner() {
   const [showFramework, setShowFramework] = useState(false);
   const [mobileEmailTab, setMobileEmailTab] = useState<"compose" | "reference">("compose");
 
+  // Citation filter
+  const MAX_CITATIONS = 100000;
+  const PROFESSORS_PER_PAGE = 5;
+  const [citationRange, setCitationRange] = useState<[number, number]>([0, MAX_CITATIONS]);
+  const [showCitationFilter, setShowCitationFilter] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  function formatCitations(n: number): string {
+    if (n >= 1000000) return `${(n / 1000000).toFixed(1)}M`;
+    if (n >= 1000) return `${Math.round(n / 1000)}k`;
+    return n.toString();
+  }
+
   // Email finder
   const [emailLookup, setEmailLookup] = useState<Record<string, { emails: { email: string; source: string; confidence: string }[]; searchUrls: { google: string; scholar: string; directory: string | null }; homepageUrl: string | null; orcidUrl: string | null } | null>>({});
   const [emailLookupLoading, setEmailLookupLoading] = useState<Record<string, boolean>>({});
@@ -578,6 +591,8 @@ function AppPageInner() {
     setResolvedTopic("");
     setResolvedInstitution("");
     setShowSaved(false);
+    setCitationRange([0, MAX_CITATIONS]);
+    setCurrentPage(1);
     // Log search (fire and forget)
     fetch("/api/log-search", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ research_interest: allTopics.join(", "), university: allUnis.join(", "), is_authenticated: !!user }) }).catch(() => {});
     try {
@@ -1115,6 +1130,16 @@ function AppPageInner() {
     return emails.length > 0 ? { emails: [...new Set(emails)].slice(0, 3), domain, searchUrl } : null;
   }
   const displayList = showSaved ? saved : results;
+  // Citation filter
+  const filteredList = displayList.filter(a =>
+    a.cited_by_count >= citationRange[0] &&
+    (citationRange[1] >= MAX_CITATIONS || a.cited_by_count <= citationRange[1])
+  );
+  // Pagination — only for paid users on search results
+  const totalPages = isPaid && !showSaved ? Math.ceil(filteredList.length / PROFESSORS_PER_PAGE) : 1;
+  const pagedList = isPaid && !showSaved
+    ? filteredList.slice((currentPage - 1) * PROFESSORS_PER_PAGE, currentPage * PROFESSORS_PER_PAGE)
+    : filteredList;
   const wordCount = emailDraft.trim().split(/\s+/).filter(Boolean).length;
 
   // ── Hero transition ──────────────────────────────────────────────────────
@@ -1577,17 +1602,110 @@ function AppPageInner() {
             {error && <p style={{ textAlign: "center", fontSize: "1.1rem", color: "#c45c5c", marginBottom: "32px" }}>{error}</p>}
 
             {!showSaved && results.length > 0 && (
-              <p style={{ fontSize: "1rem", color: "#6b7280", marginBottom: "32px" }}>
-                Showing results for <span style={{ color: "#2d5a3d", fontWeight: 700 }}>{resolvedTopic}</span>
-                {resolvedInstitution && <> at <span style={{ color: "#2d5a3d", fontWeight: 700 }}>{resolvedInstitution}</span></>}
-              </p>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap", marginBottom: "20px" }}>
+                <p style={{ fontSize: "1rem", color: "#6b7280", margin: 0 }}>
+                  Results for <span style={{ color: "#2d5a3d", fontWeight: 700 }}>{resolvedTopic}</span>
+                  {resolvedInstitution && <> at <span style={{ color: "#2d5a3d", fontWeight: 700 }}>{resolvedInstitution}</span></>}
+                  {filteredList.length < results.length && (
+                    <span style={{ color: "#9ca3af" }}> · {filteredList.length} of {results.length} match filter</span>
+                  )}
+                </p>
+
+                {/* Citation filter button */}
+                <div style={{ position: "relative", marginLeft: "auto" }}>
+                  <button
+                    onClick={() => setShowCitationFilter(v => !v)}
+                    style={{
+                      display: "inline-flex", alignItems: "center", gap: "8px",
+                      padding: "8px 16px",
+                      background: (citationRange[0] > 0 || citationRange[1] < MAX_CITATIONS) ? "#2d5a3d" : "rgba(45,90,61,0.07)",
+                      color: (citationRange[0] > 0 || citationRange[1] < MAX_CITATIONS) ? "#fff" : "#2d5a3d",
+                      border: "1.5px solid rgba(45,90,61,0.25)",
+                      borderRadius: "999px", cursor: "pointer",
+                      fontSize: "0.82rem", fontWeight: 600,
+                      fontFamily: "DM Sans, Inter, sans-serif",
+                      transition: "all 0.2s ease",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    <span>📊</span>
+                    <span>
+                      {citationRange[0] === 0 && citationRange[1] >= MAX_CITATIONS
+                        ? "Citations"
+                        : `${formatCitations(citationRange[0])} – ${citationRange[1] >= MAX_CITATIONS ? "100k+" : formatCitations(citationRange[1])}`
+                      }
+                    </span>
+                    <span style={{ fontSize: "0.7rem", transition: "transform 0.2s", transform: showCitationFilter ? "rotate(180deg)" : "none", display: "inline-block" }}>▾</span>
+                  </button>
+
+                  {showCitationFilter && (
+                    <div style={{
+                      position: "absolute", right: 0, top: "calc(100% + 8px)",
+                      background: "rgba(255,255,255,0.95)",
+                      backdropFilter: "blur(20px)",
+                      border: "1.5px solid rgba(45,90,61,0.15)",
+                      borderRadius: "18px",
+                      padding: "20px 24px",
+                      width: "300px",
+                      boxShadow: "0 8px 32px rgba(45,90,61,0.12)",
+                      zIndex: 100,
+                    }}>
+                      <p style={{ fontSize: "0.72rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>Citations Range</p>
+                      <p style={{ fontSize: "1.1rem", fontWeight: 700, color: "#1a1a1a", marginBottom: "16px" }}>
+                        {formatCitations(citationRange[0])} – {citationRange[1] >= MAX_CITATIONS ? "100k+" : formatCitations(citationRange[1])}
+                      </p>
+
+                      {/* Dual range slider */}
+                      <div className="dual-range-container">
+                        <div className="dual-range-track" />
+                        <div className="dual-range-fill" style={{
+                          left: `${(citationRange[0] / MAX_CITATIONS) * 100}%`,
+                          right: `${100 - (citationRange[1] / MAX_CITATIONS) * 100}%`,
+                        }} />
+                        <input
+                          type="range" min={0} max={MAX_CITATIONS} step={1000}
+                          value={citationRange[0]}
+                          onChange={e => {
+                            const val = Math.min(Number(e.target.value), citationRange[1] - 1000);
+                            setCitationRange([Math.max(0, val), citationRange[1]]);
+                            setCurrentPage(1);
+                          }}
+                          className="dual-range-input"
+                        />
+                        <input
+                          type="range" min={0} max={MAX_CITATIONS} step={1000}
+                          value={citationRange[1]}
+                          onChange={e => {
+                            const val = Math.max(Number(e.target.value), citationRange[0] + 1000);
+                            setCitationRange([citationRange[0], Math.min(MAX_CITATIONS, val)]);
+                            setCurrentPage(1);
+                          }}
+                          className="dual-range-input"
+                        />
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.72rem", color: "#9ca3af", marginTop: "6px" }}>
+                        <span>0</span><span>50k</span><span>100k+</span>
+                      </div>
+                      {(citationRange[0] > 0 || citationRange[1] < MAX_CITATIONS) && (
+                        <button
+                          onClick={() => { setCitationRange([0, MAX_CITATIONS]); setCurrentPage(1); }}
+                          style={{ marginTop: "14px", fontSize: "0.78rem", color: "#c45c5c", background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: "inherit" }}
+                        >✕ Clear filter</button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
             )}
             {showSaved && <p style={{ fontSize: "1rem", color: "#6b7280", marginBottom: "32px" }}>Your saved professors ({saved.length})</p>}
 
 
         {/* CARDS */}
         <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-          {displayList.map((author, authorIndex) => {
+          {pagedList.map((author, pageIndex) => {
+            const authorIndex = isPaid && !showSaved
+              ? (currentPage - 1) * PROFESSORS_PER_PAGE + pageIndex
+              : pageIndex;
             const id = author.id.split("/").pop()!;
             const summary = summaries[id];
             const isLoadingSummary = loadingSummary[id];
@@ -1981,6 +2099,23 @@ function AppPageInner() {
             );
           })}
         </div>
+
+        {/* PAGINATION */}
+        {isPaid && !showSaved && totalPages > 1 && (
+          <div className="rm-pagination">
+            <button
+              className="rm-page-btn"
+              disabled={currentPage === 1}
+              onClick={() => { setCurrentPage(p => p - 1); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+            >← Prev</button>
+            <span className="rm-page-info">Page {currentPage} of {totalPages}</span>
+            <button
+              className="rm-page-btn"
+              disabled={currentPage === totalPages}
+              onClick={() => { setCurrentPage(p => p + 1); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+            >Next →</button>
+          </div>
+        )}
 
         {/* LOCKED PROFESSORS PROMPT — shown when there are more than 3 results */}
         {!isPaid && !showSaved && displayList.length > 3 && (
