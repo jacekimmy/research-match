@@ -309,10 +309,12 @@ function AppPageInner() {
   const [showFramework, setShowFramework] = useState(false);
   const [mobileEmailTab, setMobileEmailTab] = useState<"compose" | "reference">("compose");
 
-  // Citation filter
+  // Citation + Paper filter
   const MAX_CITATIONS = 100000;
+  const MAX_PAPERS = 500;
   const PROFESSORS_PER_PAGE = 5;
   const [citationRange, setCitationRange] = useState<[number, number]>([0, MAX_CITATIONS]);
+  const [paperRange, setPaperRange] = useState<[number, number]>([0, MAX_PAPERS]);
   const [showCitationFilter, setShowCitationFilter] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -592,6 +594,7 @@ function AppPageInner() {
     setResolvedInstitution("");
     setShowSaved(false);
     setCitationRange([0, MAX_CITATIONS]);
+    setPaperRange([0, MAX_PAPERS]);
     setCurrentPage(1);
     // Log search (fire and forget)
     fetch("/api/log-search", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ research_interest: allTopics.join(", "), university: allUnis.join(", "), is_authenticated: !!user }) }).catch(() => {});
@@ -1133,7 +1136,9 @@ function AppPageInner() {
   // Citation filter
   const filteredList = displayList.filter(a =>
     a.cited_by_count >= citationRange[0] &&
-    (citationRange[1] >= MAX_CITATIONS || a.cited_by_count <= citationRange[1])
+    (citationRange[1] >= MAX_CITATIONS || a.cited_by_count <= citationRange[1]) &&
+    a.works_count >= paperRange[0] &&
+    (paperRange[1] >= MAX_PAPERS || a.works_count <= paperRange[1])
   );
   // Pagination — only for paid users on search results
   const totalPages = isPaid && !showSaved ? Math.ceil(filteredList.length / PROFESSORS_PER_PAGE) : 1;
@@ -1611,86 +1616,102 @@ function AppPageInner() {
                   )}
                 </p>
 
-                {/* Citation filter button */}
+                {/* Filter button */}
                 <div style={{ position: "relative", marginLeft: "auto" }}>
-                  <button
-                    onClick={() => setShowCitationFilter(v => !v)}
-                    style={{
-                      display: "inline-flex", alignItems: "center", gap: "8px",
-                      padding: "8px 16px",
-                      background: (citationRange[0] > 0 || citationRange[1] < MAX_CITATIONS) ? "#2d5a3d" : "rgba(45,90,61,0.07)",
-                      color: (citationRange[0] > 0 || citationRange[1] < MAX_CITATIONS) ? "#fff" : "#2d5a3d",
-                      border: "1.5px solid rgba(45,90,61,0.25)",
-                      borderRadius: "999px", cursor: "pointer",
-                      fontSize: "0.82rem", fontWeight: 600,
-                      fontFamily: "DM Sans, Inter, sans-serif",
-                      transition: "all 0.2s ease",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    <span>📊</span>
-                    <span>
-                      {citationRange[0] === 0 && citationRange[1] >= MAX_CITATIONS
-                        ? "Citations"
-                        : `${formatCitations(citationRange[0])} – ${citationRange[1] >= MAX_CITATIONS ? "100k+" : formatCitations(citationRange[1])}`
-                      }
-                    </span>
-                    <span style={{ fontSize: "0.7rem", transition: "transform 0.2s", transform: showCitationFilter ? "rotate(180deg)" : "none", display: "inline-block" }}>▾</span>
-                  </button>
+                  {(() => {
+                    const citActive = citationRange[0] > 0 || citationRange[1] < MAX_CITATIONS;
+                    const paperActive = paperRange[0] > 0 || paperRange[1] < MAX_PAPERS;
+                    const activeCount = (citActive ? 1 : 0) + (paperActive ? 1 : 0);
+                    const anyActive = activeCount > 0;
+                    return (
+                      <button
+                        onClick={() => setShowCitationFilter(v => !v)}
+                        style={{
+                          display: "inline-flex", alignItems: "center", gap: "8px",
+                          padding: "8px 16px",
+                          background: anyActive ? "#2d5a3d" : "rgba(45,90,61,0.07)",
+                          color: anyActive ? "#fff" : "#2d5a3d",
+                          border: "1.5px solid rgba(45,90,61,0.25)",
+                          borderRadius: "999px", cursor: "pointer",
+                          fontSize: "0.82rem", fontWeight: 600,
+                          fontFamily: "DM Sans, Inter, sans-serif",
+                          transition: "all 0.2s ease",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        <span>📊</span>
+                        <span>Filters{activeCount > 0 ? ` (${activeCount})` : ""}</span>
+                        <span style={{ fontSize: "0.7rem", transition: "transform 0.2s", transform: showCitationFilter ? "rotate(180deg)" : "none", display: "inline-block" }}>▾</span>
+                      </button>
+                    );
+                  })()}
 
                   {showCitationFilter && (
                     <div style={{
                       position: "absolute", right: 0, top: "calc(100% + 8px)",
-                      background: "rgba(255,255,255,0.95)",
+                      background: "rgba(255,255,255,0.97)",
                       backdropFilter: "blur(20px)",
                       border: "1.5px solid rgba(45,90,61,0.15)",
                       borderRadius: "18px",
                       padding: "20px 24px",
-                      width: "300px",
+                      width: "310px",
                       boxShadow: "0 8px 32px rgba(45,90,61,0.12)",
                       zIndex: 100,
                     }}>
-                      <p style={{ fontSize: "0.72rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>Citations Range</p>
-                      <p style={{ fontSize: "1.1rem", fontWeight: 700, color: "#1a1a1a", marginBottom: "16px" }}>
+
+                      {/* ── Citations ── */}
+                      <p style={{ fontSize: "0.68rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.09em", marginBottom: "2px" }}>Citations</p>
+                      <p style={{ fontSize: "1.05rem", fontWeight: 700, color: "#1a1a1a", marginBottom: "12px" }}>
                         {formatCitations(citationRange[0])} – {citationRange[1] >= MAX_CITATIONS ? "100k+" : formatCitations(citationRange[1])}
                       </p>
-
-                      {/* Dual range slider */}
                       <div className="dual-range-container">
                         <div className="dual-range-track" />
                         <div className="dual-range-fill" style={{
                           left: `${(citationRange[0] / MAX_CITATIONS) * 100}%`,
                           right: `${100 - (citationRange[1] / MAX_CITATIONS) * 100}%`,
                         }} />
-                        <input
-                          type="range" min={0} max={MAX_CITATIONS} step={1000}
-                          value={citationRange[0]}
-                          onChange={e => {
-                            const val = Math.min(Number(e.target.value), citationRange[1] - 1000);
-                            setCitationRange([Math.max(0, val), citationRange[1]]);
-                            setCurrentPage(1);
-                          }}
-                          className="dual-range-input"
-                        />
-                        <input
-                          type="range" min={0} max={MAX_CITATIONS} step={1000}
-                          value={citationRange[1]}
-                          onChange={e => {
-                            const val = Math.max(Number(e.target.value), citationRange[0] + 1000);
-                            setCitationRange([citationRange[0], Math.min(MAX_CITATIONS, val)]);
-                            setCurrentPage(1);
-                          }}
-                          className="dual-range-input"
-                        />
+                        <input type="range" min={0} max={MAX_CITATIONS} step={1000} value={citationRange[0]}
+                          onChange={e => { const v = Math.min(Number(e.target.value), citationRange[1] - 1000); setCitationRange([Math.max(0, v), citationRange[1]]); setCurrentPage(1); }}
+                          className="dual-range-input" />
+                        <input type="range" min={0} max={MAX_CITATIONS} step={1000} value={citationRange[1]}
+                          onChange={e => { const v = Math.max(Number(e.target.value), citationRange[0] + 1000); setCitationRange([citationRange[0], Math.min(MAX_CITATIONS, v)]); setCurrentPage(1); }}
+                          className="dual-range-input" />
                       </div>
-                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.72rem", color: "#9ca3af", marginTop: "6px" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.68rem", color: "#9ca3af", marginTop: "4px" }}>
                         <span>0</span><span>50k</span><span>100k+</span>
                       </div>
-                      {(citationRange[0] > 0 || citationRange[1] < MAX_CITATIONS) && (
+
+                      {/* Divider */}
+                      <div style={{ height: "1px", background: "rgba(45,90,61,0.1)", margin: "18px 0" }} />
+
+                      {/* ── Papers ── */}
+                      <p style={{ fontSize: "0.68rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.09em", marginBottom: "2px" }}>Papers Published</p>
+                      <p style={{ fontSize: "1.05rem", fontWeight: 700, color: "#1a1a1a", marginBottom: "12px" }}>
+                        {paperRange[0]} – {paperRange[1] >= MAX_PAPERS ? "500+" : String(paperRange[1])}
+                      </p>
+                      <div className="dual-range-container">
+                        <div className="dual-range-track" />
+                        <div className="dual-range-fill" style={{
+                          left: `${(paperRange[0] / MAX_PAPERS) * 100}%`,
+                          right: `${100 - (paperRange[1] / MAX_PAPERS) * 100}%`,
+                        }} />
+                        <input type="range" min={0} max={MAX_PAPERS} step={5} value={paperRange[0]}
+                          onChange={e => { const v = Math.min(Number(e.target.value), paperRange[1] - 5); setPaperRange([Math.max(0, v), paperRange[1]]); setCurrentPage(1); }}
+                          className="dual-range-input" />
+                        <input type="range" min={0} max={MAX_PAPERS} step={5} value={paperRange[1]}
+                          onChange={e => { const v = Math.max(Number(e.target.value), paperRange[0] + 5); setPaperRange([paperRange[0], Math.min(MAX_PAPERS, v)]); setCurrentPage(1); }}
+                          className="dual-range-input" />
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.68rem", color: "#9ca3af", marginTop: "4px" }}>
+                        <span>0</span><span>250</span><span>500+</span>
+                      </div>
+
+                      {/* Clear all */}
+                      {(citationRange[0] > 0 || citationRange[1] < MAX_CITATIONS || paperRange[0] > 0 || paperRange[1] < MAX_PAPERS) && (
                         <button
-                          onClick={() => { setCitationRange([0, MAX_CITATIONS]); setCurrentPage(1); }}
-                          style={{ marginTop: "14px", fontSize: "0.78rem", color: "#c45c5c", background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: "inherit" }}
-                        >✕ Clear filter</button>
+                          onClick={() => { setCitationRange([0, MAX_CITATIONS]); setPaperRange([0, MAX_PAPERS]); setCurrentPage(1); }}
+                          style={{ marginTop: "16px", fontSize: "0.78rem", color: "#c45c5c", background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: "inherit" }}
+                        >✕ Clear all filters</button>
                       )}
                     </div>
                   )}
