@@ -307,6 +307,7 @@ function AppPageInner() {
   const [checkingEmail, setCheckingEmail] = useState(false);
   const [hasChecked, setHasChecked] = useState(false);
   const [showFramework, setShowFramework] = useState(false);
+  const [mobileEmailTab, setMobileEmailTab] = useState<"compose" | "reference">("compose");
 
   // Email finder
   const [emailLookup, setEmailLookup] = useState<Record<string, { emails: { email: string; source: string; confidence: string }[]; searchUrls: { google: string; scholar: string; directory: string | null }; homepageUrl: string | null; orcidUrl: string | null } | null>>({});
@@ -2114,7 +2115,18 @@ function AppPageInner() {
           return (
             <div className="modal-bg rm-modal-overlay">
               <div className="modal-glass rm-modal">
-                <div className="rm-modal-left">
+                {/* Mobile-only tab bar */}
+                <div className="rm-modal-tabs">
+                  <button
+                    className={`rm-modal-tab${mobileEmailTab === "compose" ? " rm-modal-tab-active" : ""}`}
+                    onClick={() => setMobileEmailTab("compose")}
+                  >✏️ Compose</button>
+                  <button
+                    className={`rm-modal-tab${mobileEmailTab === "reference" ? " rm-modal-tab-active" : ""}`}
+                    onClick={() => setMobileEmailTab("reference")}
+                  >📄 Reference</button>
+                </div>
+                <div className={`rm-modal-left${mobileEmailTab === "reference" ? " rm-modal-panel-hidden" : ""}`}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
                     <h2 className="rm-modal-title">Email to {emailTarget.display_name}</h2>
                     <button onClick={() => { setEmailTarget(null); setEmailDraft(""); setEmailFlags([]); setHasChecked(false); }} style={{ fontSize: "1.5rem", color: "#6b7280", background: "none", border: "none", cursor: "pointer", transition: "transform 0.2s" }} onMouseEnter={e => (e.currentTarget.style.transform = "rotate(90deg)")} onMouseLeave={e => (e.currentTarget.style.transform = "rotate(0deg)")}>&times;</button>
@@ -2253,7 +2265,7 @@ function AppPageInner() {
                     <p style={{ marginTop: "16px", fontSize: "0.85rem", color: "#6b7280" }}>Hit &quot;Check my email&quot; when you&apos;re ready for feedback.</p>
                   )}
                 </div>
-                <div className="modal-sidebar rm-modal-right">
+                <div className={`modal-sidebar rm-modal-right${mobileEmailTab === "compose" ? " rm-modal-panel-hidden" : ""}`}>
                   <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "24px" }}>Reference</p>
                   <div style={{ marginBottom: "24px" }}>
                     <p style={{ fontSize: "1.4rem", fontWeight: 700, color: "#1a1a1a" }}>{emailTarget.display_name}</p>
