@@ -1605,30 +1605,87 @@ body::after {
 
   .rm-modal-overlay {
     padding: 0;
+    align-items: flex-end; /* bottom sheet */
   }
 
   .rm-modal {
     flex-direction: column;
-    height: 100vh;
+    height: 90dvh;
     max-width: 100%;
+    border-radius: 24px 24px 0 0;
+    width: 100%;
   }
 
   .modal-glass.rm-modal {
-    border-radius: 0;
+    border-radius: 24px 24px 0 0;
+  }
+
+  /* Drag handle indicator at top of sheet */
+  .rm-modal::before {
+    content: "";
+    display: block;
+    width: 40px;
+    height: 4px;
+    background: rgba(45, 90, 61, 0.2);
+    border-radius: 2px;
+    margin: 12px auto 0;
+    flex-shrink: 0;
   }
 
   .rm-modal-left {
-    padding: 24px 20px;
+    padding: 16px 20px 0;
     min-height: 0;
+    height: calc(90dvh - 48px - 28px); /* minus tab bar and handle */
+    flex: none;
+    max-height: none;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
   }
 
   .rm-modal-right {
     width: 100%;
-    max-height: 40vh;
+    height: calc(90dvh - 48px - 28px);
+    max-height: none;
+    flex: none;
     padding: 20px;
     border-left: none;
     border-top: 1px solid rgba(45, 90, 61, 0.3);
     border-radius: 0;
+    overflow-y: auto;
+  }
+
+  /* Hide volunteer tip on mobile — too cramped */
+  .rm-email-tip-volunteer {
+    display: none !important;
+  }
+
+  /* Compact the before-emailing tip */
+  .rm-email-tip-before {
+    padding: 10px 14px !important;
+    margin-bottom: 12px !important;
+  }
+  .rm-email-tip-before p {
+    font-size: 0.78rem !important;
+    line-height: 1.5 !important;
+  }
+
+  /* Textarea — let it grow to fill remaining space */
+  .modal-textarea {
+    min-height: 140px;
+    flex: 1;
+  }
+
+  /* Sticky action bar at bottom of compose panel */
+  .rm-modal-sticky-footer {
+    position: sticky;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 12px 0 16px;
+    margin-top: 12px;
+    border-top: 1px solid rgba(45, 90, 61, 0.1);
   }
 
   .rm-modal-actions {
@@ -1642,10 +1699,10 @@ body::after {
   }
 
   .rm-modal-title {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
   }
 
-  /* Mobile tab bar — hidden on desktop */
+  /* Mobile tab bar */
   .rm-modal-tabs {
     display: flex;
     flex-shrink: 0;
@@ -1655,7 +1712,7 @@ body::after {
 
   .rm-modal-tab {
     flex: 1;
-    padding: 14px 12px;
+    padding: 13px 12px;
     font-size: 0.88rem;
     font-weight: 600;
     font-family: var(--font-playfair), Georgia, serif;
@@ -1671,15 +1728,6 @@ body::after {
     color: #2d5a3d;
     border-bottom-color: #2d5a3d;
     background: rgba(45, 90, 61, 0.04);
-  }
-
-  /* Panel shown on active tab fills remaining height */
-  .rm-modal-left,
-  .rm-modal-right {
-    height: calc(100dvh - 48px);
-    flex: none;
-    max-height: none;
-    overflow-y: auto;
   }
 
   /* Hidden panel on wrong tab */

@@ -2133,7 +2133,7 @@ function AppPageInner() {
                   </div>
 
                   {/* Check their website banner */}
-                  <div style={{ padding: "14px 18px", background: "rgba(45, 90, 61,0.08)", border: "1.5px solid rgba(45, 90, 61,0.18)", borderRadius: "14px", marginBottom: "16px", display: "flex", alignItems: "flex-start", gap: "10px" }}>
+                  <div className="rm-email-tip rm-email-tip-before" style={{ padding: "14px 18px", background: "rgba(45, 90, 61,0.08)", border: "1.5px solid rgba(45, 90, 61,0.18)", borderRadius: "14px", marginBottom: "16px", display: "flex", alignItems: "flex-start", gap: "10px" }}>
                     <span style={{ fontSize: "1.1rem", flexShrink: 0 }}>&#128161;</span>
                     <p style={{ fontSize: "0.85rem", color: "#2d5a3d", lineHeight: 1.6 }}>
                       <strong>Before emailing</strong>, check the professor&apos;s faculty page for specific contact instructions. Less than 5% of students do this and it instantly sets you apart.
@@ -2141,7 +2141,7 @@ function AppPageInner() {
                   </div>
 
                   {/* Volunteer framing tip */}
-                  <div style={{ padding: "12px 18px", background: "rgba(45, 90, 61,0.12)", border: "1px solid rgba(45, 90, 61,0.25)", borderRadius: "14px", marginBottom: "16px" }}>
+                  <div className="rm-email-tip rm-email-tip-volunteer" style={{ padding: "12px 18px", background: "rgba(45, 90, 61,0.12)", border: "1px solid rgba(45, 90, 61,0.25)", borderRadius: "14px", marginBottom: "16px" }}>
                     <p style={{ fontSize: "0.82rem", color: "#2d5a3d", lineHeight: 1.6 }}>
                       <strong>Tip:</strong> Consider saying you&apos;d like to <em>volunteer</em> rather than asking for a position. It lowers the commitment for professors and makes them more likely to say yes.
                     </p>
@@ -2225,7 +2225,7 @@ function AppPageInner() {
                   </div>
 
                   <textarea value={emailDraft} onChange={(e) => { setEmailDraft(e.target.value); setHasChecked(false); }} placeholder={`Dear Professor ${emailTarget.display_name},\n\nI'm a [year] [major] student at [your university]...\n\nUse the reference panel to mention specific papers and research.`} className="modal-textarea" style={{ flex: 1, padding: "24px", lineHeight: 1.7 }} />
-                  <div className="rm-modal-actions">
+                  <div className="rm-modal-actions rm-modal-sticky-footer">
                     <button onClick={checkEmail} disabled={checkingEmail || !emailDraft.trim()} className="btn-cta" style={{ padding: "14px 36px", fontSize: "1rem" }}>
                       {checkingEmail ? (
                         <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
