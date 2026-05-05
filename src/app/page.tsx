@@ -324,7 +324,7 @@ export default function LandingPage() {
         <div className="lp-hero-inner">
           <div className="lp-hero-eyebrow">
             <span className="lp-eyebrow-dot" />
-            Loved by students at Stanford{" & "}universities worldwide
+            Used by 1,000+ students at Stanford, MIT, and beyond.
           </div>
 
           <h1 className="lp-hero-title">
@@ -333,7 +333,7 @@ export default function LandingPage() {
           </h1>
 
           <p className="lp-hero-sub">
-            Search 250M+ papers, find a professor who matches, and send an email worth replying to
+            Cold emails to professors get ignored. Yours won't.
           </p>
 
           {/* Hero search */}
@@ -372,11 +372,6 @@ export default function LandingPage() {
             </button>
           </div>
 
-          <div className="lp-hero-sub-actions">
-            <Link href="/app" className="lp-ghost-btn">
-              Browse without searching
-            </Link>
-          </div>
 
           {/* Hero testimonial - Jedrek N. */}
           <div className="lp-hero-testimonial">
