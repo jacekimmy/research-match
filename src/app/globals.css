@@ -3458,17 +3458,10 @@ body::after {
 }
 
 /* Hero reveal animations */
-.lp-hero .lp-hero-eyebrow  { opacity: 0; transform: translateY(20px); }
-.lp-hero .lp-hero-title    { opacity: 0; transform: translateY(28px); }
-.lp-hero .lp-hero-sub      { opacity: 0; transform: translateY(22px); }
-.lp-hero .lp-search-bar    { opacity: 0; transform: translateY(18px); }
-.lp-hero .lp-hero-sub-actions { opacity: 0; transform: translateY(14px); }
-
-.lp-hero-visible .lp-hero-eyebrow    { animation: lpHeroIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.05s forwards; }
-.lp-hero-visible .lp-hero-title      { animation: lpHeroIn 1.0s cubic-bezier(0.16, 1, 0.3, 1) 0.18s forwards; }
-.lp-hero-visible .lp-hero-sub        { animation: lpHeroIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.32s forwards; }
-.lp-hero-visible .lp-search-bar      { animation: lpHeroIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.44s forwards; }
-.lp-hero-visible .lp-hero-sub-actions{ animation: lpHeroIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.56s forwards; }
+.lp-hero .lp-hero-eyebrow    { animation: lpHeroIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both; }
+.lp-hero .lp-hero-title      { animation: lpHeroIn 1.0s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both; }
+.lp-hero .lp-hero-sub        { animation: lpHeroIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.32s both; }
+.lp-hero .lp-search-bar      { animation: lpHeroIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.44s both; }
 
 @keyframes lpHeroIn {
   from { opacity: 0; transform: translateY(var(--ty, 22px)); }

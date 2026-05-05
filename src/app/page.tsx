@@ -34,7 +34,6 @@ export default function LandingPage() {
   const [waitlistTier, setWaitlistTier] = useState<"research_pro" | "pro" | null>(null);
   const [waitlistDone, setWaitlistDone] = useState(false);
   const [waitlistLoading, setWaitlistLoading] = useState(false);
-  const [heroVisible, setHeroVisible] = useState(false);
   const [searchCount, setSearchCount] = useState<number | null>(null);
   const [activePricingIndex, setActivePricingIndex] = useState(0);
   const [activePricingTab, setActivePricingTab] = useState<string>("free");
@@ -76,7 +75,6 @@ export default function LandingPage() {
   };
 
   useEffect(() => { setBillingMounted(true); }, []);
-  useEffect(() => { setHeroVisible(true); }, []);
   useEffect(() => {
     fetch("/api/stats").then(r => r.json()).then(d => {
       startTransition(() => setSearchCount(d.searches));
@@ -320,7 +318,7 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           HERO
       ══════════════════════════════════════════ */}
-      <section className={`lp-hero ${heroVisible ? "lp-hero-visible" : ""}`}>
+      <section className="lp-hero">
         <div className="lp-hero-inner">
           <div className="lp-hero-eyebrow">
             <span className="lp-eyebrow-dot" />
