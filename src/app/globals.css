@@ -3509,7 +3509,7 @@ body::after {
   color: #1a2e1f;
   line-height: 1.05;
   letter-spacing: -0.04em;
-  margin-bottom: 4px;
+  margin-bottom: 12px;
   font-family: var(--font-playfair), Georgia, serif;
 }
 
@@ -4804,7 +4804,7 @@ body::after {
   }
   .lp-hero-title {
     font-size: clamp(2.1rem, 9.5vw, 3rem);
-    margin-bottom: 4px;
+    margin-bottom: 12px;
     letter-spacing: -0.03em;
   }
   .lp-hero-sub {
