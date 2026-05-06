@@ -171,6 +171,14 @@ body::after {
 
 /* Blob animations removed for performance — splotches are static */
 
+@media (max-width: 768px) {
+  body::before,
+  body::after,
+  .splotches {
+    display: none;
+  }
+}
+
 /* ===== BLOG ===== */
 
 .blog-content h2 {
@@ -4752,6 +4760,10 @@ body::after {
    Touch-optimized. Every tap target ≥ 44px. No hover jank.
 ══════════════════════════════════════════════════════════ */
 @media (max-width: 860px) {
+  .lp-orb,
+  .lp-dark-callout::before {
+    display: none;
+  }
 
   /* ── Nav ── */
   .lp-nav {
