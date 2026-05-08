@@ -374,7 +374,7 @@ export default function LandingPage() {
           {/* Hero testimonial - Jedrek N. */}
           <div className="lp-hero-testimonial">
             <p className="lp-hero-testimonial-text">
-              &ldquo;Research Match saved me time. The paper summaries meant I didn&apos;t have to waste time finding key findings myself.&rdquo;
+              &ldquo;Just wanted to say thanks, like no joke. I got like 6 research internship opportunities now for this summer😭 (IU, Purdue, UIUC, UChicago).&rdquo;
             </p>
             <p className="lp-hero-testimonial-author">Jedrek N., College Student</p>
           </div>
@@ -651,7 +651,7 @@ export default function LandingPage() {
         <div className="lp-social-label">What users said</div>
         <div className="lp-quotes-grid">
           {[
-            { quote: "Research Match saved me time for cold emailing professors. The paper summaries meant I didn't have to waste time finding key findings myself.", author: "Jedrek N., College Student", avatar: "JN" },
+            { quote: "Just wanted to say thanks, like no joke. I got like 6 research internship opportunities now for this summer😭 (IU, Purdue, UIUC, UChicago).", author: "Jedrek N., College Student", avatar: "JN" },
             { quote: "I got a reply in 3 days. Never happened before.", author: "Undergraduate student", avatar: "U" },
             { quote: "I was skeptical at first, but after purchasing the semester plan, I was really impressed with what Research Match had to offer. It’s been genuinely helpful as a high schooler trying to get involved with research.", author: "Chetana R., College Student", avatar: "CR" },
             { quote: "Endorse this advice 💯. If an email smells of AI I will not answer it.", author: "Research Professor", avatar: "RP" },
