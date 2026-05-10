@@ -8,7 +8,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 const PRICE_IDS: Record<string, string> = {
-  weekly:   process.env.NEXT_PUBLIC_STRIPE_PRICE_WEEKLY   || "price_1TMxDSFINW44xCyFWrm6ZTOo",
+  weekly:   process.env.NEXT_PUBLIC_STRIPE_PRICE_WEEKLY   || "price_1TQAAIFINW44xCyFF3QP0SRL",
   semester: process.env.NEXT_PUBLIC_STRIPE_PRICE_SEMESTER || "price_1TIuAlFINW44xCyFcxqgQpeV",
   lifetime: process.env.NEXT_PUBLIC_STRIPE_PRICE_LIFETIME || "price_1TIuBBFINW44xCyFoSCtUpFN",
 };
@@ -77,6 +77,7 @@ export async function GET(req: NextRequest) {
       payment_method_types: ["card"],
       line_items: [{ price: priceId, quantity: 1 }],
       metadata: { userId },
+      ...(mode === "subscription" ? { subscription_data: { metadata: { userId } } } : {}),
       allow_promotion_codes: true,
       success_url: `${origin}/welcome`,
       cancel_url:  `${origin}/app`,

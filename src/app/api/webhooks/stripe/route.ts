@@ -11,6 +11,17 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+const WEEKLY_PRICE_IDS = new Set([
+  process.env.STRIPE_PRICE_WEEKLY,
+  process.env.NEXT_PUBLIC_STRIPE_PRICE_WEEKLY,
+  "price_1TQAAIFINW44xCyFF3QP0SRL",
+  "price_1TMxDSFINW44xCyFWrm6ZTOo",
+].filter(Boolean));
+
+function planTypeFromPrice(priceId?: string | null) {
+  return priceId && WEEKLY_PRICE_IDS.has(priceId) ? "weekly" : "semester";
+}
+
 export async function POST(req: NextRequest) {
   const body = await req.text();
   const sig = req.headers.get("stripe-signature")!;
@@ -33,9 +44,7 @@ export async function POST(req: NextRequest) {
     if (!userId)
       return NextResponse.json({ error: "No userId" }, { status: 400 });
 
-    const semesterPriceId = process.env.STRIPE_PRICE_SEMESTER || "price_1TIuAlFINW44xCyFcxqgQpeV";
     const lifetimePriceId = process.env.STRIPE_PRICE_LIFETIME || "price_1TIuBBFINW44xCyFoSCtUpFN";
-    const weeklyPriceId = process.env.STRIPE_PRICE_WEEKLY || "price_1TMxDSFINW44xCyFWrm6ZTOo";
 
     let planType = "semester";
 
@@ -47,11 +56,7 @@ export async function POST(req: NextRequest) {
     } else if (session.mode === "subscription" && session.subscription) {
       const sub = await stripe.subscriptions.retrieve(session.subscription as string);
       const priceId = sub.items.data[0]?.price.id;
-      if (priceId === weeklyPriceId) {
-        planType = "weekly";
-      } else {
-        planType = "semester";
-      }
+      planType = planTypeFromPrice(priceId);
     }
 
     const { error: updateError, data: updatedRows } = await supabaseAdmin
@@ -167,9 +172,8 @@ export async function POST(req: NextRequest) {
         if (!sub.cancel_at_period_end) {
           const userId = await userIdFromSubscription(subscriptionId);
           if (userId) {
-            const weeklyPriceId = process.env.STRIPE_PRICE_WEEKLY || "price_1TMxDSFINW44xCyFWrm6ZTOo";
             const priceId = sub.items.data[0]?.price.id;
-            const planType = priceId === weeklyPriceId ? "weekly" : "semester";
+            const planType = planTypeFromPrice(priceId);
             await supabaseAdmin
               .from("profiles")
               .update({ plan_type: planType })

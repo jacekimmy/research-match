@@ -10,6 +10,7 @@ export default function ProfilePage() {
   const [daysActive, setDaysActive] = useState(0);
   const [animateIn, setAnimateIn] = useState(false);
   const [portalLoading, setPortalLoading] = useState(false);
+  const [cancelLoading, setCancelLoading] = useState(false);
 
   useEffect(() => {
     setAnimateIn(true);
@@ -251,6 +252,43 @@ export default function ProfilePage() {
                 style={{ padding: "10px 22px", fontSize: "0.85rem", opacity: portalLoading ? 0.6 : 1 }}
               >
                 {portalLoading ? "Opening…" : "Manage Subscription"}
+              </button>
+            )}
+
+            {isPaid && profile?.plan_type !== "lifetime" && (
+              <button
+                id="cancel-subscription-btn"
+                disabled={cancelLoading}
+                onClick={async () => {
+                  const confirmed = window.confirm(
+                    "Cancel your Research Match subscription? You will not be charged again."
+                  );
+                  if (!confirmed) return;
+
+                  setCancelLoading(true);
+                  try {
+                    const res = await fetch("/api/cancel-subscription", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ userId: user?.id }),
+                    });
+                    const data = await res.json();
+                    if (!res.ok) {
+                      alert(data.error || "Could not cancel subscription. Please contact support.");
+                      return;
+                    }
+                    await refreshProfile();
+                    alert("Subscription canceled. You will not be charged again.");
+                  } catch {
+                    alert("Something went wrong. Please try again.");
+                  } finally {
+                    setCancelLoading(false);
+                  }
+                }}
+                className="btn-secondary"
+                style={{ padding: "10px 22px", fontSize: "0.85rem", color: "#c45c5c", opacity: cancelLoading ? 0.6 : 1 }}
+              >
+                {cancelLoading ? "Canceling…" : "Cancel Subscription"}
               </button>
             )}
 

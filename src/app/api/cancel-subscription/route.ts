@@ -48,7 +48,6 @@ export async function POST(req: NextRequest) {
     }
 
     const customerIds = await customerIdsForUser(userId);
-
     if (customerIds.length === 0) {
       return NextResponse.json(
         { error: "No Stripe customer found for this user. Contact support." },
@@ -56,16 +55,46 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const origin = req.headers.get("origin") || "http://localhost:3000";
+    const activeSubscriptions: Stripe.Subscription[] = [];
 
-    const portalSession = await stripe.billingPortal.sessions.create({
-      customer: customerIds[0],
-      return_url: `${origin}/profile`,
+    for (const customer of customerIds) {
+      const subscriptions = await stripe.subscriptions.list({
+        customer,
+        status: "all",
+        limit: 100,
+      });
+
+      activeSubscriptions.push(
+        ...subscriptions.data.filter((subscription) =>
+          ["active", "trialing", "past_due"].includes(subscription.status) &&
+          !subscription.cancel_at_period_end
+        )
+      );
+    }
+
+    if (activeSubscriptions.length === 0) {
+      return NextResponse.json(
+        { error: "No active subscription found for this user." },
+        { status: 404 }
+      );
+    }
+
+    const canceled = await Promise.all(
+      activeSubscriptions.map((subscription) =>
+        stripe.subscriptions.update(subscription.id, { cancel_at_period_end: true })
+      )
+    );
+
+    await supabaseAdmin
+      .from("profiles")
+      .update({ plan_type: "free" })
+      .eq("id", userId);
+
+    return NextResponse.json({
+      canceled: canceled.map((subscription) => subscription.id),
     });
-
-    return NextResponse.json({ url: portalSession.url });
   } catch (err) {
-    console.error("Customer portal error:", err);
+    console.error("Cancel subscription error:", err);
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }
 }

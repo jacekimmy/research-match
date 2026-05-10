@@ -129,7 +129,7 @@ export default function LandingPage() {
     setCheckoutLoading(plan);
     try {
       const priceId =
-        plan === "weekly"   ? (process.env.NEXT_PUBLIC_STRIPE_PRICE_WEEKLY   || "price_1TMxDSFINW44xCyFWrm6ZTOo") :
+        plan === "weekly"   ? (process.env.NEXT_PUBLIC_STRIPE_PRICE_WEEKLY   || "price_1TQAAIFINW44xCyFF3QP0SRL") :
         plan === "semester" ? (process.env.NEXT_PUBLIC_STRIPE_PRICE_SEMESTER || "price_1TIuAlFINW44xCyFcxqgQpeV") :
                               (process.env.NEXT_PUBLIC_STRIPE_PRICE_LIFETIME || "price_1TIuBBFINW44xCyFoSCtUpFN");
       const res = await fetch("/api/checkout", {
