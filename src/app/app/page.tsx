@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef, useCallback, Suspense } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import confetti from "canvas-confetti";
 import Link from "next/link";
@@ -298,7 +298,7 @@ function AppPageInner() {
     "e.g. machine learning", "e.g. cardiology", "e.g. astrophysics",
     "e.g. behavioral economics", "e.g. robotics", "e.g. immunology",
   ];
-  const [placeholderIdx, setPlaceholderIdx] = useState(0);
+  const DEFAULT_PLACEHOLDER = PLACEHOLDER_EXAMPLES[0];
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
   const [emailTarget, setEmailTarget] = useState<Author | null>(null);
@@ -408,10 +408,13 @@ function AppPageInner() {
 
   // Grand reveal / welcome back
   const [revealPhase, setRevealPhase] = useState<"curtain" | "content" | "done">("curtain");
+  const [welcomeSubtitle, setWelcomeSubtitle] = useState("Your research journey starts here.");
+  const [hasViewedFreeSummary, setHasViewedFreeSummary] = useState(false);
   useEffect(() => {
     const visitCount = parseInt(localStorage.getItem("research-match-visits") || "0", 10);
     localStorage.setItem("research-match-visits", String(visitCount + 1));
     localStorage.setItem("research-match-last-visit", new Date().toISOString());
+    setWelcomeSubtitle(visitCount === 0 ? "Your research journey starts here." : "Welcome back. Let\u2019s keep going.");
 
     if (visitCount === 0) {
       // First visit — grand reveal
@@ -419,11 +422,14 @@ function AppPageInner() {
       setTimeout(() => setRevealPhase("content"), 2200);
       setTimeout(() => { setShowWelcome(false); setRevealPhase("done"); }, 3600);
     } else {
-      // Returning user — quick welcome back
-      setShowWelcome(true);
-      setRevealPhase("content");
-      setTimeout(() => { setShowWelcome(false); setRevealPhase("done"); }, 1800);
+      // Returning users should land straight in the app without an extra animated pause.
+      setShowWelcome(false);
+      setRevealPhase("done");
     }
+  }, []);
+
+  useEffect(() => {
+    setHasViewedFreeSummary(localStorage.getItem("hasViewedFreeSummary") === "true");
   }, []);
 
   // Exit intent — subtle goodbye on mouse leave (desktop only)
@@ -444,13 +450,6 @@ function AppPageInner() {
       try { setSaved(JSON.parse(stored)); } catch { /* ignore */ }
     }
   }, []);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setPlaceholderIdx((i) => (i + 1) % PLACEHOLDER_EXAMPLES.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -506,9 +505,8 @@ function AppPageInner() {
     });
   }
 
-  function isSaved(author: Author) {
-    return saved.some((a) => a.id === author.id);
-  }
+  const savedIds = useMemo(() => new Set(saved.map((a) => a.id)), [saved]);
+  const isSaved = useCallback((author: Author) => savedIds.has(author.id), [savedIds]);
 
   // Summary limit:
   //   Anon: 1 free summary tracked via hasViewedFreeSummary localStorage flag
@@ -517,8 +515,7 @@ function AppPageInner() {
   function getSummariesRemaining(): number {
     if (isPaid) return Infinity;
     if (!user) {
-      const hasViewed = localStorage.getItem("hasViewedFreeSummary") === "true";
-      return hasViewed ? 0 : 1;
+      return hasViewedFreeSummary ? 0 : 1;
     }
     // Free account: 1 use total
     if (profile?.summaries_reset_at && new Date() > new Date(profile.summaries_reset_at)) {
@@ -530,8 +527,7 @@ function AppPageInner() {
   function canSummarize(): boolean {
     if (isPaid) return true;
     if (!user) {
-      const hasViewed = localStorage.getItem("hasViewedFreeSummary") === "true";
-      if (hasViewed) {
+      if (hasViewedFreeSummary) {
         // Returning anon who already viewed their free summary — gate behind signup
         setAuthModalCopy("Your summary is ready. Create a free account to check your email before you send it.");
         setShowAuthModal(true);
@@ -950,7 +946,10 @@ function AppPageInner() {
       const highlights = data.highlights || [];
       setSummaries((prev) => ({ ...prev, [id]: { summary: summaryText, highlights, questions: data.questions || [] } }));
       // Mark that anon has viewed their free summary
-      if (!user) localStorage.setItem("hasViewedFreeSummary", "true");
+      if (!user) {
+        localStorage.setItem("hasViewedFreeSummary", "true");
+        setHasViewedFreeSummary(true);
+      }
       // Refresh profile so client UI reflects updated count
       if (highlights.length > 0 && !data.error) refreshProfile();
     } catch { setSummaries((prev) => ({ ...prev, [id]: { summary: "Summary unavailable. Try again or visit their faculty page.", highlights: [], questions: [] } })); }
@@ -1132,20 +1131,26 @@ function AppPageInner() {
 
     return emails.length > 0 ? { emails: [...new Set(emails)].slice(0, 3), domain, searchUrl } : null;
   }
-  const displayList = showSaved ? saved : results;
+  const displayList = useMemo(() => (showSaved ? saved : results), [showSaved, saved, results]);
   // Citation filter
-  const filteredList = displayList.filter(a =>
-    a.cited_by_count >= citationRange[0] &&
-    (citationRange[1] >= MAX_CITATIONS || a.cited_by_count <= citationRange[1]) &&
-    a.works_count >= paperRange[0] &&
-    (paperRange[1] >= MAX_PAPERS || a.works_count <= paperRange[1])
-  );
+  const filteredList = useMemo(() => (
+    displayList.filter(a =>
+      a.cited_by_count >= citationRange[0] &&
+      (citationRange[1] >= MAX_CITATIONS || a.cited_by_count <= citationRange[1]) &&
+      a.works_count >= paperRange[0] &&
+      (paperRange[1] >= MAX_PAPERS || a.works_count <= paperRange[1])
+    )
+  ), [displayList, citationRange, paperRange]);
   // Pagination — only for paid users on search results
-  const totalPages = isPaid && !showSaved ? Math.ceil(filteredList.length / PROFESSORS_PER_PAGE) : 1;
-  const pagedList = isPaid && !showSaved
-    ? filteredList.slice((currentPage - 1) * PROFESSORS_PER_PAGE, currentPage * PROFESSORS_PER_PAGE)
-    : filteredList;
-  const wordCount = emailDraft.trim().split(/\s+/).filter(Boolean).length;
+  const totalPages = useMemo(() => (
+    isPaid && !showSaved ? Math.ceil(filteredList.length / PROFESSORS_PER_PAGE) : 1
+  ), [isPaid, showSaved, filteredList.length]);
+  const pagedList = useMemo(() => (
+    isPaid && !showSaved
+      ? filteredList.slice((currentPage - 1) * PROFESSORS_PER_PAGE, currentPage * PROFESSORS_PER_PAGE)
+      : filteredList
+  ), [isPaid, showSaved, filteredList, currentPage]);
+  const wordCount = useMemo(() => emailDraft.trim().split(/\s+/).filter(Boolean).length, [emailDraft]);
 
   // ── Hero transition ──────────────────────────────────────────────────────
   const [heroExiting, setHeroExiting] = useState(false);
@@ -1224,11 +1229,7 @@ function AppPageInner() {
               <h2 className="grand-reveal-title">Research Match</h2>
             </div>
             <div className="grand-reveal-line" />
-            <p className="grand-reveal-subtitle">
-              {parseInt(localStorage.getItem("research-match-visits") || "1", 10) <= 1
-                ? "Your research journey starts here."
-                : "Welcome back. Let\u2019s keep going."}
-            </p>
+            <p className="grand-reveal-subtitle">{welcomeSubtitle}</p>
           </div>
         </div>
       )}
@@ -1457,7 +1458,7 @@ function AppPageInner() {
                         else if (e.key === ",") { e.preventDefault(); addQueryTag(); }
                         else if (e.key === "Backspace" && !query && queryTags.length > 0) removeQueryTag(queryTags.length - 1);
                       }}
-                      placeholder={queryTags.length === 0 ? PLACEHOLDER_EXAMPLES[placeholderIdx] : "Add another..."}
+                      placeholder={queryTags.length === 0 ? DEFAULT_PLACEHOLDER : "Add another..."}
                       className="rm-search-input rm-tag-input"
                     />
                   </div>
@@ -1546,7 +1547,7 @@ function AppPageInner() {
                               else if (e.key === ",") { e.preventDefault(); addQueryTag(); }
                               else if (e.key === "Backspace" && !query && queryTags.length > 0) removeQueryTag(queryTags.length - 1);
                             }}
-                            placeholder={queryTags.length === 0 ? PLACEHOLDER_EXAMPLES[placeholderIdx] : "Add another..."}
+                            placeholder={queryTags.length === 0 ? DEFAULT_PLACEHOLDER : "Add another..."}
                             className="rm-search-input rm-tag-input"
                           />
                         </div>
@@ -2648,4 +2649,3 @@ function AppPageInner() {
     </>
   );
 }
-

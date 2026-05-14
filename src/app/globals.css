@@ -42,7 +42,8 @@ body::before {
   width: 500px;
   height: 500px;
   background: radial-gradient(circle, rgba(45, 90, 61, 0.25) 0%, transparent 70%);
-  filter: blur(120px);
+  filter: blur(56px);
+  opacity: 0.55;
 }
 
 body::after {
@@ -51,7 +52,8 @@ body::after {
   width: 600px;
   height: 600px;
   background: radial-gradient(circle, rgba(45, 90, 61, 0.2) 0%, transparent 70%);
-  filter: blur(120px);
+  filter: blur(56px);
+  opacity: 0.5;
 }
 
 .splotches {
@@ -68,7 +70,8 @@ body::after {
 .splotch {
   position: absolute;
   border-radius: 50%;
-  filter: blur(120px);
+  filter: blur(56px);
+  opacity: 0.58;
 }
 
 .splotch-1 {
@@ -101,7 +104,7 @@ body::after {
   width: 500px;
   height: 500px;
   background: radial-gradient(ellipse at 50% 50%, rgba(45, 90, 61, 0.18) 0%, rgba(45, 90, 61, 0.07) 50%, transparent 70%);
-  filter: blur(140px);
+  filter: blur(64px);
 }
 
 .splotch-5 {
@@ -150,7 +153,7 @@ body::after {
   width: 260px;
   height: 260px;
   background: radial-gradient(ellipse at 50% 45%, rgba(45, 90, 61, 0.18) 0%, rgba(45, 90, 61, 0.07) 45%, transparent 70%);
-  filter: blur(140px);
+  filter: blur(64px);
 }
 
 .splotch-11 {
@@ -170,6 +173,12 @@ body::after {
 }
 
 /* Blob animations removed for performance — splotches are static */
+
+@media (max-width: 1600px) {
+  .splotches {
+    display: none;
+  }
+}
 
 @media (max-width: 768px) {
   body::before,
@@ -3291,14 +3300,14 @@ body::after {
   overflow-x: hidden;
 }
 
-/* ── Animated background orbs ── */
+/* ── Premium background orbs ── */
 .lp-orb {
   position: fixed;
   border-radius: 50%;
   pointer-events: none;
   z-index: 0;
-  filter: blur(120px);
-  will-change: transform;
+  filter: blur(72px);
+  opacity: 0.72;
 }
 
 .lp-orb-1 {
@@ -3307,7 +3316,6 @@ body::after {
   top: -200px;
   left: -200px;
   background: radial-gradient(circle, rgba(45, 90, 61, 0.22) 0%, transparent 70%);
-  animation: lpOrb1 18s ease-in-out infinite alternate;
 }
 
 .lp-orb-2 {
@@ -3316,7 +3324,6 @@ body::after {
   bottom: 10%;
   right: -150px;
   background: radial-gradient(circle, rgba(45, 90, 61, 0.18) 0%, transparent 70%);
-  animation: lpOrb2 22s ease-in-out infinite alternate;
 }
 
 .lp-orb-3 {
@@ -3326,20 +3333,6 @@ body::after {
   left: 50%;
   transform: translate(-50%, -50%);
   background: radial-gradient(circle, rgba(196, 162, 101, 0.08) 0%, transparent 70%);
-  animation: lpOrb3 28s ease-in-out infinite alternate;
-}
-
-@keyframes lpOrb1 {
-  from { transform: translate(0, 0) scale(1); }
-  to   { transform: translate(80px, 60px) scale(1.15); }
-}
-@keyframes lpOrb2 {
-  from { transform: translate(0, 0) scale(1); }
-  to   { transform: translate(-60px, -80px) scale(1.1); }
-}
-@keyframes lpOrb3 {
-  from { transform: translate(-50%, -50%) scale(1); }
-  to   { transform: translate(-45%, -55%) scale(1.2); }
 }
 
 /* ── Floating pill nav ── */
