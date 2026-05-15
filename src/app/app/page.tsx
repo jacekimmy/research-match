@@ -338,6 +338,11 @@ function AppPageInner() {
   // Plan helpers
   const isPaid = profile?.plan_type === "weekly" || profile?.plan_type === "semester" || profile?.plan_type === "student_monthly" || profile?.plan_type === "student_annual" || profile?.plan_type === "lifetime";
   const isFree = !isPaid;
+  const planLabel = profile?.plan_type === "lifetime"
+    ? "Lifetime"
+    : profile?.plan_type === "weekly"
+      ? "Weekly"
+      : "Semester";
 
   // Tag helpers
   function addQueryTag() {
@@ -1319,10 +1324,10 @@ function AppPageInner() {
                 </button>
               )}
               {isPaid && profile?.plan_type === "lifetime" && (
-                <span className="rm-nav-badge" style={{ color: "#fff", background: "linear-gradient(135deg, #2d5a3d, #2E9E72)" }}>Lifetime</span>
+                <span className="rm-nav-badge" style={{ color: "#fff", background: "linear-gradient(135deg, #2d5a3d, #2E9E72)" }}>{planLabel}</span>
               )}
               {isPaid && profile?.plan_type !== "lifetime" && (
-                <span className="rm-nav-badge" style={{ color: "#fff", background: "#2d5a3d" }}>Semester</span>
+                <span className="rm-nav-badge" style={{ color: "#fff", background: "#2d5a3d" }}>{planLabel}</span>
               )}
               <Link href="/profile" style={{
                 width: "36px", height: "36px", borderRadius: "50%",
