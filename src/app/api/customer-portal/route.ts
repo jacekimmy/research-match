@@ -14,6 +14,24 @@ const supabaseAdmin = createClient(
 async function customerIdsForUser(userId: string) {
   const customerIds = new Set<string>();
 
+  try {
+    const subscriptions = await stripe.subscriptions.search({
+      query: `metadata['userId']:'${userId.replace(/'/g, "\\'")}'`,
+      limit: 100,
+    });
+
+    subscriptions.data.forEach((subscription) => {
+      const customer = subscription.customer;
+      if (typeof customer === "string") {
+        customerIds.add(customer);
+      } else if (!("deleted" in customer && customer.deleted)) {
+        customerIds.add(customer.id);
+      }
+    });
+  } catch (err) {
+    console.warn("Subscription metadata lookup failed:", err);
+  }
+
   const sessions = await stripe.checkout.sessions
     .list({ limit: 100 })
     .autoPagingToArray({ limit: 1000 });
@@ -40,6 +58,25 @@ async function customerIdsForUser(userId: string) {
   return [...customerIds];
 }
 
+async function customerWithCurrentSubscription(customerIds: string[]) {
+  for (const customer of customerIds) {
+    const subscriptions = await stripe.subscriptions.list({
+      customer,
+      status: "all",
+      limit: 100,
+    });
+
+    const hasCurrentSubscription = subscriptions.data.some((subscription) =>
+      ["active", "trialing", "past_due"].includes(subscription.status) &&
+      !subscription.cancel_at_period_end
+    );
+
+    if (hasCurrentSubscription) return customer;
+  }
+
+  return customerIds[0];
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { userId } = await req.json();
@@ -58,8 +95,10 @@ export async function POST(req: NextRequest) {
 
     const origin = req.headers.get("origin") || "http://localhost:3000";
 
+    const customer = await customerWithCurrentSubscription(customerIds);
+
     const portalSession = await stripe.billingPortal.sessions.create({
-      customer: customerIds[0],
+      customer,
       return_url: `${origin}/profile`,
     });
 

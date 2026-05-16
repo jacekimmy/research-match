@@ -14,6 +14,24 @@ const supabaseAdmin = createClient(
 async function customerIdsForUser(userId: string) {
   const customerIds = new Set<string>();
 
+  try {
+    const subscriptions = await stripe.subscriptions.search({
+      query: `metadata['userId']:'${userId.replace(/'/g, "\\'")}'`,
+      limit: 100,
+    });
+
+    subscriptions.data.forEach((subscription) => {
+      const customer = subscription.customer;
+      if (typeof customer === "string") {
+        customerIds.add(customer);
+      } else if (!("deleted" in customer && customer.deleted)) {
+        customerIds.add(customer.id);
+      }
+    });
+  } catch (err) {
+    console.warn("Subscription metadata lookup failed:", err);
+  }
+
   const sessions = await stripe.checkout.sessions
     .list({ limit: 100 })
     .autoPagingToArray({ limit: 1000 });
@@ -40,6 +58,10 @@ async function customerIdsForUser(userId: string) {
   return [...customerIds];
 }
 
+function isCancelableSubscription(subscription: Stripe.Subscription) {
+  return ["active", "trialing", "past_due"].includes(subscription.status);
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { userId } = await req.json();
@@ -56,6 +78,7 @@ export async function POST(req: NextRequest) {
     }
 
     const activeSubscriptions: Stripe.Subscription[] = [];
+    const alreadyScheduledSubscriptions: Stripe.Subscription[] = [];
 
     for (const customer of customerIds) {
       const subscriptions = await stripe.subscriptions.list({
@@ -64,15 +87,29 @@ export async function POST(req: NextRequest) {
         limit: 100,
       });
 
-      activeSubscriptions.push(
-        ...subscriptions.data.filter((subscription) =>
-          ["active", "trialing", "past_due"].includes(subscription.status) &&
-          !subscription.cancel_at_period_end
-        )
-      );
+      for (const subscription of subscriptions.data) {
+        if (!isCancelableSubscription(subscription)) continue;
+        if (subscription.cancel_at_period_end) {
+          alreadyScheduledSubscriptions.push(subscription);
+        } else {
+          activeSubscriptions.push(subscription);
+        }
+      }
     }
 
     if (activeSubscriptions.length === 0) {
+      if (alreadyScheduledSubscriptions.length > 0) {
+        await supabaseAdmin
+          .from("profiles")
+          .update({ plan_type: "free" })
+          .eq("id", userId);
+
+        return NextResponse.json({
+          canceled: alreadyScheduledSubscriptions.map((subscription) => subscription.id),
+          alreadyScheduled: true,
+        });
+      }
+
       return NextResponse.json(
         { error: "No active subscription found for this user." },
         { status: 404 }
