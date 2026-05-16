@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useAuth } from "@/lib/auth-context";
+import { supabase } from "@/lib/supabase";
 
 const StarterKitModal = dynamic(() => import("./components/StarterKitModal"), { ssr: false });
 
@@ -132,10 +133,15 @@ export default function LandingPage() {
         plan === "weekly"   ? (process.env.NEXT_PUBLIC_STRIPE_PRICE_WEEKLY   || "price_1TQAAIFINW44xCyFF3QP0SRL") :
         plan === "semester" ? (process.env.NEXT_PUBLIC_STRIPE_PRICE_SEMESTER || "price_1TIuAlFINW44xCyFcxqgQpeV") :
                               (process.env.NEXT_PUBLIC_STRIPE_PRICE_LIFETIME || "price_1TIuBBFINW44xCyFoSCtUpFN");
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) throw new Error("Missing auth session");
       const res = await fetch("/api/checkout", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ priceId, userId: user.id }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ priceId }),
       });
       const data = await res.json();
       if (data.url) window.location.href = data.url;
@@ -331,7 +337,7 @@ export default function LandingPage() {
           </h1>
 
           <p className="lp-hero-sub">
-            Cold emails to professors get ignored. Yours won't.
+            Cold emails to professors get ignored. Yours won&apos;t.
           </p>
 
           {/* Hero search */}
@@ -628,7 +634,7 @@ export default function LandingPage() {
       ══════════════════════════════════════════ */}
       <section className="lp-founder-section" data-reveal>
         <div className="lp-founder-inner">
-          <div className="lp-founder-quote-mark">"</div>
+          <div className="lp-founder-quote-mark">&ldquo;</div>
           <blockquote className="lp-founder-quote">
             When I was a high school freshman, I used this approach to cold email 5 professors.
             A Princeton astrophysics professor responded within 24 hours and said I was
@@ -660,7 +666,7 @@ export default function LandingPage() {
           ].map((item, i) => (
             <div key={i} className="lp-quote-card">
               <div className="lp-quote-avatar" aria-hidden="true">{item.avatar}</div>
-              <div className="lp-quote-mark">"</div>
+              <div className="lp-quote-mark">&ldquo;</div>
               <p className="lp-quote-text">{item.quote}</p>
               <p className="lp-quote-author">{item.author}</p>
             </div>

@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
+import { supabase } from "@/lib/supabase";
 
 export default function ProfilePage() {
   const { user, profile, signOut, refreshProfile } = useAuth();
@@ -190,10 +191,18 @@ export default function ProfilePage() {
             <button
               onClick={async () => {
                 const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_SEMESTER || "price_1TIuAlFINW44xCyFcxqgQpeV";
+                const { data: { session } } = await supabase.auth.getSession();
+                if (!session?.access_token) {
+                  alert("Please sign in again to continue.");
+                  return;
+                }
                 const res = await fetch("/api/checkout", {
                   method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ priceId, userId: user?.id }),
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${session.access_token}`,
+                  },
+                  body: JSON.stringify({ priceId }),
                 });
                 const data = await res.json();
                 if (data.url) window.location.href = data.url;
@@ -231,10 +240,18 @@ export default function ProfilePage() {
                 onClick={async () => {
                   setPortalLoading(true);
                   try {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if (!session?.access_token) {
+                      alert("Please sign in again to manage billing.");
+                      return;
+                    }
                     const res = await fetch("/api/customer-portal", {
                       method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ userId: user?.id }),
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${session.access_token}`,
+                      },
+                      body: JSON.stringify({}),
                     });
                     const data = await res.json();
                     if (data.url) {
@@ -267,10 +284,18 @@ export default function ProfilePage() {
 
                   setCancelLoading(true);
                   try {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if (!session?.access_token) {
+                      alert("Please sign in again to cancel your subscription.");
+                      return;
+                    }
                     const res = await fetch("/api/cancel-subscription", {
                       method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ userId: user?.id }),
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${session.access_token}`,
+                      },
+                      body: JSON.stringify({}),
                     });
                     const data = await res.json();
                     if (!res.ok) {

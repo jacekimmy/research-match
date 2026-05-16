@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import confetti from "canvas-confetti";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
+import { supabase } from "@/lib/supabase";
 
 export default function AppPageWrapper() {
   return <Suspense><AppPageInner /></Suspense>;
@@ -2580,7 +2581,13 @@ function AppPageInner() {
                   if (!user) { setShowUpgradeModal(false); setShowAuthModal(true); setAuthMode("signup"); return; }
                   try {
                     const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_LIFETIME || "price_1TIuBBFINW44xCyFoSCtUpFN";
-                    const res = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ priceId, userId: user.id }) });
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if (!session?.access_token) throw new Error("Missing auth session");
+                    const res = await fetch("/api/checkout", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+                      body: JSON.stringify({ priceId }),
+                    });
                     const data = await res.json();
                     if (data.url) window.location.href = data.url;
                   } catch { showToast("Something went wrong. Try again."); }
@@ -2608,7 +2615,13 @@ function AppPageInner() {
                   if (!user) { setShowUpgradeModal(false); setShowAuthModal(true); setAuthMode("signup"); return; }
                   try {
                     const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_SEMESTER || "price_1TIuAlFINW44xCyFcxqgQpeV";
-                    const res = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ priceId, userId: user.id }) });
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if (!session?.access_token) throw new Error("Missing auth session");
+                    const res = await fetch("/api/checkout", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+                      body: JSON.stringify({ priceId }),
+                    });
                     const data = await res.json();
                     if (data.url) window.location.href = data.url;
                   } catch { showToast("Something went wrong. Try again."); }
@@ -2631,7 +2644,13 @@ function AppPageInner() {
                 if (!user) { setShowUpgradeModal(false); setShowAuthModal(true); setAuthMode("signup"); return; }
                 try {
                   const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_WEEKLY || "price_1TMxDSFINW44xCyFWrm6ZTOo";
-                  const res = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ priceId, userId: user.id }) });
+                  const { data: { session } } = await supabase.auth.getSession();
+                  if (!session?.access_token) throw new Error("Missing auth session");
+                  const res = await fetch("/api/checkout", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+                    body: JSON.stringify({ priceId }),
+                  });
                   const data = await res.json();
                   if (data.url) window.location.href = data.url;
                 } catch { showToast("Something went wrong. Try again."); }

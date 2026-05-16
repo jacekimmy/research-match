@@ -77,11 +77,20 @@ async function customerWithCurrentSubscription(customerIds: string[]) {
   return customerIds[0];
 }
 
+async function authenticatedUserId(req: NextRequest) {
+  const token = req.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
+  if (!token) return null;
+
+  const { data, error } = await supabaseAdmin.auth.getUser(token);
+  if (error) return null;
+  return data.user?.id ?? null;
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const { userId } = await req.json();
+    const userId = await authenticatedUserId(req);
     if (!userId) {
-      return NextResponse.json({ error: "userId is required" }, { status: 400 });
+      return NextResponse.json({ error: "You must be signed in to manage billing." }, { status: 401 });
     }
 
     const customerIds = await customerIdsForUser(userId);

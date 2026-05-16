@@ -62,11 +62,20 @@ function isCancelableSubscription(subscription: Stripe.Subscription) {
   return ["active", "trialing", "past_due"].includes(subscription.status);
 }
 
+async function authenticatedUserId(req: NextRequest) {
+  const token = req.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
+  if (!token) return null;
+
+  const { data, error } = await supabaseAdmin.auth.getUser(token);
+  if (error) return null;
+  return data.user?.id ?? null;
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const { userId } = await req.json();
+    const userId = await authenticatedUserId(req);
     if (!userId) {
-      return NextResponse.json({ error: "userId is required" }, { status: 400 });
+      return NextResponse.json({ error: "You must be signed in to cancel a subscription." }, { status: 401 });
     }
 
     const customerIds = await customerIdsForUser(userId);
