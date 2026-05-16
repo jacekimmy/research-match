@@ -232,8 +232,10 @@ export default function ProfilePage() {
               Give feedback
             </Link>
 
-            {/* Manage / cancel subscription — only for active recurring paid users */}
-            {isPaid && profile?.plan_type !== "lifetime" && (
+            {/* Manage / cancel recurring billing.
+                Keep this visible for free profiles too: a failed/partial cancel can leave
+                Supabase marked free while Stripe still has an active subscription. */}
+            {profile?.plan_type !== "lifetime" && (
               <button
                 id="manage-subscription-btn"
                 disabled={portalLoading}
@@ -272,7 +274,7 @@ export default function ProfilePage() {
               </button>
             )}
 
-            {isPaid && profile?.plan_type !== "lifetime" && (
+            {profile?.plan_type !== "lifetime" && (
               <button
                 id="cancel-subscription-btn"
                 disabled={cancelLoading}
