@@ -2643,7 +2643,7 @@ function AppPageInner() {
               <button onClick={async () => {
                 if (!user) { setShowUpgradeModal(false); setShowAuthModal(true); setAuthMode("signup"); return; }
                 try {
-                  const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_WEEKLY || "price_1TMxDSFINW44xCyFWrm6ZTOo";
+                  const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_WEEKLY || "price_1TQAAIFINW44xCyFF3QP0SRL";
                   const { data: { session } } = await supabase.auth.getSession();
                   if (!session?.access_token) throw new Error("Missing auth session");
                   const res = await fetch("/api/checkout", {

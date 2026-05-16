@@ -99,8 +99,13 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // Helper: look up userId from a subscription ID via checkout session metadata
+  // Helper: look up userId from subscription metadata first, then checkout metadata.
   async function userIdFromSubscription(subscriptionId: string): Promise<string | null> {
+    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+    if (subscription.metadata?.userId) {
+      return subscription.metadata.userId;
+    }
+
     const sessions = await stripe.checkout.sessions.list({
       subscription: subscriptionId,
       limit: 1,
