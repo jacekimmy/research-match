@@ -314,7 +314,7 @@ export default function LandingPage() {
             <a href="#pricing" className="lp-nav-link">Pricing</a>
             <Link href="/feedback" className="lp-nav-link">Feedback</Link>
           </div>
-          <Link href="/app" className="lp-nav-cta">
+          <Link href="/app" className="lp-nav-cta" onPointerUp={(e) => e.currentTarget.blur()}>
             Start free
             <span className="lp-nav-cta-arrow">→</span>
           </Link>
