@@ -59,7 +59,7 @@ async function customerIdsForUser(userId: string) {
 }
 
 function isCancelableSubscription(subscription: Stripe.Subscription) {
-  return ["active", "trialing", "past_due"].includes(subscription.status);
+  return ["active", "trialing", "past_due", "unpaid", "incomplete"].includes(subscription.status);
 }
 
 async function authenticatedUserId(req: NextRequest) {
@@ -69,6 +69,53 @@ async function authenticatedUserId(req: NextRequest) {
   const { data, error } = await supabaseAdmin.auth.getUser(token);
   if (error) return null;
   return data.user?.id ?? null;
+}
+
+function invoiceSubscriptionId(invoice: Stripe.Invoice) {
+  const invoiceWithSubscription = invoice as Stripe.Invoice & {
+    subscription?: string | Stripe.Subscription | null;
+    parent?: {
+      type?: string;
+      subscription_details?: { subscription?: string | null };
+    } | null;
+  };
+
+  const subscription = invoiceWithSubscription.subscription;
+  if (typeof subscription === "string") return subscription;
+  if (subscription?.id) return subscription.id;
+  if (invoiceWithSubscription.parent?.type === "subscription_details") {
+    return invoiceWithSubscription.parent.subscription_details?.subscription ?? null;
+  }
+  return null;
+}
+
+async function voidOpenInvoicesForSubscription(subscription: Stripe.Subscription) {
+  const customer =
+    typeof subscription.customer === "string"
+      ? subscription.customer
+      : subscription.customer.id;
+
+  const openInvoices = await stripe.invoices.list({
+    customer,
+    status: "open",
+    limit: 100,
+  });
+
+  const subscriptionInvoices = openInvoices.data.filter(
+    (invoice) => invoiceSubscriptionId(invoice) === subscription.id
+  );
+
+  const voidedInvoices: string[] = [];
+  for (const invoice of subscriptionInvoices) {
+    try {
+      const voided = await stripe.invoices.voidInvoice(invoice.id);
+      voidedInvoices.push(voided.id);
+    } catch (err) {
+      console.warn(`Could not void invoice ${invoice.id} for subscription ${subscription.id}:`, err);
+    }
+  }
+
+  return voidedInvoices;
 }
 
 export async function POST(req: NextRequest) {
@@ -86,8 +133,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const activeSubscriptions: Stripe.Subscription[] = [];
-    const alreadyScheduledSubscriptions: Stripe.Subscription[] = [];
+    const cancelableSubscriptions: Stripe.Subscription[] = [];
 
     for (const customer of customerIds) {
       const subscriptions = await stripe.subscriptions.list({
@@ -98,38 +144,28 @@ export async function POST(req: NextRequest) {
 
       for (const subscription of subscriptions.data) {
         if (!isCancelableSubscription(subscription)) continue;
-        if (subscription.cancel_at_period_end) {
-          alreadyScheduledSubscriptions.push(subscription);
-        } else {
-          activeSubscriptions.push(subscription);
-        }
+        cancelableSubscriptions.push(subscription);
       }
     }
 
-    if (activeSubscriptions.length === 0) {
-      if (alreadyScheduledSubscriptions.length > 0) {
-        await supabaseAdmin
-          .from("profiles")
-          .update({ plan_type: "free" })
-          .eq("id", userId);
-
-        return NextResponse.json({
-          canceled: alreadyScheduledSubscriptions.map((subscription) => subscription.id),
-          alreadyScheduled: true,
-        });
-      }
-
+    if (cancelableSubscriptions.length === 0) {
       return NextResponse.json(
         { error: "No active subscription found for this user." },
         { status: 404 }
       );
     }
 
-    const canceled = await Promise.all(
-      activeSubscriptions.map((subscription) =>
-        stripe.subscriptions.update(subscription.id, { cancel_at_period_end: true })
-      )
-    );
+    const canceled: Stripe.Subscription[] = [];
+    const voidedInvoices: string[] = [];
+
+    for (const subscription of cancelableSubscriptions) {
+      const canceledSubscription = await stripe.subscriptions.cancel(subscription.id, {
+        invoice_now: false,
+        prorate: false,
+      });
+      canceled.push(canceledSubscription);
+      voidedInvoices.push(...await voidOpenInvoicesForSubscription(canceledSubscription));
+    }
 
     await supabaseAdmin
       .from("profiles")
@@ -138,6 +174,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       canceled: canceled.map((subscription) => subscription.id),
+      voidedInvoices,
     });
   } catch (err) {
     console.error("Cancel subscription error:", err);
