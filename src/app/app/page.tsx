@@ -2636,14 +2636,14 @@ function AppPageInner() {
               <div>
                 <p style={{ fontSize: "0.65rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "2px" }}>Weekly Sprint</p>
                 <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
-                  <span style={{ fontSize: "1.3rem", fontWeight: 800, color: "#2d5a3d" }}>$9</span>
+                  <span style={{ fontSize: "1.3rem", fontWeight: 800, color: "#2d5a3d" }}>$7</span>
                   <span style={{ fontSize: "0.78rem", color: "#6b7280" }}>/ week · Crunch time access for 7 days</span>
                 </div>
               </div>
               <button onClick={async () => {
                 if (!user) { setShowUpgradeModal(false); setShowAuthModal(true); setAuthMode("signup"); return; }
                 try {
-                  const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_WEEKLY || "price_1TQAAIFINW44xCyFF3QP0SRL";
+                  const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_WEEKLY || "price_1TMxDSFINW44xCyFWrm6ZTOo";
                   const { data: { session } } = await supabase.auth.getSession();
                   if (!session?.access_token) throw new Error("Missing auth session");
                   const res = await fetch("/api/checkout", {
@@ -2655,7 +2655,7 @@ function AppPageInner() {
                   if (data.url) window.location.href = data.url;
                 } catch { showToast("Something went wrong. Try again."); }
               }} className="btn-cta" style={{ padding: "9px 20px", fontSize: "0.83rem", background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "none", whiteSpace: "nowrap" }}>
-                Start Sprint — $9
+                Start Sprint — $7
               </button>
             </div>
 

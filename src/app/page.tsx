@@ -130,7 +130,7 @@ export default function LandingPage() {
     setCheckoutLoading(plan);
     try {
       const priceId =
-        plan === "weekly"   ? (process.env.NEXT_PUBLIC_STRIPE_PRICE_WEEKLY   || "price_1TQAAIFINW44xCyFF3QP0SRL") :
+        plan === "weekly"   ? (process.env.NEXT_PUBLIC_STRIPE_PRICE_WEEKLY   || "price_1TMxDSFINW44xCyFWrm6ZTOo") :
         plan === "semester" ? (process.env.NEXT_PUBLIC_STRIPE_PRICE_SEMESTER || "price_1TIuAlFINW44xCyFcxqgQpeV") :
                               (process.env.NEXT_PUBLIC_STRIPE_PRICE_LIFETIME || "price_1TIuBBFINW44xCyFoSCtUpFN");
       const { data: { session } } = await supabase.auth.getSession();
@@ -798,7 +798,7 @@ export default function LandingPage() {
             <div className="lp-pricing-slider-slide">
               <div className="lp-price-card">
                 <div className="lp-price-tier">Weekly Sprint</div>
-                <div className="lp-price-amount" style={{ color: "#2d5a3d" }}>$9</div>
+                <div className="lp-price-amount" style={{ color: "#2d5a3d" }}>$7</div>
                 <div className="lp-price-period" style={{ opacity: 0.7 }}>1 week access</div>
                 <ul className="lp-price-features">
                   <li style={{ fontWeight: 700 }}><span className="lp-check">✓</span>Software access:</li>
@@ -812,7 +812,7 @@ export default function LandingPage() {
                   className="lp-price-btn"
                   style={{ background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "1px solid rgba(45, 90, 61, 0.2)", cursor: "pointer", width: "100%" }}
                 >
-                  {checkoutLoading === "weekly" ? "Loading…" : "Start 1-Week Sprint — $9"}
+                  {checkoutLoading === "weekly" ? "Loading…" : "Start 1-Week Sprint — $7"}
                 </button>
               </div>
             </div>
