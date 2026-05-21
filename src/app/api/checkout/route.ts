@@ -14,7 +14,6 @@ const supabaseAdmin = createClient(
 const ALLOWED_PRICE_IDS = new Set([
   process.env.STRIPE_PRICE_WEEKLY,
   process.env.NEXT_PUBLIC_STRIPE_PRICE_WEEKLY,
-  "price_1TQAAIFINW44xCyFF3QP0SRL",
   "price_1TMxDSFINW44xCyFWrm6ZTOo",
   process.env.STRIPE_PRICE_SEMESTER,
   process.env.NEXT_PUBLIC_STRIPE_PRICE_SEMESTER,
