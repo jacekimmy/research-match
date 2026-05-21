@@ -3458,8 +3458,8 @@ body::after {
 .lp-hero {
   position: relative;
   z-index: 1;
-  min-height: 112svh;
-  min-height: 112vh;
+  min-height: 100svh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -3471,7 +3471,7 @@ body::after {
 .lp-hero-inner {
   max-width: 1040px;
   width: 100%;
-  min-height: calc(112svh - 200px);
+  min-height: calc(100svh - 200px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -3683,9 +3683,16 @@ body::after {
   50%       { transform: translateY(4px);  opacity: 0.75; }
 }
 
-/* Hero inline testimonial - clean left-border strip */
+/* Dedicated hero proof moment */
+.lp-hero-proof-section {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  padding: clamp(76px, 10svh, 116px) 40px clamp(92px, 12svh, 136px);
+}
+
 .lp-hero-testimonial {
-  margin-top: clamp(68px, 8svh, 104px);
   max-width: 620px;
   width: 100%;
   background: rgba(255, 255, 255, 0.58);
@@ -4881,13 +4888,13 @@ body::after {
   /* ── Hero ── */
   .lp-hero {
     padding: 100px 20px 48px;
-    min-height: 108svh;
-    min-height: 108vh; /* fallback */
+    min-height: 100svh;
+    min-height: 100vh; /* fallback */
     justify-content: flex-start;
     padding-top: max(100px, env(safe-area-inset-top, 0px) + 82px);
   }
   .lp-hero-inner {
-    min-height: calc(108svh - 148px);
+    min-height: calc(100svh - 148px);
     gap: 0;
     width: 100%;
   }
@@ -4973,14 +4980,20 @@ body::after {
     justify-content: center;
   }
 
-  /* Hero testimonial - compact on mobile */
+  .lp-hero-proof-section {
+    padding: 78px 20px 76px;
+  }
+
+  /* Dedicated proof card - compact on mobile */
   .lp-hero-testimonial {
-    margin-top: clamp(54px, 7svh, 78px);
     padding: 12px 15px;
     border-radius: 0 12px 12px 0;
     background: rgba(255, 255, 255, 0.95); /* Opaque fallback for mobile perf */
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
+  }
+  .lp-hero-proof-section .lp-hero-testimonial {
+    max-width: 100%;
   }
   .lp-hero-testimonial-text {
     font-size: 0.78rem;
@@ -5242,8 +5255,8 @@ body::after {
 @media (max-width: 390px) {
   .lp-hero {
     padding: 92px 20px 40px;
-    min-height: 106svh;
-    min-height: 106vh;
+    min-height: 100svh;
+    min-height: 100vh;
     padding-top: max(92px, env(safe-area-inset-top, 0px) + 74px);
   }
   .lp-hero-eyebrow {
@@ -5265,9 +5278,10 @@ body::after {
   .lp-search-btn {
     padding: 14px 18px;
   }
-  .lp-hero-testimonial {
-    display: block;
-    margin-top: 46px;
+  .lp-hero-proof-section {
+    padding: 72px 20px 68px;
+  }
+  .lp-hero-proof-section .lp-hero-testimonial {
     padding: 11px 13px;
   }
   .lp-nav-logo span.lp-nav-logo-mark { display: none; }

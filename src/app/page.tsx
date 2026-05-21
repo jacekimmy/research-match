@@ -376,14 +376,6 @@ export default function LandingPage() {
             </button>
           </div>
 
-
-          {/* Hero testimonial - Jedrek N. */}
-          <div className="lp-hero-testimonial">
-            <p className="lp-hero-testimonial-text">
-              &ldquo;Just wanted to say thanks, like no joke. I got like 6 research internship opportunities now for this summer😭 (IU, Purdue, UIUC, UChicago).&rdquo;
-            </p>
-            <p className="lp-hero-testimonial-author">Jedrek N., College Student</p>
-          </div>
         </div>
 
         {/* Scroll cue */}
@@ -391,6 +383,15 @@ export default function LandingPage() {
           <svg className="lp-scroll-chevron" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M6 9l6 6 6-6" stroke="#2d5a3d" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
+        </div>
+      </section>
+
+      <section className="lp-hero-proof-section" aria-label="Student result">
+        <div className="lp-hero-testimonial">
+          <p className="lp-hero-testimonial-text">
+            &ldquo;Just wanted to say thanks, like no joke. I got like 6 research internship opportunities now for this summer😭 (IU, Purdue, UIUC, UChicago).&rdquo;
+          </p>
+          <p className="lp-hero-testimonial-author">Jedrek N., College Student</p>
         </div>
       </section>
 
