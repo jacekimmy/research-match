@@ -555,7 +555,7 @@ export default function LandingPage() {
               </div>
               <div className="lp-mockup-body" style={{ padding: 0 }}>
                 <div
-                  className="p-6 md:p-8 w-full max-w-md md:max-w-none mx-auto"
+                  className="p-6 md:p-8 w-full mx-auto"
                   style={{ padding: "clamp(24px, calc(8px + 3vw), 32px)" }}
                 >
                   <div className="lp-mock-summary-header">
