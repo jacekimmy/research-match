@@ -208,7 +208,21 @@ interface Author {
   last_known_institutions: { id: string; display_name: string; country_code: string; geo?: { city?: string; region?: string; country?: string } }[];
   works_count: number;
   cited_by_count: number;
-  topics: { display_name: string }[];
+  topics: { id?: string; display_name: string }[];
+}
+
+interface OpenAlexInstitutionRef {
+  id?: string;
+}
+
+interface OpenAlexAuthorship {
+  author?: { id?: string };
+  institutions?: OpenAlexInstitutionRef[];
+}
+
+interface OpenAlexWork {
+  publication_year?: number;
+  authorships?: OpenAlexAuthorship[];
 }
 
 const US_STATE_CODES: Record<string, string> = {
@@ -376,7 +390,7 @@ function AppPageInner() {
         setShowUpgradeModal(true);
       }
     }
-  }, [authLoading2, user, searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [authLoading2, user, searchParams]);
 
   // Auto-search from landing page URL params
   const [autoSearched, setAutoSearched] = useState(false);
@@ -556,32 +570,6 @@ function AppPageInner() {
     return true;
   }
 
-  async function incrementSummary() {
-    if (isPaid) return;
-    if (!user) {
-      const current = parseInt(localStorage.getItem("research-match-summaries") || "0", 10);
-      localStorage.setItem("research-match-summaries", String(current + 1));
-      return;
-    }
-    try {
-      const { supabase } = await import("@/lib/supabase");
-      if (profile?.summaries_reset_at && new Date() > new Date(profile.summaries_reset_at)) {
-        const nextMonth = new Date();
-        nextMonth.setMonth(nextMonth.getMonth() + 1, 1);
-        nextMonth.setHours(0, 0, 0, 0);
-        await supabase.from("profiles").update({
-          summaries_used: 1,
-          summaries_reset_at: nextMonth.toISOString(),
-        }).eq("id", user.id);
-      } else {
-        await supabase.from("profiles").update({
-          summaries_used: (profile?.summaries_used ?? 0) + 1,
-        }).eq("id", user.id);
-      }
-      refreshProfile();
-    } catch { /* ignore */ }
-  }
-
   async function search() {
     // Collect all topics and universities (tags + current input)
     // Split by comma so "UCI, UCLA, Caltech" works even without tagging each one
@@ -675,7 +663,7 @@ function AppPageInner() {
                 const authorId = authorship.author?.id;
                 if (!authorId) continue;
                 const shortId = authorId.split("/").pop()!;
-                if (!authorship.institutions?.some((inst: any) => fullInstIds.includes(inst.id))) continue;
+                if (!authorship.institutions?.some((inst: OpenAlexInstitutionRef) => inst.id ? fullInstIds.includes(inst.id) : false)) continue;
                 if (!authorIdsToFetch.has(shortId)) authorIdsToFetch.set(shortId, authorId);
                 if (authorIdsToFetch.size >= 20) break;
               }
@@ -721,7 +709,7 @@ function AppPageInner() {
       if (topicIds.length > 0 && authors.length > 0) {
         const filterByTopN = (n: number) =>
           authors.filter((a) => {
-            const topIds = (a.topics ?? []).slice(0, n).map((t: any) => t.id?.split("/").pop());
+            const topIds = (a.topics ?? []).slice(0, n).map((t) => t.id?.split("/").pop());
             return topicIds.some((id: string) => topIds.includes(id));
           });
         // When searching a university, use a wider window since faculty at smaller
@@ -817,7 +805,7 @@ function AppPageInner() {
           `https://api.openalex.org/works?filter=author.id:${authorId},publication_year:>${threeYearsAgo}&per_page=50&select=authorships,publication_year`
         );
         const worksData = await worksRes.json();
-        const works = worksData.results ?? [];
+        const works = (worksData.results ?? []) as OpenAlexWork[];
 
         if (works.length === 0) {
           setResponsiveness(prev => ({ ...prev, [authorId]: { level: "red", label: "Inactive lab", tooltip: "No papers found in the last 3 years — this lab may be inactive or retired" } }));
@@ -825,13 +813,13 @@ function AppPageInner() {
         }
 
         // Check if published in last 12 months
-        const recentWorks = works.filter((w: any) => w.publication_year >= currentYear - 1);
+        const recentWorks = works.filter((w) => (w.publication_year ?? 0) >= currentYear - 1);
         const publishedRecently = recentWorks.length > 0;
 
         // Check for no publications in last 2 years
-        const last2YearWorks = works.filter((w: any) => w.publication_year >= twoYearsAgo);
+        const last2YearWorks = works.filter((w) => (w.publication_year ?? 0) >= twoYearsAgo);
         if (last2YearWorks.length === 0) {
-          const lastYear = Math.max(...works.map((w: any) => w.publication_year as number));
+          const lastYear = Math.max(...works.map((w) => w.publication_year ?? 0));
           const yearsAgo = currentYear - lastYear;
           setResponsiveness(prev => ({ ...prev, [authorId]: { level: "red", label: "Inactive lab", tooltip: `Last published in ${lastYear} (${yearsAgo} year${yearsAgo !== 1 ? "s" : ""} ago) — lab appears to be winding down` } }));
           continue;
@@ -885,7 +873,7 @@ function AppPageInner() {
         } else if (!publishedRecently) {
           level = "yellow";
           label = "May not take students";
-          const lastYear = Math.max(...works.map((w: any) => w.publication_year as number));
+          const lastYear = Math.max(...works.map((w) => w.publication_year ?? 0));
           const yearsAgo = currentYear - lastYear;
           tooltip = yearsAgo >= 2
             ? `Last published ${yearsAgo} years ago — lab may not be actively recruiting`
@@ -923,11 +911,6 @@ function AppPageInner() {
       if (authors.length > 0) fetchResponsiveness(authors);
     } catch { setError("Something went wrong. Please try again."); }
     finally { setLoading(false); }
-  }
-
-  function handleSearch() {
-    if (searchMode === "name") searchByName();
-    else search();
   }
 
   async function loadSummary(author: Author, retry = false) {
@@ -974,8 +957,27 @@ function AppPageInner() {
     const summary = summaries[id];
     setCheckingEmail(true);
     try {
-      const res = await fetch("/api/email", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ draft: emailDraft, professorName: emailTarget.display_name, institution: emailTarget.last_known_institutions?.[0]?.display_name || "", topics: emailTarget.topics?.slice(0, 4).map((t) => t.display_name), highlights: summary?.highlights || [], questions: summary?.questions || [] }) });
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        setEmailFlags([{ type: "error", issue: "Sign in again", suggestion: "Log in again before checking your email." }]);
+        setHasChecked(true);
+        return;
+      }
+
+      const res = await fetch("/api/email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ draft: emailDraft, professorName: emailTarget.display_name, institution: emailTarget.last_known_institutions?.[0]?.display_name || "", topics: emailTarget.topics?.slice(0, 4).map((t) => t.display_name), highlights: summary?.highlights || [], questions: summary?.questions || [] }),
+      });
       const data = await res.json();
+      if (!res.ok) {
+        setEmailFlags([{ type: "error", issue: "Check failed", suggestion: data.error || "Something went wrong. Try again." }]);
+        setHasChecked(true);
+        return;
+      }
       const flags = data.flags ?? [];
       setEmailFlags(flags);
       setHasChecked(true);
@@ -1044,99 +1046,6 @@ function AppPageInner() {
 
   const profileUrl = (author: Author) => `https://openalex.org/authors/${author.id.split("/").pop()}`;
 
-  function getEmailInfo(author: Author): { emails: string[]; domain: string | null; searchUrl: string } | null {
-    const inst = author.last_known_institutions?.[0];
-    if (!inst?.display_name) return null;
-    const nameParts = author.display_name.toLowerCase().replace(/[^a-z\s.-]/g, "").split(/\s+/).filter(Boolean);
-    if (nameParts.length < 2) return null;
-    const first = nameParts[0];
-    const last = nameParts[nameParts.length - 1];
-    const firstInitial = first[0];
-
-    const domainMap: Record<string, { domain: string; formats: string[] }> = {
-      "massachusetts institute of technology": { domain: "mit.edu", formats: ["{last}@", "{first}{last}@"] },
-      "stanford university": { domain: "stanford.edu", formats: ["{first}.{last}@", "{last}@"] },
-      "harvard university": { domain: "harvard.edu", formats: ["{first}_{last}@", "{last}@fas."] },
-      "princeton university": { domain: "princeton.edu", formats: ["{first}.{last}@", "{last}@"] },
-      "yale university": { domain: "yale.edu", formats: ["{first}.{last}@", "{last}@"] },
-      "columbia university": { domain: "columbia.edu", formats: ["{fi}{last}@", "{first}.{last}@"] },
-      "university of california, berkeley": { domain: "berkeley.edu", formats: ["{last}@", "{first}.{last}@"] },
-      "cornell university": { domain: "cornell.edu", formats: ["{fi}{last}@", "{first}.{last}@"] },
-      "university of chicago": { domain: "uchicago.edu", formats: ["{last}@", "{first}.{last}@"] },
-      "university of pennsylvania": { domain: "upenn.edu", formats: ["{last}@", "{first}.{last}@"] },
-      "duke university": { domain: "duke.edu", formats: ["{first}.{last}@", "{last}@"] },
-      "university of michigan": { domain: "umich.edu", formats: ["{last}@", "{first}{last}@"] },
-      "university of oxford": { domain: "ox.ac.uk", formats: ["{first}.{last}@", "{last}@"] },
-      "university of cambridge": { domain: "cam.ac.uk", formats: ["{fi}{last}@", "{first}.{last}@"] },
-      "california institute of technology": { domain: "caltech.edu", formats: ["{last}@", "{first}@"] },
-      "carnegie mellon university": { domain: "cmu.edu", formats: ["{first}{last}@", "{last}@cs."] },
-      "georgia institute of technology": { domain: "gatech.edu", formats: ["{first}.{last}@", "{last}@"] },
-      "university of california, los angeles": { domain: "ucla.edu", formats: ["{last}@", "{first}.{last}@"] },
-      "university of california, san diego": { domain: "ucsd.edu", formats: ["{fi}{last}@", "{last}@"] },
-      "university of washington": { domain: "uw.edu", formats: ["{last}@", "{first}@"] },
-      "northwestern university": { domain: "northwestern.edu", formats: ["{first}.{last}@", "{fi}-{last}@"] },
-      "johns hopkins university": { domain: "jhu.edu", formats: ["{last}@", "{first}.{last}@"] },
-      "new york university": { domain: "nyu.edu", formats: ["{fi}{last}@", "{first}.{last}@"] },
-      "university of texas at austin": { domain: "utexas.edu", formats: ["{first}.{last}@", "{last}@"] },
-      "university of illinois urbana-champaign": { domain: "illinois.edu", formats: ["{last}@", "{first}@"] },
-      "brown university": { domain: "brown.edu", formats: ["{first}_{last}@", "{last}@"] },
-      "rice university": { domain: "rice.edu", formats: ["{last}@", "{first}.{last}@"] },
-      "vanderbilt university": { domain: "vanderbilt.edu", formats: ["{first}.{last}@", "{last}@"] },
-      "emory university": { domain: "emory.edu", formats: ["{first}.{last}@", "{last}@"] },
-      "university of southern california": { domain: "usc.edu", formats: ["{last}@", "{first}.{last}@"] },
-      "boston university": { domain: "bu.edu", formats: ["{last}@", "{first}@"] },
-      "university of virginia": { domain: "virginia.edu", formats: ["{fi}{last}@", "{last}@"] },
-      "purdue university": { domain: "purdue.edu", formats: ["{last}@", "{first}.{last}@"] },
-      "ohio state university": { domain: "osu.edu", formats: ["{last}.1@", "{first}.{last}@"] },
-      "penn state university": { domain: "psu.edu", formats: ["{fi}{last}@", "{last}@"] },
-      "university of florida": { domain: "ufl.edu", formats: ["{last}@", "{first}.{last}@"] },
-      "eth zurich": { domain: "ethz.ch", formats: ["{first}.{last}@", "{last}@"] },
-      "university of toronto": { domain: "utoronto.ca", formats: ["{first}.{last}@", "{last}@"] },
-      "university of british columbia": { domain: "ubc.ca", formats: ["{first}.{last}@", "{last}@"] },
-      "mcgill university": { domain: "mcgill.ca", formats: ["{first}.{last}@", "{last}@"] },
-      "imperial college london": { domain: "imperial.ac.uk", formats: ["{fi}.{last}@", "{first}.{last}@"] },
-      "university college london": { domain: "ucl.ac.uk", formats: ["{fi}.{last}@", "{first}.{last}@"] },
-      "national university of singapore": { domain: "nus.edu.sg", formats: ["{last}@", "{first}.{last}@"] },
-      "university of tokyo": { domain: "u-tokyo.ac.jp", formats: ["{last}@", "{first}.{last}@"] },
-    };
-
-    const instName = inst.display_name.toLowerCase();
-    const mapped = domainMap[instName];
-    let domain: string | null = null;
-    let emails: string[] = [];
-
-    if (mapped) {
-      domain = mapped.domain;
-      emails = mapped.formats.map(fmt =>
-        fmt.replace("{first}", first).replace("{last}", last).replace("{fi}", firstInitial) + (fmt.includes("@") && !fmt.endsWith("@") ? domain! : domain!)
-      );
-    } else {
-      // Fallback: try to extract domain
-      const words = instName.replace(/university of |the /gi, "").replace(/university|college|institute|school/gi, "").trim().split(/\s+/).filter(w => w.length > 2);
-      if (words.length > 0) {
-        domain = words[0].replace(/[^a-z]/g, "") + ".edu";
-        emails = [
-          `${first}.${last}@${domain}`,
-          `${firstInitial}${last}@${domain}`,
-          `${last}@${domain}`,
-        ];
-      }
-    }
-
-    // Fix: the format strings already include @, so we need to handle this properly
-    if (mapped) {
-      emails = mapped.formats.map(fmt => {
-        const parts = fmt.split("@");
-        const localPart = parts[0].replace("{first}", first).replace("{last}", last).replace("{fi}", firstInitial);
-        const domainSuffix = parts[1] || "";
-        return `${localPart}@${domainSuffix}${domainSuffix ? "" : ""}${mapped.domain}`;
-      });
-    }
-
-    const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(`"${author.display_name}" email ${inst.display_name}`)}`;
-
-    return emails.length > 0 ? { emails: [...new Set(emails)].slice(0, 3), domain, searchUrl } : null;
-  }
   const displayList = useMemo(() => (showSaved ? saved : results), [showSaved, saved, results]);
   // Citation filter
   const filteredList = useMemo(() => (
@@ -1738,8 +1647,6 @@ function AppPageInner() {
             const summary = summaries[id];
             const isLoadingSummary = loadingSummary[id];
             const resp = responsiveness[id];
-            const summaryLocked = !isPaid && summary && getSummariesRemaining() <= 0 && !summaries[id];
-
             // Non-paid users: professor 4+ gets restricted
             // Anon users: completely hidden (show exactly 3, no friction)
             // Free account: locked stub with upgrade prompt
@@ -1769,7 +1676,7 @@ function AppPageInner() {
                       <>
                         <hr className="rm-card-divider" />
                         <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
-                          {author.topics.slice(0, 4).map((t: any, i: number) => <span key={i} className="tag">{t.display_name}</span>)}
+                          {author.topics.slice(0, 4).map((t, i) => <span key={i} className="tag">{t.display_name}</span>)}
                         </div>
                       </>
                     )}

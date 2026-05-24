@@ -6,7 +6,6 @@ import { supabase } from "@/lib/supabase";
 
 export default function ProfilePage() {
   const { user, profile, signOut, refreshProfile } = useAuth();
-  const [searchesThisSession, setSearchesThisSession] = useState(0);
   const [memberSince, setMemberSince] = useState("");
   const [daysActive, setDaysActive] = useState(0);
   const [animateIn, setAnimateIn] = useState(false);
@@ -20,9 +19,6 @@ export default function ProfilePage() {
       setMemberSince(created.toLocaleDateString("en-US", { month: "long", year: "numeric" }));
       setDaysActive(Math.max(1, Math.floor((Date.now() - created.getTime()) / (1000 * 60 * 60 * 24))));
     }
-    // Get session searches from localStorage
-    const s = parseInt(localStorage.getItem("research-match-searches") || "0", 10);
-    setSearchesThisSession(s);
   }, [profile]);
 
   useEffect(() => {
@@ -51,10 +47,11 @@ export default function ProfilePage() {
       : profile?.plan_type === "semester" || profile?.plan_type === "student_monthly" || profile?.plan_type === "student_annual"
         ? "Semester"
         : "Free";
-  const summariesUsed = profile?.searches_used ?? 0;
-  const summariesLeft = isPaid ? "Unlimited" : `${Math.max(0, 3 - summariesUsed)} of 3`;
-  const resetDate = profile?.searches_reset_at
-    ? new Date(profile.searches_reset_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+  const freeSummaryLimit = 1;
+  const summariesUsed = profile?.summaries_used ?? 0;
+  const summariesLeft = isPaid ? "Unlimited" : `${Math.max(0, freeSummaryLimit - summariesUsed)} of ${freeSummaryLimit}`;
+  const resetDate = profile?.summaries_reset_at
+    ? new Date(profile.summaries_reset_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })
     : "—";
   const initial = user.email?.charAt(0).toUpperCase() || "?";
 

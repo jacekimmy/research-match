@@ -192,7 +192,7 @@ export default function FrameworkPage() {
             Red Flag Phrases
           </h2>
           <p style={{ fontSize: "0.9rem", color: "#6b7280", marginBottom: "28px", lineHeight: 1.6 }}>
-            These phrases signal to professors that you haven't done your homework. Avoid them.
+            These phrases signal to professors that you haven&apos;t done your homework. Avoid them.
           </p>
 
           <div style={{

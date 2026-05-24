@@ -124,7 +124,7 @@ export async function POST(req: NextRequest) {
 
     // Count co-authors with fewer than 5 works (likely students)
     let newStudentCoAuthors = 0;
-    for (const [coAuthorId, count] of coAuthorWorkCounts) {
+    for (const count of coAuthorWorkCounts.values()) {
       if (count < 5) {
         newStudentCoAuthors++;
       }

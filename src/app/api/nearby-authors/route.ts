@@ -3,6 +3,12 @@ import Groq from "groq-sdk";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
+interface NearbyAuthor {
+  id?: string;
+  works_count?: number;
+  cited_by_count?: number;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { institutionName, topicId, excludeIds }: {
@@ -74,20 +80,21 @@ export async function POST(req: NextRequest) {
             { signal: AbortSignal.timeout(5000) }
           );
           const d = await r.json();
-          return (d.results ?? []) as any[];
+          return (d.results ?? []) as NearbyAuthor[];
         } catch { return []; }
       })
     );
 
     // Flatten, deduplicate, filter out excluded IDs and low work counts
     const seen = new Set<string>(excludeIds);
-    const candidates: any[] = [];
+    const candidates: NearbyAuthor[] = [];
     for (const group of authorsByInst) {
       for (const author of group) {
-        const shortId = author.id?.split("/").pop();
-        if (!shortId || seen.has(author.id) || seen.has(shortId)) continue;
+        const authorId = author.id;
+        const shortId = authorId?.split("/").pop();
+        if (!authorId || !shortId || seen.has(authorId) || seen.has(shortId)) continue;
         if ((author.works_count ?? 0) < 15) continue;
-        seen.add(author.id);
+        seen.add(authorId);
         seen.add(shortId);
         candidates.push(author);
       }

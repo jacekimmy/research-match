@@ -12,6 +12,16 @@ interface ScoredAuthor {
   score: number;
 }
 
+interface OpenAlexAuthorship {
+  author?: { id?: string };
+  author_position?: string;
+}
+
+interface OpenAlexWork {
+  publication_year?: number;
+  authorships?: OpenAlexAuthorship[];
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { authors }: { authors: AuthorInput[] } = await req.json();
@@ -38,24 +48,20 @@ export async function POST(req: NextRequest) {
             { signal: AbortSignal.timeout(5000) }
           );
           const worksData = await worksRes.json();
-          const works = worksData.results ?? [];
+          const works = (worksData.results ?? []) as OpenAlexWork[];
 
           // Count last-author appearances
           let lastAuthorCount = 0;
-          let onlyFirstMiddle = true;
           const years: number[] = [];
 
           for (const w of works) {
             if (w.publication_year) years.push(w.publication_year);
             const authorship = w.authorships?.find(
-              (a: any) => a.author?.id === `https://openalex.org/${authorId}`
+              (a) => a.author?.id === `https://openalex.org/${authorId}`
             );
             if (authorship) {
               if (authorship.author_position === "last") {
                 lastAuthorCount++;
-                onlyFirstMiddle = false;
-              } else if (authorship.author_position !== "first" && authorship.author_position !== "middle") {
-                onlyFirstMiddle = false;
               }
             }
           }

@@ -5,8 +5,6 @@ type DemoPhase = "idle" | "showing_bad" | "showing_flags" | "flags_done" | "edit
 
 const BAD_EMAIL = `Dear Professor Smith, I am writing to express my sincere interest in your groundbreaking research. I would be honored to work in your prestigious lab. I am a dedicated and hardworking student who is willing to do whatever it takes. I read your paper on machine learning and found it very interesting. Please let me know if you have any available positions. Thank you for your time and consideration.`;
 
-const GOOD_EMAIL = `Hi Professor Smith, I'm a sophomore studying computer science. I've been working on a project using neural networks for image classification and your recent paper on transfer learning caught my attention. I was curious how your approach handles domain shift when the source dataset is small. Would you have any openings for a volunteer this semester? If not, is there someone in your group you'd recommend I reach out to? Thanks, [Name]`;
-
 const RED_FLAGS = [
   "Sycophantic tone",
   "Too generic",

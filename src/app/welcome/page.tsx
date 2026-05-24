@@ -17,7 +17,8 @@ export default function WelcomePage() {
     }
     // Mark immediately — refreshing won't show this again
     localStorage.setItem(WELCOME_KEY, "1");
-    setReady(true);
+    const frame = window.requestAnimationFrame(() => setReady(true));
+    return () => window.cancelAnimationFrame(frame);
   }, [router]);
 
   // While checking localStorage (or redirecting), show the same dark green

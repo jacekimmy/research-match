@@ -1,6 +1,8 @@
 "use client";
 import { useState, useEffect, useCallback, useRef, startTransition } from "react";
+import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
+import { supabase } from "@/lib/supabase";
 
 interface FeedbackItem {
   id: string;
@@ -125,15 +127,31 @@ export default function FeedbackPage() {
   }
 
   async function handleResolve(id: string) {
-    setItems((prev) => prev.map((item) => item.id === id ? { ...item, resolved: true } : item));
-    showToast("Marked as resolved");
     try {
-      await fetch("/api/feedback", {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        showToast("Sign in again to resolve feedback");
+        return;
+      }
+
+      const res = await fetch("/api/feedback", {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
         body: JSON.stringify({ id, resolved: true }),
       });
-    } catch { /* ignore */ }
+      if (!res.ok) {
+        showToast("Only admins can resolve feedback");
+        return;
+      }
+
+      setItems((prev) => prev.map((item) => item.id === id ? { ...item, resolved: true } : item));
+      showToast("Marked as resolved");
+    } catch {
+      showToast("Could not resolve feedback");
+    }
   }
 
   const categoryStyle = (cat: string) => {
@@ -155,16 +173,16 @@ export default function FeedbackPage() {
       <main className="rm-page" style={{ maxWidth: "800px" }}>
         <div className="rm-header" style={{ marginBottom: "40px" }}>
           <div>
-            <a href="/" style={{ textDecoration: "none" }}>
+            <Link href="/" style={{ textDecoration: "none" }}>
               <h1 className="rm-title" style={{ fontSize: "2.4rem" }}>Feedback Board</h1>
-            </a>
+            </Link>
             <p style={{ fontSize: "1.05rem", color: "#6b7280", marginTop: "8px" }}>
               Help shape Research Match. Suggest features, report bugs, or share your thoughts.
             </p>
           </div>
-          <a href="/" className="btn-cta" style={{ padding: "12px 28px", fontSize: "0.9rem", textDecoration: "none", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px", whiteSpace: "nowrap", textAlign: "center" }}>
+          <Link href="/" className="btn-cta" style={{ padding: "12px 28px", fontSize: "0.9rem", textDecoration: "none", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px", whiteSpace: "nowrap", textAlign: "center" }}>
             &larr; Back to tool
-          </a>
+          </Link>
         </div>
 
         {/* SUBMIT FORM */}

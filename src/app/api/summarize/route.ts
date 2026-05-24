@@ -8,8 +8,22 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-const FREE_LIMIT = 2;
+const FREE_LIMIT = 1;
 const ANON_LIMIT = 1;
+
+interface OpenAlexAuthorship {
+  author?: { id?: string };
+  author_position?: string;
+}
+
+interface OpenAlexWork {
+  title?: string;
+  publication_year?: number;
+  cited_by_count?: number;
+  abstract_inverted_index?: Record<string, number[]>;
+  authorships?: OpenAlexAuthorship[];
+  doi?: string | null;
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -72,7 +86,7 @@ export async function POST(req: NextRequest) {
       `https://api.openalex.org/works?filter=author.id:${authorId},publication_year:>${fromYear}&sort=cited_by_count:desc&per_page=20&select=title,abstract_inverted_index,cited_by_count,publication_year,authorships,doi`
     );
     const worksData = await worksRes.json();
-    const allWorks = worksData.results ?? [];
+    const allWorks = (worksData.results ?? []) as OpenAlexWork[];
     const works = allWorks.slice(0, 8);
 
     if (works.length === 0) {
@@ -84,7 +98,7 @@ export async function POST(req: NextRequest) {
     const paperDois: Record<string, string> = {};
     for (const w of works) {
       const authorship = w.authorships?.find(
-        (a: any) => a.author?.id === `https://openalex.org/${authorId}`
+        (a) => a.author?.id === `https://openalex.org/${authorId}`
       );
       if (authorship && w.title) {
         authorPositions[w.title] = authorship.author_position ?? "unknown";
@@ -95,7 +109,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Reconstruct abstracts from inverted index
-    const papers = works.map((w: any) => {
+    const papers = works.map((w) => {
       let abstract = "";
       if (w.abstract_inverted_index) {
         const words: { word: string; pos: number }[] = [];

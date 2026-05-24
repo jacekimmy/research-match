@@ -28,6 +28,42 @@ interface ProfessorResult {
   topics: string[];
 }
 
+interface OpenAlexTopic {
+  display_name?: string;
+}
+
+interface OpenAlexInstitutionRef {
+  id?: string;
+}
+
+interface OpenAlexAuthorship {
+  author?: { id?: string };
+  institutions?: OpenAlexInstitutionRef[];
+}
+
+interface OpenAlexAuthor {
+  id?: string;
+  display_name?: string;
+  works_count?: number;
+  cited_by_count?: number;
+  topics?: OpenAlexTopic[];
+  last_known_institutions?: InstitutionResult[];
+}
+
+interface OpenAlexWork {
+  authorships?: OpenAlexAuthorship[];
+}
+
+interface OpenAlexList<T> {
+  results?: T[];
+}
+
+interface OpenAlexInstitutionGeoResult {
+  id: string;
+  display_name: string;
+  geo?: { latitude?: number | null; longitude?: number | null };
+}
+
 function haversineDistance(
   lat1: number,
   lon1: number,
@@ -46,19 +82,19 @@ function haversineDistance(
   return R * c;
 }
 
-async function oaFetch(url: string): Promise<any> {
+async function oaFetch<T>(url: string): Promise<T> {
   const separator = url.includes("?") ? "&" : "?";
   const res = await fetch(`${url}${separator}mailto=${OPENALEX_MAILTO}`, {
     signal: AbortSignal.timeout(10000),
   });
   if (!res.ok) throw new Error(`OpenAlex ${res.status}: ${url}`);
-  return res.json();
+  return res.json() as Promise<T>;
 }
 
 async function resolveInstitutionGeo(
   name: string
 ): Promise<{ id: string; display_name: string; lat: number; lng: number }> {
-  const data = await oaFetch(
+  const data = await oaFetch<OpenAlexList<OpenAlexInstitutionGeoResult>>(
     `https://api.openalex.org/institutions?search=${encodeURIComponent(name)}&per_page=1&select=id,display_name,geo`
   );
   const inst = data.results?.[0];
@@ -75,7 +111,7 @@ async function findNearbyInstitutions(
   radiusKm: number,
   excludeId: string
 ): Promise<InstitutionResult[]> {
-  const data = await oaFetch(
+  const data = await oaFetch<OpenAlexList<InstitutionResult>>(
     `https://api.openalex.org/institutions?filter=geo.is_within:${lat},${lng},${radiusKm}km&per_page=20&select=id,display_name,geo`
   );
   const results: InstitutionResult[] = data.results ?? [];
@@ -86,22 +122,22 @@ async function findAuthorsAtInstitution(
   institutionId: string,
   topicId: string | null,
   query: string
-): Promise<any[]> {
+): Promise<OpenAlexAuthor[]> {
   const shortId = institutionId.split("/").pop();
 
   if (topicId) {
     // Use topic filter + institution filter
-    const data = await oaFetch(
+    const data = await oaFetch<OpenAlexList<OpenAlexAuthor>>(
       `https://api.openalex.org/authors?filter=topics.id:${topicId},last_known_institutions.id:${shortId}&per_page=10&sort=cited_by_count:desc&select=id,display_name,works_count,cited_by_count,topics,last_known_institutions`
     );
     return data.results ?? [];
   }
 
   // Keyword search: find works matching query at this institution, extract authors
-  const data = await oaFetch(
+  const data = await oaFetch<OpenAlexList<OpenAlexWork>>(
     `https://api.openalex.org/works?search=${encodeURIComponent(query)}&filter=institutions.id:${shortId}&sort=cited_by_count:desc&per_page=10&select=authorships`
   );
-  const works = data.results ?? [];
+  const works = (data.results ?? []) as OpenAlexWork[];
 
   // Collect unique authors from these works
   const authorMap = new Map<string, { id: string; count: number }>();
@@ -111,7 +147,7 @@ async function findAuthorsAtInstitution(
       if (!aId) continue;
       // Only include authors affiliated with the target institution
       const affiliatedHere = authorship.institutions?.some(
-        (inst: any) => inst.id === institutionId
+        (inst) => inst.id === institutionId
       );
       if (!affiliatedHere) continue;
       const existing = authorMap.get(aId);
@@ -132,7 +168,7 @@ async function findAuthorsAtInstitution(
     topAuthorIds.map(async ({ id }) => {
       try {
         const shortAuthorId = id.split("/").pop();
-        const authorData = await oaFetch(
+        const authorData = await oaFetch<OpenAlexAuthor>(
           `https://api.openalex.org/authors/${shortAuthorId}?select=id,display_name,works_count,cited_by_count,topics,last_known_institutions`
         );
         return authorData;
@@ -142,10 +178,10 @@ async function findAuthorsAtInstitution(
     })
   );
 
-  return authors.filter(Boolean);
+  return authors.filter((author): author is OpenAlexAuthor => Boolean(author));
 }
 
-function scoreAuthor(author: any): number {
+function scoreAuthor(author: OpenAlexAuthor): number {
   let score = 0;
   // Favor higher citation counts (log scale to avoid extreme skew)
   score += Math.log10(Math.max(author.cited_by_count ?? 1, 1)) * 2;
@@ -177,7 +213,7 @@ async function findNearbyProfessors(
 
   // Search each nearby institution for matching authors (in parallel, limited)
   const allCandidates: {
-    author: any;
+    author: OpenAlexAuthor;
     institution: InstitutionResult;
     distance: number;
   }[] = [];
@@ -230,13 +266,13 @@ async function findNearbyProfessors(
   scored.sort((a, b) => b.score - a.score);
 
   return scored.slice(0, 3).map((c) => ({
-    id: c.author.id,
+    id: c.author.id ?? "",
     name: c.author.display_name ?? "Unknown",
     institution: c.institution.display_name,
     distance_miles: Math.round(c.distance * 10) / 10,
     topics: (c.author.topics ?? [])
       .slice(0, 5)
-      .map((t: any) => t.display_name),
+      .map((t) => t.display_name ?? ""),
   }));
 }
 

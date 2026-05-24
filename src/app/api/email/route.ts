@@ -1,12 +1,62 @@
 import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
+import { createClient } from "@supabase/supabase-js";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
+
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX_CHECKS = 12;
+const emailCheckHits = new Map<string, { count: number; resetAt: number }>();
+
+interface EmailHighlight {
+  paper: string;
+}
+
+interface EmailReviewRequest {
+  draft?: string;
+  professorName?: string;
+  highlights?: EmailHighlight[];
+}
+
+async function authenticatedUserId(req: NextRequest) {
+  const token = req.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
+  if (!token) return null;
+
+  const { data, error } = await supabaseAdmin.auth.getUser(token);
+  if (error) return null;
+  return data.user?.id ?? null;
+}
+
+function withinRateLimit(key: string) {
+  const now = Date.now();
+  const current = emailCheckHits.get(key);
+
+  if (!current || current.resetAt <= now) {
+    emailCheckHits.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return true;
+  }
+
+  if (current.count >= RATE_LIMIT_MAX_CHECKS) return false;
+  current.count += 1;
+  return true;
+}
 
 export async function POST(req: NextRequest) {
   try {
-    const { draft, professorName, institution, topics, highlights, questions } =
-      await req.json();
+    const userId = await authenticatedUserId(req);
+    if (!userId) {
+      return NextResponse.json({ error: "Sign in to check an email." }, { status: 401 });
+    }
+
+    if (!withinRateLimit(userId)) {
+      return NextResponse.json({ error: "Too many email checks. Try again in a minute." }, { status: 429 });
+    }
+
+    const { draft, professorName, highlights } = await req.json() as EmailReviewRequest;
 
     if (!draft || draft.trim().length < 10) {
       return NextResponse.json({
@@ -22,7 +72,7 @@ export async function POST(req: NextRequest) {
     }
 
     const paperList = highlights?.length
-      ? highlights.map((h: any) => `- "${h.paper}"`).join("\n")
+      ? highlights.map((h) => `- "${h.paper}"`).join("\n")
       : "No papers loaded";
 
     const prompt = `Review this cold email to Professor ${professorName}.

@@ -2,11 +2,8 @@
 import { useState, useEffect, useRef, startTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import dynamic from "next/dynamic";
 import { useAuth } from "@/lib/auth-context";
 import { supabase } from "@/lib/supabase";
-
-const StarterKitModal = dynamic(() => import("./components/StarterKitModal"), { ssr: false });
 
 const HERO_PLACEHOLDERS = [
   "e.g. machine learning",
@@ -30,7 +27,6 @@ export default function LandingPage() {
   const [inlineWaitlistEmail, setInlineWaitlistEmail] = useState("");
   const [inlineWaitlistDone, setInlineWaitlistDone] = useState(false);
   const [lifetimeSpotsRemaining, setLifetimeSpotsRemaining] = useState<number | null>(null);
-  const [showStarterKit, setShowStarterKit] = useState(false);
   const [waitlistEmail, setWaitlistEmail] = useState("");
   const [waitlistTier, setWaitlistTier] = useState<"research_pro" | "pro" | null>(null);
   const [waitlistDone, setWaitlistDone] = useState(false);

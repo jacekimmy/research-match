@@ -10,6 +10,16 @@ function splitName(displayName: string): { first: string | null; last: string | 
   return { first, last };
 }
 
+interface NihProject {
+  project_title?: string;
+  award_amount?: number | null;
+  fiscal_year?: number | null;
+  award_notice_date?: string | null;
+  organization?: { org_name?: string | null; name?: string | null };
+  activity?: string | null;
+  project_num?: string | null;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { piName } = await req.json();
@@ -64,7 +74,7 @@ export async function POST(req: NextRequest) {
     }
 
     const data = await res.json();
-    const projects: any[] = data?.results ?? [];
+    const projects = (data?.results ?? []) as NihProject[];
 
     const normalized = projects.slice(0, 5).map((p) => ({
       title: p?.project_title ?? "",

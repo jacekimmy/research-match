@@ -27,7 +27,6 @@ export default function MobileLanding() {
   const [inlineWaitlistEmail, setInlineWaitlistEmail] = useState("");
   const [inlineWaitlistDone, setInlineWaitlistDone] = useState(false);
   const [lifetimeSpotsRemaining, setLifetimeSpotsRemaining] = useState<number | null>(null);
-  const [glowingCard, setGlowingCard] = useState<string | null>(null);
   const [activePricingTab, setActivePricingTab] = useState<'lifetime' | 'semester' | 'free'>('lifetime');
   const [showStarterKit, setShowStarterKit] = useState(false);
   const splotchRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -118,11 +117,6 @@ export default function MobileLanding() {
       setInlineWaitlistDone(true);
     } catch { /* ignore */ }
   }
-
-  const handlePricingTap = useCallback((cardName: string) => {
-    setGlowingCard(cardName);
-    setTimeout(() => setGlowingCard(null), 600);
-  }, []);
 
   const handleTilt = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
     const el = e.currentTarget;

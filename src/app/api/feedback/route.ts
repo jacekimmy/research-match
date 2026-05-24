@@ -1,5 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
+
+const ADMIN_EMAIL = "thomasjacekim@gmail.com";
+
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
+
+async function authenticatedAdmin(req: NextRequest) {
+  const token = req.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
+  if (!token) return false;
+
+  const { data, error } = await supabaseAdmin.auth.getUser(token);
+  if (error) return false;
+
+  return data.user?.email === ADMIN_EMAIL;
+}
 
 export async function GET(req: NextRequest) {
   const sort = req.nextUrl.searchParams.get("sort") || "upvotes";
@@ -54,11 +72,15 @@ export async function PATCH(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
+  if (!(await authenticatedAdmin(req))) {
+    return NextResponse.json({ error: "Admin access required." }, { status: 403 });
+  }
+
   const { id, resolved } = await req.json();
 
   if (!id) return NextResponse.json({ error: "ID required." }, { status: 400 });
 
-  const { error } = await supabase
+  const { error } = await supabaseAdmin
     .from("feedback")
     .update({ resolved: !!resolved })
     .eq("id", id);
