@@ -489,15 +489,15 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           FEATURES
       ══════════════════════════════════════════ */}
-      <section className="lp-features-section">
+      <section className="lp-features-section px-4 sm:px-6 md:px-12 lg:px-24">
         <div className="lp-features-label" data-reveal>The Platform</div>
 
         {/* Feature 1 */}
         <div className="lp-feature" data-reveal>
           <div className="lp-feature-text">
             <div className="lp-feature-num">01</div>
-            <h2 className="lp-feature-title">Search any research interest.</h2>
-            <p className="lp-feature-desc">
+            <h2 className="lp-feature-title text-2xl font-bold sm:text-3xl md:text-4xl">Search any research interest.</h2>
+            <p className="lp-feature-desc text-sm leading-relaxed md:text-base">
               Type what you care about: quantum computing, cognitive neuroscience, climate policy.
               We surface the top professors publishing in that exact space, ranked by impact.
             </p>
@@ -538,8 +538,8 @@ export default function LandingPage() {
         <div className="lp-feature lp-feature-rev" data-reveal>
           <div className="lp-feature-text">
             <div className="lp-feature-num">02</div>
-            <h2 className="lp-feature-title">Understand their research in plain English.</h2>
-            <p className="lp-feature-desc">
+            <h2 className="lp-feature-title text-2xl font-bold sm:text-3xl md:text-4xl">Understand their research in plain English.</h2>
+            <p className="lp-feature-desc text-sm leading-relaxed md:text-base">
               Every professor gets an AI summary of their key findings, written so a high schooler
               can understand it and use it in their email. No more pretending to read papers.
             </p>
@@ -553,22 +553,27 @@ export default function LandingPage() {
                 <div className="lp-dot" style={{ background: "#28c840" }} />
                 <span className="lp-mockup-url">researchmatch.net/app</span>
               </div>
-              <div className="lp-mockup-body">
-                <div className="lp-mock-summary-header">
-                  <div className="lp-mock-summary-name">Dr. Emily Nakamura</div>
-                  <span className="lp-mock-tag" style={{ fontSize: "0.6rem" }}>Harvard</span>
-                </div>
-                <p className="lp-mock-summary-text">
-                  Studies how memories form and consolidate during sleep using fMRI.
-                  Recent work shows neural oscillation patterns predict next-day recall accuracy
-                  in elderly patients with early cognitive decline.
-                </p>
-                <div className="lp-mock-finding">
-                  <div className="lp-mock-finding-label">Key Finding</div>
-                  <p className="lp-mock-finding-text">
-                    Theta oscillations during REM sleep increased memory consolidation by 34%.
-                    Published 2024, first-author.
+              <div className="lp-mockup-body" style={{ padding: 0 }}>
+                <div
+                  className="p-6 md:p-8 w-full max-w-md md:max-w-none mx-auto"
+                  style={{ padding: "clamp(24px, calc(8px + 3vw), 32px)" }}
+                >
+                  <div className="lp-mock-summary-header">
+                    <div className="lp-mock-summary-name">Dr. Emily Nakamura</div>
+                    <span className="lp-mock-tag" style={{ fontSize: "0.6rem" }}>Harvard</span>
+                  </div>
+                  <p className="lp-mock-summary-text text-sm leading-relaxed md:text-base">
+                    Studies how memories form and consolidate during sleep using fMRI.
+                    Recent work shows neural oscillation patterns predict next-day recall accuracy
+                    in elderly patients with early cognitive decline.
                   </p>
+                  <div className="lp-mock-finding">
+                    <div className="lp-mock-finding-label">Key Finding</div>
+                    <p className="lp-mock-finding-text text-sm leading-relaxed md:text-base">
+                      Theta oscillations during REM sleep increased memory consolidation by 34%.
+                      Published 2024, first-author.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -579,8 +584,8 @@ export default function LandingPage() {
         <div className="lp-feature" data-reveal>
           <div className="lp-feature-text">
             <div className="lp-feature-num">03</div>
-            <h2 className="lp-feature-title">Write emails that get read.</h2>
-            <p className="lp-feature-desc">
+            <h2 className="lp-feature-title text-2xl font-bold sm:text-3xl md:text-4xl">Write emails that get read.</h2>
+            <p className="lp-feature-desc text-sm leading-relaxed md:text-base">
               Our email checker, built from real professor feedback, catches every mistake
               before you hit send. Generic tone, AI language, vague ask. Fixed before it costs you.
             </p>
@@ -594,7 +599,7 @@ export default function LandingPage() {
                 <div className="lp-dot" style={{ background: "#28c840" }} />
                 <span className="lp-mockup-url">researchmatch.net/app</span>
               </div>
-              <div className="lp-mockup-body">
+              <div className="lp-mockup-body flex flex-col gap-6 md:flex-row md:gap-12">
                 <div className="lp-mock-email">
                   <div className="lp-mock-email-line">
                     <span className="lp-mock-strike">I found your work fascinating and groundbreaking.</span>
