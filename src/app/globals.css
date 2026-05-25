@@ -4228,35 +4228,77 @@ body::after {
   text-transform: uppercase;
   letter-spacing: 0.16em;
   text-align: center;
-  margin-bottom: 56px;
+  margin-bottom: 42px;
 }
-.lp-quotes-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+.lp-testimonial-viewport {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  padding: 10px 0 22px;
+  mask-image: linear-gradient(90deg, transparent 0%, #000 9%, #000 91%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 9%, #000 91%, transparent 100%);
+}
+.lp-quotes-track {
+  display: flex;
+  width: max-content;
+  animation: lpTestimonialsMarquee 58s linear infinite;
+  will-change: transform;
+}
+.lp-testimonial-viewport:hover .lp-quotes-track,
+.lp-testimonial-viewport:focus-within .lp-quotes-track {
+  animation-play-state: paused;
+}
+.lp-quotes-group {
+  display: flex;
+  flex: 0 0 auto;
   gap: 24px;
-  padding: 0 40px;
-  max-width: 1100px;
-  margin: 0 auto;
+  padding-right: 24px;
 }
-/* Last row: center the remaining 2 cards */
-.lp-quotes-grid .lp-quote-card:nth-child(4) { grid-column: 1; }
-.lp-quotes-grid .lp-quote-card:nth-child(5) { grid-column: 2; }
+@keyframes lpTestimonialsMarquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp-testimonial-viewport {
+    overflow-x: auto;
+    padding: 10px 20px 22px;
+    mask-image: none;
+    -webkit-mask-image: none;
+    scroll-snap-type: x proximity;
+  }
+  .lp-quotes-track {
+    animation: none;
+  }
+  .lp-quotes-group {
+    padding-right: 0;
+  }
+  .lp-quotes-group[aria-hidden="true"] {
+    display: none;
+  }
+  .lp-quote-card {
+    scroll-snap-align: center;
+  }
+}
 
 @media (max-width: 900px) {
-  .lp-quotes-grid {
-    grid-template-columns: 1fr;
-    padding: 0 20px;
-    gap: 16px;
+  .lp-testimonial-viewport {
+    padding-bottom: 16px;
+    mask-image: linear-gradient(90deg, transparent 0%, #000 6%, #000 94%, transparent 100%);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 6%, #000 94%, transparent 100%);
   }
-  .lp-quotes-grid .lp-quote-card:nth-child(4),
-  .lp-quotes-grid .lp-quote-card:nth-child(5) {
-    grid-column: auto;
+  .lp-quotes-track {
+    animation-duration: 52s;
+  }
+  .lp-quotes-group {
+    gap: 16px;
+    padding-right: 16px;
   }
 }
 .lp-quote-card {
   position: relative;
   overflow: hidden;
-  width: 100%;
+  width: clamp(310px, 31vw, 390px);
+  flex: 0 0 clamp(310px, 31vw, 390px);
   min-height: 238px;
   display: flex;
   flex-direction: column;
@@ -5293,15 +5335,19 @@ body::after {
     padding: 64px 0 48px;
   }
   .lp-social-label { margin-bottom: 32px; }
-  .lp-quotes-grid {
-    grid-template-columns: 1fr;
-    padding: 0 20px;
-    gap: 16px;
+  .lp-testimonial-viewport {
+    margin: 0 -4px;
   }
-  .lp-quotes-grid .lp-quote-card:nth-child(4),
-  .lp-quotes-grid .lp-quote-card:nth-child(5) { grid-column: 1; }
+  .lp-quotes-track {
+    animation-duration: 54s;
+  }
+  .lp-quotes-group {
+    gap: 16px;
+    padding-right: 16px;
+  }
   .lp-quote-card {
-    width: 100%;
+    width: 82vw;
+    flex-basis: 82vw;
   }
   .lp-quote-card:hover { transform: none; box-shadow: 0 8px 32px rgba(45,90,61,0.07); }
   .lp-quote-card:active { transform: scale(0.99); }
@@ -5497,7 +5543,10 @@ body::after {
   }
   .lp-nav-logo span.lp-nav-logo-mark { display: none; }
   .lp-proof-item { flex: 1 1 100%; border-right: none !important; }
-  .lp-quote-card { width: 88vw; }
+  .lp-quote-card {
+    width: 88vw;
+    flex-basis: 88vw;
+  }
   .lp-price-card { padding: 28px 22px; }
   /* Further shrink logos on small phones */
   .lp-nav-logo svg,

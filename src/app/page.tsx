@@ -15,6 +15,15 @@ const HERO_PLACEHOLDERS = [
   "e.g. behavioral economics",
 ];
 
+const TESTIMONIALS = [
+  { quote: "Just wanted to say thanks, like no joke. I got like 6 research internship opportunities now for this summer😭 (IU, Purdue, UIUC, UChicago).", author: "Jedrek N., College Student", avatar: "JN" },
+  { quote: "I got a reply in 3 days. Never happened before.", author: "Undergraduate student", avatar: "U" },
+  { quote: "I was skeptical at first, but after purchasing the semester plan, I was really impressed with what Research Match had to offer. It’s been genuinely helpful as a high schooler trying to get involved with research.", author: "Chetana R., College Student", avatar: "CR" },
+  { quote: "Endorse this advice 💯. If an email smells of AI I will not answer it.", author: "Research Professor", avatar: "RP" },
+  { quote: "First time I've gotten real advice on my emails. I've sent 10 emails so far using this.", author: "Student user", avatar: "S" },
+  { quote: "This website is goated. I'm saving this for future use.", author: "Student user", avatar: "S" },
+];
+
 export default function LandingPage() {
   const router = useRouter();
   const { user } = useAuth();
@@ -643,22 +652,25 @@ export default function LandingPage() {
       ══════════════════════════════════════════ */}
       <section className="lp-social-section" data-reveal>
         <div className="lp-social-label">What users said</div>
-        <div className="lp-quotes-grid">
-          {[
-            { quote: "Just wanted to say thanks, like no joke. I got like 6 research internship opportunities now for this summer😭 (IU, Purdue, UIUC, UChicago).", author: "Jedrek N., College Student", avatar: "JN" },
-            { quote: "I got a reply in 3 days. Never happened before.", author: "Undergraduate student", avatar: "U" },
-            { quote: "I was skeptical at first, but after purchasing the semester plan, I was really impressed with what Research Match had to offer. It’s been genuinely helpful as a high schooler trying to get involved with research.", author: "Chetana R., College Student", avatar: "CR" },
-            { quote: "Endorse this advice 💯. If an email smells of AI I will not answer it.", author: "Research Professor", avatar: "RP" },
-            { quote: "First time I've gotten real advice on my emails. I've sent 10 emails so far using this.", author: "Student user", avatar: "S" },
-            { quote: "This website is goated. I'm saving this for future use.", author: "Student user", avatar: "S" },
-          ].map((item, i) => (
-            <div key={i} className="lp-quote-card">
-              <div className="lp-quote-avatar" aria-hidden="true">{item.avatar}</div>
-              <div className="lp-quote-mark">&ldquo;</div>
-              <p className="lp-quote-text">{item.quote}</p>
-              <p className="lp-quote-author">{item.author}</p>
-            </div>
-          ))}
+        <div className="lp-testimonial-viewport" aria-label="Student testimonials">
+          <div className="lp-quotes-track">
+            {[0, 1].map((setIndex) => (
+              <div
+                key={setIndex}
+                className="lp-quotes-group"
+                aria-hidden={setIndex === 1}
+              >
+                {TESTIMONIALS.map((item, i) => (
+                  <article key={`${setIndex}-${i}`} className="lp-quote-card">
+                    <div className="lp-quote-avatar" aria-hidden="true">{item.avatar}</div>
+                    <div className="lp-quote-mark">&ldquo;</div>
+                    <p className="lp-quote-text">{item.quote}</p>
+                    <p className="lp-quote-author">{item.author}</p>
+                  </article>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
