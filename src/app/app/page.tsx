@@ -1336,7 +1336,8 @@ function AppPageInner() {
               className="rm-hero-title"
               style={heroExiting ? { filter: "url(#meltFilter)" } : {}}
             >
-              Find your research<br />professor.
+              <span style={{ display: "block" }}>Find your</span>
+              <span style={{ display: "block", whiteSpace: "nowrap" }}>research professor.</span>
             </h1>
             {/* Mode toggle */}
             <div className="mode-toggle" ref={toggleRef}>
@@ -1638,7 +1639,7 @@ function AppPageInner() {
 
 
         {/* CARDS */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+        <div className="rm-results-stack">
           {pagedList.map((author, pageIndex) => {
             const authorIndex = isPaid && !showSaved
               ? (currentPage - 1) * PROFESSORS_PER_PAGE + pageIndex
@@ -1653,7 +1654,7 @@ function AppPageInner() {
             const isLockedStub = !isPaid && !showSaved && authorIndex >= 3;
             if (isLockedStub) {
               return (
-                <div key={author.id} className="glass-card card-enter rm-card" style={{ position: "relative", overflow: "hidden" }}>
+                <div key={author.id} className="glass-card card-enter rm-card rm-card-locked" style={{ position: "relative", overflow: "hidden" }}>
                   {/* Blurred content behind */}
                   <div style={{ filter: "blur(5px)", userSelect: "none", pointerEvents: "none", opacity: 0.5 }}>
                     <div className="rm-card-top">
@@ -1710,8 +1711,8 @@ function AppPageInner() {
             return (
               <div key={author.id} className="glass-card card-enter rm-card">
                 <div className="rm-card-top">
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+                  <div className="rm-card-identity">
+                    <div className="rm-card-title-row">
                       <a href={profileUrl(author)} target="_blank" rel="noopener noreferrer" className="rm-card-name">
                         {author.display_name}
                       </a>
@@ -1751,14 +1752,14 @@ function AppPageInner() {
                       )}
                       <button
                         onClick={() => toggleSave(author)}
-                        className={starBounce === id ? "star-bounce" : ""}
                         style={{ fontSize: "1.4rem", color: isSaved(author) ? "#A8893E" : "#8aaa96", background: "none", border: "none", cursor: "pointer", transition: "color 0.2s, transform 0.2s" }}
+                        className={`rm-save-btn ${starBounce === id ? "star-bounce" : ""}`}
                         title={isSaved(author) ? "Remove from saved" : "Save professor"}
                       >
                         {isSaved(author) ? "\u2605" : "\u2606"}
                       </button>
                     </div>
-                    <p style={{ fontSize: "1rem", color: "#6b7280", marginTop: "4px" }}>
+                    <p className="rm-card-affiliation">
                       {formatInstitutionLocation(author.last_known_institutions?.[0]) || "Unknown institution"}
                     </p>
                   </div>
@@ -1777,7 +1778,7 @@ function AppPageInner() {
                 {author.topics?.length > 0 && (
                   <>
                     <hr className="rm-card-divider" />
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                    <div className="rm-topic-row">
                       {author.topics.slice(0, 4).map((t, i) => <span key={i} className="tag">{t.display_name}</span>)}
                     </div>
                   </>
@@ -1788,7 +1789,7 @@ function AppPageInner() {
                   const lookup = emailLookup[id];
                   const isLookingUp = emailLookupLoading[id];
                   return (
-                    <div style={{ marginTop: "16px" }}>
+                    <div className="rm-email-lookup">
                       {!lookup && !isLookingUp && (
                         <button onClick={() => lookupEmail(author)} className="btn-secondary" style={{ padding: "10px 22px", fontSize: "0.85rem" }}>
                           Find professor email →
@@ -1859,7 +1860,7 @@ function AppPageInner() {
                     </div>
                   );
                 })() : (
-                  <div className="rm-locked-row" style={{ marginTop: "18px" }}>
+                  <div className="rm-locked-row rm-feature-lock" style={{ marginTop: "18px" }}>
                     <span style={{ fontSize: "0.9rem", opacity: 0.6 }}>&#128274;</span>
                     <span style={{ fontSize: "0.85rem", color: "#6b7280", flex: 1 }}>Professor email finder</span>
                     <span style={{ fontSize: "0.72rem", color: "#8aaa96", fontStyle: "italic", letterSpacing: "0.02em" }}>Summarize to unlock</span>
@@ -1868,8 +1869,8 @@ function AppPageInner() {
 
                 {/* Summary section */}
                 {summary ? (
-                  <div className="summary-enter" style={{ marginTop: "28px" }}>
-                    <p style={{ fontSize: "1.05rem", lineHeight: 1.7, color: "#6b7280" }}>{summary.summary}</p>
+                  <div className="summary-enter rm-summary-block" style={{ marginTop: "28px" }}>
+                    <p className="rm-summary-copy">{summary.summary}</p>
                     {summary.highlights.length === 0 && summary.summary.includes("unavailable") && (
                       <button
                         onClick={() => loadSummary(author, true)}

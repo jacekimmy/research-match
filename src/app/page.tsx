@@ -310,7 +310,7 @@ export default function LandingPage() {
             <a href="#pricing" className="lp-nav-link">Pricing</a>
             <Link href="/feedback" className="lp-nav-link">Feedback</Link>
           </div>
-          <Link href="/app" className="lp-nav-cta" onPointerUp={(e) => e.currentTarget.blur()}>
+          <Link href="/app" className="lp-nav-cta px-3 py-1.5 text-xs md:text-sm md:px-4 md:py-2" onPointerUp={(e) => e.currentTarget.blur()}>
             Start free
             <span className="lp-nav-cta-arrow">→</span>
           </Link>
@@ -322,12 +322,12 @@ export default function LandingPage() {
       ══════════════════════════════════════════ */}
       <section className="lp-hero">
         <div className="lp-hero-inner">
-          <div className="lp-hero-eyebrow">
+          <div className="lp-hero-eyebrow text-emerald-950/80 font-medium text-[10px] md:text-xs tracking-wider uppercase">
             <span className="lp-eyebrow-dot" />
             Used by 1,000+ students at Stanford, MIT, and beyond.
           </div>
 
-          <h1 className="lp-hero-title">
+          <h1 className="lp-hero-title text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight leading-[1.1]">
             Find the professor<br />
             <em className="lp-hero-title-em">who changes your life.</em>
           </h1>
