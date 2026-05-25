@@ -5009,11 +5009,11 @@ body::after {
 
   /* ── Nav ── */
   .lp-nav {
-    width: calc(100% - 28px);
-    top: 14px;
+    width: calc(100% - 24px);
+    top: 10px;
   }
   .lp-nav-pill {
-    padding: 8px 8px 8px 14px;
+    padding: 7px 8px 7px 12px;
     gap: 6px;
     background: rgba(255, 255, 255, 0.95); /* Opaque fallback for mobile perf */
     backdrop-filter: none;
@@ -5026,12 +5026,12 @@ body::after {
     min-width: 0;
   }
   .lp-nav-logo svg {
-    max-width: 136px;
+    max-width: 118px;
     height: auto;
   }
   .lp-nav-cta {
-    padding: 6px 12px;
-    font-size: 0.75rem;
+    padding: 6px 11px;
+    font-size: 0.72rem;
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
   }
@@ -5049,14 +5049,14 @@ body::after {
 
   /* ── Hero ── */
   .lp-hero {
-    padding: 100px 20px 48px;
+    padding: 76px 18px 40px;
     min-height: 100svh;
     min-height: 100vh; /* fallback */
     justify-content: flex-start;
-    padding-top: max(100px, env(safe-area-inset-top, 0px) + 82px);
+    padding-top: max(76px, env(safe-area-inset-top, 0px) + 58px);
   }
   .lp-hero-inner {
-    min-height: calc(100svh - 148px);
+    min-height: auto;
     gap: 0;
     width: 100%;
   }
@@ -5067,19 +5067,24 @@ body::after {
     line-height: 1.35;
     letter-spacing: 0.1em;
     color: rgba(2, 44, 34, 0.8);
-    margin-top: clamp(28px, 5svh, 58px);
-    margin-bottom: clamp(32px, 5svh, 54px);
+    margin-top: 18px;
+    margin-bottom: 24px;
     padding: 7px 12px;
-    max-width: 320px;
+    max-width: 300px;
+    border-color: rgba(45, 90, 61, 0.14);
+    background: rgba(255, 255, 255, 0.36);
     justify-content: center;
     white-space: normal;
   }
   .lp-hero-title {
-    font-size: clamp(2.25rem, 11vw, 4.5rem);
-    line-height: 1.1;
+    max-width: 100%;
+    margin-right: auto;
+    margin-left: auto;
+    font-size: clamp(1.95rem, 7.8vw, 2.2rem);
+    line-height: 1.05;
     font-weight: 700;
-    margin-bottom: clamp(34px, 5.5svh, 54px);
-    letter-spacing: -0.025em;
+    margin-bottom: 30px;
+    letter-spacing: -0.035em;
   }
   .lp-hero-sub {
     display: none;
@@ -5093,16 +5098,22 @@ body::after {
     background: rgba(255, 255, 255, 0.95); /* Opaque fallback for mobile perf */
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    border-radius: 24px;
-    padding: 10px;
+    max-width: 420px;
+    margin-right: auto;
+    margin-left: auto;
+    border-radius: 22px;
+    padding: 8px;
     gap: 0;
-    margin-bottom: 28px;
+    margin-bottom: max(72px, calc(env(safe-area-inset-bottom, 0px) + 44px));
+    box-shadow:
+      0 16px 46px rgba(31, 50, 39, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
     /* Disable hover transform on mobile */
     transform: none !important;
   }
   .lp-search-bar:hover { transform: none !important; }
   .lp-search-field {
-    padding: 11px 14px;
+    padding: 10px 14px;
     width: 100%;
   }
   .lp-search-label {
@@ -5110,7 +5121,8 @@ body::after {
     margin-bottom: 2px;
   }
   .lp-search-input {
-    font-size: 1rem;
+    font-size: 0.98rem;
+    line-height: 1.35;
   }
   .lp-search-divider {
     width: calc(100% - 28px);
@@ -5122,8 +5134,8 @@ body::after {
     border-radius: 16px;
     margin-left: 0;
     margin-top: 8px;
-    padding: 16px 20px;
-    font-size: 1rem;
+    padding: 15px 18px;
+    font-size: 0.98rem;
     /* Touch active state */
     -webkit-tap-highlight-color: transparent;
   }
@@ -5143,26 +5155,6 @@ body::after {
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-
-  .lp-hero-proof-section {
-    padding: 78px 20px 76px;
-  }
-
-  /* Dedicated proof card - compact on mobile */
-  .lp-hero-testimonial {
-    padding: 12px 15px;
-    border-radius: 0 12px 12px 0;
-    background: rgba(255, 255, 255, 0.95); /* Opaque fallback for mobile perf */
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
-  .lp-hero-proof-section .lp-hero-testimonial {
-    max-width: 100%;
-  }
-  .lp-hero-testimonial-text {
-    font-size: 0.78rem;
-    line-height: 1.55;
   }
 
   /* Hide scroll cue on mobile — hero content fills viewport */
@@ -5418,22 +5410,34 @@ body::after {
 
 /* ── Extra small screens (≤ 390px) ── */
 @media (max-width: 390px) {
+  .lp-nav {
+    width: calc(100% - 22px);
+    top: 9px;
+  }
+  .lp-nav-pill {
+    padding: 6px 7px 6px 11px;
+  }
+  .lp-nav-cta {
+    padding: 5px 10px;
+    font-size: 0.7rem;
+  }
   .lp-hero {
-    padding: 92px 20px 40px;
+    padding: 72px 16px 38px;
     min-height: 100svh;
     min-height: 100vh;
-    padding-top: max(92px, env(safe-area-inset-top, 0px) + 74px);
+    padding-top: max(72px, env(safe-area-inset-top, 0px) + 54px);
   }
   .lp-hero-eyebrow {
     font-size: 10px;
-    margin-top: 24px;
-    margin-bottom: 30px;
-    max-width: 290px;
+    margin-top: 16px;
+    margin-bottom: 22px;
+    max-width: 280px;
   }
   .lp-hero-title {
-    font-size: 2.25rem;
-    line-height: 1.1;
-    margin-bottom: 34px;
+    max-width: 100%;
+    font-size: clamp(1.85rem, 7.6vw, 2.05rem);
+    line-height: 1.05;
+    margin-bottom: 28px;
   }
   .lp-hero-sub {
     display: none;
@@ -5441,14 +5445,13 @@ body::after {
   .lp-search-field {
     padding: 9px 12px;
   }
+  .lp-search-bar {
+    max-width: 100%;
+    padding: 8px;
+    margin-bottom: max(76px, calc(env(safe-area-inset-bottom, 0px) + 48px));
+  }
   .lp-search-btn {
     padding: 14px 18px;
-  }
-  .lp-hero-proof-section {
-    padding: 72px 20px 68px;
-  }
-  .lp-hero-proof-section .lp-hero-testimonial {
-    padding: 11px 13px;
   }
   .lp-nav-logo span.lp-nav-logo-mark { display: none; }
   .lp-proof-item { flex: 1 1 100%; border-right: none !important; }
@@ -5457,11 +5460,29 @@ body::after {
   /* Further shrink logos on small phones */
   .lp-nav-logo svg,
   .rm-nav-logo svg {
-    max-width: 120px;
+    max-width: 112px;
   }
   /* Upgrade/auth modals — tighter padding on small phones */
   .rm-modal-card {
     padding: 28px 20px !important;
+  }
+}
+
+@media (max-width: 639px) {
+  .lp-hero-title {
+    font-size: clamp(1.85rem, 7.8vw, 2.15rem);
+  }
+}
+
+@media (min-width: 640px) and (max-width: 767px) {
+  .lp-hero-title {
+    font-size: 3rem;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .lp-hero-title {
+    font-size: 4.5rem;
   }
 }
 
