@@ -346,6 +346,11 @@ export default function LandingPage() {
       ══════════════════════════════════════════ */}
       <section className="lp-hero">
         <div className="lp-hero-inner">
+          <div className="lp-hero-eyebrow text-emerald-950/80 font-medium text-[10px] md:text-xs tracking-wider uppercase">
+            <span className="lp-eyebrow-dot" />
+            Used by 1,000+ students at Stanford, MIT, and beyond.
+          </div>
+
           <h1 className="lp-hero-title text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight leading-[1.1]">
             Find the mentor<br />
             <em className="lp-hero-title-em">who changes your life.</em>
