@@ -43,6 +43,7 @@ export default function LandingPage() {
   const [searchCount, setSearchCount] = useState<number | null>(null);
   const [activePricingIndex, setActivePricingIndex] = useState(0);
   const [activePricingTab, setActivePricingTab] = useState<string>("free");
+  const [testimonialPaused, setTestimonialPaused] = useState(false);
   const pricingOptions = ["free", "weekly", "semester", "lifetime"] as const;
 
   const setPricingItem = (index: number) => {
@@ -78,6 +79,20 @@ export default function LandingPage() {
     }
     touchStart.current = null;
     touchEnd.current = null;
+  };
+
+  const pauseTestimonials = (e: React.PointerEvent<HTMLDivElement>) => {
+    const target = e.target as Element;
+    if (!target.closest(".lp-quote-card")) return;
+    setTestimonialPaused(true);
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+  };
+
+  const resumeTestimonials = (e: React.PointerEvent<HTMLDivElement>) => {
+    setTestimonialPaused(false);
+    if (e.currentTarget.hasPointerCapture?.(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
   };
 
   useEffect(() => { setBillingMounted(true); }, []);
@@ -652,7 +667,15 @@ export default function LandingPage() {
       ══════════════════════════════════════════ */}
       <section className="lp-social-section" data-reveal>
         <div className="lp-social-label">What users said</div>
-        <div className="lp-testimonial-viewport" aria-label="Student testimonials">
+        <div
+          className={`lp-testimonial-viewport ${testimonialPaused ? "lp-testimonial-paused" : ""}`}
+          aria-label="Student testimonials"
+          onPointerDown={pauseTestimonials}
+          onPointerUp={resumeTestimonials}
+          onPointerCancel={resumeTestimonials}
+          onPointerLeave={resumeTestimonials}
+          onLostPointerCapture={resumeTestimonials}
+        >
           <div className="lp-quotes-track">
             {[0, 1].map((setIndex) => (
               <div
