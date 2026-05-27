@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
 import { createClient } from "@supabase/supabase-js";
+import { hasPaidAccess } from "@/lib/buddy-pass";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const supabaseAdmin = createClient(
@@ -46,15 +47,11 @@ export async function POST(req: NextRequest) {
       // Authenticated user: check Supabase
       const { data: profile } = await supabaseAdmin
         .from("profiles")
-        .select("plan_type, summaries_used, summaries_reset_at")
+        .select("plan_type, summaries_used, summaries_reset_at, buddy_pass_active_until")
         .eq("id", userId)
         .single();
 
-      const isPaid = profile?.plan_type === "weekly" ||
-        profile?.plan_type === "semester" ||
-        profile?.plan_type === "student_monthly" ||
-        profile?.plan_type === "student_annual" ||
-        profile?.plan_type === "lifetime";
+      const isPaid = hasPaidAccess(profile);
 
       if (!isPaid) {
         const needsReset = profile?.summaries_reset_at && new Date() > new Date(profile.summaries_reset_at);
@@ -183,15 +180,11 @@ Return only valid JSON, no markdown, no explanation.`;
         // Increment server-side for authenticated user
         const { data: profile } = await supabaseAdmin
           .from("profiles")
-          .select("plan_type, summaries_used, summaries_reset_at")
+          .select("plan_type, summaries_used, summaries_reset_at, buddy_pass_active_until")
           .eq("id", userId)
           .single();
 
-        const isPaid = profile?.plan_type === "weekly" ||
-          profile?.plan_type === "semester" ||
-          profile?.plan_type === "student_monthly" ||
-          profile?.plan_type === "student_annual" ||
-          profile?.plan_type === "lifetime";
+        const isPaid = hasPaidAccess(profile);
 
         if (!isPaid) {
           const needsReset = profile?.summaries_reset_at && new Date() > new Date(profile.summaries_reset_at);

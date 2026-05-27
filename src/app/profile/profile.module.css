@@ -1,0 +1,719 @@
+.profileMount {
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  padding: 34px 20px 72px;
+  background:
+    radial-gradient(circle at 18% 10%, rgba(45, 90, 61, 0.09), transparent 34%),
+    radial-gradient(circle at 88% 4%, rgba(196, 162, 101, 0.13), transparent 30%),
+    linear-gradient(180deg, #f6f2ea 0%, #f3efe7 100%);
+}
+
+.profileMount :global(.profile-shell) {
+  position: relative;
+  z-index: 1;
+  width: min(1120px, 100%);
+  margin: 0 auto;
+}
+
+.profileMount :global(.profile-ambient) {
+  position: fixed;
+  pointer-events: none;
+  border-radius: 999px;
+  filter: blur(28px);
+  opacity: 0.55;
+  transform: translateZ(0);
+}
+
+.profileMount :global(.profile-ambient-a) {
+  width: 320px;
+  height: 320px;
+  top: 90px;
+  left: -120px;
+  background: rgba(45, 90, 61, 0.13);
+}
+
+.profileMount :global(.profile-ambient-b) {
+  width: 280px;
+  height: 280px;
+  right: -110px;
+  bottom: 160px;
+  background: rgba(196, 162, 101, 0.14);
+}
+
+.profileMount :global(.profile-topbar) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.profileMount :global(.profile-back-link),
+.profileMount :global(.profile-brand-link) {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #2d5a3d;
+  font-weight: 800;
+  text-decoration: none;
+  border-radius: 999px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.profileMount :global(.profile-back-link) {
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.54);
+  border: 1px solid rgba(45, 90, 61, 0.12);
+  box-shadow: 0 10px 30px rgba(45, 90, 61, 0.07), inset 0 1px 0 rgba(255,255,255,0.72);
+}
+
+.profileMount :global(.profile-brand-link) {
+  padding: 10px 4px;
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 1.05rem;
+}
+
+.profileMount :global(.profile-back-link:hover),
+.profileMount :global(.profile-brand-link:hover),
+.profileMount :global(.profile-soft-button:hover),
+.profileMount :global(.profile-action-button:hover),
+.profileMount :global(.profile-primary-action:hover) {
+  transform: translateY(-2px);
+}
+
+.profileMount :global(.profile-back-link:active),
+.profileMount :global(.profile-brand-link:active),
+.profileMount :global(.profile-soft-button:active),
+.profileMount :global(.profile-action-button:active),
+.profileMount :global(.profile-primary-action:active) {
+  transform: translateY(0) scale(0.98);
+}
+
+.profileMount :global(.profile-back-link:focus-visible),
+.profileMount :global(.profile-brand-link:focus-visible),
+.profileMount :global(.profile-soft-button:focus-visible),
+.profileMount :global(.profile-action-button:focus-visible),
+.profileMount :global(.profile-primary-action:focus-visible),
+.profileMount :global(.buddy-toggle:focus-visible) {
+  outline: 2px solid rgba(45, 90, 61, 0.42);
+  outline-offset: 4px;
+}
+
+.profileMount :global(.profile-hero-panel),
+.profileMount :global(.profile-panel),
+.profileMount :global(.profile-metric-card) {
+  border: 1px solid rgba(45, 90, 61, 0.12);
+  background: linear-gradient(145deg, rgba(255,255,255,0.72), rgba(255,255,255,0.42));
+  box-shadow: 0 22px 70px rgba(45, 90, 61, 0.1), 0 4px 18px rgba(45, 90, 61, 0.05), inset 0 1px 0 rgba(255,255,255,0.78);
+  backdrop-filter: blur(22px) saturate(150%);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
+}
+
+.profileMount :global(.profile-hero-panel) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  padding: clamp(24px, 4vw, 42px);
+  border-radius: 34px;
+  margin-bottom: 18px;
+  overflow: hidden;
+  animation: profilePanelIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.profileMount :global(.profile-identity) {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  min-width: 0;
+}
+
+.profileMount :global(.profile-avatar-large) {
+  width: clamp(72px, 10vw, 104px);
+  height: clamp(72px, 10vw, 104px);
+  flex: 0 0 auto;
+  border-radius: 32px;
+  display: grid;
+  place-items: center;
+  color: #fffaf0;
+  font-size: clamp(1.8rem, 4vw, 2.7rem);
+  font-weight: 900;
+  font-family: var(--font-playfair), Georgia, serif;
+  background: radial-gradient(circle at 32% 22%, rgba(255,255,255,0.34), transparent 32%), linear-gradient(145deg, #2d5a3d, #1f4931 70%);
+  box-shadow: 0 18px 42px rgba(45, 90, 61, 0.25), inset 0 1px 0 rgba(255,255,255,0.26);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+}
+
+.profileMount :global(.profile-avatar-large:hover) {
+  transform: translateY(-3px) rotate(-1deg);
+  box-shadow: 0 24px 58px rgba(45, 90, 61, 0.32), inset 0 1px 0 rgba(255,255,255,0.28);
+}
+
+.profileMount :global(.profile-kicker) {
+  margin: 0 0 6px;
+  color: #2d5a3d;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.profileMount :global(.profile-identity h1),
+.profileMount :global(.profile-panel h2),
+.profileMount :global(.profile-signed-out h1) {
+  margin: 0;
+  color: #244c34;
+  font-family: var(--font-playfair), Georgia, serif;
+  letter-spacing: -0.025em;
+}
+
+.profileMount :global(.profile-identity h1) {
+  font-size: clamp(1.75rem, 4vw, 3.4rem);
+  line-height: 1.02;
+  overflow-wrap: anywhere;
+}
+
+.profileMount :global(.profile-identity p:last-child),
+.profileMount :global(.profile-muted),
+.profileMount :global(.buddy-activation-card p),
+.profileMount :global(.buddy-empty-state p),
+.profileMount :global(.profile-metric-card p),
+.profileMount :global(.profile-signed-out p) {
+  color: #617568;
+  line-height: 1.65;
+}
+
+.profileMount :global(.profile-identity p:last-child) {
+  max-width: 620px;
+  margin: 10px 0 0;
+  font-size: 0.95rem;
+}
+
+.profileMount :global(.profile-plan-chip) {
+  min-width: 190px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 22px;
+  border: 1px solid rgba(45, 90, 61, 0.13);
+  background: rgba(255,255,255,0.55);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.74);
+}
+
+.profileMount :global(.profile-plan-chip p) {
+  margin: 0 0 2px;
+  color: #7a8f81;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.profileMount :global(.profile-plan-chip strong) {
+  color: #244c34;
+  font-size: 1rem;
+}
+
+.profileMount :global(.profile-plan-dot) {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: #b9c6bc;
+  box-shadow: 0 0 0 6px rgba(185, 198, 188, 0.18);
+}
+
+.profileMount :global(.profile-plan-dot.is-live) {
+  background: #2e9e72;
+  box-shadow: 0 0 0 6px rgba(46, 158, 114, 0.15), 0 0 22px rgba(46, 158, 114, 0.35);
+}
+
+.profileMount :global(.profile-metrics-grid) {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.profileMount :global(.profile-metric-card) {
+  padding: 18px;
+  border-radius: 24px;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+}
+
+.profileMount :global(.profile-metric-card:hover) {
+  transform: translateY(-4px);
+  box-shadow: 0 28px 72px rgba(45, 90, 61, 0.13), 0 6px 20px rgba(45, 90, 61, 0.06), inset 0 1px 0 rgba(255,255,255,0.78);
+}
+
+.profileMount :global(.profile-metric-card span) {
+  display: block;
+  color: #7b8d80;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.profileMount :global(.profile-metric-card strong) {
+  display: block;
+  margin-top: 8px;
+  color: #244c34;
+  font-size: clamp(1.45rem, 2.4vw, 2rem);
+  letter-spacing: -0.04em;
+}
+
+.profileMount :global(.profile-metric-card p) {
+  margin: 5px 0 0;
+  font-size: 0.78rem;
+}
+
+.profileMount :global(.profile-content-grid) {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(310px, 0.85fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.profileMount :global(.profile-main-stack),
+.profileMount :global(.profile-side-stack) {
+  display: grid;
+  gap: 18px;
+}
+
+.profileMount :global(.profile-panel) {
+  border-radius: 30px;
+  padding: clamp(22px, 3vw, 32px);
+  animation: profilePanelIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.profileMount :global(.profile-panel-header) {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.profileMount :global(.profile-panel h2) {
+  font-size: clamp(1.45rem, 2.4vw, 2.15rem);
+  line-height: 1.08;
+}
+
+.profileMount :global(.profile-muted) {
+  margin: 0 0 20px;
+  font-size: 0.95rem;
+}
+
+.profileMount :global(.buddy-pass-badge),
+.profileMount :global(.profile-soft-button),
+.profileMount :global(.buddy-referral-row span) {
+  border-radius: 999px;
+  color: #2d5a3d;
+  background: rgba(45, 90, 61, 0.1);
+  border: 1px solid rgba(45, 90, 61, 0.12);
+  font-size: 0.75rem;
+  font-weight: 900;
+}
+
+.profileMount :global(.buddy-pass-badge) {
+  flex: 0 0 auto;
+  padding: 7px 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.profileMount :global(.buddy-code-card),
+.profileMount :global(.buddy-link-row),
+.profileMount :global(.buddy-activation-card) {
+  border: 1px solid rgba(45, 90, 61, 0.12);
+  background: rgba(255,255,255,0.54);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.72);
+}
+
+.profileMount :global(.buddy-code-card) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 24px;
+  margin-bottom: 10px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.profileMount :global(.buddy-code-card:hover) {
+  border-color: rgba(45, 90, 61, 0.2);
+  box-shadow: 0 16px 44px rgba(45, 90, 61, 0.08), inset 0 1px 0 rgba(255,255,255,0.72);
+  transform: translateY(-2px);
+}
+
+.profileMount :global(.buddy-code-card span),
+.profileMount :global(.buddy-link-row span) {
+  color: #7b8d80;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.profileMount :global(.buddy-code-card strong) {
+  display: block;
+  margin-top: 4px;
+  color: #1f3f2d;
+  font-size: clamp(1.6rem, 5vw, 2.6rem);
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+
+.profileMount :global(.profile-soft-button),
+.profileMount :global(.profile-action-button),
+.profileMount :global(.profile-primary-action) {
+  cursor: pointer;
+  text-decoration: none;
+  font-family: inherit;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.profileMount :global(.profile-soft-button) {
+  flex: 0 0 auto;
+  padding: 10px 14px;
+}
+
+.profileMount :global(.buddy-link-row) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 18px;
+  margin-bottom: 14px;
+}
+
+.profileMount :global(.buddy-link-row span) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 700;
+}
+
+.profileMount :global(.buddy-activation-card) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px;
+  border-radius: 24px;
+  margin-bottom: 14px;
+}
+
+.profileMount :global(.buddy-activation-card h3) {
+  margin: 0 0 5px;
+  color: #244c34;
+  font-size: 1.05rem;
+}
+
+.profileMount :global(.buddy-activation-card p) {
+  margin: 0;
+  font-size: 0.88rem;
+}
+
+.profileMount :global(.buddy-toggle) {
+  flex: 0 0 auto;
+  width: 70px;
+  height: 40px;
+  padding: 4px;
+  border: 1px solid rgba(45, 90, 61, 0.15);
+  border-radius: 999px;
+  background: rgba(45, 90, 61, 0.12);
+  cursor: pointer;
+  box-shadow: inset 0 2px 8px rgba(45, 90, 61, 0.1);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.profileMount :global(.buddy-toggle span) {
+  display: block;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.94);
+  box-shadow: 0 6px 18px rgba(45, 90, 61, 0.18);
+  transition: transform 0.42s cubic-bezier(0.2, 1.65, 0.35, 1);
+}
+
+.profileMount :global(.buddy-toggle.is-on) {
+  background: linear-gradient(135deg, #2d5a3d, #2e9e72);
+  box-shadow: 0 10px 30px rgba(45, 90, 61, 0.24), inset 0 1px 0 rgba(255,255,255,0.18);
+}
+
+.profileMount :global(.buddy-toggle.is-on span) {
+  transform: translateX(30px);
+}
+
+.profileMount :global(.buddy-toggle:disabled) {
+  cursor: default;
+  opacity: 0.72;
+}
+
+.profileMount :global(.buddy-toggle:not(:disabled):hover) {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(45, 90, 61, 0.16), inset 0 2px 8px rgba(45, 90, 61, 0.1);
+}
+
+.profileMount :global(.buddy-pass-stats) {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.profileMount :global(.buddy-pass-stats div) {
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(45, 90, 61, 0.06);
+  border: 1px solid rgba(45, 90, 61, 0.08);
+}
+
+.profileMount :global(.buddy-pass-stats strong) {
+  display: block;
+  color: #244c34;
+  font-size: 1.35rem;
+}
+
+.profileMount :global(.buddy-pass-stats span) {
+  display: block;
+  margin-top: 2px;
+  color: #7b8d80;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.profileMount :global(.profile-error) {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  color: #9a4343;
+  background: rgba(196, 92, 92, 0.08);
+  border: 1px solid rgba(196, 92, 92, 0.14);
+  font-size: 0.84rem;
+  font-weight: 650;
+}
+
+.profileMount :global(.profile-feature-list),
+.profileMount :global(.profile-actions-panel),
+.profileMount :global(.buddy-referral-list) {
+  display: grid;
+  gap: 10px;
+}
+
+.profileMount :global(.profile-feature-row) {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  color: #1f3f2d;
+}
+
+.profileMount :global(.profile-feature-row.is-muted) {
+  opacity: 0.48;
+}
+
+.profileMount :global(.profile-feature-row span) {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: #2d5a3d;
+  background: rgba(45, 90, 61, 0.1);
+  font-weight: 900;
+}
+
+.profileMount :global(.profile-feature-row p) {
+  margin: 0;
+  font-size: 0.94rem;
+  font-weight: 650;
+}
+
+.profileMount :global(.profile-primary-action) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 13px 22px;
+  border-radius: 999px;
+  border: 0;
+  color: #fffaf0;
+  background: linear-gradient(145deg, #2d5a3d, #214a32);
+  box-shadow: 0 15px 34px rgba(45, 90, 61, 0.22), inset 0 1px 0 rgba(255,255,255,0.18);
+  font-weight: 900;
+}
+
+.profileMount :global(.profile-full-action) {
+  width: 100%;
+  margin-top: 22px;
+}
+
+.profileMount :global(.buddy-referral-row) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.45);
+  border: 1px solid rgba(45, 90, 61, 0.1);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.28s ease, background 0.28s ease;
+}
+
+.profileMount :global(.buddy-referral-row:hover) {
+  transform: translateY(-2px);
+  border-color: rgba(45, 90, 61, 0.18);
+  background: rgba(255,255,255,0.6);
+}
+
+.profileMount :global(.buddy-referral-row strong) {
+  color: #244c34;
+  font-size: 0.88rem;
+}
+
+.profileMount :global(.buddy-referral-row p) {
+  margin: 3px 0 0;
+  color: #7b8d80;
+  font-size: 0.76rem;
+}
+
+.profileMount :global(.buddy-referral-row span) {
+  flex: 0 0 auto;
+  padding: 7px 10px;
+}
+
+.profileMount :global(.buddy-empty-state) {
+  padding: 18px;
+  border-radius: 20px;
+  border: 1px dashed rgba(45, 90, 61, 0.2);
+  background: rgba(255,255,255,0.35);
+}
+
+.profileMount :global(.buddy-empty-state strong) {
+  color: #244c34;
+}
+
+.profileMount :global(.buddy-empty-state p) {
+  margin: 6px 0 0;
+  font-size: 0.84rem;
+}
+
+.profileMount :global(.profile-action-button) {
+  width: 100%;
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-radius: 16px;
+  color: #244c34;
+  background: rgba(255,255,255,0.48);
+  border: 1px solid rgba(45, 90, 61, 0.11);
+  font-weight: 800;
+  text-align: left;
+}
+
+.profileMount :global(.profile-action-button.is-danger) {
+  color: #a24646;
+}
+
+.profileMount :global(.profile-action-button:disabled) {
+  opacity: 0.6;
+  cursor: default;
+  transform: none;
+}
+
+.profileMount :global(.profile-signed-out) {
+  width: min(430px, calc(100% - 32px));
+  margin: 16vh auto 0;
+  text-align: center;
+}
+
+.profileMount :global(.profile-lock-mark) {
+  width: 74px;
+  height: 74px;
+  margin: 0 auto 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 24px;
+  color: #fffaf0;
+  background: linear-gradient(145deg, #2d5a3d, #214a32);
+  font-family: var(--font-playfair), Georgia, serif;
+  font-weight: 900;
+}
+
+.profileMount :global(.profile-signed-out p) {
+  margin-bottom: 22px;
+}
+
+@keyframes profilePanelIn {
+  from { opacity: 0; transform: translateY(18px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 900px) {
+  .profileMount { padding: 18px 14px 54px; }
+  .profileMount :global(.profile-topbar) { margin-bottom: 14px; }
+  .profileMount :global(.profile-hero-panel),
+  .profileMount :global(.profile-identity),
+  .profileMount :global(.buddy-activation-card),
+  .profileMount :global(.profile-topbar) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .profileMount :global(.profile-plan-chip),
+  .profileMount :global(.profile-brand-link),
+  .profileMount :global(.profile-back-link) {
+    width: 100%;
+  }
+  .profileMount :global(.profile-brand-link) { justify-content: center; }
+  .profileMount :global(.profile-metrics-grid),
+  .profileMount :global(.profile-content-grid) {
+    grid-template-columns: 1fr;
+  }
+  .profileMount :global(.profile-hero-panel),
+  .profileMount :global(.profile-panel) {
+    border-radius: 26px;
+  }
+}
+
+@media (max-width: 560px) {
+  .profileMount { padding-left: 12px; padding-right: 12px; }
+  .profileMount :global(.profile-hero-panel),
+  .profileMount :global(.profile-panel) {
+    padding: 20px;
+  }
+  .profileMount :global(.profile-panel-header),
+  .profileMount :global(.buddy-code-card) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .profileMount :global(.buddy-link-row) { grid-template-columns: 1fr; }
+  .profileMount :global(.buddy-code-card strong) { font-size: 1.8rem; }
+  .profileMount :global(.buddy-pass-stats) { grid-template-columns: 1fr; }
+  .profileMount :global(.profile-soft-button),
+  .profileMount :global(.profile-primary-action) {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profileMount *,
+  .profileMount *::before,
+  .profileMount *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

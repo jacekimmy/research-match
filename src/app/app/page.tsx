@@ -5,6 +5,7 @@ import confetti from "canvas-confetti";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
 import { supabase } from "@/lib/supabase";
+import { hasPaidAccess, normalizeReferralCode, planLabelFor } from "@/lib/buddy-pass";
 
 export default function AppPageWrapper() {
   return <Suspense><AppPageInner /></Suspense>;
@@ -303,6 +304,8 @@ function AppPageInner() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [upgradeModalTitle, setUpgradeModalTitle] = useState("");
   const [upgradeModalSubtitle, setUpgradeModalSubtitle] = useState("");
+  const [checkoutReferralCode, setCheckoutReferralCode] = useState("");
+  const [checkoutError, setCheckoutError] = useState("");
   const [authModalCopy, setAuthModalCopy] = useState("");
   const [showMenu, setShowMenu] = useState(false);
   const [showEmailPlaybookMenu, setShowEmailPlaybookMenu] = useState(false);
@@ -351,13 +354,9 @@ function AppPageInner() {
   const [responsiveness, setResponsiveness] = useState<Record<string, { level: "green" | "yellow" | "red"; label: string; tooltip: string }>>({});
 
   // Plan helpers
-  const isPaid = profile?.plan_type === "weekly" || profile?.plan_type === "semester" || profile?.plan_type === "student_monthly" || profile?.plan_type === "student_annual" || profile?.plan_type === "lifetime";
+  const isPaid = hasPaidAccess(profile);
   const isFree = !isPaid;
-  const planLabel = profile?.plan_type === "lifetime"
-    ? "Lifetime"
-    : profile?.plan_type === "weekly"
-      ? "Weekly"
-      : "Semester";
+  const planLabel = planLabelFor(profile);
 
   // Tag helpers
   function addQueryTag() {
@@ -391,6 +390,60 @@ function AppPageInner() {
       }
     }
   }, [authLoading2, user, searchParams]);
+
+  useEffect(() => {
+    if (authLoading2) return;
+    const buddyCode = searchParams.get("buddy");
+    if (!buddyCode) return;
+
+    setCheckoutReferralCode(normalizeReferralCode(buddyCode));
+    if (!user) {
+      setShowAuthModal(true);
+      setAuthMode("signup");
+      setAuthError("");
+      setAuthModalCopy("Create your account, then use your friend's Buddy Pass for 25% off.");
+    } else {
+      setShowUpgradeModal(true);
+    }
+  }, [authLoading2, user, searchParams]);
+
+  function isLifetimePrice(priceId: string) {
+    const lifetimePriceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_LIFETIME || "price_1TIuBBFINW44xCyFoSCtUpFN";
+    return priceId === lifetimePriceId;
+  }
+
+  async function startCheckout(priceId: string) {
+    if (!user) {
+      setShowUpgradeModal(false);
+      setShowAuthModal(true);
+      setAuthMode("signup");
+      return;
+    }
+
+    setCheckoutError("");
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) throw new Error("Missing auth session");
+
+      const cleanReferralCode = isLifetimePrice(priceId) ? "" : normalizeReferralCode(checkoutReferralCode);
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+        body: JSON.stringify({
+          priceId,
+          referralCode: cleanReferralCode || undefined,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setCheckoutError(data.error || "Could not apply that Buddy Pass code.");
+        return;
+      }
+      if (data.url) window.location.href = data.url;
+    } catch {
+      showToast("Something went wrong. Try again.");
+    }
+  }
 
   // Auto-search from landing page URL params
   const [autoSearched, setAutoSearched] = useState(false);
@@ -489,7 +542,13 @@ function AppPageInner() {
 
   // Reset modal copy state when modals close
   useEffect(() => { if (!showAuthModal) setAuthModalCopy(""); }, [showAuthModal]);
-  useEffect(() => { if (!showUpgradeModal) { setUpgradeModalTitle(""); setUpgradeModalSubtitle(""); } }, [showUpgradeModal]);
+  useEffect(() => {
+    if (!showUpgradeModal) {
+      setUpgradeModalTitle("");
+      setUpgradeModalSubtitle("");
+      setCheckoutError("");
+    }
+  }, [showUpgradeModal]);
 
   // Lock body scroll when email modal is open
   useEffect(() => {
@@ -2464,6 +2523,63 @@ function AppPageInner() {
           <div className="glass-card rm-modal-card" style={{ padding: "32px", maxWidth: "620px", width: "92%", maxHeight: "90vh", overflowY: "auto" }} onClick={(e) => e.stopPropagation()}>
             <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "4px" }}>{upgradeModalTitle || "Upgrade your plan"}</h3>
             <p style={{ fontSize: "0.85rem", color: "#6b7280", marginBottom: "20px" }}>{upgradeModalSubtitle || "Unlimited summaries, email checker, and professor email finder."}</p>
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "1fr auto",
+              gap: "10px",
+              alignItems: "center",
+              padding: "10px",
+              borderRadius: "16px",
+              background: "rgba(255,255,255,0.58)",
+              border: "1px solid rgba(45,90,61,0.12)",
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.65)",
+              marginBottom: "14px",
+            }}>
+              <input
+                type="text"
+                placeholder="Buddy Pass code for 25% off subscriptions"
+                value={checkoutReferralCode}
+                onChange={(e) => { setCheckoutReferralCode(normalizeReferralCode(e.target.value)); setCheckoutError(""); }}
+                style={{
+                  width: "100%",
+                  minWidth: 0,
+                  border: "none",
+                  outline: "none",
+                  background: "transparent",
+                  color: "#1f3f2d",
+                  fontSize: "0.9rem",
+                  fontWeight: 650,
+                  letterSpacing: "0.02em",
+                  fontFamily: "inherit",
+                  padding: "8px 4px",
+                  textTransform: "uppercase",
+                }}
+              />
+              <span style={{
+                fontSize: "0.7rem",
+                color: "#2d5a3d",
+                fontWeight: 800,
+                padding: "7px 10px",
+                borderRadius: "999px",
+                background: "rgba(45,90,61,0.1)",
+                whiteSpace: "nowrap",
+              }}>
+                Weekly + semester
+              </span>
+            </div>
+            {checkoutError && (
+              <p style={{
+                fontSize: "0.78rem",
+                color: "#a24646",
+                background: "rgba(196,92,92,0.08)",
+                border: "1px solid rgba(196,92,92,0.14)",
+                padding: "9px 12px",
+                borderRadius: "12px",
+                marginBottom: "14px",
+              }}>
+                {checkoutError}
+              </p>
+            )}
 
             {/* Lifetime + Semester side by side on desktop */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "12px", marginBottom: "12px" }}>
@@ -2486,19 +2602,8 @@ function AppPageInner() {
                   ))}
                 </ul>
                 <button onClick={async () => {
-                  if (!user) { setShowUpgradeModal(false); setShowAuthModal(true); setAuthMode("signup"); return; }
-                  try {
-                    const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_LIFETIME || "price_1TIuBBFINW44xCyFoSCtUpFN";
-                    const { data: { session } } = await supabase.auth.getSession();
-                    if (!session?.access_token) throw new Error("Missing auth session");
-                    const res = await fetch("/api/checkout", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
-                      body: JSON.stringify({ priceId }),
-                    });
-                    const data = await res.json();
-                    if (data.url) window.location.href = data.url;
-                  } catch { showToast("Something went wrong. Try again."); }
+                  const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_LIFETIME || "price_1TIuBBFINW44xCyFoSCtUpFN";
+                  await startCheckout(priceId);
                 }} className="btn-cta rm-search-btn" style={{ width: "100%", padding: "10px", fontSize: "0.88rem", background: "linear-gradient(135deg, #A8893E, #c9a84c)" }}>
                   Claim Lifetime — $59
                 </button>
@@ -2520,19 +2625,8 @@ function AppPageInner() {
                   ))}
                 </ul>
                 <button onClick={async () => {
-                  if (!user) { setShowUpgradeModal(false); setShowAuthModal(true); setAuthMode("signup"); return; }
-                  try {
-                    const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_SEMESTER || "price_1TIuAlFINW44xCyFcxqgQpeV";
-                    const { data: { session } } = await supabase.auth.getSession();
-                    if (!session?.access_token) throw new Error("Missing auth session");
-                    const res = await fetch("/api/checkout", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
-                      body: JSON.stringify({ priceId }),
-                    });
-                    const data = await res.json();
-                    if (data.url) window.location.href = data.url;
-                  } catch { showToast("Something went wrong. Try again."); }
+                  const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_SEMESTER || "price_1TIuAlFINW44xCyFcxqgQpeV";
+                  await startCheckout(priceId);
                 }} className="btn-cta rm-search-btn" style={{ width: "100%", padding: "10px", fontSize: "0.88rem" }}>
                   Get Semester — $29
                 </button>
@@ -2549,19 +2643,8 @@ function AppPageInner() {
                 </div>
               </div>
               <button onClick={async () => {
-                if (!user) { setShowUpgradeModal(false); setShowAuthModal(true); setAuthMode("signup"); return; }
-                try {
-                  const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_WEEKLY || "price_1TMxDSFINW44xCyFWrm6ZTOo";
-                  const { data: { session } } = await supabase.auth.getSession();
-                  if (!session?.access_token) throw new Error("Missing auth session");
-                  const res = await fetch("/api/checkout", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
-                    body: JSON.stringify({ priceId }),
-                  });
-                  const data = await res.json();
-                  if (data.url) window.location.href = data.url;
-                } catch { showToast("Something went wrong. Try again."); }
+                const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_WEEKLY || "price_1TMxDSFINW44xCyFWrm6ZTOo";
+                await startCheckout(priceId);
               }} className="btn-cta" style={{ padding: "9px 20px", fontSize: "0.83rem", background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "none", whiteSpace: "nowrap" }}>
                 Start Sprint — $7
               </button>

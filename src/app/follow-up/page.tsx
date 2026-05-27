@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
+import { hasPaidAccess } from "@/lib/buddy-pass";
 
 const STORAGE_KEY = "rm_followup_used";
 
@@ -29,7 +30,7 @@ export default function FollowUpPage() {
     setFreeUsed(localStorage.getItem(STORAGE_KEY) === "true");
   }, []);
 
-  const isPaid = profile?.plan_type === "weekly" || profile?.plan_type === "semester" || profile?.plan_type === "student_monthly" || profile?.plan_type === "student_annual" || profile?.plan_type === "lifetime";
+  const isPaid = hasPaidAccess(profile);
 
   async function handleSubmit() {
     if (!originalEmail.trim()) { setError("Paste your original email first."); return; }

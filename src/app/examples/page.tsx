@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
+import { hasPaidAccess } from "@/lib/buddy-pass";
 
 /* ------------------------------------------------------------------ */
 /*  Data                                                               */
@@ -349,7 +350,7 @@ function GatedOverlay() {
 
 export default function ExamplesPage() {
   const { profile, loading } = useAuth();
-  const isPaid = profile?.plan_type !== "free" && profile?.plan_type != null;
+  const isPaid = hasPaidAccess(profile);
 
   return (
     <>

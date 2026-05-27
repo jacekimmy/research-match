@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
+import { normalizeReferralCode } from "@/lib/buddy-pass";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -17,9 +18,15 @@ export async function GET(req: NextRequest) {
   const origin = req.nextUrl.origin;
   const plan = req.nextUrl.searchParams.get("plan") ?? "";
   const priceId = PRICE_IDS[plan];
+  const buddyCode = normalizeReferralCode(req.nextUrl.searchParams.get("buddy") ?? "");
 
   if (!priceId) {
     return NextResponse.redirect(`${origin}/app`);
+  }
+
+  if (buddyCode) {
+    const fallback = plan === "semester" ? "true" : plan;
+    return NextResponse.redirect(`${origin}/app?upgrade=${fallback}&buddy=${encodeURIComponent(buddyCode)}`);
   }
 
   // Try to resolve the logged-in user from the Supabase auth cookie

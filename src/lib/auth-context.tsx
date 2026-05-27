@@ -2,6 +2,7 @@
 import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from "react";
 import { supabase } from "./supabase";
 import type { User, AuthError } from "@supabase/supabase-js";
+import { generateReferralCode } from "./buddy-pass";
 
 interface Profile {
   id: string;
@@ -11,6 +12,11 @@ interface Profile {
   searches_reset_at: string;
   summaries_used: number;
   summaries_reset_at: string;
+  referral_code: string | null;
+  buddy_pass_weeks_available: number;
+  buddy_pass_weeks_earned: number;
+  buddy_pass_weeks_used: number;
+  buddy_pass_active_until: string | null;
   framework_used: boolean;
   created_at: string;
 }
@@ -81,6 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         id: data.user.id,
         email,
         plan_type: "free",
+        referral_code: generateReferralCode(data.user.id),
         searches_used: 0,
         searches_reset_at: nextMonth.toISOString(),
         summaries_used: 0,

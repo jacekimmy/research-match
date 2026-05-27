@@ -1,331 +1,496 @@
 "use client";
-import { useState, useEffect } from "react";
+
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
 import { supabase } from "@/lib/supabase";
+import { formatBuddyPassDate, hasActiveBuddyPass, hasPaidAccess, planLabelFor } from "@/lib/buddy-pass";
+import styles from "./profile.module.css";
+
+type BuddyReferral = {
+  id: string;
+  friendEmail: string;
+  createdAt: string;
+  rewardWeeks: number;
+  discountPercent: number;
+};
+
+type BuddyPassData = {
+  referralCode: string;
+  referralUrl: string;
+  weeksAvailable: number;
+  weeksEarned: number;
+  weeksUsed: number;
+  activeUntil: string | null;
+  active: boolean;
+  successfulReferrals: number;
+  referrals: BuddyReferral[];
+};
+
+const EMPTY_BUDDY_PASS: BuddyPassData = {
+  referralCode: "",
+  referralUrl: "",
+  weeksAvailable: 0,
+  weeksEarned: 0,
+  weeksUsed: 0,
+  activeUntil: null,
+  active: false,
+  successfulReferrals: 0,
+  referrals: [],
+};
+
+function formatMemberSince(date?: string) {
+  if (!date) return "Recently";
+  return new Date(date).toLocaleDateString("en-US", { month: "long", year: "numeric" });
+}
+
+function daysSince(date?: string) {
+  if (!date) return 1;
+  const created = new Date(date).getTime();
+  return Math.max(1, Math.floor((Date.now() - created) / (1000 * 60 * 60 * 24)));
+}
+
+function resetDate(date?: string | null) {
+  if (!date) return "soon";
+  return new Date(date).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
 
 export default function ProfilePage() {
   const { user, profile, signOut, refreshProfile } = useAuth();
-  const [memberSince, setMemberSince] = useState("");
-  const [daysActive, setDaysActive] = useState(0);
-  const [animateIn, setAnimateIn] = useState(false);
+  const [savedCount, setSavedCount] = useState(0);
+  const [buddyPass, setBuddyPass] = useState<BuddyPassData>(EMPTY_BUDDY_PASS);
+  const [buddyLoading, setBuddyLoading] = useState(true);
+  const [buddyError, setBuddyError] = useState("");
+  const [activationLoading, setActivationLoading] = useState(false);
   const [portalLoading, setPortalLoading] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
+  const [copyState, setCopyState] = useState<"idle" | "code" | "link">("idle");
 
-  useEffect(() => {
-    setAnimateIn(true);
-    if (profile?.created_at) {
-      const created = new Date(profile.created_at);
-      setMemberSince(created.toLocaleDateString("en-US", { month: "long", year: "numeric" }));
-      setDaysActive(Math.max(1, Math.floor((Date.now() - created.getTime()) / (1000 * 60 * 60 * 24))));
+  const isPaid = hasPaidAccess(profile);
+  const buddyActive = buddyPass.active || hasActiveBuddyPass(profile);
+  const planLabel = planLabelFor(profile);
+  const initial = user?.email?.charAt(0).toUpperCase() || "?";
+  const summariesUsed = profile?.summaries_used ?? 0;
+  const summariesLeft = isPaid ? "Unlimited" : `${Math.max(0, 1 - summariesUsed)} / 1`;
+
+  const memberSince = useMemo(() => formatMemberSince(profile?.created_at), [profile?.created_at]);
+  const activeDays = useMemo(() => daysSince(profile?.created_at), [profile?.created_at]);
+
+  const fetchBuddyPass = useCallback(async () => {
+    if (!user) return;
+    setBuddyError("");
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) throw new Error("Missing auth session");
+
+      const res = await fetch("/api/buddy-pass", {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Could not load Buddy Pass.");
+      setBuddyPass(data);
+    } catch (err) {
+      setBuddyError(err instanceof Error ? err.message : "Could not load Buddy Pass.");
+    } finally {
+      setBuddyLoading(false);
     }
-  }, [profile]);
+  }, [user]);
 
   useEffect(() => {
+    setSavedCount(JSON.parse(localStorage.getItem("research-match-saved") || "[]").length);
     refreshProfile();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+    if (!user) return;
+    fetchBuddyPass();
+    const interval = window.setInterval(fetchBuddyPass, 15000);
+    return () => window.clearInterval(interval);
+  }, [fetchBuddyPass, user]);
+
+  async function copyBuddyPass(value: string, kind: "code" | "link") {
+    if (!value) return;
+    await navigator.clipboard.writeText(value);
+    setCopyState(kind);
+    window.setTimeout(() => setCopyState("idle"), 1600);
+  }
+
+  async function activateBuddyWeek() {
+    if (buddyActive) return;
+    if (buddyPass.weeksAvailable <= 0) {
+      setBuddyError("You do not have a Buddy Week ready yet.");
+      return;
+    }
+
+    setActivationLoading(true);
+    setBuddyError("");
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) throw new Error("Missing auth session");
+
+      const res = await fetch("/api/buddy-pass", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ action: "activate" }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Could not activate Buddy Pass.");
+
+      await Promise.all([fetchBuddyPass(), refreshProfile()]);
+    } catch (err) {
+      setBuddyError(err instanceof Error ? err.message : "Could not activate Buddy Pass.");
+    } finally {
+      setActivationLoading(false);
+    }
+  }
+
+  async function startSemesterCheckout() {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        alert("Please sign in again to continue.");
+        return;
+      }
+
+      const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_SEMESTER || "price_1TIuAlFINW44xCyFcxqgQpeV";
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ priceId }),
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+      else alert(data.error || "Could not open checkout.");
+    } catch {
+      alert("Something went wrong. Please try again.");
+    }
+  }
+
+  async function openBillingPortal() {
+    setPortalLoading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        alert("Please sign in again to manage billing.");
+        return;
+      }
+      const res = await fetch("/api/customer-portal", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({}),
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+      else alert(data.error || "Could not open billing portal. Please contact support.");
+    } catch {
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setPortalLoading(false);
+    }
+  }
+
+  async function cancelSubscription() {
+    const confirmed = window.confirm("Cancel your Research Match subscription? You will not be charged again.");
+    if (!confirmed) return;
+
+    setCancelLoading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        alert("Please sign in again to cancel your subscription.");
+        return;
+      }
+      const res = await fetch("/api/cancel-subscription", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({}),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || "Could not cancel subscription. Please contact support.");
+        return;
+      }
+      await refreshProfile();
+      alert("Subscription canceled. You will not be charged again.");
+    } catch {
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setCancelLoading(false);
+    }
+  }
+
   if (!user) {
     return (
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div className="glass-card" style={{ padding: "48px", textAlign: "center", maxWidth: "400px" }}>
-          <p style={{ fontSize: "2.5rem", marginBottom: "16px" }}>🔒</p>
-          <h2 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "12px" }}>Sign in to view your profile</h2>
-          <Link href="/app" className="btn-cta rm-search-btn" style={{ display: "inline-block", padding: "12px 28px", textDecoration: "none", marginTop: "8px" }}>
-            Go to app
-          </Link>
-        </div>
-      </div>
+      <main className={`${styles.profileMount} profile-page`}>
+        <section className="profile-signed-out profile-panel">
+          <div className="profile-lock-mark">RM</div>
+          <h1>Sign in to view your profile</h1>
+          <p>Your plan, saved professors, and Buddy Pass rewards live here.</p>
+          <Link href="/app" className="profile-primary-action">Go to app</Link>
+        </section>
+      </main>
     );
   }
 
-  const isPaid = profile?.plan_type === "weekly" || profile?.plan_type === "semester" || profile?.plan_type === "student_monthly" || profile?.plan_type === "student_annual" || profile?.plan_type === "lifetime";
-  const planLabel = profile?.plan_type === "lifetime"
-    ? "Lifetime"
-    : profile?.plan_type === "weekly"
-      ? "Weekly"
-      : profile?.plan_type === "semester" || profile?.plan_type === "student_monthly" || profile?.plan_type === "student_annual"
-        ? "Semester"
-        : "Free";
-  const freeSummaryLimit = 1;
-  const summariesUsed = profile?.summaries_used ?? 0;
-  const summariesLeft = isPaid ? "Unlimited" : `${Math.max(0, freeSummaryLimit - summariesUsed)} of ${freeSummaryLimit}`;
-  const resetDate = profile?.summaries_reset_at
-    ? new Date(profile.summaries_reset_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })
-    : "—";
-  const initial = user.email?.charAt(0).toUpperCase() || "?";
-
   return (
-    <div style={{ minHeight: "100vh", padding: "40px 20px" }}>
-      {/* Background splotches */}
-      <div className="splotches">
-        <div className="splotch splotch-1" />
-        <div className="splotch splotch-2" />
-        <div className="splotch splotch-3" />
-      </div>
+    <main className={`${styles.profileMount} profile-page`}>
+      <div className="profile-ambient profile-ambient-a" />
+      <div className="profile-ambient profile-ambient-b" />
 
-      <div style={{ maxWidth: "700px", margin: "0 auto" }}>
-        {/* Back nav */}
-        <Link href="/app" className="btn-cta" style={{
-          display: "inline-flex", alignItems: "center", gap: "8px",
-          padding: "10px 22px", fontSize: "0.85rem", textDecoration: "none", marginBottom: "40px",
-        }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
-          Back to search
-        </Link>
+      <div className="profile-shell">
+        <nav className="profile-topbar" aria-label="Profile navigation">
+          <Link href="/app" className="profile-back-link">
+            <span aria-hidden="true">←</span>
+            Back to search
+          </Link>
+          <Link href="/" className="profile-brand-link">Research Match</Link>
+        </nav>
 
-        {/* Profile header */}
-        <div className={`glass-card ${animateIn ? "card-enter" : ""}`} style={{
-          padding: "48px 40px", textAlign: "center", marginBottom: "24px",
-          background: "linear-gradient(135deg, rgba(255,255,255,0.6), rgba(255,255,255,0.35))",
-        }}>
-          {/* Big avatar */}
-          <div style={{
-            width: "90px", height: "90px", borderRadius: "50%",
-            background: "linear-gradient(135deg, #2d5a3d, #2E9E72)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            margin: "0 auto 20px",
-            color: "#ffffff", fontSize: "2.2rem", fontWeight: 700,
-            boxShadow: "0 8px 32px rgba(45, 90, 61,0.25)",
-            border: "3px solid rgba(255,255,255,0.5)",
-            animation: "profilePop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both",
-          }}>
-            {initial}
-          </div>
-
-          <h1 style={{
-            fontSize: "1.6rem", fontWeight: 700, color: "#2d5a3d",
-            marginBottom: "6px", letterSpacing: "-0.01em",
-          }}>
-            {user.email}
-          </h1>
-
-          <div style={{ display: "flex", gap: "10px", justifyContent: "center", marginTop: "12px", flexWrap: "wrap" }}>
-            <span style={{
-              fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em",
-              padding: "5px 16px", borderRadius: "999px",
-              background: isPaid ? "#2d5a3d" : "rgba(45, 90, 61,0.1)",
-              color: isPaid ? "#f4f0ea" : "#2d5a3d",
-            }}>
-              {planLabel}
-            </span>
-            <span style={{
-              fontSize: "0.75rem", fontWeight: 600, color: "#6b7280",
-              padding: "5px 16px", borderRadius: "999px",
-              background: "rgba(45, 90, 61,0.15)",
-            }}>
-              Member since {memberSince}
-            </span>
-          </div>
-        </div>
-
-        {/* Stats grid */}
-        <div style={{
-          display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
-          gap: "12px", marginBottom: "24px",
-        }}>
-          {[
-            { label: "Summaries left", value: summariesLeft, icon: "📄", sub: isPaid ? "No limits" : `Resets ${resetDate}` },
-            { label: "Days active", value: daysActive.toString(), icon: "📅", sub: "Keep going!" },
-            { label: "Saved", value: (JSON.parse(localStorage.getItem("research-match-saved") || "[]")).length.toString(), icon: "⭐", sub: "Your picks" },
-          ].map((stat, i) => (
-            <div key={stat.label} className={`glass-card ${animateIn ? "card-enter" : ""}`} style={{
-              padding: "20px 12px", textAlign: "center",
-              animationDelay: `${0.1 + i * 0.08}s`,
-            }}>
-              <span style={{ fontSize: "1.4rem", display: "block", marginBottom: "8px" }}>{stat.icon}</span>
-              <p style={{ fontSize: "1.5rem", fontWeight: 800, color: "#2d5a3d", letterSpacing: "-0.02em" }}>{stat.value}</p>
-              <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.06em", marginTop: "4px", lineHeight: 1.3 }}>{stat.label}</p>
-              <p style={{ fontSize: "0.65rem", color: "#8aaa96", marginTop: "4px" }}>{stat.sub}</p>
+        <section className="profile-hero-panel">
+          <div className="profile-identity">
+            <div className="profile-avatar-large">{initial}</div>
+            <div>
+              <p className="profile-kicker">Profile Settings</p>
+              <h1>{user.email}</h1>
+              <p>Member since {memberSince}. Your research workspace updates as your plan changes.</p>
             </div>
-          ))}
-        </div>
+          </div>
 
-        {/* Plan details */}
-        <div className={`glass-card ${animateIn ? "card-enter" : ""}`} style={{
-          padding: "32px", marginBottom: "24px",
-          animationDelay: "0.35s",
-        }}>
-          <h2 style={{ fontSize: "1.1rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "20px" }}>Your Plan</h2>
+          <div className="profile-plan-chip">
+            <span className={isPaid ? "profile-plan-dot is-live" : "profile-plan-dot"} />
+            <div>
+              <p>Current access</p>
+              <strong>{planLabel}</strong>
+            </div>
+          </div>
+        </section>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-            {[
-              { feature: "Full research summaries", included: true },
-              { feature: "Suggested questions", included: true },
-              { feature: "Author position labels", included: true },
-              { feature: "Save professors", included: true },
-              { feature: "Paper links", included: true },
-              { feature: "Unlimited summaries", included: isPaid },
-              { feature: "Email checker", included: isPaid },
-              { feature: "Professor email finder", included: isPaid },
-              { feature: "Nearby professor access", included: isPaid },
-            ].map((item) => (
-              <div key={item.feature} style={{
-                display: "flex", alignItems: "center", gap: "12px",
-                padding: "8px 0",
-                opacity: item.included ? 1 : 0.45,
-              }}>
-                <span style={{
-                  width: "22px", height: "22px", borderRadius: "50%",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: "0.7rem",
-                  background: item.included ? "rgba(45, 90, 61,0.12)" : "rgba(149,173,157,0.1)",
-                  color: item.included ? "#2d5a3d" : "#8aaa96",
-                }}>
-                  {item.included ? "✓" : "—"}
-                </span>
-                <span style={{ fontSize: "0.9rem", color: item.included ? "#1a1a1a" : "#6b7280" }}>
-                  {item.feature}
-                </span>
-                {!item.included && (
-                  <span style={{ fontSize: "0.65rem", color: "#8aaa96", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>Student</span>
+        <section className="profile-metrics-grid" aria-label="Profile stats">
+          <div className="profile-metric-card">
+            <span>Summaries</span>
+            <strong>{summariesLeft}</strong>
+            <p>{isPaid ? "No limit while active" : `Resets ${resetDate(profile?.summaries_reset_at)}`}</p>
+          </div>
+          <div className="profile-metric-card">
+            <span>Saved</span>
+            <strong>{savedCount}</strong>
+            <p>Professors in your shortlist</p>
+          </div>
+          <div className="profile-metric-card">
+            <span>Days active</span>
+            <strong>{activeDays}</strong>
+            <p>Research rhythm matters</p>
+          </div>
+          <div className="profile-metric-card">
+            <span>Buddy weeks</span>
+            <strong>{buddyLoading ? "..." : buddyPass.weeksAvailable}</strong>
+            <p>{buddyActive ? `Active until ${formatBuddyPassDate(buddyPass.activeUntil || profile?.buddy_pass_active_until)}` : "Ready to activate"}</p>
+          </div>
+        </section>
+
+        <section className="profile-content-grid">
+          <div className="profile-main-stack">
+            <section className="profile-panel buddy-pass-panel">
+              <div className="profile-panel-header">
+                <div>
+                  <p className="profile-kicker">Research Buddy Pass</p>
+                  <h2>Give 25% off. Bank a free week.</h2>
+                </div>
+                <span className="buddy-pass-badge">Stackable</span>
+              </div>
+
+              <p className="profile-muted">
+                Every friend who uses your code while buying a weekly or semester subscription gets 25% off. You earn one Buddy Week, stored here until you choose to start it.
+              </p>
+
+              <div className="buddy-code-card">
+                <div>
+                  <span>Your code</span>
+                  <strong>{buddyLoading ? "Loading..." : buddyPass.referralCode}</strong>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => copyBuddyPass(buddyPass.referralCode, "code")}
+                  className="profile-soft-button"
+                >
+                  {copyState === "code" ? "Copied" : "Copy"}
+                </button>
+              </div>
+
+              <div className="buddy-link-row">
+                <span>{buddyPass.referralUrl || "Your share link appears here"}</span>
+                <button
+                  type="button"
+                  onClick={() => copyBuddyPass(buddyPass.referralUrl, "link")}
+                  className="profile-soft-button"
+                >
+                  {copyState === "link" ? "Copied" : "Copy link"}
+                </button>
+              </div>
+
+              <div className="buddy-activation-card">
+                <div>
+                  <p className="profile-kicker">Week usage</p>
+                  <h3>{buddyActive ? "Buddy Week is running" : "Activate one stored week"}</h3>
+                  <p>
+                    {buddyActive
+                      ? `This week stays on until ${formatBuddyPassDate(buddyPass.activeUntil || profile?.buddy_pass_active_until)}. It cannot be paused once started.`
+                      : buddyPass.weeksAvailable > 0
+                        ? "Turn it on when you need a focused research sprint."
+                        : "Refer a friend to earn your next free week."}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={buddyActive}
+                  aria-label={buddyActive ? "Buddy Week is active" : "Activate one Buddy Week"}
+                  disabled={activationLoading || buddyActive || buddyPass.weeksAvailable <= 0}
+                  onClick={activateBuddyWeek}
+                  className={`buddy-toggle${buddyActive ? " is-on" : ""}`}
+                  title={buddyActive ? "Buddy Weeks cannot be paused once started." : "Start one stored Buddy Week."}
+                >
+                  <span />
+                </button>
+              </div>
+
+              {buddyError && <p className="profile-error">{buddyError}</p>}
+
+              <div className="buddy-pass-stats">
+                <div>
+                  <strong>{buddyPass.successfulReferrals}</strong>
+                  <span>referrals</span>
+                </div>
+                <div>
+                  <strong>{buddyPass.weeksEarned}</strong>
+                  <span>earned</span>
+                </div>
+                <div>
+                  <strong>{buddyPass.weeksUsed}</strong>
+                  <span>used</span>
+                </div>
+              </div>
+            </section>
+
+            <section className="profile-panel">
+              <div className="profile-panel-header">
+                <div>
+                  <p className="profile-kicker">Access</p>
+                  <h2>Your plan includes</h2>
+                </div>
+              </div>
+
+              <div className="profile-feature-list">
+                {[
+                  ["Full research summaries", true],
+                  ["Suggested questions", true],
+                  ["Author position labels", true],
+                  ["Save professors", true],
+                  ["Paper links", true],
+                  ["Unlimited summaries", isPaid],
+                  ["Email checker", isPaid],
+                  ["Professor email finder", isPaid],
+                  ["Nearby professor access", isPaid],
+                ].map(([feature, included]) => (
+                  <div key={feature as string} className={included ? "profile-feature-row" : "profile-feature-row is-muted"}>
+                    <span>{included ? "✓" : "·"}</span>
+                    <p>{feature}</p>
+                  </div>
+                ))}
+              </div>
+
+              {!isPaid && profile?.plan_type !== "lifetime" && (
+                <button type="button" onClick={startSemesterCheckout} className="profile-primary-action profile-full-action">
+                  Get Semester Access
+                </button>
+              )}
+            </section>
+          </div>
+
+          <aside className="profile-side-stack">
+            <section className="profile-panel">
+              <div className="profile-panel-header">
+                <div>
+                  <p className="profile-kicker">Referrals</p>
+                  <h2>Recent rewards</h2>
+                </div>
+              </div>
+
+              <div className="buddy-referral-list">
+                {buddyPass.referrals.length > 0 ? buddyPass.referrals.map((referral) => (
+                  <div className="buddy-referral-row" key={referral.id}>
+                    <div>
+                      <strong>{referral.friendEmail}</strong>
+                      <p>{formatBuddyPassDate(referral.createdAt)}</p>
+                    </div>
+                    <span>+{referral.rewardWeeks} week</span>
+                  </div>
+                )) : (
+                  <div className="buddy-empty-state">
+                    <strong>No referrals yet</strong>
+                    <p>Share your code and the first reward will land here automatically after checkout.</p>
+                  </div>
                 )}
               </div>
-            ))}
-          </div>
+            </section>
 
-          {!isPaid && profile?.plan_type !== "lifetime" && (
-            <button
-              onClick={async () => {
-                const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_SEMESTER || "price_1TIuAlFINW44xCyFcxqgQpeV";
-                const { data: { session } } = await supabase.auth.getSession();
-                if (!session?.access_token) {
-                  alert("Please sign in again to continue.");
-                  return;
-                }
-                const res = await fetch("/api/checkout", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${session.access_token}`,
-                  },
-                  body: JSON.stringify({ priceId }),
-                });
-                const data = await res.json();
-                if (data.url) window.location.href = data.url;
-              }}
-              className="btn-cta rm-search-btn"
-              style={{
-                display: "block", width: "100%", textAlign: "center", padding: "14px",
-                marginTop: "24px", fontSize: "0.95rem", border: "none", cursor: "pointer",
-              }}
-            >
-              Get Semester Access — $29
-            </button>
-          )}
-        </div>
+            <section className="profile-panel profile-actions-panel">
+              <div className="profile-panel-header">
+                <div>
+                  <p className="profile-kicker">Account</p>
+                  <h2>Controls</h2>
+                </div>
+              </div>
 
-        {/* Actions */}
-        <div className={`glass-card ${animateIn ? "card-enter" : ""}`} style={{
-          padding: "32px", marginBottom: "40px",
-          animationDelay: "0.45s",
-        }}>
-          <h2 style={{ fontSize: "1.1rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "20px" }}>Account</h2>
+              <Link href="/feedback" className="profile-action-button">Give feedback</Link>
 
-          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-            <Link href="/feedback" className="btn-secondary" style={{
-              padding: "10px 22px", fontSize: "0.85rem", textDecoration: "none",
-            }}>
-              Give feedback
-            </Link>
+              {profile?.plan_type !== "lifetime" && (
+                <button
+                  id="manage-subscription-btn"
+                  type="button"
+                  disabled={portalLoading}
+                  onClick={openBillingPortal}
+                  className="profile-action-button"
+                >
+                  {portalLoading ? "Opening..." : "Manage subscription"}
+                </button>
+              )}
 
-            {/* Manage / cancel recurring billing.
-                Keep this visible for free profiles too: a failed/partial cancel can leave
-                Supabase marked free while Stripe still has an active subscription. */}
-            {profile?.plan_type !== "lifetime" && (
+              {profile?.plan_type !== "lifetime" && (
+                <button
+                  id="cancel-subscription-btn"
+                  type="button"
+                  disabled={cancelLoading}
+                  onClick={cancelSubscription}
+                  className="profile-action-button is-danger"
+                >
+                  {cancelLoading ? "Canceling..." : "Cancel subscription"}
+                </button>
+              )}
+
               <button
-                id="manage-subscription-btn"
-                disabled={portalLoading}
-                onClick={async () => {
-                  setPortalLoading(true);
-                  try {
-                    const { data: { session } } = await supabase.auth.getSession();
-                    if (!session?.access_token) {
-                      alert("Please sign in again to manage billing.");
-                      return;
-                    }
-                    const res = await fetch("/api/customer-portal", {
-                      method: "POST",
-                      headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${session.access_token}`,
-                      },
-                      body: JSON.stringify({}),
-                    });
-                    const data = await res.json();
-                    if (data.url) {
-                      window.location.href = data.url;
-                    } else {
-                      alert(data.error || "Could not open billing portal. Please contact support.");
-                    }
-                  } catch {
-                    alert("Something went wrong. Please try again.");
-                  } finally {
-                    setPortalLoading(false);
-                  }
-                }}
-                className="btn-secondary"
-                style={{ padding: "10px 22px", fontSize: "0.85rem", opacity: portalLoading ? 0.6 : 1 }}
+                type="button"
+                onClick={async () => { await signOut(); window.location.href = "/"; }}
+                className="profile-action-button is-danger"
               >
-                {portalLoading ? "Opening…" : "Manage Subscription"}
+                Sign out
               </button>
-            )}
-
-            {profile?.plan_type !== "lifetime" && (
-              <button
-                id="cancel-subscription-btn"
-                disabled={cancelLoading}
-                onClick={async () => {
-                  const confirmed = window.confirm(
-                    "Cancel your Research Match subscription? You will not be charged again."
-                  );
-                  if (!confirmed) return;
-
-                  setCancelLoading(true);
-                  try {
-                    const { data: { session } } = await supabase.auth.getSession();
-                    if (!session?.access_token) {
-                      alert("Please sign in again to cancel your subscription.");
-                      return;
-                    }
-                    const res = await fetch("/api/cancel-subscription", {
-                      method: "POST",
-                      headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${session.access_token}`,
-                      },
-                      body: JSON.stringify({}),
-                    });
-                    const data = await res.json();
-                    if (!res.ok) {
-                      alert(data.error || "Could not cancel subscription. Please contact support.");
-                      return;
-                    }
-                    await refreshProfile();
-                    alert("Subscription canceled. You will not be charged again.");
-                  } catch {
-                    alert("Something went wrong. Please try again.");
-                  } finally {
-                    setCancelLoading(false);
-                  }
-                }}
-                className="btn-secondary"
-                style={{ padding: "10px 22px", fontSize: "0.85rem", color: "#c45c5c", opacity: cancelLoading ? 0.6 : 1 }}
-              >
-                {cancelLoading ? "Canceling…" : "Cancel Subscription"}
-              </button>
-            )}
-
-            <button
-              onClick={async () => { await signOut(); window.location.href = "/"; }}
-              className="btn-secondary"
-              style={{ padding: "10px 22px", fontSize: "0.85rem", color: "#c45c5c" }}
-            >
-              Sign out
-            </button>
-          </div>
-        </div>
+            </section>
+          </aside>
+        </section>
       </div>
-    </div>
+    </main>
   );
 }

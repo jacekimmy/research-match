@@ -47,15 +47,18 @@ export async function POST(req: NextRequest) {
     const lifetimePriceId = process.env.STRIPE_PRICE_LIFETIME || "price_1TIuBBFINW44xCyFoSCtUpFN";
 
     let planType = "semester";
+    let paidPriceIdForReferral: string | null = null;
 
     if (session.mode === "payment") {
       // One-time payment — lifetime
       const lineItems = await stripe.checkout.sessions.listLineItems(session.id, { limit: 1 });
       const paidPriceId = lineItems.data[0]?.price?.id;
+      paidPriceIdForReferral = paidPriceId ?? null;
       planType = paidPriceId === lifetimePriceId ? "lifetime" : "semester";
     } else if (session.mode === "subscription" && session.subscription) {
       const sub = await stripe.subscriptions.retrieve(session.subscription as string);
       const priceId = sub.items.data[0]?.price.id;
+      paidPriceIdForReferral = priceId ?? null;
       planType = planTypeFromPrice(priceId);
     }
 
@@ -75,6 +78,74 @@ export async function POST(req: NextRequest) {
     }
 
     console.log(`✅ Plan updated to "${planType}" for userId: ${userId}`);
+
+    // Buddy Pass referral reward: friend got 25% off at checkout, referrer gets one
+    // stored week they can activate later. Keep it outside Stripe subscription state.
+    if (
+      session.mode === "subscription" &&
+      session.metadata?.referrerId &&
+      session.metadata?.referralCode &&
+      session.metadata?.referredUserId === userId &&
+      session.metadata.referrerId !== userId
+    ) {
+      try {
+        const referrerId = session.metadata.referrerId;
+        const referralCode = session.metadata.referralCode;
+
+        const { data: existingSessionReward } = await supabaseAdmin
+          .from("buddy_pass_referrals")
+          .select("id")
+          .eq("checkout_session_id", session.id)
+          .maybeSingle();
+
+        const { data: existingUserReward } = await supabaseAdmin
+          .from("buddy_pass_referrals")
+          .select("id")
+          .eq("referred_user_id", userId)
+          .eq("status", "rewarded")
+          .limit(1)
+          .maybeSingle();
+
+        if (!existingSessionReward && !existingUserReward) {
+          const stripeCustomerId =
+            typeof session.customer === "string"
+              ? session.customer
+              : session.customer?.id ?? null;
+
+          const { error: insertError } = await supabaseAdmin
+            .from("buddy_pass_referrals")
+            .insert({
+              referrer_id: referrerId,
+              referred_user_id: userId,
+              referral_code: referralCode,
+              checkout_session_id: session.id,
+              stripe_customer_id: stripeCustomerId,
+              price_id: paidPriceIdForReferral,
+              status: "rewarded",
+              discount_percent: 25,
+              reward_weeks: 1,
+              rewarded_at: new Date().toISOString(),
+            });
+
+          if (insertError) {
+            console.error("Buddy Pass referral insert failed:", insertError);
+          } else {
+            const { error: grantError } = await supabaseAdmin.rpc("grant_buddy_pass_week", {
+              p_referrer_id: referrerId,
+              p_weeks: 1,
+            });
+
+            if (grantError) {
+              console.error("Buddy Pass reward grant failed:", grantError);
+            } else {
+              console.log(`✅ Buddy Pass reward granted to referrerId: ${referrerId}`);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Buddy Pass reward error:", err);
+      }
+    }
 
     // Increment lifetime spots counter if lifetime purchase
     if (planType === "lifetime") {
