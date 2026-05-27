@@ -5,6 +5,17 @@ import type { Metadata } from "next";
 
 type Props = { params: Promise<{ slug: string }> };
 
+function formatBlogDate(date: string) {
+  const [year, month, day] = date.split("-").map(Number);
+  if (!year || !month || !day) return date;
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(year, month - 1, day));
+}
+
 export async function generateStaticParams() {
   return posts.map((post) => ({ slug: post.slug }));
 }
@@ -105,7 +116,7 @@ export default async function BlogPost({ params }: Props) {
               <p style={{ fontSize: "0.78rem", color: "#8aaa96", margin: 0 }}>
                 15-year-old founder of Research Match. Cold emailed professors at Princeton, ASU, and dozens of others to learn what actually gets a response.
                 {post.datePublished && (
-                  <> &middot; {new Date(post.datePublished).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</>
+                  <> &middot; {formatBlogDate(post.datePublished)}</>
                 )}
               </p>
             </div>

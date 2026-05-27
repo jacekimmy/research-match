@@ -17,6 +17,7 @@ const CATEGORIES: { label: string; slugs: string[] }[] = [
   {
     label: "Finding Professors",
     slugs: [
+      "how-to-find-research-positions",
       "how-to-find-research-opportunities",
       "how-to-get-research-experience-undergrad",
       "research-opportunities-for-high-school-students",
@@ -28,6 +29,8 @@ const CATEGORIES: { label: string; slugs: string[] }[] = [
   {
     label: "Writing the Email",
     slugs: [
+      "how-to-email-a-professor",
+      "how-to-email-a-research-professor",
       "how-to-cold-email-a-professor",
       "how-to-email-a-professor-about-research",
       "cold-email-professor-template",
