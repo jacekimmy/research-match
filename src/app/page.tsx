@@ -47,7 +47,6 @@ export default function LandingPage() {
   const [testimonialPaused, setTestimonialPaused] = useState(false);
   const [referralCode, setReferralCode] = useState("");
   const [checkoutError, setCheckoutError] = useState("");
-  const [phoneHeroMode, setPhoneHeroMode] = useState(false);
   const pricingOptions = ["free", "weekly", "semester", "lifetime"] as const;
 
   const setPricingItem = (index: number) => {
@@ -100,28 +99,6 @@ export default function LandingPage() {
   };
 
   useEffect(() => { setBillingMounted(true); }, []);
-  useEffect(() => {
-    const syncPhoneHeroMode = () => {
-      const width = Math.min(
-        window.innerWidth || Number.POSITIVE_INFINITY,
-        window.outerWidth || Number.POSITIVE_INFINITY,
-        window.screen?.width || Number.POSITIVE_INFINITY,
-        window.visualViewport?.width || Number.POSITIVE_INFINITY
-      );
-      const isPortraitCanvas = window.innerHeight > window.innerWidth * 1.18 && window.innerWidth <= 1200;
-      const isMobileAgent = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
-      setPhoneHeroMode(width <= 760 || isPortraitCanvas || isMobileAgent);
-    };
-
-    syncPhoneHeroMode();
-    window.addEventListener("resize", syncPhoneHeroMode);
-    window.visualViewport?.addEventListener("resize", syncPhoneHeroMode);
-    return () => {
-      window.removeEventListener("resize", syncPhoneHeroMode);
-      window.visualViewport?.removeEventListener("resize", syncPhoneHeroMode);
-    };
-  }, []);
-
   useEffect(() => {
     fetch("/api/stats").then(r => r.json()).then(d => {
       startTransition(() => setSearchCount(d.searches));
@@ -231,7 +208,7 @@ export default function LandingPage() {
   }
 
   return (
-    <div className={`lp-root ${phoneHeroMode ? "lp-phone-hero-mode" : ""}`} style={{ overflowX: 'hidden' }}>
+    <div className="lp-root" style={{ overflowX: 'hidden' }}>
       <style>{`
         /* ── Universal Enforcements ── */
         .lp-pricing-slider-viewport {
@@ -384,12 +361,8 @@ export default function LandingPage() {
           </div>
 
           <h1 className="lp-hero-title text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight leading-[1.1]">
-            <span className="lp-title-desktop-text">Find the mentor<br /></span>
-            <span className="lp-title-mobile-text">Find the<br />mentor<br /></span>
-            <em className="lp-hero-title-em">
-              <span className="lp-title-desktop-text">who changes your life.</span>
-              <span className="lp-title-mobile-text">who changes<br />your life.</span>
-            </em>
+            Find the mentor<br />
+            <em className="lp-hero-title-em">who changes your life.</em>
           </h1>
 
           <p className="lp-hero-sub">
