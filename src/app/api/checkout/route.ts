@@ -81,10 +81,6 @@ export async function POST(req: NextRequest) {
       if (!normalizedReferralCode) {
         return NextResponse.json({ error: "Enter a valid Buddy Pass code." }, { status: 400 });
       }
-      if (mode !== "subscription") {
-        return NextResponse.json({ error: "Buddy Pass codes work on weekly and semester subscriptions." }, { status: 400 });
-      }
-
       const { data: referrer } = await supabaseAdmin
         .from("profiles")
         .select("id, referral_code")

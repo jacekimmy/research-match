@@ -407,11 +407,6 @@ function AppPageInner() {
     }
   }, [authLoading2, user, searchParams]);
 
-  function isLifetimePrice(priceId: string) {
-    const lifetimePriceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_LIFETIME || "price_1TIuBBFINW44xCyFoSCtUpFN";
-    return priceId === lifetimePriceId;
-  }
-
   async function startCheckout(priceId: string) {
     if (!user) {
       setShowUpgradeModal(false);
@@ -425,7 +420,7 @@ function AppPageInner() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.access_token) throw new Error("Missing auth session");
 
-      const cleanReferralCode = isLifetimePrice(priceId) ? "" : normalizeReferralCode(checkoutReferralCode);
+      const cleanReferralCode = normalizeReferralCode(checkoutReferralCode);
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
@@ -2537,7 +2532,7 @@ function AppPageInner() {
             }}>
               <input
                 type="text"
-                placeholder="Buddy Pass code for 25% off subscriptions"
+                placeholder="Buddy Pass code for 25% off"
                 value={checkoutReferralCode}
                 onChange={(e) => { setCheckoutReferralCode(normalizeReferralCode(e.target.value)); setCheckoutError(""); }}
                 style={{
@@ -2564,7 +2559,7 @@ function AppPageInner() {
                 background: "rgba(45,90,61,0.1)",
                 whiteSpace: "nowrap",
               }}>
-                Weekly + semester
+                All paid plans
               </span>
             </div>
             {checkoutError && (

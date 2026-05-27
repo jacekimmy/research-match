@@ -312,7 +312,7 @@ export default function ProfilePage() {
               </div>
 
               <p className="profile-muted">
-                Every friend who uses your code while buying a weekly or semester subscription gets 25% off. You earn one Buddy Week, stored here until you choose to start it.
+                Every friend who uses your code while buying weekly, semester, or lifetime access gets 25% off. You earn one Buddy Week, stored here until you choose to start it.
               </p>
 
               <div className="buddy-code-card">

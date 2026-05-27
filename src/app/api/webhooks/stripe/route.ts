@@ -82,7 +82,6 @@ export async function POST(req: NextRequest) {
     // Buddy Pass referral reward: friend got 25% off at checkout, referrer gets one
     // stored week they can activate later. Keep it outside Stripe subscription state.
     if (
-      session.mode === "subscription" &&
       session.metadata?.referrerId &&
       session.metadata?.referralCode &&
       session.metadata?.referredUserId === userId &&
