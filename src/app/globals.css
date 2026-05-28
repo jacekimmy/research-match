@@ -6355,10 +6355,10 @@ body::after {
 
   .lp-duo-card-meta {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     gap: 18px;
-    margin-bottom: 22px;
+    margin-bottom: 26px;
   }
 
   .lp-duo-card-meta .lp-price-tier {
@@ -6416,20 +6416,21 @@ body::after {
 
   .lp-paid-toggle-option em {
     position: absolute;
-    top: -13px;
+    top: -14px;
     left: 50%;
     transform: translateX(-50%);
-    padding: 2px 8px;
+    padding: 3px 10px;
     border-radius: 999px;
-    background: rgba(196, 162, 101, 0.13);
-    border: 1px solid rgba(196, 162, 101, 0.18);
-    color: #8b7031;
+    background: rgba(248, 239, 205, 0.96);
+    border: 1px solid rgba(181, 143, 61, 0.34);
+    color: #765b20;
     font-size: 0.53rem;
     font-style: normal;
     font-weight: 800;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     white-space: nowrap;
+    box-shadow: 0 5px 14px rgba(128, 93, 31, 0.12);
   }
 
   .lp-paid-toggle-option:hover {
@@ -6450,7 +6451,9 @@ body::after {
     display: grid;
     grid-template-columns: minmax(150px, 0.72fr) minmax(240px, 1fr);
     gap: 28px;
-    align-items: end;
+    align-items: center;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(45, 90, 61, 0.08);
   }
 
   .lp-paid-price-row .lp-price-period {
@@ -6458,7 +6461,7 @@ body::after {
   }
 
   .lp-paid-promise {
-    margin: 0 0 4px;
+    margin: 0;
     color: #5d6b60;
     font-size: 1.02rem;
     font-weight: 600;
@@ -6474,10 +6477,15 @@ body::after {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: 32px;
+    padding-top: 4px;
   }
 
   .lp-paid-feature-grid li {
-    min-height: 46px;
+    min-height: 48px;
+  }
+
+  .lp-paid-feature-grid li:nth-child(-n + 2) {
+    border-top: 0;
   }
 }
 

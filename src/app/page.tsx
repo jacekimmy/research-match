@@ -61,7 +61,7 @@ export default function LandingPage() {
   const activePaidPlanIndex = paidPricingOptions.findIndex((plan) => plan.key === activePaidPlan);
   const paidPlan = paidPricingOptions[activePaidPlanIndex >= 0 ? activePaidPlanIndex : 1];
   const paidFeatures = [
-    ...(activePaidPlan === "lifetime" ? ["Never pay again"] : ["Finish the outreach job"]),
+    ...(activePaidPlan === "lifetime" ? ["Never pay again"] : []),
     "Unlimited professor searches",
     "Unlimited summaries",
     "Professor email finder",
@@ -759,114 +759,6 @@ export default function LandingPage() {
           <p className="lp-pricing-sub">One research position can change your entire career. One semester is all it takes.</p>
         </div>
 
-        <div
-          style={{
-            width: "min(440px, calc(100% - 40px))",
-            margin: "0 auto 28px",
-            borderRadius: buddyPassOpen ? "22px" : "999px",
-            background: "rgba(255,255,255,0.5)",
-            border: "1px solid rgba(45,90,61,0.12)",
-            boxShadow: buddyPassOpen
-              ? "0 18px 46px rgba(45,90,61,0.12), inset 0 1px 0 rgba(255,255,255,0.72)"
-              : "0 10px 28px rgba(45,90,61,0.07), inset 0 1px 0 rgba(255,255,255,0.72)",
-            backdropFilter: "blur(18px)",
-            WebkitBackdropFilter: "blur(18px)",
-            overflow: "hidden",
-            transition: "all 420ms cubic-bezier(0.22, 1, 0.36, 1)",
-          }}
-        >
-          <button
-            type="button"
-            aria-expanded={buddyPassOpen}
-            onClick={toggleBuddyPass}
-            style={{
-              width: "100%",
-              border: "none",
-              background: "transparent",
-              color: "#2d5a3d",
-              cursor: "pointer",
-              fontFamily: "inherit",
-              fontSize: "0.86rem",
-              fontWeight: 800,
-              letterSpacing: "0.01em",
-              padding: buddyPassOpen ? "15px 16px 10px" : "13px 16px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "10px",
-              transition: "all 300ms ease",
-              WebkitTapHighlightColor: "transparent",
-            }}
-          >
-            <span>Have a Research Buddy Pass?</span>
-            <span
-              aria-hidden="true"
-              style={{
-                width: "24px",
-                height: "24px",
-                borderRadius: "999px",
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                background: "rgba(45,90,61,0.1)",
-                transform: buddyPassOpen ? "rotate(45deg)" : "rotate(0deg)",
-                transition: "transform 360ms cubic-bezier(0.22, 1, 0.36, 1)",
-              }}
-            >
-              +
-            </span>
-          </button>
-          <div
-            style={{
-              maxHeight: buddyPassOpen ? "116px" : "0px",
-              opacity: buddyPassOpen ? 1 : 0,
-              transform: buddyPassOpen ? "translateY(0)" : "translateY(-8px)",
-              transition: "max-height 420ms cubic-bezier(0.22, 1, 0.36, 1), opacity 260ms ease, transform 360ms cubic-bezier(0.22, 1, 0.36, 1)",
-              padding: buddyPassOpen ? "0 12px 12px" : "0 12px",
-            }}
-          >
-            <input
-              ref={buddyInputRef}
-              value={referralCode}
-              onChange={(e) => { setReferralCode(normalizeReferralCode(e.target.value)); setCheckoutError(""); }}
-              placeholder="Enter friend code"
-              aria-label="Research Buddy Pass code"
-              style={{
-                width: "100%",
-                minWidth: 0,
-                border: "1px solid rgba(45,90,61,0.12)",
-                outline: "none",
-                background: "rgba(255,255,255,0.68)",
-                color: "#1f3f2d",
-                fontSize: "0.92rem",
-                fontWeight: 750,
-                fontFamily: "inherit",
-                padding: "13px 14px",
-                borderRadius: "15px",
-                textTransform: "uppercase",
-                letterSpacing: "0.04em",
-                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.68)",
-                transition: "border-color 240ms ease, box-shadow 240ms ease, background 240ms ease",
-              }}
-            />
-            {checkoutError && (
-              <p style={{
-                color: "#9a4343",
-                background: "rgba(196,92,92,0.08)",
-                border: "1px solid rgba(196,92,92,0.14)",
-                borderRadius: "12px",
-                fontSize: "0.78rem",
-                fontWeight: 650,
-                margin: "10px 2px 0",
-                padding: "9px 11px",
-                textAlign: "center",
-              }}>
-                {checkoutError}
-              </p>
-            )}
-          </div>
-        </div>
-
         {/* Mobile: Tab toggle */}
         <div 
           id="lp-mobile-pricing-tabs"
@@ -1157,6 +1049,114 @@ export default function LandingPage() {
               onClick={() => setPricingItem(idx)}
             />
           ))}
+        </div>
+
+        <div
+          style={{
+            width: "min(440px, calc(100% - 40px))",
+            margin: "30px auto 28px",
+            borderRadius: buddyPassOpen ? "22px" : "999px",
+            background: "rgba(255,255,255,0.5)",
+            border: "1px solid rgba(45,90,61,0.12)",
+            boxShadow: buddyPassOpen
+              ? "0 18px 46px rgba(45,90,61,0.12), inset 0 1px 0 rgba(255,255,255,0.72)"
+              : "0 10px 28px rgba(45,90,61,0.07), inset 0 1px 0 rgba(255,255,255,0.72)",
+            backdropFilter: "blur(18px)",
+            WebkitBackdropFilter: "blur(18px)",
+            overflow: "hidden",
+            transition: "all 420ms cubic-bezier(0.22, 1, 0.36, 1)",
+          }}
+        >
+          <button
+            type="button"
+            aria-expanded={buddyPassOpen}
+            onClick={toggleBuddyPass}
+            style={{
+              width: "100%",
+              border: "none",
+              background: "transparent",
+              color: "#2d5a3d",
+              cursor: "pointer",
+              fontFamily: "inherit",
+              fontSize: "0.86rem",
+              fontWeight: 800,
+              letterSpacing: "0.01em",
+              padding: buddyPassOpen ? "15px 16px 10px" : "13px 16px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "10px",
+              transition: "all 300ms ease",
+              WebkitTapHighlightColor: "transparent",
+            }}
+          >
+            <span>Have a Research Buddy Pass?</span>
+            <span
+              aria-hidden="true"
+              style={{
+                width: "24px",
+                height: "24px",
+                borderRadius: "999px",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "rgba(45,90,61,0.1)",
+                transform: buddyPassOpen ? "rotate(45deg)" : "rotate(0deg)",
+                transition: "transform 360ms cubic-bezier(0.22, 1, 0.36, 1)",
+              }}
+            >
+              +
+            </span>
+          </button>
+          <div
+            style={{
+              maxHeight: buddyPassOpen ? "116px" : "0px",
+              opacity: buddyPassOpen ? 1 : 0,
+              transform: buddyPassOpen ? "translateY(0)" : "translateY(-8px)",
+              transition: "max-height 420ms cubic-bezier(0.22, 1, 0.36, 1), opacity 260ms ease, transform 360ms cubic-bezier(0.22, 1, 0.36, 1)",
+              padding: buddyPassOpen ? "0 12px 12px" : "0 12px",
+            }}
+          >
+            <input
+              ref={buddyInputRef}
+              value={referralCode}
+              onChange={(e) => { setReferralCode(normalizeReferralCode(e.target.value)); setCheckoutError(""); }}
+              placeholder="Enter friend code"
+              aria-label="Research Buddy Pass code"
+              style={{
+                width: "100%",
+                minWidth: 0,
+                border: "1px solid rgba(45,90,61,0.12)",
+                outline: "none",
+                background: "rgba(255,255,255,0.68)",
+                color: "#1f3f2d",
+                fontSize: "0.92rem",
+                fontWeight: 750,
+                fontFamily: "inherit",
+                padding: "13px 14px",
+                borderRadius: "15px",
+                textTransform: "uppercase",
+                letterSpacing: "0.04em",
+                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.68)",
+                transition: "border-color 240ms ease, box-shadow 240ms ease, background 240ms ease",
+              }}
+            />
+            {checkoutError && (
+              <p style={{
+                color: "#9a4343",
+                background: "rgba(196,92,92,0.08)",
+                border: "1px solid rgba(196,92,92,0.14)",
+                borderRadius: "12px",
+                fontSize: "0.78rem",
+                fontWeight: 650,
+                margin: "10px 2px 0",
+                padding: "9px 11px",
+                textAlign: "center",
+              }}>
+                {checkoutError}
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Global Bonus Strip (Moved out of cards for a cleaner UI) */}
