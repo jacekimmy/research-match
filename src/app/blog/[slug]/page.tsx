@@ -16,6 +16,48 @@ function formatBlogDate(date: string) {
   }).format(new Date(year, month - 1, day));
 }
 
+function ctaForPost(post: (typeof posts)[number]) {
+  const text = `${post.slug} ${post.title} ${post.keyword}`.toLowerCase();
+
+  if (text.includes("email") || text.includes("cold")) {
+    return {
+      kicker: "Turn the guide into an email",
+      title: "Find the right professor, then write the email around their actual work.",
+      body: "Research Match helps you search by interest, read professor research in plain English, and draft outreach that sounds specific instead of copied.",
+      button: "Find professors to email",
+    };
+  }
+
+  if (text.includes("mentor")) {
+    return {
+      kicker: "Find a real mentor fit",
+      title: "Stop guessing which professors might be worth reaching out to.",
+      body: "Search your research interest, compare professors by recent work, and build a shortlist that feels intentional before you send a single email.",
+      button: "Find mentor matches",
+    };
+  }
+
+  if (text.includes("summer") || text.includes("premed") || text.includes("phd")) {
+    return {
+      kicker: "Build your research plan",
+      title: "Turn this advice into a professor list you can act on today.",
+      body: "Use Research Match to find labs aligned with your goal, understand their recent papers, and decide who deserves a thoughtful email first.",
+      button: "Build my shortlist",
+    };
+  }
+
+  return {
+    kicker: "Go from reading to reaching out",
+    title: "Find research positions by matching with professors who study your exact interests.",
+    body: "Search a topic, see professor work summarized clearly, save strong matches, and use the email checker before you send.",
+    button: "Find research matches",
+  };
+}
+
+function articleContent(post: (typeof posts)[number]) {
+  return post.content.replace(/\s*<div class="blog-cta">[\s\S]*?<\/div>\s*$/, "");
+}
+
 export async function generateStaticParams() {
   return posts.map((post) => ({ slug: post.slug }));
 }
@@ -54,6 +96,7 @@ export default async function BlogPost({ params }: Props) {
   const relatedPosts = post.relatedSlugs
     .map((s) => posts.find((p) => p.slug === s))
     .filter(Boolean);
+  const cta = ctaForPost(post);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -77,20 +120,20 @@ export default async function BlogPost({ params }: Props) {
   };
 
   return (
-    <div style={{ minHeight: "100vh", padding: "40px 20px" }}>
+    <div className="blog-shell blog-post-shell">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div style={{ maxWidth: "720px", margin: "0 auto" }}>
+      <div className="blog-post-container">
         {/* Nav */}
-        <nav style={{ marginBottom: "40px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Link href="/" style={{ fontSize: "1.3rem", fontWeight: 800, color: "#2d5a3d", textDecoration: "none" }}>
+        <nav className="blog-nav">
+          <Link href="/" className="blog-brand">
             Research Match
           </Link>
-          <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-            <Link href="/blog" style={{ fontSize: "0.85rem", color: "#6b7280", textDecoration: "none" }}>Blog</Link>
-            <Link href="/app" className="btn-cta rm-search-btn" style={{ padding: "10px 24px", fontSize: "0.85rem", textDecoration: "none" }}>
+          <div className="blog-nav-links">
+            <Link href="/blog" className="blog-nav-link">Blog</Link>
+            <Link href="/app" className="blog-green-button blog-nav-button">
               Open Tool
             </Link>
           </div>
@@ -98,22 +141,22 @@ export default async function BlogPost({ params }: Props) {
 
         {/* Article */}
         <article className="blog-article">
-          <h1 style={{
-            fontSize: "clamp(1.8rem, 4vw, 2.6rem)", fontWeight: 800,
-            color: "#2d5a3d", marginBottom: "16px", lineHeight: 1.2,
-            letterSpacing: "-0.02em",
-          }}>
+          <div className="blog-article-hero">
+            <p className="blog-kicker">Research Match Guide</p>
+            <h1 className="blog-title">
             {post.title}
-          </h1>
+            </h1>
+            <p className="blog-description">{post.description}</p>
+          </div>
 
           {/* Author + date */}
-          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "40px", paddingBottom: "24px", borderBottom: "1px solid rgba(45,90,61,0.1)" }}>
-            <div style={{ width: "38px", height: "38px", borderRadius: "50%", background: "linear-gradient(135deg, #2d5a3d, #2E9E72)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <span style={{ color: "#fff", fontWeight: 700, fontSize: "0.9rem" }}>J</span>
+          <div className="blog-author-card">
+            <div className="blog-author-avatar">
+              <span>J</span>
             </div>
             <div>
-              <p style={{ fontSize: "0.88rem", fontWeight: 700, color: "#2d5a3d", margin: 0, marginBottom: "2px" }}>Jace</p>
-              <p style={{ fontSize: "0.78rem", color: "#8aaa96", margin: 0 }}>
+              <p className="blog-author-name">Jace</p>
+              <p className="blog-author-meta">
                 15-year-old founder of Research Match. Cold emailed professors at Princeton, ASU, and dozens of others to learn what actually gets a response.
                 {post.datePublished && (
                   <> &middot; {formatBlogDate(post.datePublished)}</>
@@ -124,31 +167,41 @@ export default async function BlogPost({ params }: Props) {
 
           <div
             className="blog-content"
-            dangerouslySetInnerHTML={{ __html: post.content }}
+            dangerouslySetInnerHTML={{ __html: articleContent(post) }}
           />
         </article>
 
+        <section className="blog-conversion-panel">
+          <div>
+            <p className="blog-conversion-kicker">{cta.kicker}</p>
+            <h2>{cta.title}</h2>
+            <p>{cta.body}</p>
+          </div>
+          <div className="blog-conversion-actions">
+            <Link href={`/app?source=blog&post=${post.slug}`} className="blog-green-button blog-conversion-button">
+              {cta.button}
+            </Link>
+            <span>Free preview. No generic professor lists.</span>
+          </div>
+        </section>
+
         {/* Related posts */}
         {relatedPosts.length > 0 && (
-          <div style={{ marginTop: "60px", paddingTop: "40px", borderTop: "1px solid rgba(45, 90, 61,0.3)" }}>
-            <h2 style={{ fontSize: "1.3rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "20px" }}>
+          <div className="blog-related">
+            <h2>
               Related posts
             </h2>
-            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            <div className="blog-related-list">
               {relatedPosts.map((rp) => rp && (
                 <Link
                   key={rp.slug}
                   href={`/blog/${rp.slug}`}
-                  className="glass-card"
-                  style={{
-                    display: "block", padding: "20px 24px", textDecoration: "none",
-                    transition: "transform 0.3s ease",
-                  }}
+                  className="blog-related-card"
                 >
-                  <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "6px" }}>
+                  <h3>
                     {rp.title}
                   </h3>
-                  <p style={{ fontSize: "0.8rem", color: "#6b7280", lineHeight: 1.5 }}>
+                  <p>
                     {rp.description}
                   </p>
                 </Link>
@@ -158,8 +211,8 @@ export default async function BlogPost({ params }: Props) {
         )}
 
         {/* Footer */}
-        <div style={{ marginTop: "48px", padding: "24px 0", borderTop: "1px solid rgba(45, 90, 61,0.3)", textAlign: "center" }}>
-          <Link href="/blog" style={{ fontSize: "0.85rem", color: "#6b7280", textDecoration: "none" }}>
+        <div className="blog-footer">
+          <Link href="/blog">
             ← Back to all posts
           </Link>
         </div>

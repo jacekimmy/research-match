@@ -64,36 +64,37 @@ const CATEGORIES: { label: string; slugs: string[] }[] = [
 
 export default function BlogIndex() {
   return (
-    <div style={{ minHeight: "100vh", padding: "40px 20px" }}>
-      <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-        <nav style={{ marginBottom: "40px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Link href="/" style={{ fontSize: "1.3rem", fontWeight: 800, color: "#2d5a3d", textDecoration: "none" }}>
+    <div className="blog-shell blog-index-shell">
+      <div className="blog-index-container">
+        <nav className="blog-nav">
+          <Link href="/" className="blog-brand">
             Research Match
           </Link>
-          <Link href="/app" className="btn-cta rm-search-btn" style={{ padding: "10px 24px", fontSize: "0.85rem", textDecoration: "none" }}>
+          <Link href="/app" className="blog-green-button blog-nav-button">
             Open Tool
           </Link>
         </nav>
 
-        <h1 style={{
-          fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 800,
-          color: "#2d5a3d", marginBottom: "20px", letterSpacing: "-0.02em",
-          lineHeight: 1.15,
-        }}>
-          The Complete Guide to Getting Undergraduate Research
-        </h1>
-
-        <div style={{ fontSize: "1rem", color: "#4b5563", lineHeight: 1.75, marginBottom: "52px", maxWidth: "640px" }}>
-          <p style={{ marginBottom: "16px" }}>
+        <header className="blog-index-hero">
+          <p className="blog-kicker">Research Match Library</p>
+          <h1>
+            The Complete Guide to Getting Undergraduate Research
+          </h1>
+          <div>
+          <p>
             Getting research experience as an undergrad is one of the best things you can do for grad school, med school, or just figuring out what you actually want to do. But nobody teaches you how to do it.
           </p>
-          <p style={{ marginBottom: "16px" }}>
+          <p>
             Most students either wait around for a posting that never comes or send a generic cold email that gets deleted in two seconds. Neither works. What works is knowing how to find the right professor, writing an email that sounds like a human wrote it, and following up without being annoying.
           </p>
           <p>
             These guides cover the whole process from scratch. Start with finding professors if you have no idea where to look, or jump straight to the email guides if you just need help with what to actually say.
           </p>
-        </div>
+          </div>
+          <Link href="/app?source=blog-index" className="blog-green-button blog-index-cta">
+            Find professor matches
+          </Link>
+        </header>
 
         {CATEGORIES.map((cat) => {
           const catPosts = cat.slugs
@@ -101,41 +102,34 @@ export default function BlogIndex() {
             .filter(Boolean) as typeof posts;
           if (catPosts.length === 0) return null;
           return (
-            <div key={cat.label} style={{ marginBottom: "52px" }}>
-              <h2 style={{
-                fontSize: "1.1rem", fontWeight: 700, color: "#2d5a3d",
-                textTransform: "uppercase", letterSpacing: "0.06em",
-                marginBottom: "20px", paddingBottom: "10px",
-                borderBottom: "2px solid rgba(45,90,61,0.12)",
-              }}>
+            <section key={cat.label} className="blog-category">
+              <h2>
                 {cat.label}
               </h2>
-              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              <div className="blog-card-list">
                 {catPosts.map((post) => (
                   <Link
                     key={post.slug}
                     href={`/blog/${post.slug}`}
-                    style={{ display: "block", textDecoration: "none", padding: "18px 24px", borderRadius: "14px", background: "rgba(255,255,255,0.6)", border: "1px solid rgba(45,90,61,0.08)", transition: "background 0.2s ease, border-color 0.2s ease" }}
+                    className="blog-index-card"
                   >
-                    <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "6px", lineHeight: 1.4 }}>
+                    <h3>
                       {post.title}
                     </h3>
-                    <p style={{ fontSize: "0.85rem", color: "#6b7280", lineHeight: 1.6, margin: 0 }}>
+                    <p>
                       {post.description}
                     </p>
                   </Link>
                 ))}
               </div>
-            </div>
+            </section>
           );
         })}
 
-        <div style={{ marginTop: "20px", padding: "32px", textAlign: "center", borderTop: "1px solid rgba(45, 90, 61,0.3)" }}>
-          <p style={{ fontSize: "0.95rem", color: "#6b7280", marginBottom: "16px" }}>
-            Ready to find your research professor?
-          </p>
-          <Link href="/app" className="btn-cta rm-search-btn" style={{ padding: "14px 36px", fontSize: "1rem", textDecoration: "none" }}>
-            Try Research Match — free
+        <div className="blog-index-bottom-cta">
+          <p>Ready to turn the guides into a shortlist?</p>
+          <Link href="/app?source=blog-index-footer" className="blog-green-button">
+            Search professors free
           </Link>
         </div>
       </div>
