@@ -941,7 +941,12 @@ export default function LandingPage() {
                 <div className="lp-price-amount">$0</div>
                 <div className="lp-price-period">forever</div>
                 <ul className="lp-price-features">
-                  {["Unlimited professor searches", "1 full summary after signup", "Author position labels", "Save professors", "Paper links"].map((f) => (
+                  {[
+                    "3 professor searches",
+                    "1 professor summary",
+                    "1 email check",
+                    "Blurred email finder + responsiveness",
+                  ].map((f) => (
                     <li key={f}><span className="lp-check">✓</span>{f}</li>
                   ))}
                 </ul>
@@ -958,8 +963,15 @@ export default function LandingPage() {
                 <div className="lp-price-amount" style={{ color: "#2d5a3d" }}>$7</div>
                 <div className="lp-price-period" style={{ opacity: 0.7 }}>1 week access</div>
                 <ul className="lp-price-features">
-                  <li style={{ fontWeight: 700 }}><span className="lp-check">✓</span>Software access:</li>
-                  {["Unlimited research summaries", "Email checker", "Professor email finder", "Responsiveness indicator"].map((f) => (
+                  <li style={{ fontWeight: 700 }}><span className="lp-check">✓</span>Finish the outreach job:</li>
+                  {[
+                    "Unlimited professor searches",
+                    "Unlimited summaries",
+                    "Professor email finder",
+                    "Email checker",
+                    "Responsiveness scores",
+                    "Cold Email Playbook",
+                  ].map((f) => (
                     <li key={f}><span className="lp-check">✓</span>{f}</li>
                   ))}
                 </ul>
@@ -981,8 +993,15 @@ export default function LandingPage() {
                 <div className="lp-price-amount" style={{ color: "#2d5a3d" }}>$29</div>
                 <div className="lp-price-period" style={{ opacity: 0.7 }}>4 months access</div>
                 <ul className="lp-price-features">
-                  <li style={{ fontWeight: 700 }}><span className="lp-check">✓</span>Everything in Free, plus:</li>
-                  {["Unlimited research summaries", "Email checker", "Professor email finder", "Responsiveness indicator"].map((f) => (
+                  <li style={{ fontWeight: 700 }}><span className="lp-check">✓</span>Finish the outreach job:</li>
+                  {[
+                    "Unlimited professor searches",
+                    "Unlimited summaries",
+                    "Professor email finder",
+                    "Email checker",
+                    "Responsiveness scores",
+                    "Cold Email Playbook",
+                  ].map((f) => (
                     <li key={f}><span className="lp-check">✓</span>{f}</li>
                   ))}
                 </ul>
@@ -1006,7 +1025,15 @@ export default function LandingPage() {
                 <div className="lp-price-period" style={{ color: "#A8893E", opacity: 0.7 }}>Yours forever.</div>
                 <ul className="lp-price-features">
                   <li style={{ fontWeight: 700 }}><span className="lp-check" style={{ color: "#A8893E" }}>✓</span>Everything in Semester, plus:</li>
-                  {["Never pay again", "Unlimited searches & summaries", "Email checker", "Professor email finder", "Nearby professor access", "Responsiveness indicator"].map((f) => (
+                  {[
+                    "Never pay again",
+                    "Unlimited professor searches",
+                    "Unlimited summaries",
+                    "Professor email finder",
+                    "Email checker",
+                    "Responsiveness scores",
+                    "Cold Email Playbook",
+                  ].map((f) => (
                     <li key={f}><span className="lp-check" style={{ color: "#A8893E" }}>✓</span>{f}</li>
                   ))}
                 </ul>

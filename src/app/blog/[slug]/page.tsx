@@ -22,35 +22,35 @@ function ctaForPost(post: (typeof posts)[number]) {
   if (text.includes("email") || text.includes("cold")) {
     return {
       kicker: "Turn the guide into an email",
-      title: "Find the right professor, then write the email around their actual work.",
-      body: "Research Match helps you search by interest, read professor research in plain English, and draft outreach that sounds specific instead of copied.",
-      button: "Find professors to email",
+      title: "Find a professor and get the email angle.",
+      body: "Search by interest, understand their work, and draft outreach that sounds specific.",
+      button: "Find professors",
     };
   }
 
   if (text.includes("mentor")) {
     return {
       kicker: "Find a real mentor fit",
-      title: "Stop guessing which professors might be worth reaching out to.",
-      body: "Search your research interest, compare professors by recent work, and build a shortlist that feels intentional before you send a single email.",
-      button: "Find mentor matches",
+      title: "Find mentors worth emailing.",
+      body: "Compare professors by recent work and build a focused shortlist before you reach out.",
+      button: "Find mentors",
     };
   }
 
   if (text.includes("summer") || text.includes("premed") || text.includes("phd")) {
     return {
       kicker: "Build your research plan",
-      title: "Turn this advice into a professor list you can act on today.",
-      body: "Use Research Match to find labs aligned with your goal, understand their recent papers, and decide who deserves a thoughtful email first.",
+      title: "Build a professor shortlist today.",
+      body: "Find labs aligned with your goal and see which professors deserve a thoughtful email first.",
       button: "Build my shortlist",
     };
   }
 
   return {
     kicker: "Go from reading to reaching out",
-    title: "Find research positions by matching with professors who study your exact interests.",
-    body: "Search a topic, see professor work summarized clearly, save strong matches, and use the email checker before you send.",
-    button: "Find research matches",
+    title: "Find professors who match your interests.",
+    body: "Search a topic, understand recent work, and turn strong matches into outreach.",
+    button: "Find matches",
   };
 }
 
@@ -181,7 +181,7 @@ export default async function BlogPost({ params }: Props) {
             <Link href={`/app?source=blog&post=${post.slug}`} className="blog-green-button blog-conversion-button">
               {cta.button}
             </Link>
-            <span>Free preview. No generic professor lists.</span>
+            <span>Free preview.</span>
           </div>
         </section>
 
