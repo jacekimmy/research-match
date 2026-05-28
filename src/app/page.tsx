@@ -988,7 +988,8 @@ export default function LandingPage() {
 
             {/* Semester */}
             <div className="lp-pricing-slider-slide">
-              <div className="lp-price-card">
+              <div className="lp-price-card lp-price-card-best">
+                <div className="lp-best-value-badge">Best Value</div>
                 <div className="lp-price-tier">Semester</div>
                 <div className="lp-price-amount" style={{ color: "#2d5a3d" }}>$29</div>
                 <div className="lp-price-period" style={{ opacity: 0.7 }}>4 months access</div>
@@ -1019,12 +1020,11 @@ export default function LandingPage() {
             {/* Lifetime */}
             <div className="lp-pricing-slider-slide">
               <div className="lp-price-card lp-price-card-lifetime lp-price-card-lifetime-hero">
-                <div className="lp-best-value-badge">Best Value</div>
-                <div className="lp-price-tier" style={{ color: "#A8893E" }}>Lifetime</div>
-                <div className="lp-price-amount" style={{ color: "#A8893E" }}>$59</div>
-                <div className="lp-price-period" style={{ color: "#A8893E", opacity: 0.7 }}>Yours forever.</div>
+                <div className="lp-price-tier">Lifetime</div>
+                <div className="lp-price-amount" style={{ color: "#2d5a3d" }}>$59</div>
+                <div className="lp-price-period" style={{ opacity: 0.7 }}>Yours forever.</div>
                 <ul className="lp-price-features">
-                  <li style={{ fontWeight: 700 }}><span className="lp-check" style={{ color: "#A8893E" }}>✓</span>Everything in Semester, plus:</li>
+                  <li style={{ fontWeight: 700 }}><span className="lp-check">✓</span>Everything in Semester, plus:</li>
                   {[
                     "Never pay again",
                     "Unlimited professor searches",
@@ -1034,7 +1034,7 @@ export default function LandingPage() {
                     "Responsiveness scores",
                     "Cold Email Playbook",
                   ].map((f) => (
-                    <li key={f}><span className="lp-check" style={{ color: "#A8893E" }}>✓</span>{f}</li>
+                    <li key={f}><span className="lp-check">✓</span>{f}</li>
                   ))}
                 </ul>
                 {lifetimeSpotsRemaining === 0 ? (
@@ -1043,8 +1043,8 @@ export default function LandingPage() {
                   <button
                     onClick={() => handleCheckout("lifetime")}
                     disabled={checkoutLoading === "lifetime"}
-                    className="lp-price-btn lp-price-btn-gold"
-                    style={{ cursor: "pointer", width: "100%" }}
+                    className="lp-price-btn"
+                    style={{ background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "1px solid rgba(45, 90, 61, 0.2)", cursor: "pointer", width: "100%" }}
                   >
                     {checkoutLoading === "lifetime" ? "Loading…" : "Claim your spot — $59"}
                   </button>
