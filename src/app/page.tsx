@@ -59,6 +59,12 @@ export default function LandingPage() {
       ? activePricingTab
       : "semester";
   const activePaidPlanIndex = paidPricingOptions.findIndex((plan) => plan.key === activePaidPlan);
+  const paidToggleHighlightTransform =
+    activePaidPlanIndex === 1
+      ? "translateX(calc(100% + 6px))"
+      : activePaidPlanIndex === 2
+        ? "translateX(calc(200% + 12px))"
+        : "translateX(0)";
   const paidPlan = paidPricingOptions[activePaidPlanIndex >= 0 ? activePaidPlanIndex : 1];
   const paidFeatures = [
     ...(activePaidPlan === "lifetime" ? ["Never pay again"] : []),
@@ -864,6 +870,11 @@ export default function LandingPage() {
               <div className="lp-duo-card-meta">
                 <div className="lp-price-tier">Paid</div>
                 <div className="lp-paid-toggle" role="tablist" aria-label="Choose a paid plan">
+                  <span
+                    className="lp-paid-toggle-highlight"
+                    aria-hidden="true"
+                    style={{ transform: paidToggleHighlightTransform }}
+                  />
                   {paidPricingOptions.map((plan) => (
                     <button
                       key={plan.key}

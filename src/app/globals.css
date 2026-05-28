@@ -6226,10 +6226,13 @@ body::after {
   }
 
   .lp-price-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     min-height: 60px;
     border-radius: 18px;
     font-size: 1rem;
-    line-height: 1.22;
+    line-height: 1.05;
     background: linear-gradient(145deg, #36714b, #285d3b) !important;
     color: #ffffff !important;
     border: 1px solid rgba(255,255,255,0.22) !important;
@@ -6351,6 +6354,8 @@ body::after {
 
   .lp-duo-card-head {
     min-height: 176px;
+    display: flex;
+    flex-direction: column;
   }
 
   .lp-duo-card-meta {
@@ -6367,6 +6372,7 @@ body::after {
   }
 
   .lp-paid-toggle {
+    position: relative;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 6px;
@@ -6380,8 +6386,25 @@ body::after {
       0 10px 30px rgba(45, 90, 61, 0.05);
   }
 
+  .lp-paid-toggle-highlight {
+    position: absolute;
+    top: 6px;
+    bottom: 6px;
+    left: 6px;
+    width: calc((100% - 24px) / 3);
+    border-radius: 17px;
+    background: linear-gradient(145deg, #36714b, #285d3b);
+    box-shadow:
+      0 14px 28px rgba(45, 90, 61, 0.22),
+      inset 0 1px 0 rgba(255,255,255,0.22);
+    transition: transform 480ms cubic-bezier(0.22, 1.45, 0.32, 1);
+    pointer-events: none;
+    z-index: 0;
+  }
+
   .lp-paid-toggle-option {
     position: relative;
+    z-index: 1;
     min-height: 54px;
     border: 1px solid transparent;
     border-radius: 17px;
@@ -6439,21 +6462,31 @@ body::after {
   }
 
   .lp-paid-toggle-option-active {
-    background: rgba(255,255,255,0.76);
-    color: #2d5a3d;
-    border-color: rgba(45, 90, 61, 0.12);
-    box-shadow:
-      0 10px 22px rgba(45, 90, 61, 0.08),
-      inset 0 1px 0 rgba(255,255,255,0.84);
+    background: transparent;
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  .lp-paid-toggle-option-active small {
+    opacity: 0.82;
+  }
+
+  .lp-paid-toggle-option-active:hover {
+    color: #ffffff;
   }
 
   .lp-paid-price-row {
     display: grid;
     grid-template-columns: minmax(150px, 0.72fr) minmax(240px, 1fr);
     gap: 28px;
-    align-items: center;
+    align-items: start;
     padding-bottom: 24px;
     border-bottom: 1px solid rgba(45, 90, 61, 0.08);
+  }
+
+  .lp-paid-price-row > div {
+    min-height: 108px;
   }
 
   .lp-paid-price-row .lp-price-period {
@@ -6462,6 +6495,7 @@ body::after {
 
   .lp-paid-promise {
     margin: 0;
+    padding-top: 8px;
     color: #5d6b60;
     font-size: 1.02rem;
     font-weight: 600;
@@ -6482,6 +6516,9 @@ body::after {
 
   .lp-paid-feature-grid li {
     min-height: 48px;
+    align-items: flex-start;
+    display: grid;
+    grid-template-columns: 16px minmax(0, 1fr);
   }
 
   .lp-paid-feature-grid li:nth-child(-n + 2) {
