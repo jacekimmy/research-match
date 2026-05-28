@@ -6100,6 +6100,201 @@ body::after {
   transform: scale(0.97) translateY(-4px);
 }
 
+@media (min-width: 901px) {
+  #lp-pricing-slider-viewport #lp-pricing-slider-track {
+    align-items: stretch !important;
+  }
+
+  .lp-price-card {
+    min-height: 660px;
+    padding: 34px 32px 28px;
+    border-radius: 30px;
+    overflow: hidden;
+    isolation: isolate;
+    background:
+      radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.92), transparent 34%),
+      linear-gradient(150deg, rgba(255, 255, 255, 0.76), rgba(255, 255, 255, 0.48));
+    border: 1px solid rgba(45, 90, 61, 0.1);
+    box-shadow:
+      0 24px 70px rgba(45, 90, 61, 0.08),
+      0 1px 0 rgba(255, 255, 255, 0.88) inset;
+  }
+
+  .lp-price-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.72), transparent 36%),
+      radial-gradient(circle at 82% 10%, rgba(45, 90, 61, 0.08), transparent 32%);
+    pointer-events: none;
+  }
+
+  .lp-price-card::after {
+    content: "";
+    position: absolute;
+    left: 28px;
+    right: 28px;
+    top: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(45, 90, 61, 0.18), transparent);
+    pointer-events: none;
+  }
+
+  .lp-price-card:hover {
+    transform: translateY(-8px);
+    box-shadow:
+      0 34px 90px rgba(45, 90, 61, 0.13),
+      0 1px 0 rgba(255, 255, 255, 0.9) inset;
+  }
+
+  .lp-price-tier {
+    display: inline-flex;
+    width: fit-content;
+    align-items: center;
+    min-height: 28px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: rgba(45, 90, 61, 0.06);
+    color: #51685a;
+    margin-bottom: 18px;
+  }
+
+  .lp-price-amount {
+    font-size: clamp(3rem, 4vw, 3.85rem);
+    line-height: 0.88;
+    letter-spacing: -0.055em;
+  }
+
+  .lp-price-period {
+    margin-top: 8px;
+    margin-bottom: 28px;
+    color: #718074;
+    font-size: 0.94rem;
+    font-weight: 650;
+  }
+
+  .lp-price-features {
+    gap: 7px;
+    margin-bottom: 28px;
+  }
+
+  .lp-price-features li {
+    align-items: center;
+    min-height: 42px;
+    padding: 9px 11px;
+    border: 1px solid rgba(45, 90, 61, 0.08);
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.45);
+    color: #596679;
+    font-size: 0.9rem;
+    font-weight: 650;
+    line-height: 1.28;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.64);
+  }
+
+  .lp-price-features li:first-child {
+    background: rgba(45, 90, 61, 0.07);
+    border-color: rgba(45, 90, 61, 0.12);
+    color: #2d5a3d;
+  }
+
+  .lp-check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: rgba(45, 90, 61, 0.09);
+    font-size: 0.72rem;
+    font-weight: 900;
+  }
+
+  .lp-price-btn {
+    min-height: 60px;
+    border-radius: 18px;
+    font-size: 1rem;
+    line-height: 1.22;
+    background: linear-gradient(145deg, #36714b, #285d3b) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255,255,255,0.22) !important;
+    box-shadow:
+      0 18px 40px rgba(45, 90, 61, 0.18),
+      inset 0 1px 0 rgba(255,255,255,0.22);
+  }
+
+  .lp-price-btn:hover {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow:
+      0 24px 54px rgba(45, 90, 61, 0.24),
+      inset 0 1px 0 rgba(255,255,255,0.28);
+  }
+
+  .lp-price-card-free {
+    opacity: 1;
+    transform: none;
+    background:
+      radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.86), transparent 35%),
+      linear-gradient(150deg, rgba(255,255,255,0.64), rgba(255,255,255,0.38));
+  }
+
+  .lp-price-card-free:hover {
+    transform: translateY(-6px);
+  }
+
+  .lp-price-card-free .lp-price-btn {
+    background: rgba(45, 90, 61, 0.07) !important;
+    color: #2d5a3d !important;
+    border: 1px solid rgba(45, 90, 61, 0.16) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.78);
+  }
+
+  .lp-price-card-lifetime,
+  .lp-price-card-lifetime-hero {
+    background:
+      radial-gradient(circle at 22% 0%, rgba(255,255,255,0.96), transparent 34%),
+      linear-gradient(152deg, rgba(255,253,244,0.96), rgba(255,246,216,0.78));
+    border-color: rgba(168, 137, 62, 0.28);
+    box-shadow:
+      0 26px 84px rgba(168, 137, 62, 0.14),
+      inset 0 1px 0 rgba(255,255,255,0.9);
+    padding: 34px 32px 28px;
+  }
+
+  .lp-price-card-lifetime .lp-price-tier {
+    background: rgba(168, 137, 62, 0.1);
+  }
+
+  .lp-price-card-lifetime .lp-price-features li {
+    border-color: rgba(168, 137, 62, 0.12);
+    background: rgba(255, 255, 255, 0.48);
+  }
+
+  .lp-price-card-lifetime .lp-check {
+    background: rgba(168, 137, 62, 0.11);
+  }
+
+  .lp-price-card-lifetime .lp-price-btn-gold {
+    background: linear-gradient(145deg, #c6a04c, #a98635) !important;
+    border-color: rgba(255,255,255,0.28) !important;
+    box-shadow:
+      0 20px 48px rgba(168, 137, 62, 0.28),
+      inset 0 1px 0 rgba(255,255,255,0.28);
+  }
+
+  .lp-best-value-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    margin-bottom: 14px;
+    border-radius: 999px;
+    letter-spacing: 0.13em;
+  }
+}
+
 /* ── Waitlist ── */
 .lp-waitlist {
   text-align: center;
