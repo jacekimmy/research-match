@@ -6101,7 +6101,15 @@ body::after {
   transform: scale(0.97) translateY(-4px);
 }
 
+.lp-pricing-desktop-duo {
+  display: none;
+}
+
 @media (min-width: 901px) {
+  #lp-pricing-slider-viewport {
+    display: none !important;
+  }
+
   #lp-pricing-slider-viewport #lp-pricing-slider-track {
     align-items: stretch !important;
   }
@@ -6313,6 +6321,163 @@ body::after {
     margin-bottom: 12px;
     border-radius: 999px;
     letter-spacing: 0.12em;
+  }
+
+  .lp-pricing-desktop-duo {
+    display: grid;
+    grid-template-columns: minmax(300px, 0.82fr) minmax(560px, 1.18fr);
+    gap: 28px;
+    max-width: 1000px;
+    margin: 0 auto;
+    align-items: stretch;
+  }
+
+  .lp-pricing-desktop-duo .lp-price-card {
+    min-height: 540px;
+  }
+
+  .lp-price-card-duo-free,
+  .lp-price-card-paid {
+    padding: 38px 38px 32px;
+  }
+
+  .lp-price-card-paid {
+    background:
+      radial-gradient(circle at 78% 0%, rgba(196, 162, 101, 0.12), transparent 30%),
+      radial-gradient(circle at 18% 0%, rgba(255,255,255,0.94), transparent 34%),
+      linear-gradient(152deg, rgba(255,255,255,0.8), rgba(248,250,246,0.58));
+    border-color: rgba(45, 90, 61, 0.13);
+  }
+
+  .lp-duo-card-head {
+    min-height: 176px;
+  }
+
+  .lp-duo-card-meta {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 22px;
+  }
+
+  .lp-duo-card-meta .lp-price-tier {
+    margin-bottom: 0;
+    flex: 0 0 auto;
+  }
+
+  .lp-paid-toggle {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    width: min(100%, 420px);
+    padding: 6px;
+    border-radius: 22px;
+    background: rgba(45, 90, 61, 0.065);
+    border: 1px solid rgba(45, 90, 61, 0.08);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.68),
+      0 10px 30px rgba(45, 90, 61, 0.05);
+  }
+
+  .lp-paid-toggle-option {
+    position: relative;
+    min-height: 54px;
+    border: 1px solid transparent;
+    border-radius: 17px;
+    background: transparent;
+    color: #536356;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    transition:
+      transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
+      background 0.28s ease,
+      border-color 0.28s ease,
+      box-shadow 0.28s ease,
+      color 0.28s ease;
+  }
+
+  .lp-paid-toggle-option span {
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .lp-paid-toggle-option small {
+    font-size: 0.76rem;
+    font-weight: 750;
+    opacity: 0.72;
+  }
+
+  .lp-paid-toggle-option em {
+    position: absolute;
+    top: -13px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(196, 162, 101, 0.13);
+    border: 1px solid rgba(196, 162, 101, 0.18);
+    color: #8b7031;
+    font-size: 0.53rem;
+    font-style: normal;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .lp-paid-toggle-option:hover {
+    transform: translateY(-1px);
+    color: #2d5a3d;
+  }
+
+  .lp-paid-toggle-option-active {
+    background: rgba(255,255,255,0.76);
+    color: #2d5a3d;
+    border-color: rgba(45, 90, 61, 0.12);
+    box-shadow:
+      0 10px 22px rgba(45, 90, 61, 0.08),
+      inset 0 1px 0 rgba(255,255,255,0.84);
+  }
+
+  .lp-paid-price-row {
+    display: grid;
+    grid-template-columns: minmax(150px, 0.72fr) minmax(240px, 1fr);
+    gap: 28px;
+    align-items: end;
+  }
+
+  .lp-paid-price-row .lp-price-period {
+    margin-bottom: 0;
+  }
+
+  .lp-paid-promise {
+    margin: 0 0 4px;
+    color: #5d6b60;
+    font-size: 1.02rem;
+    font-weight: 600;
+    line-height: 1.45;
+    max-width: 360px;
+  }
+
+  .lp-price-features-duo {
+    margin-top: 0;
+  }
+
+  .lp-paid-feature-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 32px;
+  }
+
+  .lp-paid-feature-grid li {
+    min-height: 46px;
   }
 }
 

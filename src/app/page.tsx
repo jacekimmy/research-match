@@ -49,6 +49,26 @@ export default function LandingPage() {
   const [referralCode, setReferralCode] = useState("");
   const [checkoutError, setCheckoutError] = useState("");
   const pricingOptions = ["free", "weekly", "semester", "lifetime"] as const;
+  const paidPricingOptions = [
+    { key: "weekly", label: "Weekly", detail: "$7", price: "$7", period: "1 week access", cta: "Start 1-Week Sprint — $7", badge: null },
+    { key: "semester", label: "Semester", detail: "$29", price: "$29", period: "4 months access", cta: "Get Semester Access — $29", badge: "Best value" },
+    { key: "lifetime", label: "Lifetime", detail: "$59", price: "$59", period: "Yours forever.", cta: "Claim your spot — $59", badge: null },
+  ] as const;
+  const activePaidPlan =
+    activePricingTab === "weekly" || activePricingTab === "semester" || activePricingTab === "lifetime"
+      ? activePricingTab
+      : "semester";
+  const activePaidPlanIndex = paidPricingOptions.findIndex((plan) => plan.key === activePaidPlan);
+  const paidPlan = paidPricingOptions[activePaidPlanIndex >= 0 ? activePaidPlanIndex : 1];
+  const paidFeatures = [
+    ...(activePaidPlan === "lifetime" ? ["Never pay again"] : ["Finish the outreach job"]),
+    "Unlimited professor searches",
+    "Unlimited summaries",
+    "Professor email finder",
+    "Email checker",
+    "Responsiveness scores",
+    "Cold Email Playbook",
+  ];
   const buddyInputRef = useRef<HTMLInputElement | null>(null);
 
   const setPricingItem = (index: number) => {
@@ -922,7 +942,81 @@ export default function LandingPage() {
           ))}
         </div>
 
-        {/* Desktop: 4-column grid | Mobile: single active card */}
+        {/* Desktop: two-card comparison */}
+        <div className="lp-pricing-desktop-duo" data-reveal>
+          <div className="lp-price-card lp-price-card-free lp-price-card-duo-free">
+            <div className="lp-duo-card-head">
+              <div className="lp-duo-card-meta">
+                <div className="lp-price-tier">Free</div>
+              </div>
+              <div className="lp-price-amount">$0</div>
+              <div className="lp-price-period">forever</div>
+            </div>
+            <ul className="lp-price-features lp-price-features-duo">
+              {[
+                "3 professor searches",
+                "1 professor summary",
+                "1 email check",
+                "Blurred email finder + responsiveness",
+              ].map((f) => (
+                <li key={f}><span className="lp-check">✓</span>{f}</li>
+              ))}
+            </ul>
+            <Link href="/app" className="lp-price-btn lp-price-btn-ghost">
+              Start free
+            </Link>
+          </div>
+
+          <div className="lp-price-card lp-price-card-paid">
+            <div className="lp-duo-card-head">
+              <div className="lp-duo-card-meta">
+                <div className="lp-price-tier">Paid</div>
+                <div className="lp-paid-toggle" role="tablist" aria-label="Choose a paid plan">
+                  {paidPricingOptions.map((plan) => (
+                    <button
+                      key={plan.key}
+                      type="button"
+                      role="tab"
+                      aria-selected={activePaidPlan === plan.key}
+                      className={`lp-paid-toggle-option${activePaidPlan === plan.key ? " lp-paid-toggle-option-active" : ""}`}
+                      onClick={() => setPricingItem(pricingOptions.indexOf(plan.key))}
+                    >
+                      <span>{plan.label}</span>
+                      <small>{plan.detail}</small>
+                      {plan.badge ? <em>{plan.badge}</em> : null}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="lp-paid-price-row">
+                <div>
+                  <div className="lp-price-amount" style={{ color: "#2d5a3d" }}>{paidPlan.price}</div>
+                  <div className="lp-price-period" style={{ opacity: 0.7 }}>{paidPlan.period}</div>
+                </div>
+                <p className="lp-paid-promise">Everything you need to find, judge, and contact professors without getting stuck.</p>
+              </div>
+            </div>
+            <ul className="lp-price-features lp-price-features-duo lp-paid-feature-grid">
+              {paidFeatures.map((f) => (
+                <li key={f}><span className="lp-check">✓</span>{f}</li>
+              ))}
+            </ul>
+            {activePaidPlan === "lifetime" && lifetimeSpotsRemaining === 0 ? (
+              <button disabled className="lp-price-btn" style={{ background: "#e5e7eb", color: "#9ca3af", cursor: "not-allowed" }}>Sold out</button>
+            ) : (
+              <button
+                onClick={() => handleCheckout(activePaidPlan)}
+                disabled={checkoutLoading === activePaidPlan}
+                className="lp-price-btn"
+                style={{ background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "1px solid rgba(45, 90, 61, 0.2)", cursor: "pointer", width: "100%" }}
+              >
+                {checkoutLoading === activePaidPlan ? "Loading…" : paidPlan.cta}
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Mobile: single active card */}
         <div id="lp-pricing-slider-viewport" className="lp-pricing-slider-viewport" data-reveal>
           <div 
             id="lp-pricing-slider-track"
