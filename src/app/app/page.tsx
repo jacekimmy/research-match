@@ -401,7 +401,7 @@ function AppPageInner() {
       setShowAuthModal(true);
       setAuthMode("signup");
       setAuthError("");
-      setAuthModalCopy("Create your account, then use your friend's Buddy Pass for 25% off.");
+      setAuthModalCopy("Create your account, then apply your friend's Buddy Pass during checkout.");
     } else {
       setShowUpgradeModal(true);
     }
@@ -2518,50 +2518,72 @@ function AppPageInner() {
           <div className="glass-card rm-modal-card" style={{ padding: "32px", maxWidth: "620px", width: "92%", maxHeight: "90vh", overflowY: "auto" }} onClick={(e) => e.stopPropagation()}>
             <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "4px" }}>{upgradeModalTitle || "Upgrade your plan"}</h3>
             <p style={{ fontSize: "0.85rem", color: "#6b7280", marginBottom: "20px" }}>{upgradeModalSubtitle || "Unlimited summaries, email checker, and professor email finder."}</p>
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: "1fr auto",
-              gap: "10px",
-              alignItems: "center",
-              padding: "10px",
-              borderRadius: "16px",
-              background: "rgba(255,255,255,0.58)",
-              border: "1px solid rgba(45,90,61,0.12)",
-              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.65)",
-              marginBottom: "14px",
-            }}>
-              <input
-                type="text"
-                placeholder="Buddy Pass code for 25% off"
-                value={checkoutReferralCode}
-                onChange={(e) => { setCheckoutReferralCode(normalizeReferralCode(e.target.value)); setCheckoutError(""); }}
+            <details
+              open={Boolean(checkoutReferralCode)}
+              style={{
+                marginBottom: "14px",
+                borderRadius: "16px",
+                background: "rgba(255,255,255,0.48)",
+                border: "1px solid rgba(45,90,61,0.1)",
+                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.65)",
+                overflow: "hidden",
+              }}
+            >
+              <summary
                 style={{
-                  width: "100%",
-                  minWidth: 0,
-                  border: "none",
-                  outline: "none",
-                  background: "transparent",
-                  color: "#1f3f2d",
-                  fontSize: "0.9rem",
-                  fontWeight: 650,
-                  letterSpacing: "0.02em",
-                  fontFamily: "inherit",
-                  padding: "8px 4px",
-                  textTransform: "uppercase",
+                  listStyle: "none",
+                  cursor: "pointer",
+                  padding: "12px 14px",
+                  color: "#2d5a3d",
+                  fontSize: "0.82rem",
+                  fontWeight: 750,
+                  letterSpacing: "0.01em",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
                 }}
-              />
-              <span style={{
-                fontSize: "0.7rem",
-                color: "#2d5a3d",
-                fontWeight: 800,
-                padding: "7px 10px",
-                borderRadius: "999px",
-                background: "rgba(45,90,61,0.1)",
-                whiteSpace: "nowrap",
+              >
+                Have a Research Buddy Pass?
+                <span style={{
+                  fontSize: "0.68rem",
+                  color: "#55705f",
+                  fontWeight: 750,
+                  padding: "5px 9px",
+                  borderRadius: "999px",
+                  background: "rgba(45,90,61,0.08)",
+                  whiteSpace: "nowrap",
+                }}>
+                  Optional
+                </span>
+              </summary>
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: "1fr",
+                padding: "0 14px 14px",
               }}>
-                All paid plans
-              </span>
-            </div>
+                <input
+                  type="text"
+                  placeholder="Enter friend code"
+                  value={checkoutReferralCode}
+                  onChange={(e) => { setCheckoutReferralCode(normalizeReferralCode(e.target.value)); setCheckoutError(""); }}
+                  style={{
+                    width: "100%",
+                    minWidth: 0,
+                    border: "1px solid rgba(45,90,61,0.12)",
+                    outline: "none",
+                    background: "rgba(255,255,255,0.64)",
+                    color: "#1f3f2d",
+                    fontSize: "0.9rem",
+                    fontWeight: 650,
+                    letterSpacing: "0.02em",
+                    fontFamily: "inherit",
+                    padding: "12px 13px",
+                    borderRadius: "12px",
+                    textTransform: "uppercase",
+                  }}
+                />
+              </div>
+            </details>
             {checkoutError && (
               <p style={{
                 fontSize: "0.78rem",

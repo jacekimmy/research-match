@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { supabase } from "@/lib/supabase";
-import { normalizeReferralCode } from "@/lib/buddy-pass";
 
 const HERO_PLACEHOLDERS = [
   "e.g. machine learning",
@@ -45,8 +44,6 @@ export default function LandingPage() {
   const [activePricingIndex, setActivePricingIndex] = useState(0);
   const [activePricingTab, setActivePricingTab] = useState<string>("free");
   const [testimonialPaused, setTestimonialPaused] = useState(false);
-  const [referralCode, setReferralCode] = useState("");
-  const [checkoutError, setCheckoutError] = useState("");
   const pricingOptions = ["free", "weekly", "semester", "lifetime"] as const;
 
   const setPricingItem = (index: number) => {
@@ -144,15 +141,13 @@ export default function LandingPage() {
   }
 
   async function handleCheckout(plan: "weekly" | "semester" | "lifetime") {
-    const cleanReferralCode = normalizeReferralCode(referralCode);
     if (!user) {
       // Not logged in — send to app to sign up then upgrade
       const param = plan === "semester" ? "true" : plan;
-      router.push(`/app?upgrade=${param}${cleanReferralCode ? `&buddy=${encodeURIComponent(cleanReferralCode)}` : ""}`);
+      router.push(`/app?upgrade=${param}`);
       return;
     }
     setCheckoutLoading(plan);
-    setCheckoutError("");
     try {
       const priceId =
         plan === "weekly"   ? (process.env.NEXT_PUBLIC_STRIPE_PRICE_WEEKLY   || "price_1TMxDSFINW44xCyFWrm6ZTOo") :
@@ -166,12 +161,11 @@ export default function LandingPage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${session.access_token}`,
         },
-        body: JSON.stringify({ priceId, referralCode: cleanReferralCode || undefined }),
+        body: JSON.stringify({ priceId }),
       });
       const data = await res.json();
       if (!res.ok) {
-        setCheckoutError(data.error || "Could not apply that Buddy Pass code.");
-        return;
+        throw new Error(data.error || "Could not start checkout.");
       }
       if (data.url) window.location.href = data.url;
     } catch {
@@ -725,72 +719,6 @@ export default function LandingPage() {
           <h2 className="lp-pricing-title">Simple, honest pricing.</h2>
           <p className="lp-pricing-sub">One research position can change your entire career. One semester is all it takes.</p>
         </div>
-
-        <div
-          style={{
-            width: "min(520px, calc(100% - 32px))",
-            margin: "0 auto 26px",
-            padding: "10px",
-            display: "grid",
-            gridTemplateColumns: "1fr auto",
-            gap: "10px",
-            alignItems: "center",
-            background: "rgba(255,255,255,0.62)",
-            border: "1px solid rgba(45, 90, 61, 0.13)",
-            borderRadius: "20px",
-            boxShadow: "0 16px 42px rgba(45,90,61,0.08), inset 0 1px 0 rgba(255,255,255,0.72)",
-            backdropFilter: "blur(18px)",
-          }}
-        >
-          <input
-            value={referralCode}
-            onChange={(e) => { setReferralCode(normalizeReferralCode(e.target.value)); setCheckoutError(""); }}
-            placeholder="Research Buddy Pass code"
-            aria-label="Research Buddy Pass code"
-            style={{
-              width: "100%",
-              minWidth: 0,
-              border: "none",
-              outline: "none",
-              background: "transparent",
-              color: "#1f3f2d",
-              fontSize: "0.94rem",
-              fontWeight: 700,
-              fontFamily: "inherit",
-              padding: "10px 8px",
-              textTransform: "uppercase",
-              letterSpacing: "0.03em",
-            }}
-          />
-          <span style={{
-            color: "#2d5a3d",
-            background: "rgba(45,90,61,0.1)",
-            border: "1px solid rgba(45,90,61,0.12)",
-            borderRadius: "999px",
-            padding: "9px 12px",
-            fontSize: "0.72rem",
-            fontWeight: 800,
-            whiteSpace: "nowrap",
-          }}>
-            25% off
-          </span>
-        </div>
-        {checkoutError && (
-          <p style={{
-            width: "min(520px, calc(100% - 32px))",
-            margin: "-14px auto 24px",
-            padding: "10px 14px",
-            borderRadius: "14px",
-            background: "rgba(196,92,92,0.08)",
-            border: "1px solid rgba(196,92,92,0.14)",
-            color: "#9a4343",
-            fontSize: "0.82rem",
-            fontWeight: 650,
-            textAlign: "center",
-          }}>
-            {checkoutError}
-          </p>
-        )}
 
         {/* Mobile: Tab toggle */}
         <div 
