@@ -19,7 +19,7 @@ const HERO_PLACEHOLDERS = [
 const TESTIMONIALS = [
   { quote: "Just wanted to say thanks, like no joke. I got like 6 research internship opportunities now for this summer😭 (IU, Purdue, UIUC, UChicago).", author: "Jedrek N., College Student", avatar: "JN" },
   { quote: "I got a reply in 3 days. Never happened before.", author: "Undergraduate student", avatar: "U" },
-  { quote: "I was skeptical at first, but after purchasing the semester plan, I was really impressed with what Research Match had to offer. It’s been genuinely helpful as a high schooler trying to get involved with research.", author: "Chetana R., College Student", avatar: "CR" },
+  { quote: "I was skeptical at first, but after purchasing the semester plan, I was really impressed with what Research Match had to offer. It has been genuinely helpful as a student trying to get involved with research.", author: "Chetana R., College Student", avatar: "CR" },
   { quote: "Endorse this advice 💯. If an email smells of AI I will not answer it.", author: "Research Professor", avatar: "RP" },
   { quote: "First time I've gotten real advice on my emails. I've sent 10 emails so far using this.", author: "Student user", avatar: "S" },
   { quote: "This website is goated. I'm saving this for future use.", author: "Student user", avatar: "S" },
@@ -603,7 +603,7 @@ export default function LandingPage() {
             <div className="lp-feature-num">02</div>
             <h2 className="lp-feature-title text-2xl font-bold sm:text-3xl md:text-4xl">Understand their research in plain English.</h2>
             <p className="lp-feature-desc text-sm leading-relaxed md:text-base">
-              Every professor gets an AI summary of their key findings, written so a high schooler
+              Every professor gets an AI summary of their key findings, written so a new researcher
               can understand it and use it in their email. No more pretending to read papers.
             </p>
             <Link href="/app" className="lp-feature-link">See an example →</Link>
@@ -701,7 +701,7 @@ export default function LandingPage() {
         <div className="lp-founder-inner">
           <div className="lp-founder-quote-mark">&ldquo;</div>
           <blockquote className="lp-founder-quote">
-            When I was a high school freshman, I used this approach to cold email 5 professors.
+            Early in my research journey, I used this approach to cold email 5 professors.
             A Princeton astrophysics professor responded within 24 hours and said I was
             &lsquo;way ahead of the curve.&rsquo; That&apos;s why I built Research Match.
           </blockquote>

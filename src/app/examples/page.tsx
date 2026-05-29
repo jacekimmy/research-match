@@ -26,7 +26,7 @@ const emails: EmailExample[] = [
       'Professor responded within 24 hours. Said I was "way ahead of the curve." Offered to ask around the department for opportunities.',
     paragraphs: [
       {
-        text: "Hi Professor [redacted], I\u2019m a high school freshman planning to major in astronomy. I\u2019ve been teaching myself Python to work with public datasets from the Sloan Digital Sky Survey, and your work on [redacted topic] caught my attention because I\u2019m trying to understand how [redacted connection to student interest].",
+        text: "Hi Professor [redacted], I\u2019m a student planning to major in astronomy. I\u2019ve been teaching myself Python to work with public datasets from the Sloan Digital Sky Survey, and your work on [redacted topic] caught my attention because I\u2019m trying to understand how [redacted connection to student interest].",
         annotation:
           "Led with MY interest and skills first. Mentioned Python which shows I have something to offer. Connected my interest to their work naturally.",
       },

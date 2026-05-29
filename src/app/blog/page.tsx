@@ -4,10 +4,10 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Research Match Blog - How to Find and Land Undergraduate Research",
-  description: "Guides, tips, and real stories about finding professors, writing cold emails, and landing research positions as an undergrad or high school student.",
+  description: "Guides, tips, and real stories about finding professors, writing cold emails, and landing research positions as a student.",
   openGraph: {
     title: "Research Match Blog - How to Find and Land Undergraduate Research",
-    description: "Guides, tips, and real stories about finding professors, writing cold emails, and landing research positions as an undergrad or high school student.",
+    description: "Guides, tips, and real stories about finding professors, writing cold emails, and landing research positions as a student.",
     type: "website",
     siteName: "Research Match",
   },
@@ -20,7 +20,7 @@ const CATEGORIES: { label: string; slugs: string[] }[] = [
       "how-to-find-research-positions",
       "how-to-find-research-opportunities",
       "how-to-get-research-experience-undergrad",
-      "research-opportunities-for-high-school-students",
+      "research-opportunities-for-early-stage-students",
       "how-to-find-a-research-mentor",
       "summer-research-opportunities",
       "undergraduate-research-benefits",

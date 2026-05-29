@@ -138,7 +138,7 @@ export default function MobileLanding() {
   ];
 
   const testimonials = [
-    { quote: "A Princeton professor responded to a high school freshman within 24 hours.", author: "Founder experience" },
+    { quote: "A Princeton professor responded within 24 hours to a student using this approach.", author: "Founder experience" },
     { quote: "First time I\u2019ve gotten real advice on my emails. I\u2019ve sent 10 emails so far using this.", author: "Student user" },
     { quote: "Endorse this advice \u{1F4AF}. If an email smells of AI I will not answer it.", author: "Research Professor" },
     { quote: "This website is goated. I\u2019m saving this for future use.", author: "Student user" },
@@ -582,7 +582,7 @@ export default function MobileLanding() {
             fontSize: "1rem", color: "#6b7280", lineHeight: 1.75,
             fontStyle: "italic",
           }}>
-            &ldquo;When I was a high school freshman, I used this approach to cold email 5 professors. A Princeton astrophysics professor responded within 24 hours and said I was &lsquo;way ahead of the curve.&rsquo; That&apos;s why I built Research Match.&rdquo;
+            &ldquo;Early in my research journey, I used this approach to cold email 5 professors. A Princeton astrophysics professor responded within 24 hours and said I was &lsquo;way ahead of the curve.&rsquo; That&apos;s why I built Research Match.&rdquo;
           </p>
           <p style={{ fontSize: "0.85rem", color: "#2d5a3d", fontWeight: 700, marginTop: "14px" }}>
             - Jace, Founder

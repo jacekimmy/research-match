@@ -7,7 +7,7 @@ Here's what it does:
 3. Find their real email (not guesses)
 4. Check your cold email for red flags before you send
 
-A Princeton professor responded to a high school freshman within 24 hours using this approach.
+A Princeton professor responded to a student within 24 hours using this approach.
 
 Most cold emails to professors get ignored because they sound like ChatGPT wrote them. This tool helps you actually understand their work — so your email sounds like you.
 
