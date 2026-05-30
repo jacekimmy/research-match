@@ -299,22 +299,25 @@ export default function LandingPage() {
           display: flex !important;
           justify-content: center !important;
           align-items: center !important;
-          gap: 14px !important;
-          margin-top: 24px !important;
-          margin-bottom: 40px !important;
+          gap: 8px !important;
+          margin-top: 28px !important;
+          margin-bottom: 36px !important;
         }
         .lp-pricing-dot {
-          width: 10px !important;
-          height: 10px !important;
-          border-radius: 50% !important;
-          background: rgba(45, 90, 61, 0.15) !important;
+          width: 8px !important;
+          height: 8px !important;
+          border-radius: 999px !important;
+          background: rgba(45, 90, 61, 0.18) !important;
           cursor: pointer !important;
-          transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+          transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        }
+        .lp-pricing-dot:hover {
+          background: rgba(45, 90, 61, 0.35) !important;
         }
         .lp-pricing-dot.active {
+          width: 28px !important;
           background: #2d5a3d !important;
-          transform: scale(1.6) !important;
-          box-shadow: 0 0 12px rgba(45, 90, 61, 0.25) !important;
+          box-shadow: 0 2px 8px rgba(45, 90, 61, 0.28) !important;
         }
 
         /* ── Mobile Layout (<= 900px) ── */
@@ -502,7 +505,7 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           WHY NOT CHATGPT
       ══════════════════════════════════════════ */}
-      <section style={{ background: "linear-gradient(to bottom, #ffffff, rgba(255,255,255,0))", padding: "100px 24px", margin: "0 0 100px 0", borderTop: "1px solid rgba(45,90,61,0.06)", borderBottom: "1px solid rgba(45,90,61,0.06)" }}>
+      <section className="lp-chatgpt-section" style={{ background: "linear-gradient(to bottom, #ffffff, rgba(255,255,255,0))", padding: "100px 24px", margin: "0 0 100px 0", borderTop: "1px solid rgba(45,90,61,0.06)", borderBottom: "1px solid rgba(45,90,61,0.06)" }}>
         <div style={{ maxWidth: "900px", margin: "0 auto" }} data-reveal>
           <h2 style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "clamp(1.8rem, 3vw, 2.4rem)", fontWeight: 700, color: "#2d5a3d", textAlign: "center", marginBottom: "64px", letterSpacing: "-0.02em" }}>
             Why not just use ChatGPT?
@@ -754,22 +757,15 @@ export default function LandingPage() {
           PRICING
       ══════════════════════════════════════════ */}
       <section id="pricing" className="lp-pricing-section" data-reveal>
-        {/* Urgency banner */}
-        <div className="lp-urgency-banner">
-          Most students start professor outreach 60 days before application deadlines.
-        </div>
-
         <div className="lp-pricing-header">
-          <p className="lp-risk-reversal-top">Try it risk-free. Full refund if it doesn&apos;t work.</p>
-          <h2 className="lp-pricing-title">Simple, honest pricing.</h2>
-          <p className="lp-pricing-sub">One research position can change your entire career. One semester is all it takes.</p>
+          <h2 className="lp-pricing-title">Pick your plan.</h2>
+          <p className="lp-pricing-guarantee">Full refund if it doesn&apos;t work.</p>
         </div>
 
         {/* Mobile: Tab toggle */}
-        <div 
+        <div
           id="lp-mobile-pricing-tabs"
-          className="lp-pricing-tabs" 
-          data-reveal
+          className="lp-pricing-tabs"
           style={{
             display: 'flex',
             position: 'relative',

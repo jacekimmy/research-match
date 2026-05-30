@@ -5462,7 +5462,11 @@ body::after {
   display: flex;
   width: max-content;
   animation: lpTestimonialsMarquee 58s linear infinite;
+  animation-play-state: paused;
   will-change: transform;
+}
+.lp-social-section.lp-revealed .lp-quotes-track {
+  animation-play-state: running;
 }
 .lp-testimonial-paused .lp-quotes-track {
   animation-play-state: paused;
@@ -5682,20 +5686,21 @@ body::after {
 }
 .lp-pricing-header {
   text-align: center;
-  margin-bottom: 48px;
+  margin-bottom: 40px;
 }
 .lp-pricing-title {
-  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  font-size: clamp(2rem, 3.5vw, 2.8rem);
   font-weight: 800;
   color: #1a2e1f;
   letter-spacing: -0.03em;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   font-family: var(--font-playfair), Georgia, serif;
 }
-.lp-pricing-sub {
-  font-size: 1rem;
-  color: #6b7280;
-  line-height: 1.6;
+.lp-pricing-guarantee {
+  font-size: 0.85rem;
+  color: #8aaa96;
+  font-style: italic;
+  letter-spacing: 0.01em;
 }
 /* ── Pricing: Tab toggle (mobile) + 4-col grid (desktop) ── */
 .lp-pricing-tabs {
@@ -5951,6 +5956,7 @@ body::after {
   text-align: center;
   padding: 14px 20px;
   border-radius: 14px;
+  -webkit-tap-highlight-color: transparent;
   font-size: 0.95rem;
   font-weight: 700;
   font-family: var(--font-playfair), Georgia, serif;
@@ -5960,6 +5966,10 @@ body::after {
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   width: 100%;
   margin-top: auto;
+}
+.lp-price-btn:active {
+  transform: scale(0.96) !important;
+  transition: transform 0.12s ease !important;
 }
 .lp-price-btn-ghost {
   background: rgba(45,90,61,0.06);
@@ -7015,10 +7025,9 @@ body::after {
   .lp-pricing-section {
     padding: 48px 16px 40px;
   }
-  .lp-pricing-header { margin-bottom: 32px; }
-  .lp-pricing-title { font-size: 1.7rem; }
-  .lp-pricing-sub { font-size: 0.86rem; }
-  .lp-urgency-banner { font-size: 0.78rem; padding: 10px 16px; margin-bottom: 24px; }
+  .lp-pricing-header { margin-bottom: 28px; }
+  .lp-pricing-title { font-size: 1.9rem; }
+  .lp-pricing-guarantee { font-size: 0.8rem; }
   .lp-pricing-grid {
     display: flex;
     flex-direction: column;
@@ -7254,6 +7263,14 @@ body::after {
 @media (max-width: 600px) {
   .lp-how-it-works-grid {
     grid-template-columns: 1fr !important;
+  }
+}
+
+/* Fix ChatGPT section spacing on mobile */
+@media (max-width: 600px) {
+  .lp-chatgpt-section {
+    padding: 56px 20px !important;
+    margin: 0 0 40px 0 !important;
   }
 }
 
