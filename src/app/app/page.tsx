@@ -357,6 +357,8 @@ function AppPageInner() {
   const isPaid = hasPaidAccess(profile);
   const isFree = !isPaid;
   const planLabel = planLabelFor(profile);
+  const isWeekly = profile?.plan_type === "weekly";
+  const hasEmailChecker = isPaid && !isWeekly;
 
   // Tag helpers
   function addQueryTag() {
@@ -1028,7 +1030,12 @@ function AppPageInner() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setEmailFlags([{ type: "error", issue: "Check failed", suggestion: data.error || "Something went wrong. Try again." }]);
+        if (data.error === "upgrade_required") {
+          setEmailTarget(null);
+          setShowUpgradeModal(true);
+          return;
+        }
+        setEmailFlags([{ type: "error", issue: "Check failed", suggestion: data.message || data.error || "Something went wrong. Try again." }]);
         setHasChecked(true);
         return;
       }
@@ -2371,14 +2378,22 @@ function AppPageInner() {
 
                   <textarea value={emailDraft} onChange={(e) => { setEmailDraft(e.target.value); setHasChecked(false); }} placeholder={`Dear Professor ${emailTarget.display_name},\n\nI'm a [year] [major] student at [your university]...\n\nUse the reference panel to mention specific papers and research.`} className="modal-textarea" style={{ flex: 1, padding: "24px", lineHeight: 1.7 }} />
                   <div className="rm-modal-actions rm-modal-sticky-footer">
-                    <button onClick={checkEmail} disabled={checkingEmail || !emailDraft.trim()} className="btn-cta" style={{ padding: "14px 36px", fontSize: "1rem" }}>
-                      {checkingEmail ? (
-                        <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
-                          <span className="loading-spinner" style={{ fontSize: "0.9rem" }}>&#127807;</span>
-                          Checking...
-                        </span>
-                      ) : "Check my email"}
-                    </button>
+                    {isWeekly ? (
+                      <div style={{ display: "flex", alignItems: "center", gap: "12px", flex: 1, background: "rgba(45,90,61,0.05)", border: "1px solid rgba(45,90,61,0.12)", borderRadius: "12px", padding: "12px 16px" }}>
+                        <span style={{ fontSize: "1rem" }}>🔒</span>
+                        <span style={{ fontSize: "0.85rem", color: "#6b7280", flex: 1 }}>Email checker is on Semester &amp; Lifetime</span>
+                        <button onClick={() => { setEmailTarget(null); setShowUpgradeModal(true); }} style={{ fontSize: "0.8rem", fontWeight: 700, color: "#2d5a3d", background: "rgba(45,90,61,0.08)", border: "1px solid rgba(45,90,61,0.2)", borderRadius: "8px", padding: "6px 14px", cursor: "pointer", whiteSpace: "nowrap" }}>Upgrade</button>
+                      </div>
+                    ) : (
+                      <button onClick={checkEmail} disabled={checkingEmail || !emailDraft.trim()} className="btn-cta" style={{ padding: "14px 36px", fontSize: "1rem" }}>
+                        {checkingEmail ? (
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+                            <span className="loading-spinner" style={{ fontSize: "0.9rem" }}>&#127807;</span>
+                            Checking...
+                          </span>
+                        ) : "Check my email"}
+                      </button>
+                    )}
                     <button onClick={handleCopy} disabled={!emailDraft.trim()} style={{ fontSize: "1rem", color: "#6b7280", background: "none", border: "none", cursor: emailDraft.trim() ? "pointer" : "default", opacity: emailDraft.trim() ? 1 : 0.3, fontFamily: "var(--font-playfair), Georgia, serif", transition: "color 0.2s" }}
                       onMouseEnter={e => { if (emailDraft.trim()) e.currentTarget.style.color = "#2d5a3d"; }}
                       onMouseLeave={e => { e.currentTarget.style.color = "#6b7280"; }}

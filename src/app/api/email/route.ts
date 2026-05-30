@@ -45,11 +45,31 @@ function withinRateLimit(key: string) {
   return true;
 }
 
+const EMAIL_CHECKER_PLANS = new Set(["semester", "student_monthly", "student_annual", "lifetime"]);
+
 export async function POST(req: NextRequest) {
   try {
     const userId = await authenticatedUserId(req);
     if (!userId) {
       return NextResponse.json({ error: "Sign in to check an email." }, { status: 401 });
+    }
+
+    // Email checker requires Semester or Lifetime — not available on Weekly
+    const { data: profile } = await supabaseAdmin
+      .from("profiles")
+      .select("plan_type, buddy_pass_active_until")
+      .eq("id", userId)
+      .single();
+
+    const hasBuddyPass =
+      profile?.buddy_pass_active_until &&
+      new Date(profile.buddy_pass_active_until).getTime() > Date.now();
+
+    if (!hasBuddyPass && !EMAIL_CHECKER_PLANS.has(profile?.plan_type ?? "")) {
+      return NextResponse.json(
+        { error: "upgrade_required", message: "Email checker is available on Semester and Lifetime plans." },
+        { status: 403 }
+      );
     }
 
     if (!withinRateLimit(userId)) {

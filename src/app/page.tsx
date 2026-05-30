@@ -71,7 +71,7 @@ export default function LandingPage() {
     "Unlimited professor searches",
     "Unlimited summaries",
     "Professor email finder",
-    "Email checker",
+    ...(activePaidPlan !== "weekly" ? ["Email checker"] : []),
     "Responsiveness scores",
     "Cold Email Playbook",
   ];
@@ -961,7 +961,6 @@ export default function LandingPage() {
                     "Unlimited professor searches",
                     "Unlimited summaries",
                     "Professor email finder",
-                    "Email checker",
                     "Responsiveness scores",
                     "Cold Email Playbook",
                   ].map((f) => (
