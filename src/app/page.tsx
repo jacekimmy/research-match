@@ -400,8 +400,8 @@ export default function LandingPage() {
           </div>
 
           <h1 className="lp-hero-title text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight leading-[1.1]">
-            Find the mentor<br />
-            <em className="lp-hero-title-em">who changes your life.</em>
+            Your research position is<br />
+            <em className="lp-hero-title-em">one email away.</em>
           </h1>
 
           <p className="lp-hero-sub">
