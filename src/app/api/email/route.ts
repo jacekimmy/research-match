@@ -45,8 +45,6 @@ function withinRateLimit(key: string) {
   return true;
 }
 
-const EMAIL_CHECKER_PLANS = new Set(["semester", "student_monthly", "student_annual", "lifetime"]);
-
 export async function POST(req: NextRequest) {
   try {
     const userId = await authenticatedUserId(req);
@@ -54,22 +52,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Sign in to check an email." }, { status: 401 });
     }
 
-    // Email checker requires Semester or Lifetime — not available on Weekly
-    // Exception: weekly subscribers who existed before this restriction are grandfathered in
+    // Only block new (non-grandfathered) weekly subscribers.
+    // All other plans (including free) retain original access.
+    // If the column doesn't exist yet (migration not run), profile may be null — fail open.
     const { data: profile } = await supabaseAdmin
       .from("profiles")
-      .select("plan_type, buddy_pass_active_until, email_checker_grandfathered")
+      .select("plan_type, email_checker_grandfathered")
       .eq("id", userId)
       .single();
 
-    const hasBuddyPass =
-      profile?.buddy_pass_active_until &&
-      new Date(profile.buddy_pass_active_until).getTime() > Date.now();
+    const isBlockedWeekly =
+      profile?.plan_type === "weekly" && !profile?.email_checker_grandfathered;
 
-    const isGrandfatheredWeekly =
-      profile?.plan_type === "weekly" && profile?.email_checker_grandfathered === true;
-
-    if (!hasBuddyPass && !isGrandfatheredWeekly && !EMAIL_CHECKER_PLANS.has(profile?.plan_type ?? "")) {
+    if (isBlockedWeekly) {
       return NextResponse.json(
         { error: "upgrade_required", message: "Email checker is available on Semester and Lifetime plans." },
         { status: 403 }
