@@ -399,7 +399,7 @@ export default function LandingPage() {
             Trusted by students at Stanford, MIT, and beyond.
           </div>
 
-          <h1 className="lp-hero-title text-4xl sm:text-5xl md:text-7xl tracking-tight leading-[1.1]">
+          <h1 className="lp-hero-title text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight leading-[1.1]">
             Find the mentor<br />
             <em className="lp-hero-title-em">who changes your life.</em>
           </h1>
