@@ -1067,12 +1067,10 @@ export default function LandingPage() {
           style={{
             width: "min(440px, calc(100% - 40px))",
             margin: "30px auto 28px",
-            borderRadius: buddyPassOpen ? "22px" : "999px",
-            background: "rgba(255,255,255,0.5)",
-            border: "1px solid rgba(45,90,61,0.12)",
-            boxShadow: buddyPassOpen
-              ? "0 18px 46px rgba(45,90,61,0.12), inset 0 1px 0 rgba(255,255,255,0.72)"
-              : "0 10px 28px rgba(45,90,61,0.07), inset 0 1px 0 rgba(255,255,255,0.72)",
+            borderRadius: "20px",
+            background: "rgba(255,255,255,0.7)",
+            border: "1px solid rgba(45,90,61,0.10)",
+            boxShadow: "0 10px 32px rgba(45,90,61,0.08), inset 0 1px 0 rgba(255,255,255,0.9)",
             backdropFilter: "blur(18px)",
             WebkitBackdropFilter: "blur(18px)",
             overflow: "hidden",
@@ -1087,32 +1085,34 @@ export default function LandingPage() {
               width: "100%",
               border: "none",
               background: "transparent",
-              color: "#2d5a3d",
               cursor: "pointer",
               fontFamily: "inherit",
-              fontSize: "0.86rem",
-              fontWeight: 800,
-              letterSpacing: "0.01em",
-              padding: buddyPassOpen ? "15px 16px 10px" : "13px 16px",
+              padding: "16px 20px",
               display: "flex",
               alignItems: "center",
-              justifyContent: "center",
-              gap: "10px",
+              justifyContent: "space-between",
+              gap: "12px",
               transition: "all 300ms ease",
               WebkitTapHighlightColor: "transparent",
             }}
           >
-            <span>Have a Research Buddy Pass?</span>
+            <span style={{ textAlign: "left" }}>
+              <span style={{ display: "block", fontSize: "0.95rem", fontWeight: 700, color: "#1a2e1f", letterSpacing: "-0.01em" }}>Have a referral code?</span>
+              <span style={{ display: "block", fontSize: "0.82rem", color: "#6b7280", marginTop: "2px" }}>Enter it here and you both get a reward</span>
+            </span>
             <span
               aria-hidden="true"
               style={{
-                width: "24px",
-                height: "24px",
+                width: "28px",
+                height: "28px",
                 borderRadius: "999px",
                 display: "inline-flex",
                 alignItems: "center",
                 justifyContent: "center",
-                background: "rgba(45,90,61,0.1)",
+                flexShrink: 0,
+                background: "rgba(45,90,61,0.08)",
+                color: "#2d5a3d",
+                fontSize: "1.1rem",
                 transform: buddyPassOpen ? "rotate(45deg)" : "rotate(0deg)",
                 transition: "transform 360ms cubic-bezier(0.22, 1, 0.36, 1)",
               }}
@@ -1194,7 +1194,7 @@ export default function LandingPage() {
                 onKeyDown={(e) => e.key === "Enter" && joinInlineWaitlist()}
                 className="lp-waitlist-input"
               />
-              <button onClick={joinInlineWaitlist} className="btn-cta rm-search-btn" style={{ padding: "12px 24px", fontSize: "0.9rem" }}>
+              <button onClick={joinInlineWaitlist} style={{ padding: "14px 28px", fontSize: "0.9rem", fontWeight: 700, fontFamily: "var(--font-inter), sans-serif", background: "#2d5a3d", color: "#fff", border: "none", borderRadius: "999px", cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.2s ease", boxShadow: "0 4px 16px rgba(45,90,61,0.25)" }}>
                 Join waitlist
               </button>
             </div>
