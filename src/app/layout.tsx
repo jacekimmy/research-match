@@ -14,7 +14,6 @@ const inter = Hanken_Grotesk({
 
 const playfair = Fraunces({
   subsets: ["latin"],
-  axes: ["opsz"],
   weight: ["300", "400", "500", "600", "700"],
   style: ["normal", "italic"],
   variable: "--font-playfair",
