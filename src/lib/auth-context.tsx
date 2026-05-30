@@ -19,6 +19,7 @@ interface Profile {
   buddy_pass_active_until: string | null;
   framework_used: boolean;
   created_at: string;
+  email_checker_grandfathered: boolean;
 }
 
 interface AuthContextType {

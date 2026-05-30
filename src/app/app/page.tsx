@@ -358,7 +358,8 @@ function AppPageInner() {
   const isFree = !isPaid;
   const planLabel = planLabelFor(profile);
   const isWeekly = profile?.plan_type === "weekly";
-  const hasEmailChecker = isPaid && !isWeekly;
+  const isGrandfatheredWeekly = isWeekly && profile?.email_checker_grandfathered === true;
+  const hasEmailChecker = isPaid && (!isWeekly || isGrandfatheredWeekly);
 
   // Tag helpers
   function addQueryTag() {
@@ -2378,7 +2379,7 @@ function AppPageInner() {
 
                   <textarea value={emailDraft} onChange={(e) => { setEmailDraft(e.target.value); setHasChecked(false); }} placeholder={`Dear Professor ${emailTarget.display_name},\n\nI'm a [year] [major] student at [your university]...\n\nUse the reference panel to mention specific papers and research.`} className="modal-textarea" style={{ flex: 1, padding: "24px", lineHeight: 1.7 }} />
                   <div className="rm-modal-actions rm-modal-sticky-footer">
-                    {isWeekly ? (
+                    {!hasEmailChecker && isWeekly ? (
                       <div style={{ display: "flex", alignItems: "center", gap: "12px", flex: 1, background: "rgba(45,90,61,0.05)", border: "1px solid rgba(45,90,61,0.12)", borderRadius: "12px", padding: "12px 16px" }}>
                         <span style={{ fontSize: "1rem" }}>🔒</span>
                         <span style={{ fontSize: "0.85rem", color: "#6b7280", flex: 1 }}>Email checker is on Semester &amp; Lifetime</span>

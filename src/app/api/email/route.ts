@@ -55,9 +55,10 @@ export async function POST(req: NextRequest) {
     }
 
     // Email checker requires Semester or Lifetime — not available on Weekly
+    // Exception: weekly subscribers who existed before this restriction are grandfathered in
     const { data: profile } = await supabaseAdmin
       .from("profiles")
-      .select("plan_type, buddy_pass_active_until")
+      .select("plan_type, buddy_pass_active_until, email_checker_grandfathered")
       .eq("id", userId)
       .single();
 
@@ -65,7 +66,10 @@ export async function POST(req: NextRequest) {
       profile?.buddy_pass_active_until &&
       new Date(profile.buddy_pass_active_until).getTime() > Date.now();
 
-    if (!hasBuddyPass && !EMAIL_CHECKER_PLANS.has(profile?.plan_type ?? "")) {
+    const isGrandfatheredWeekly =
+      profile?.plan_type === "weekly" && profile?.email_checker_grandfathered === true;
+
+    if (!hasBuddyPass && !isGrandfatheredWeekly && !EMAIL_CHECKER_PLANS.has(profile?.plan_type ?? "")) {
       return NextResponse.json(
         { error: "upgrade_required", message: "Email checker is available on Semester and Lifetime plans." },
         { status: 403 }
