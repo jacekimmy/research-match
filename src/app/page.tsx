@@ -900,10 +900,7 @@ export default function LandingPage() {
                 <li key={f.label} className={f.locked ? "lp-feature-locked" : ""}>
                   <span className="lp-check">{f.locked ? "✗" : "✓"}</span>
                   {f.locked ? (
-                    <>
-                      <span style={{ textDecoration: "line-through" }}>{f.label}</span>
-                      <span className="lp-feature-locked-hint"> — Semester &amp; Lifetime</span>
-                    </>
+                    <span style={{ textDecoration: "line-through" }}>{f.label}</span>
                   ) : f.label}
                 </li>
               ))}
@@ -977,7 +974,6 @@ export default function LandingPage() {
                   <li className="lp-feature-locked">
                     <span className="lp-check">✗</span>
                     <span style={{ textDecoration: "line-through" }}>Email checker</span>
-                    <span className="lp-feature-locked-hint"> — Semester &amp; Lifetime</span>
                   </li>
                 </ul>
                 <button

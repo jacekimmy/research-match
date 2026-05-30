@@ -5957,11 +5957,6 @@ body::after {
 .lp-feature-locked .lp-check {
   color: #9ca3af;
 }
-.lp-feature-locked-hint {
-  font-style: italic;
-  font-size: 0.78rem;
-  color: #9ca3af;
-}
 
 .lp-price-btn {
   display: block;
