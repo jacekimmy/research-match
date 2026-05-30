@@ -4849,7 +4849,7 @@ body::after {
 
 .lp-hero-title {
   font-size: clamp(3.4rem, 7.2vw, 6.8rem);
-  font-weight: 800;
+  font-weight: 700;
   color: #1a2e1f;
   line-height: 0.98;
   letter-spacing: -0.035em;
