@@ -51,8 +51,8 @@ export default function LandingPage() {
   const pricingOptions = ["free", "weekly", "semester", "lifetime"] as const;
   const paidPricingOptions = [
     { key: "weekly", label: "Weekly", detail: "$7", price: "$7", period: "1 week access", cta: "Start 1-Week Sprint — $7", badge: null },
-    { key: "semester", label: "Semester", detail: "$29", price: "$29", period: "4 months access", cta: "Get Semester Access — $29", badge: "Best value" },
-    { key: "lifetime", label: "Lifetime", detail: "$59", price: "$59", period: "Yours forever.", cta: "Claim your spot — $59", badge: null },
+    { key: "semester", label: "Semester", detail: "$29", price: "$29", period: "4 months access", cta: "Get Semester Access for $29", badge: "Best value" },
+    { key: "lifetime", label: "Lifetime", detail: "$59", price: "$59", period: "Yours forever.", cta: "Claim your spot for $59", badge: null },
   ] as const;
   const activePaidPlan =
     activePricingTab === "weekly" || activePricingTab === "semester" || activePricingTab === "lifetime"
@@ -362,9 +362,6 @@ export default function LandingPage() {
 
 
       {/* ── Animated background orbs ── */}
-      <div className="lp-orb lp-orb-1" />
-      <div className="lp-orb lp-orb-2" />
-      <div className="lp-orb lp-orb-3" />
 
       {/* ── Floating pill nav ── */}
       <nav className="lp-nav">
@@ -399,7 +396,7 @@ export default function LandingPage() {
         <div className="lp-hero-inner">
           <div className="lp-hero-eyebrow text-emerald-950/80 font-medium text-[10px] md:text-xs tracking-wider uppercase">
             <span className="lp-eyebrow-dot" />
-            Used by 1,000+ students at Stanford, MIT, and beyond.
+            Trusted by students at Stanford, MIT, and beyond.
           </div>
 
           <h1 className="lp-hero-title text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight leading-[1.1]">
@@ -492,7 +489,7 @@ export default function LandingPage() {
         {[
           { num: "250M+", label: "papers indexed" },
           { num: "1,000+", label: "universities" },
-          { num: searchCount !== null ? searchCount.toLocaleString() : "—", label: "students served" },
+          { num: searchCount !== null ? searchCount.toLocaleString() : "—", label: "searches run" },
           { num: "< 24h", label: "first professor response" },
         ].map((s, i) => (
           <div key={i} className="lp-proof-item">
@@ -505,7 +502,7 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           WHY NOT CHATGPT
       ══════════════════════════════════════════ */}
-      <section className="lp-chatgpt-section" style={{ background: "linear-gradient(to bottom, #ffffff, rgba(255,255,255,0))", padding: "100px 24px", margin: "0 0 100px 0", borderTop: "1px solid rgba(45,90,61,0.06)", borderBottom: "1px solid rgba(45,90,61,0.06)" }}>
+      <section className="lp-chatgpt-section" style={{ background: "linear-gradient(to bottom, #ffffff, rgba(255,255,255,0))", padding: "100px 24px", margin: "0 0 20px 0", borderTop: "1px solid rgba(45,90,61,0.06)", borderBottom: "1px solid rgba(45,90,61,0.06)" }}>
         <div style={{ maxWidth: "900px", margin: "0 auto" }} data-reveal>
           <h2 style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "clamp(1.8rem, 3vw, 2.4rem)", fontWeight: 700, color: "#2d5a3d", textAlign: "center", marginBottom: "64px", letterSpacing: "-0.02em" }}>
             Why not just use ChatGPT?
@@ -665,7 +662,7 @@ export default function LandingPage() {
                 <div className="lp-dot" style={{ background: "#28c840" }} />
                 <span className="lp-mockup-url">researchmatch.net/app</span>
               </div>
-              <div className="lp-mockup-body flex flex-col gap-6 md:flex-row md:gap-12">
+              <div className="lp-mockup-body flex flex-col gap-6 md:flex-row md:gap-12" style={{ alignItems: "center", padding: "24px 20px" }}>
                 <div className="lp-mock-email">
                   <div className="lp-mock-email-line">
                     <span className="lp-mock-strike">I found your work fascinating and groundbreaking.</span>
@@ -1013,7 +1010,7 @@ export default function LandingPage() {
                   className="lp-price-btn"
                   style={{ background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "1px solid rgba(45, 90, 61, 0.2)", cursor: "pointer", width: "100%" }}
                 >
-                  {checkoutLoading === "semester" ? "Loading…" : "Get Semester Access — $29"}
+                  {checkoutLoading === "semester" ? "Loading…" : "Get Semester Access for $29"}
                 </button>
               </div>
             </div>
@@ -1047,7 +1044,7 @@ export default function LandingPage() {
                     className="lp-price-btn"
                     style={{ background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "1px solid rgba(45, 90, 61, 0.2)", cursor: "pointer", width: "100%" }}
                   >
-                    {checkoutLoading === "lifetime" ? "Loading…" : "Claim your spot — $59"}
+                    {checkoutLoading === "lifetime" ? "Loading…" : "Claim your spot for $59"}
                   </button>
                 )}
               </div>

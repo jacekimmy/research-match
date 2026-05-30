@@ -36,25 +36,6 @@ body::after {
   z-index: -1;
 }
 
-body::before {
-  top: -80px;
-  left: -60px;
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(45, 90, 61, 0.25) 0%, transparent 70%);
-  filter: blur(56px);
-  opacity: 0.55;
-}
-
-body::after {
-  bottom: 10%;
-  right: -100px;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(45, 90, 61, 0.2) 0%, transparent 70%);
-  filter: blur(56px);
-  opacity: 0.5;
-}
 
 .splotches {
   position: fixed;
@@ -4696,40 +4677,6 @@ body::after {
   overflow-x: hidden;
 }
 
-/* ── Premium background orbs ── */
-.lp-orb {
-  position: fixed;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0;
-  filter: blur(72px);
-  opacity: 0.72;
-}
-
-.lp-orb-1 {
-  width: 700px;
-  height: 700px;
-  top: -200px;
-  left: -200px;
-  background: radial-gradient(circle, rgba(45, 90, 61, 0.22) 0%, transparent 70%);
-}
-
-.lp-orb-2 {
-  width: 600px;
-  height: 600px;
-  bottom: 10%;
-  right: -150px;
-  background: radial-gradient(circle, rgba(45, 90, 61, 0.18) 0%, transparent 70%);
-}
-
-.lp-orb-3 {
-  width: 400px;
-  height: 400px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(circle, rgba(196, 162, 101, 0.08) 0%, transparent 70%);
-}
 
 /* ── Floating pill nav ── */
 .lp-nav {
@@ -5188,8 +5135,7 @@ body::after {
   transition-delay: 0.05s;
 }
 .lp-feature:last-child { border-bottom: none; }
-.lp-feature-rev { direction: rtl; }
-.lp-feature-rev > * { direction: ltr; }
+.lp-feature-rev .lp-feature-visual { order: -1; }
 
 .lp-feature-num {
   font-size: 5rem;
@@ -5383,16 +5329,12 @@ body::after {
 .lp-dark-reasons { display: flex; flex-direction: column; gap: 14px; margin-bottom: 48px; }
 .lp-dark-reason {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 16px;
-  padding: 16px 24px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 14px;
   font-size: 0.95rem;
   color: rgba(255,255,255,0.65);
   text-align: left;
-  backdrop-filter: blur(8px);
+  padding: 10px 0;
 }
 .lp-dark-reason-x { color: #c45c5c; font-size: 1rem; flex-shrink: 0; }
 
@@ -6546,7 +6488,9 @@ body::after {
 /* ── Waitlist ── */
 .lp-waitlist {
   text-align: center;
-  margin-top: 56px;
+  margin-top: 80px;
+  padding-top: 48px;
+  border-top: 1px solid rgba(45,90,61,0.08);
   transition-delay: 0.2s;
 }
 .lp-waitlist-text {
@@ -6981,9 +6925,8 @@ body::after {
     text-align: left;
   }
   .lp-dark-reason {
-    padding: 14px 16px;
     font-size: 0.84rem;
-    border-radius: 12px;
+    padding: 8px 0;
     align-items: flex-start;
   }
   .lp-dark-cta {
@@ -7077,7 +7020,7 @@ body::after {
   .lp-price-btn:active { transform: scale(0.98) !important; }
 
   /* ── Waitlist ── */
-  .lp-waitlist { margin-top: 40px; }
+  .lp-waitlist { margin-top: 40px; padding-top: 0; border-top: none; }
   .lp-waitlist-form {
     flex-direction: column;
     width: 100%;
