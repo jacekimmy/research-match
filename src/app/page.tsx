@@ -66,14 +66,14 @@ export default function LandingPage() {
         ? "translateX(calc(200% + 12px))"
         : "translateX(0)";
   const paidPlan = paidPricingOptions[activePaidPlanIndex >= 0 ? activePaidPlanIndex : 1];
-  const paidFeatures = [
-    ...(activePaidPlan === "lifetime" ? ["Never pay again"] : []),
-    "Unlimited professor searches",
-    "Unlimited summaries",
-    "Professor email finder",
-    ...(activePaidPlan !== "weekly" ? ["Email checker"] : []),
-    "Responsiveness scores",
-    "Cold Email Playbook",
+  const paidFeatures: { label: string; locked?: boolean }[] = [
+    ...(activePaidPlan === "lifetime" ? [{ label: "Never pay again" }] : []),
+    { label: "Unlimited professor searches" },
+    { label: "Unlimited summaries" },
+    { label: "Professor email finder" },
+    { label: "Email checker", locked: activePaidPlan === "weekly" },
+    { label: "Responsiveness scores" },
+    { label: "Cold Email Playbook" },
   ];
   const buddyInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -897,7 +897,15 @@ export default function LandingPage() {
             </div>
             <ul className="lp-price-features lp-price-features-duo lp-paid-feature-grid">
               {paidFeatures.map((f) => (
-                <li key={f}><span className="lp-check">✓</span>{f}</li>
+                <li key={f.label} className={f.locked ? "lp-feature-locked" : ""}>
+                  <span className="lp-check">{f.locked ? "✗" : "✓"}</span>
+                  {f.locked ? (
+                    <>
+                      <span style={{ textDecoration: "line-through" }}>{f.label}</span>
+                      <span className="lp-feature-locked-hint"> — Semester &amp; Lifetime</span>
+                    </>
+                  ) : f.label}
+                </li>
               ))}
             </ul>
             {activePaidPlan === "lifetime" && lifetimeSpotsRemaining === 0 ? (
@@ -966,6 +974,11 @@ export default function LandingPage() {
                   ].map((f) => (
                     <li key={f}><span className="lp-check">✓</span>{f}</li>
                   ))}
+                  <li className="lp-feature-locked">
+                    <span className="lp-check">✗</span>
+                    <span style={{ textDecoration: "line-through" }}>Email checker</span>
+                    <span className="lp-feature-locked-hint"> — Semester &amp; Lifetime</span>
+                  </li>
                 </ul>
                 <button
                   onClick={() => handleCheckout("weekly")}

@@ -5951,6 +5951,18 @@ body::after {
 }
 .lp-check { color: #2d5a3d; flex-shrink: 0; font-size: 0.8rem; }
 
+.lp-feature-locked {
+  opacity: 0.45;
+}
+.lp-feature-locked .lp-check {
+  color: #9ca3af;
+}
+.lp-feature-locked-hint {
+  font-style: italic;
+  font-size: 0.78rem;
+  color: #9ca3af;
+}
+
 .lp-price-btn {
   display: block;
   text-align: center;
