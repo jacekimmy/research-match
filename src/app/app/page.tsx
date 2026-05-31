@@ -1479,18 +1479,20 @@ function AppPageInner() {
 
             {error && <p style={{ textAlign: "center", fontSize: "1rem", color: "#c45c5c", marginTop: "20px" }}>{error}</p>}
 
-            {/* Saved pill — hero state, centred directly below search bar */}
-            <div style={{ display: "flex", justifyContent: "center", width: "100%", maxWidth: "760px", marginTop: "12px" }}>
-              <button
-                className="rm-saved-pill"
-                onClick={() => { if (saved.length > 0) setShowSaved(true); }}
-                aria-label={saved.length > 0 ? `View ${saved.length} saved professors` : "Your saved professors shortlist"}
-                style={saved.length === 0 ? { opacity: 0.45, cursor: "default" } : {}}
-              >
-                <span aria-hidden="true">★</span>
-                {saved.length > 0 ? `${saved.length} saved` : "Saved"}
-              </button>
-            </div>
+            {/* Saved pill — hero state, centred directly below search bar; hidden during exit */}
+            {!heroExiting && (
+              <div style={{ display: "flex", justifyContent: "center", width: "100%", maxWidth: "760px", marginTop: "12px" }}>
+                <button
+                  className="rm-saved-pill"
+                  onClick={() => { if (saved.length > 0) setShowSaved(true); }}
+                  aria-label={saved.length > 0 ? `View ${saved.length} saved professors` : "Your saved professors shortlist"}
+                  style={saved.length === 0 ? { opacity: 0.45, cursor: "default" } : {}}
+                >
+                  <span aria-hidden="true">★</span>
+                  {saved.length > 0 ? `${saved.length} saved` : "Saved"}
+                </button>
+              </div>
+            )}
           </div>
 
         ) : (
@@ -1499,20 +1501,31 @@ function AppPageInner() {
             <div className="rm-compact-header">
               {!showSaved && (
                 <>
-                  <div className="mode-toggle" ref={toggleRef}>
-                    <div
-                      className="mode-toggle-slider"
-                      style={{
-                        left: searchMode === "interest"
-                          ? (btnInterestRef.current?.offsetLeft ?? 4) + "px"
-                          : (btnNameRef.current?.offsetLeft ?? 100) + "px",
-                        width: searchMode === "interest"
-                          ? (btnInterestRef.current?.offsetWidth ?? 110) + "px"
-                          : (btnNameRef.current?.offsetWidth ?? 95) + "px",
-                      }}
-                    />
-                    <button ref={btnInterestRef} onClick={() => setSearchMode("interest")} className={`mode-toggle-btn ${searchMode === "interest" ? "mode-toggle-btn-active" : ""}`}>By Interest</button>
-                    <button ref={btnNameRef} onClick={() => setSearchMode("name")} className={`mode-toggle-btn ${searchMode === "name" ? "mode-toggle-btn-active" : ""}`}>By Name</button>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
+                    <div className="mode-toggle" ref={toggleRef} style={{ marginBottom: 0 }}>
+                      <div
+                        className="mode-toggle-slider"
+                        style={{
+                          left: searchMode === "interest"
+                            ? (btnInterestRef.current?.offsetLeft ?? 4) + "px"
+                            : (btnNameRef.current?.offsetLeft ?? 100) + "px",
+                          width: searchMode === "interest"
+                            ? (btnInterestRef.current?.offsetWidth ?? 110) + "px"
+                            : (btnNameRef.current?.offsetWidth ?? 95) + "px",
+                        }}
+                      />
+                      <button ref={btnInterestRef} onClick={() => setSearchMode("interest")} className={`mode-toggle-btn ${searchMode === "interest" ? "mode-toggle-btn-active" : ""}`}>By Interest</button>
+                      <button ref={btnNameRef} onClick={() => setSearchMode("name")} className={`mode-toggle-btn ${searchMode === "name" ? "mode-toggle-btn-active" : ""}`}>By Name</button>
+                    </div>
+                    <button
+                      className="rm-saved-pill"
+                      onClick={() => { if (saved.length > 0) setShowSaved(true); }}
+                      style={saved.length === 0 ? { opacity: 0.45, cursor: "default" } : {}}
+                      aria-label={saved.length > 0 ? `View ${saved.length} saved professors` : "Saved professors shortlist"}
+                    >
+                      <span aria-hidden="true">★</span>
+                      {saved.length > 0 ? `${saved.length} saved` : "Saved"}
+                    </button>
                   </div>
                   {searchMode === "interest" ? (
                     <div className="glass-search rm-search">
@@ -1585,18 +1598,6 @@ function AppPageInner() {
                       <button onClick={searchByName} className="btn-cta rm-search-btn">Search</button>
                     </div>
                   )}
-                  {/* Pill — right-aligned directly below search bar */}
-                  <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "10px" }}>
-                    <button
-                      className="rm-saved-pill"
-                      onClick={() => { if (saved.length > 0) setShowSaved(true); }}
-                      style={saved.length === 0 ? { opacity: 0.45, cursor: "default" } : {}}
-                      aria-label={saved.length > 0 ? `View ${saved.length} saved professors` : "Your saved professors shortlist"}
-                    >
-                      <span aria-hidden="true">★</span>
-                      {saved.length > 0 ? `${saved.length} saved` : "Saved"}
-                    </button>
-                  </div>
                 </>
               )}
               {showSaved && (
