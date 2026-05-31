@@ -1478,6 +1478,18 @@ function AppPageInner() {
             )}
 
             {error && <p style={{ textAlign: "center", fontSize: "1rem", color: "#c45c5c", marginTop: "20px" }}>{error}</p>}
+
+            {/* Saved shortlist pill — hero state */}
+            {saved.length > 0 && (
+              <button
+                className="rm-saved-pill"
+                onClick={() => setShowSaved(true)}
+                aria-label={`View ${saved.length} saved professor${saved.length !== 1 ? "s" : ""}`}
+              >
+                <span aria-hidden="true">★</span>
+                {saved.length} saved
+              </button>
+            )}
           </div>
 
         ) : (
@@ -1573,6 +1585,21 @@ function AppPageInner() {
                     </div>
                   )}
                 </>
+              )}
+
+              {/* Saved shortlist pill — compact state */}
+              {saved.length > 0 && (
+                <button
+                  className={`rm-saved-pill${showSaved ? " rm-saved-pill-active" : ""}`}
+                  onClick={() => setShowSaved(!showSaved)}
+                  aria-label={showSaved ? "Back to search results" : `View ${saved.length} saved professor${saved.length !== 1 ? "s" : ""}`}
+                >
+                  {showSaved ? (
+                    <><span aria-hidden="true">←</span> Back to search</>
+                  ) : (
+                    <><span aria-hidden="true">★</span> {saved.length} saved</>
+                  )}
+                </button>
               )}
             </div>
 
