@@ -71,10 +71,10 @@ export default function ProfilePage() {
   const planLabel = planLabelFor(profile);
   const initial = user?.email?.charAt(0).toUpperCase() || "?";
   const summariesUsed = profile?.summaries_used ?? 0;
-  const summariesLeft = isPaid ? "Unlimited" : `${Math.max(0, 1 - summariesUsed)} / 1`;
+  const summariesLeft = isPaid ? "∞" : `${Math.max(0, 1 - summariesUsed)}/1`;
 
   const memberSince = useMemo(() => formatMemberSince(profile?.created_at), [profile?.created_at]);
-  const activeDays = useMemo(() => daysSince(profile?.created_at), [profile?.created_at]);
+  const activeDays   = useMemo(() => daysSince(profile?.created_at),        [profile?.created_at]);
 
   const fetchBuddyPass = useCallback(async () => {
     if (!user) return;
@@ -82,10 +82,7 @@ export default function ProfilePage() {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.access_token) throw new Error("Missing auth session");
-
-      const res = await fetch("/api/buddy-pass", {
-        headers: { Authorization: `Bearer ${session.access_token}` },
-      });
+      const res  = await fetch("/api/buddy-pass", { headers: { Authorization: `Bearer ${session.access_token}` } });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Could not load Buddy Pass.");
       setBuddyPass(data);
@@ -121,24 +118,18 @@ export default function ProfilePage() {
       setBuddyError("You do not have a Buddy Week ready yet.");
       return;
     }
-
     setActivationLoading(true);
     setBuddyError("");
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.access_token) throw new Error("Missing auth session");
-
-      const res = await fetch("/api/buddy-pass", {
+      const res  = await fetch("/api/buddy-pass", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
-        },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
         body: JSON.stringify({ action: "activate" }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Could not activate Buddy Pass.");
-
       await Promise.all([fetchBuddyPass(), refreshProfile()]);
     } catch (err) {
       setBuddyError(err instanceof Error ? err.message : "Could not activate Buddy Pass.");
@@ -150,18 +141,11 @@ export default function ProfilePage() {
   async function startSemesterCheckout() {
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.access_token) {
-        alert("Please sign in again to continue.");
-        return;
-      }
-
+      if (!session?.access_token) { alert("Please sign in again to continue."); return; }
       const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_SEMESTER || "price_1TIuAlFINW44xCyFcxqgQpeV";
-      const res = await fetch("/api/checkout", {
+      const res  = await fetch("/api/checkout", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
-        },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
         body: JSON.stringify({ priceId }),
       });
       const data = await res.json();
@@ -176,16 +160,10 @@ export default function ProfilePage() {
     setPortalLoading(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.access_token) {
-        alert("Please sign in again to manage billing.");
-        return;
-      }
-      const res = await fetch("/api/customer-portal", {
+      if (!session?.access_token) { alert("Please sign in again to manage billing."); return; }
+      const res  = await fetch("/api/customer-portal", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
-        },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
         body: JSON.stringify({}),
       });
       const data = await res.json();
@@ -201,27 +179,17 @@ export default function ProfilePage() {
   async function cancelSubscription() {
     const confirmed = window.confirm("Cancel your Research Match subscription? You will not be charged again.");
     if (!confirmed) return;
-
     setCancelLoading(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.access_token) {
-        alert("Please sign in again to cancel your subscription.");
-        return;
-      }
-      const res = await fetch("/api/cancel-subscription", {
+      if (!session?.access_token) { alert("Please sign in again to cancel your subscription."); return; }
+      const res  = await fetch("/api/cancel-subscription", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
-        },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
         body: JSON.stringify({}),
       });
       const data = await res.json();
-      if (!res.ok) {
-        alert(data.error || "Could not cancel subscription. Please contact support.");
-        return;
-      }
+      if (!res.ok) { alert(data.error || "Could not cancel subscription. Please contact support."); return; }
       await refreshProfile();
       alert("Subscription canceled. You will not be charged again.");
     } catch {
@@ -231,132 +199,161 @@ export default function ProfilePage() {
     }
   }
 
+  /* ── Signed-out gate ─────────────────────────────────────────── */
   if (!user) {
     return (
-      <main className={`${styles.profileMount} profile-page`}>
-        <section className="profile-signed-out profile-panel">
-          <div className="profile-lock-mark">RM</div>
+      <main className={styles.profileMount}>
+        <section className="pro-signed-out glass">
+          <div className="pro-signed-out-mark">RM</div>
           <h1>Sign in to view your profile</h1>
           <p>Your plan, saved professors, and Buddy Pass rewards live here.</p>
-          <Link href="/app" className="profile-primary-action">Go to app</Link>
+          <Link href="/app" className="pro-go-btn">Go to app</Link>
         </section>
       </main>
     );
   }
 
-  return (
-    <main className={`${styles.profileMount} profile-page`}>
-      <div className="profile-ambient profile-ambient-a" />
-      <div className="profile-ambient profile-ambient-b" />
+  /* ── Features list ───────────────────────────────────────────── */
+  const features: [string, boolean][] = [
+    ["Full research summaries",   true],
+    ["Suggested questions",       true],
+    ["Author position labels",    true],
+    ["Save professors",           true],
+    ["Paper links",               true],
+    ["Unlimited summaries",       isPaid],
+    ["Email checker",             isPaid],
+    ["Professor email finder",    isPaid],
+    ["Nearby professor access",   isPaid],
+  ];
 
-      <div className="profile-shell">
-        <nav className="profile-topbar" aria-label="Profile navigation">
-          <Link href="/app" className="profile-back-link">
-            <span aria-hidden="true">←</span>
-            Back to search
+  /* ── Main render ─────────────────────────────────────────────── */
+  return (
+    <main className={styles.profileMount}>
+      {/* Ambient blobs */}
+      <div className="pro-ambient pro-ambient-a" aria-hidden="true" />
+      <div className="pro-ambient pro-ambient-b" aria-hidden="true" />
+
+      <div className="pro-shell">
+
+        {/* ── Nav ─────────────────────────────────────────────── */}
+        <nav className="pro-nav" aria-label="Profile navigation">
+          <Link href="/app" className="pro-back">
+            <span aria-hidden="true">←</span> Back to search
           </Link>
-          <Link href="/" className="profile-brand-link">Research Match</Link>
+          <Link href="/" className="pro-brand">Research Match</Link>
         </nav>
 
-        <section className="profile-hero-panel">
-          <div className="profile-identity">
-            <div className="profile-avatar-large">{initial}</div>
-            <div>
-              <p className="profile-kicker">Account</p>
-              <h1>Profile Settings</h1>
-              <p className="profile-email-label">{user.email}</p>
-              <p className="profile-since-label">Member since {memberSince}</p>
+        {/* ══ HERO CARD ══════════════════════════════════════════ */}
+        <section className="pro-hero glass" aria-label="Account overview">
+          <div className="pro-hero-left">
+            <div className="pro-avatar" aria-hidden="true">{initial}</div>
+            <div className="pro-hero-text">
+              <p className="pro-eyebrow">Account</p>
+              <h1 className="pro-name">Profile Settings</h1>
+              <p className="pro-email">{user.email}</p>
+              <p className="pro-since">Member since {memberSince}</p>
             </div>
           </div>
 
-          <div className="profile-plan-chip">
-            <span className={isPaid ? "profile-plan-dot is-live" : "profile-plan-dot"} />
-            <div>
-              <p>Current access</p>
-              <strong>{planLabel}</strong>
+          <div className="pro-plan-badge" aria-label={`Current plan: ${planLabel}`}>
+            <span className={`pro-plan-dot${isPaid ? " is-live" : ""}`} aria-hidden="true" />
+            <div className="pro-plan-info">
+              <span className="pro-plan-lbl">Current plan</span>
+              <span className="pro-plan-name">{planLabel}</span>
             </div>
           </div>
         </section>
 
-        <section className="profile-metrics-grid" aria-label="Profile stats">
-          <div className="profile-metric-card">
-            <span>Summaries</span>
-            <strong>{summariesLeft}</strong>
-            <p>{isPaid ? "No limit while active" : `Resets ${resetDate(profile?.summaries_reset_at)}`}</p>
+        {/* ══ STATS STRIP ════════════════════════════════════════ */}
+        <div className="pro-stats" aria-label="Account stats">
+          <div className="pro-stat glass">
+            <span className="pro-stat-label">Summaries</span>
+            <strong className="pro-stat-value">{summariesLeft}</strong>
+            <p className="pro-stat-note">
+              {isPaid ? "Unlimited while active" : `Resets ${resetDate(profile?.summaries_reset_at)}`}
+            </p>
           </div>
-          <div className="profile-metric-card">
-            <span>Saved</span>
-            <strong>{savedCount}</strong>
-            <p>Professors in your shortlist</p>
+          <div className="pro-stat glass">
+            <span className="pro-stat-label">Saved</span>
+            <strong className="pro-stat-value">{savedCount}</strong>
+            <p className="pro-stat-note">Professors saved</p>
           </div>
-          <div className="profile-metric-card">
-            <span>Days active</span>
-            <strong>{activeDays}</strong>
-            <p>Since you joined</p>
+          <div className="pro-stat glass">
+            <span className="pro-stat-label">Days active</span>
+            <strong className="pro-stat-value">{activeDays}</strong>
+            <p className="pro-stat-note">Since you joined</p>
           </div>
-          <div className="profile-metric-card">
-            <span>Buddy weeks</span>
-            <strong>{buddyLoading ? "..." : buddyPass.weeksAvailable}</strong>
-            <p>{buddyActive ? `Active until ${formatBuddyPassDate(buddyPass.activeUntil || profile?.buddy_pass_active_until)}` : "Ready to activate"}</p>
+          <div className="pro-stat glass">
+            <span className="pro-stat-label">Buddy weeks</span>
+            <strong className="pro-stat-value">{buddyLoading ? "—" : buddyPass.weeksAvailable}</strong>
+            <p className="pro-stat-note">
+              {buddyActive
+                ? `Active until ${formatBuddyPassDate(buddyPass.activeUntil || profile?.buddy_pass_active_until)}`
+                : "Ready to activate"}
+            </p>
           </div>
-        </section>
+        </div>
 
-        <section className="profile-content-grid">
-          <div className="profile-main-stack">
-            <section className="profile-panel buddy-pass-panel">
-              <div className="profile-panel-header">
+        {/* ══ CONTENT GRID ═══════════════════════════════════════ */}
+        <div className="pro-grid">
+
+          {/* ── LEFT COL: Buddy Pass ──────────────────────────── */}
+          <div className="pro-col-main">
+            <section className="pro-panel glass" aria-label="Buddy Pass">
+              <div className="pro-panel-head">
                 <div>
-                  <p className="profile-kicker">Research Buddy Pass</p>
-                  <h2>Give 25% off. Bank a free week.</h2>
+                  <p className="pro-kicker">Referral Program</p>
+                  <h2 className="pro-panel-title">Buddy Pass</h2>
                 </div>
-                <span className="buddy-pass-badge">Stackable</span>
+                <span className="pro-badge">Stackable</span>
               </div>
 
-              <p className="profile-muted">
-                Share your code — friends get 25% off any plan. You earn one free week per successful referral. Weeks stack and never expire.
+              <p className="pro-desc">
+                Share your code — friends get 25% off any plan. You earn one free week per successful referral. Weeks never expire.
               </p>
 
-              <div className="buddy-share-card">
-                <div className="buddy-share-row">
-                  <div>
-                    <span className="buddy-share-label">Referral code</span>
-                    <strong className="buddy-share-code">
+              {/* Share card — code + link */}
+              <div className="bp-share">
+                <div className="bp-row">
+                  <div className="bp-meta">
+                    <span className="bp-lbl">Referral code</span>
+                    <strong className="bp-code">
                       {buddyLoading ? "Loading…" : buddyPass.referralCode}
                     </strong>
                   </div>
                   <button
                     type="button"
                     onClick={() => copyBuddyPass(buddyPass.referralCode, "code")}
-                    className="profile-soft-button"
+                    className={`bp-copy${copyState === "code" ? " copied" : ""}`}
                   >
                     {copyState === "code" ? "✓ Copied" : "Copy code"}
                   </button>
                 </div>
-                <hr className="buddy-share-sep" aria-hidden="true" />
-                <div className="buddy-share-row">
-                  <span className="buddy-share-url">
+                <hr className="bp-sep" aria-hidden="true" />
+                <div className="bp-row">
+                  <span className="bp-url">
                     {buddyPass.referralUrl || "Loading share link…"}
                   </span>
                   <button
                     type="button"
                     onClick={() => copyBuddyPass(buddyPass.referralUrl, "link")}
-                    className="profile-soft-button"
+                    className={`bp-copy${copyState === "link" ? " copied" : ""}`}
                   >
                     {copyState === "link" ? "✓ Copied" : "Copy link"}
                   </button>
                 </div>
               </div>
 
-              <div className="buddy-activation-card">
-                <div>
-                  <p className="profile-kicker">Week usage</p>
-                  <h3>{buddyActive ? "Buddy Week is running" : "Activate one stored week"}</h3>
+              {/* Activation toggle */}
+              <div className={`bp-activate${buddyActive ? " is-on" : ""}`}>
+                <div className="bp-activate-text">
+                  <h3>{buddyActive ? "Buddy Week is running" : "Activate a stored week"}</h3>
                   <p>
                     {buddyActive
-                      ? `This week stays on until ${formatBuddyPassDate(buddyPass.activeUntil || profile?.buddy_pass_active_until)}. It cannot be paused once started.`
+                      ? `Stays on until ${formatBuddyPassDate(buddyPass.activeUntil || profile?.buddy_pass_active_until)}. Cannot be paused.`
                       : buddyPass.weeksAvailable > 0
                         ? "Turn it on when you need a focused research sprint."
-                        : "Refer a friend to earn your next free week."}
+                        : "Refer a friend to earn your first free week."}
                   </p>
                 </div>
                 <button
@@ -366,143 +363,142 @@ export default function ProfilePage() {
                   aria-label={buddyActive ? "Buddy Week is active" : "Activate one Buddy Week"}
                   disabled={activationLoading || buddyActive || buddyPass.weeksAvailable <= 0}
                   onClick={activateBuddyWeek}
-                  className={`buddy-toggle${buddyActive ? " is-on" : ""}`}
+                  className={`bp-toggle${buddyActive ? " is-on" : ""}`}
                   title={buddyActive ? "Buddy Weeks cannot be paused once started." : "Start one stored Buddy Week."}
                 >
                   <span />
                 </button>
               </div>
 
-              {buddyError && <p className="profile-error">{buddyError}</p>}
+              {buddyError && <p className="pro-error">{buddyError}</p>}
 
-              <div className="buddy-pass-stats">
-                <div>
+              {/* Stats pills */}
+              <div className="bp-stats">
+                <div className="bp-pill">
                   <strong>{buddyPass.successfulReferrals}</strong>
                   <span>referrals</span>
                 </div>
-                <div>
+                <div className="bp-pill">
                   <strong>{buddyPass.weeksEarned}</strong>
                   <span>earned</span>
                 </div>
-                <div>
+                <div className="bp-pill">
                   <strong>{buddyPass.weeksUsed}</strong>
                   <span>used</span>
                 </div>
               </div>
             </section>
+          </div>
 
-            <section className="profile-panel">
-              <div className="profile-panel-header">
+          {/* ── RIGHT COL: Plan · Referrals · Settings ────────── */}
+          <div className="pro-col-side">
+
+            {/* Your plan */}
+            <section className="pro-panel glass" aria-label="Plan features">
+              <div className="pro-panel-head">
                 <div>
-                  <p className="profile-kicker">Access</p>
-                  <h2>Your plan includes</h2>
+                  <p className="pro-kicker">Access</p>
+                  <h2 className="pro-panel-title">Your plan</h2>
                 </div>
               </div>
-
-              <div className="profile-feature-list">
-                {[
-                  ["Full research summaries", true],
-                  ["Suggested questions", true],
-                  ["Author position labels", true],
-                  ["Save professors", true],
-                  ["Paper links", true],
-                  ["Unlimited summaries", isPaid],
-                  ["Email checker", isPaid],
-                  ["Professor email finder", isPaid],
-                  ["Nearby professor access", isPaid],
-                ].map(([feature, included]) => (
-                  <div key={feature as string} className={included ? "profile-feature-row" : "profile-feature-row is-muted"}>
-                    <span>{included ? "✓" : "·"}</span>
-                    <p>{feature}</p>
+              <div className="pro-features">
+                {features.map(([name, included]) => (
+                  <div key={name} className={`pro-feature${!included ? " locked" : ""}`}>
+                    <span className="pro-feature-icon" aria-hidden="true">
+                      {included ? "✓" : "·"}
+                    </span>
+                    <p className="pro-feature-name">{name}</p>
                   </div>
                 ))}
               </div>
-
               {!isPaid && profile?.plan_type !== "lifetime" && (
-                <button type="button" onClick={startSemesterCheckout} className="profile-primary-action profile-full-action">
+                <button type="button" onClick={startSemesterCheckout} className="pro-upgrade">
                   Get Semester Access
                 </button>
               )}
             </section>
-          </div>
 
-          <aside className="profile-side-stack">
-            <section className="profile-panel">
-              <div className="profile-panel-header">
+            {/* Recent referrals */}
+            <section className="pro-panel glass" aria-label="Referral history">
+              <div className="pro-panel-head">
                 <div>
-                  <p className="profile-kicker">Referrals</p>
-                  <h2>Recent rewards</h2>
+                  <p className="pro-kicker">Referrals</p>
+                  <h2 className="pro-panel-title">Recent rewards</h2>
                 </div>
               </div>
-
-              <div className="buddy-referral-list">
-                {buddyPass.referrals.length > 0 ? buddyPass.referrals.map((referral) => (
-                  <div className="buddy-referral-row" key={referral.id}>
-                    <div>
-                      <strong>{referral.friendEmail}</strong>
-                      <p>{formatBuddyPassDate(referral.createdAt)}</p>
+              <div className="pro-referrals">
+                {buddyPass.referrals.length > 0 ? (
+                  buddyPass.referrals.map((r) => (
+                    <div className="pro-referral-row" key={r.id}>
+                      <div>
+                        <p className="pro-referral-email">{r.friendEmail}</p>
+                        <p className="pro-referral-date">{formatBuddyPassDate(r.createdAt)}</p>
+                      </div>
+                      <span className="pro-referral-reward">+{r.rewardWeeks}w</span>
                     </div>
-                    <span>+{referral.rewardWeeks} week</span>
-                  </div>
-                )) : (
-                  <div className="buddy-empty-state">
+                  ))
+                ) : (
+                  <div className="pro-referral-empty">
                     <strong>No referrals yet</strong>
-                    <p>Share your code and the first reward will land here automatically after checkout.</p>
+                    <p>Your first reward appears here automatically after a friend checks out with your code.</p>
                   </div>
                 )}
               </div>
             </section>
 
-            <section className="profile-panel profile-actions-panel">
-              <div className="profile-panel-header">
+            {/* Account settings */}
+            <section className="pro-panel glass" aria-label="Account settings">
+              <div className="pro-panel-head">
                 <div>
-                  <p className="profile-kicker">Account</p>
-                  <h2>Settings</h2>
+                  <p className="pro-kicker">Account</p>
+                  <h2 className="pro-panel-title">Settings</h2>
                 </div>
               </div>
+              <div className="pro-actions">
+                <Link href="/feedback" className="pro-action">
+                  Give feedback
+                  <span className="pro-action-arrow" aria-hidden="true">→</span>
+                </Link>
 
-              <Link href="/feedback" className="profile-action-button">
-                Give feedback
-                <span className="profile-action-arrow" aria-hidden="true">→</span>
-              </Link>
+                {profile?.plan_type !== "lifetime" && (
+                  <button
+                    id="manage-subscription-btn"
+                    type="button"
+                    disabled={portalLoading}
+                    onClick={openBillingPortal}
+                    className="pro-action"
+                  >
+                    {portalLoading ? "Opening…" : "Manage subscription"}
+                    {!portalLoading && <span className="pro-action-arrow" aria-hidden="true">→</span>}
+                  </button>
+                )}
 
-              {profile?.plan_type !== "lifetime" && (
+                {profile?.plan_type !== "lifetime" && (
+                  <button
+                    id="cancel-subscription-btn"
+                    type="button"
+                    disabled={cancelLoading}
+                    onClick={cancelSubscription}
+                    className="pro-action danger"
+                  >
+                    {cancelLoading ? "Canceling…" : "Cancel subscription"}
+                    {!cancelLoading && <span className="pro-action-arrow" aria-hidden="true">→</span>}
+                  </button>
+                )}
+
                 <button
-                  id="manage-subscription-btn"
                   type="button"
-                  disabled={portalLoading}
-                  onClick={openBillingPortal}
-                  className="profile-action-button"
+                  onClick={async () => { await signOut(); window.location.href = "/"; }}
+                  className="pro-action danger"
                 >
-                  {portalLoading ? "Opening…" : "Manage subscription"}
-                  {!portalLoading && <span className="profile-action-arrow" aria-hidden="true">→</span>}
+                  Sign out
+                  <span className="pro-action-arrow" aria-hidden="true">→</span>
                 </button>
-              )}
-
-              {profile?.plan_type !== "lifetime" && (
-                <button
-                  id="cancel-subscription-btn"
-                  type="button"
-                  disabled={cancelLoading}
-                  onClick={cancelSubscription}
-                  className="profile-action-button is-danger"
-                >
-                  {cancelLoading ? "Canceling…" : "Cancel subscription"}
-                  {!cancelLoading && <span className="profile-action-arrow" aria-hidden="true">→</span>}
-                </button>
-              )}
-
-              <button
-                type="button"
-                onClick={async () => { await signOut(); window.location.href = "/"; }}
-                className="profile-action-button is-danger"
-              >
-                Sign out
-                <span className="profile-action-arrow" aria-hidden="true">→</span>
-              </button>
+              </div>
             </section>
-          </aside>
-        </section>
+
+          </div>
+        </div>
       </div>
     </main>
   );
