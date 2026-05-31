@@ -29,47 +29,12 @@ export default function ContactPage() {
     }
   }
 
-  const inputStyle: React.CSSProperties = {
-    width: "100%", padding: "12px 16px",
-    fontSize: "0.95rem", color: "#1a1a1a",
-    background: "rgba(255,255,255,0.8)",
-    border: "1.5px solid rgba(45,90,61,0.2)",
-    borderRadius: "10px", outline: "none",
-    fontFamily: "DM Sans, Inter, sans-serif",
-    boxSizing: "border-box",
-    transition: "border-color 0.2s",
-  };
-
   return (
     <div style={{ minHeight: "100vh", background: "#f4f0ea", fontFamily: "DM Sans, Inter, sans-serif" }}>
-      {/* Nav */}
-      <nav style={{
-        position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-        background: "rgba(244,240,234,0.92)", backdropFilter: "blur(16px)",
-        WebkitBackdropFilter: "blur(16px)",
-        borderBottom: "1px solid rgba(45,90,61,0.1)",
-        padding: "0 24px", height: "60px",
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-      }}>
-        <Link href="/app" style={{
-          fontSize: "0.95rem", fontWeight: 600, color: "#2d5a3d",
-          textDecoration: "none",
-        }}>
-          ← Research Match
-        </Link>
-        <span style={{
-          fontFamily: "var(--font-playfair), Georgia, serif",
-          fontSize: "1rem", fontWeight: 700, color: "#2d5a3d",
-        }}>
-          Contact
-        </span>
-        <Link href="/app" style={{
-          padding: "8px 20px", fontSize: "0.85rem", fontWeight: 600,
-          color: "#fff", background: "#2d5a3d", borderRadius: "10px",
-          textDecoration: "none",
-        }}>
-          Open App
-        </Link>
+      <nav className="sp-nav">
+        <Link href="/app" className="sp-nav-back">← Research Match</Link>
+        <span className="sp-nav-title">Contact</span>
+        <Link href="/app" className="sp-nav-cta">Open App</Link>
       </nav>
 
       {/* Content — centered */}
@@ -78,21 +43,8 @@ export default function ContactPage() {
         alignItems: "center", justifyContent: "center",
         padding: "80px 24px",
       }}>
-        <div style={{
-          width: "100%", maxWidth: "520px",
-          background: "rgba(255,255,255,0.7)",
-          backdropFilter: "blur(24px)",
-          WebkitBackdropFilter: "blur(24px)",
-          border: "1px solid rgba(255,255,255,0.65)",
-          borderRadius: "24px", padding: "48px 44px",
-          boxShadow: "0 8px 40px rgba(45,90,61,0.08)",
-        }}>
-          <h1 style={{
-            fontFamily: "var(--font-playfair), Georgia, serif",
-            fontSize: "2rem", fontWeight: 800,
-            color: "#2d5a3d", marginBottom: "10px",
-            letterSpacing: "-0.02em",
-          }}>
+        <div className="sp-card" style={{ width: "100%", maxWidth: "520px", padding: "48px 44px" }}>
+          <h1 className="sp-heading" style={{ fontSize: "2rem", marginBottom: "10px" }}>
             Get in Touch
           </h1>
           <p style={{ fontSize: "0.95rem", color: "#6b7280", lineHeight: 1.6, marginBottom: "28px" }}>
@@ -102,15 +54,7 @@ export default function ContactPage() {
           {/* Email link */}
           <a
             href="mailto:thomasjacekim@gmail.com"
-            style={{
-              display: "inline-block",
-              color: "#2d5a3d", fontWeight: 600, fontSize: "0.95rem",
-              textDecoration: "none",
-              border: "1.5px solid #2d5a3d",
-              borderRadius: "10px", padding: "10px 20px",
-              marginBottom: "32px",
-              transition: "background 0.2s, color 0.2s",
-            }}
+            className="contact-email-link"
           >
             thomasjacekim@gmail.com
           </a>
@@ -146,7 +90,7 @@ export default function ContactPage() {
                   value={name}
                   onChange={e => setName(e.target.value)}
                   placeholder="Your name"
-                  style={inputStyle}
+                  className="contact-input"
                 />
               </div>
               <div>
@@ -159,7 +103,7 @@ export default function ContactPage() {
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="your@email.com"
-                  style={inputStyle}
+                  className="contact-input"
                 />
               </div>
               <div>
@@ -172,7 +116,8 @@ export default function ContactPage() {
                   onChange={e => setMessage(e.target.value)}
                   placeholder="What's on your mind?"
                   rows={5}
-                  style={{ ...inputStyle, resize: "vertical", lineHeight: 1.6 }}
+                  className="contact-input"
+                  style={{ resize: "vertical", lineHeight: 1.6 }}
                 />
               </div>
               {submitError && (
@@ -181,18 +126,8 @@ export default function ContactPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                style={{
-                  background: "linear-gradient(135deg, #2d5a3d, #24956A)",
-                  color: "#fff", padding: "14px 24px",
-                  borderRadius: "12px", fontWeight: 700,
-                  fontSize: "1rem", border: "none",
-                  cursor: submitting ? "not-allowed" : "pointer",
-                  opacity: submitting ? 0.7 : 1,
-                  fontFamily: "DM Sans, Inter, sans-serif",
-                  boxShadow: "0 4px 16px rgba(45,90,61,0.25)",
-                  marginTop: "4px",
-                  transition: "opacity 0.2s",
-                }}
+                className="sp-btn-primary"
+                style={{ marginTop: "4px", opacity: submitting ? 0.7 : 1, cursor: submitting ? "not-allowed" : "pointer" }}
               >
                 {submitting ? "Sending..." : "Send Message"}
               </button>

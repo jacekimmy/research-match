@@ -308,7 +308,6 @@ function AppPageInner() {
   const [checkoutError, setCheckoutError] = useState("");
   const [authModalCopy, setAuthModalCopy] = useState("");
   const [showMenu, setShowMenu] = useState(false);
-  const [showEmailPlaybookMenu, setShowEmailPlaybookMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const PLACEHOLDER_EXAMPLES = [
@@ -471,10 +470,6 @@ function AppPageInner() {
     }
     document.addEventListener("mousedown", handleOutside);
     return () => document.removeEventListener("mousedown", handleOutside);
-  }, [showMenu]);
-
-  useEffect(() => {
-    if (!showMenu) setShowEmailPlaybookMenu(false);
   }, [showMenu]);
 
   // Grand reveal / welcome back
@@ -1319,57 +1314,60 @@ function AppPageInner() {
           {/* Dropdown menu */}
           <div className={`rm-nav-dropdown${showMenu ? " rm-nav-dropdown-open" : ""}`}>
             <div className="rm-nav-dropdown-inner">
+
+              {/* ── Tools ── */}
+              <div className="rm-nav-section-label">Tools</div>
+              <Link href="/app" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
+                <span className="rm-nav-dropdown-icon">⬡</span>
+                Professor Search
+                <span className="rm-nav-item-badge rm-nav-item-badge-tool" style={{ marginLeft: "auto" }}>App</span>
+              </Link>
               <Link href="/how-it-works" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
                 <span className="rm-nav-dropdown-icon">◎</span>
                 How It Works
               </Link>
-              <button
-                type="button"
-                className="rm-nav-dropdown-item"
-                onClick={() => setShowEmailPlaybookMenu((v) => !v)}
-              >
-                <span className="rm-nav-dropdown-icon">✉</span>
-                <span style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
-                  <span>Email Playbook</span>
-                  <span style={{ fontSize: "0.85rem", opacity: 0.8 }}>{showEmailPlaybookMenu ? "▾" : "▸"}</span>
-                </span>
-              </button>
 
-              {showEmailPlaybookMenu && (
-                <div style={{ display: "flex", flexDirection: "column", gap: "6px", margin: "4px 0 6px 34px" }}>
-                  <Link href="/examples" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
-                    <span className="rm-nav-dropdown-icon">✦</span>
-                    Emails That Worked
-                  </Link>
-                  <Link href="/framework" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
-                    <span className="rm-nav-dropdown-icon">◇</span>
-                    Email Framework
-                  </Link>
-                  <Link href="/follow-up" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
-                    <span className="rm-nav-dropdown-icon">↩</span>
-                    Follow-Up Tool
-                  </Link>
-                </div>
-              )}
-              <Link href="/feedback" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
-                <span className="rm-nav-dropdown-icon">↗</span>
-                Feedback
+              {/* ── Email Playbook ── */}
+              <div className="rm-nav-section-divider" />
+              <div className="rm-nav-section-label">Email Playbook</div>
+              <Link href="/framework" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
+                <span className="rm-nav-dropdown-icon">⊞</span>
+                Email Framework
               </Link>
+              <Link href="/examples" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
+                <span className="rm-nav-dropdown-icon">✦</span>
+                Emails That Worked
+              </Link>
+              <Link href="/follow-up" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
+                <span className="rm-nav-dropdown-icon">⟳</span>
+                Follow-Up Generator
+              </Link>
+
+              {/* ── Resources ── */}
+              <div className="rm-nav-section-divider" />
+              <div className="rm-nav-section-label">Resources</div>
               <Link href="/blog" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
                 <span className="rm-nav-dropdown-icon">✒</span>
                 Blog
               </Link>
-              <Link href="/?#pricing" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
-                <span className="rm-nav-dropdown-icon">◈</span>
-                Pricing
+              <Link href="/feedback" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
+                <span className="rm-nav-dropdown-icon">↗</span>
+                Feedback
               </Link>
               <Link href="/contact" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
-                <span className="rm-nav-dropdown-icon">◇</span>
+                <span className="rm-nav-dropdown-icon">✉</span>
                 Contact
               </Link>
+
+              {/* ── Account ── */}
+              <div className="rm-nav-section-divider" />
               <Link href="/profile" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
                 <span className="rm-nav-dropdown-icon">⚙</span>
                 Account Settings
+              </Link>
+              <Link href="/?#pricing" className="rm-nav-dropdown-item" onClick={() => setShowMenu(false)}>
+                <span className="rm-nav-dropdown-icon">◈</span>
+                Pricing
               </Link>
               {user && (
                 <>
@@ -1378,7 +1376,7 @@ function AppPageInner() {
                     className="rm-nav-dropdown-item rm-nav-dropdown-logout"
                     onClick={() => { signOut(); setShowMenu(false); }}
                   >
-                    <span className="rm-nav-dropdown-icon">↩</span>
+                    <span className="rm-nav-dropdown-icon">⏏</span>
                     Log Out
                   </button>
                 </>

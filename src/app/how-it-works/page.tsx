@@ -31,50 +31,17 @@ export default function HowItWorksPage() {
         }
       `}</style>
 
-      {/* Nav */}
-      <nav style={{
-        position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-        background: "rgba(244,240,234,0.92)", backdropFilter: "blur(16px)",
-        WebkitBackdropFilter: "blur(16px)",
-        borderBottom: "1px solid rgba(45,90,61,0.1)",
-        padding: "0 24px", height: "60px",
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-      }}>
-        <Link href="/app" style={{
-          fontSize: "0.95rem", fontWeight: 600, color: "#2d5a3d",
-          textDecoration: "none", display: "flex", alignItems: "center", gap: "6px",
-        }}>
-          ← Research Match
-        </Link>
-        <span style={{
-          fontFamily: "var(--font-playfair), Georgia, serif",
-          fontSize: "1rem", fontWeight: 700, color: "#2d5a3d",
-        }}>
-          How It Works
-        </span>
-        <Link href="/app" style={{
-          padding: "8px 20px", fontSize: "0.85rem", fontWeight: 600,
-          color: "#fff", background: "#2d5a3d", borderRadius: "10px",
-          textDecoration: "none",
-        }}>
-          Try it
-        </Link>
+      <nav className="sp-nav">
+        <Link href="/app" className="sp-nav-back">← Research Match</Link>
+        <span className="sp-nav-title">How It Works</span>
+        <Link href="/app" className="sp-nav-cta">Try it</Link>
       </nav>
 
       {/* Content */}
       <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "96px 24px 80px" }}>
-        {/* Header */}
-        <div style={{ textAlign: "center", marginBottom: "64px" }}>
-          <h1 style={{
-            fontFamily: "var(--font-playfair), Georgia, serif",
-            fontSize: "clamp(2rem, 5vw, 3rem)", fontWeight: 800,
-            color: "#2d5a3d", letterSpacing: "-0.02em", marginBottom: "16px", lineHeight: 1.2,
-          }}>
-            How Research Match Works
-          </h1>
-          <p style={{ fontSize: "1.1rem", color: "#6b7280", lineHeight: 1.7, maxWidth: "560px", margin: "0 auto" }}>
-            Three steps from topic to personalized email — in minutes.
-          </p>
+        <div className="sp-hero">
+          <h1 className="sp-heading">How <em>Research Match</em> Works</h1>
+          <p className="sp-subheading">Three steps from topic to personalized email — in minutes.</p>
         </div>
 
         {/* Step cards */}
@@ -88,39 +55,14 @@ export default function HowItWorksPage() {
           }}
         >
           {STEPS.map((step, i) => (
-            <div
-              key={i}
-              style={{
-                background: "rgba(255,255,255,0.7)",
-                backdropFilter: "blur(24px)",
-                WebkitBackdropFilter: "blur(24px)",
-                border: "1px solid rgba(255,255,255,0.65)",
-                borderRadius: "22px",
-                padding: "36px 28px",
-                boxShadow: "0 8px 32px rgba(45,90,61,0.07)",
-                display: "flex",
-                flexDirection: "column",
-                gap: "14px",
-              }}
-            >
-              <div style={{
-                fontFamily: "var(--font-playfair), Georgia, serif",
-                fontSize: "2.8rem", fontWeight: 800,
-                color: "#2d5a3d", letterSpacing: "-0.04em", lineHeight: 1,
-              }}>
+            <div key={i} className="hiw-step-card">
+              <div className="hiw-step-num">
                 {step.num}
               </div>
-              <h2 style={{
-                fontFamily: "var(--font-playfair), Georgia, serif",
-                fontSize: "1.2rem", fontWeight: 700,
-                color: "#1a1a1a", margin: 0, lineHeight: 1.35,
-              }}>
+              <h2 style={{ fontSize: "1.2rem", fontWeight: 600, color: "#1a1a1a", margin: 0, lineHeight: 1.35 }}>
                 {step.title}
               </h2>
-              <p style={{
-                fontSize: "0.9rem", color: "#6b7280",
-                lineHeight: 1.7, margin: 0,
-              }}>
+              <p style={{ fontSize: "0.9rem", color: "#6b7280", lineHeight: 1.7, margin: 0 }}>
                 {step.desc}
               </p>
             </div>
@@ -132,15 +74,7 @@ export default function HowItWorksPage() {
           <p style={{ fontSize: "1rem", color: "#6b7280", marginBottom: "20px" }}>
             Find your next research mentor in minutes.
           </p>
-          <Link href="/app" style={{
-            display: "inline-block",
-            background: "linear-gradient(135deg, #2d5a3d, #24956A)",
-            color: "#fff", padding: "16px 40px", borderRadius: "14px",
-            fontWeight: 700, fontSize: "1rem", textDecoration: "none",
-            boxShadow: "0 4px 16px rgba(45,90,61,0.3)",
-          }}>
-            Start searching →
-          </Link>
+          <Link href="/app" className="sp-cta-link">Start searching →</Link>
         </div>
       </div>
     </div>

@@ -133,18 +133,7 @@ function FadeIn({
 
 function Annotation({ text }: { text: string }) {
   return (
-    <div
-      style={{
-        borderLeft: "4px solid #2d5a3d",
-        background: "rgba(45, 90, 61, 0.07)",
-        padding: "14px 18px",
-        borderRadius: "0 10px 10px 0",
-        fontSize: "0.9rem",
-        lineHeight: 1.65,
-        color: "#1a1a1a",
-        fontStyle: "italic",
-      }}
-    >
+    <div className="ex-annotation">
       {text}
     </div>
   );
@@ -152,35 +141,8 @@ function Annotation({ text }: { text: string }) {
 
 function ResultBox({ text }: { text: string }) {
   return (
-    <div
-      style={{
-        background: "linear-gradient(135deg, rgba(45, 90, 61, 0.12) 0%, rgba(45, 90, 61, 0.06) 100%)",
-        border: "1px solid rgba(45, 90, 61, 0.25)",
-        borderRadius: "12px",
-        padding: "20px 24px",
-        marginTop: "12px",
-        display: "flex",
-        alignItems: "flex-start",
-        gap: "12px",
-      }}
-    >
-      <span
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-          width: "28px",
-          height: "28px",
-          borderRadius: "50%",
-          background: "#2d5a3d",
-          color: "#fff",
-          fontSize: "0.85rem",
-          flexShrink: 0,
-          marginTop: "1px",
-        }}
-      >
-        &#10003;
-      </span>
+    <div className="ex-result-box">
+      <span className="ex-result-icon">&#10003;</span>
       <p style={{ margin: 0, lineHeight: 1.7, fontWeight: 500, color: "#2d5a3d" }}>{text}</p>
     </div>
   );
@@ -193,12 +155,12 @@ function EmailCard({ email, index }: { email: EmailExample; index: number }) {
         {/* Email header */}
         <h2
           style={{
-            fontFamily: "'Playfair Display', serif",
+            fontFamily: "var(--font-playfair), Georgia, serif",
             fontSize: "clamp(1.25rem, 3vw, 1.6rem)",
-            fontWeight: 700,
-            color: "#2d5a3d",
+            fontWeight: 500,
+            color: "#111",
             marginBottom: "28px",
-            letterSpacing: "-0.01em",
+            letterSpacing: "-0.015em",
           }}
         >
           {email.label}
@@ -217,18 +179,7 @@ function EmailCard({ email, index }: { email: EmailExample; index: number }) {
                 className="email-row"
               >
                 {/* Email paragraph card */}
-                <div
-                  style={{
-                    background: "rgba(255, 255, 255, 0.85)",
-                    border: "1px solid rgba(44, 62, 52, 0.1)",
-                    borderRadius: "12px",
-                    padding: "20px 24px",
-                    lineHeight: 1.75,
-                    fontSize: "0.95rem",
-                    color: "#1a1a1a",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
-                  }}
-                >
+                <div className="ex-email-para">
                   {p.text}
                 </div>
 
@@ -365,72 +316,21 @@ export default function ExamplesPage() {
         }
       `}</style>
 
-      <div style={{ minHeight: "100vh", padding: "40px 20px", position: "relative" }}>
-        <div style={{ maxWidth: "900px", margin: "0 auto" }}>
-          {/* ---- Nav ---- */}
-          <nav
-            style={{
-              marginBottom: "48px",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Link
-              href="/"
-              style={{
-                fontSize: "1.3rem",
-                fontWeight: 800,
-                color: "#2d5a3d",
-                textDecoration: "none",
-                fontFamily: "'Playfair Display', serif",
-              }}
-            >
-              Research Match
-            </Link>
-            <Link
-              href="/app"
-              style={{
-                padding: "10px 24px",
-                fontSize: "0.85rem",
-                fontWeight: 600,
-                color: "#2d5a3d",
-                border: "1.5px solid #2d5a3d",
-                borderRadius: "10px",
-                textDecoration: "none",
-                transition: "background 0.2s ease, color 0.2s ease",
-                background: "transparent",
-              }}
-            >
-              Back to Search
-            </Link>
-          </nav>
+      {/* Sub-page nav */}
+      <nav className="sp-nav">
+        <Link href="/app" className="sp-nav-back">← Research Match</Link>
+        <span className="sp-nav-title">Emails That Worked</span>
+        <Link href="/app" className="sp-nav-cta">Try it</Link>
+      </nav>
 
-          {/* ---- Header ---- */}
+      <div style={{ background: "#f4f0ea", minHeight: "100vh", paddingTop: "96px", padding: "96px 20px 40px" }}>
+        <div style={{ maxWidth: "900px", margin: "0 auto" }}>
+
+          {/* ---- Hero header ---- */}
           <FadeIn>
-            <div style={{ textAlign: "center", marginBottom: "56px" }}>
-              <h1
-                style={{
-                  fontFamily: "'Playfair Display', serif",
-                  fontSize: "clamp(2rem, 5vw, 3rem)",
-                  fontWeight: 800,
-                  color: "#2d5a3d",
-                  letterSpacing: "-0.02em",
-                  marginBottom: "16px",
-                  lineHeight: 1.2,
-                }}
-              >
-                Emails That Worked
-              </h1>
-              <p
-                style={{
-                  fontSize: "1.1rem",
-                  color: "#6b7280",
-                  lineHeight: 1.7,
-                  maxWidth: "600px",
-                  margin: "0 auto",
-                }}
-              >
+            <div className="sp-hero">
+              <h1 className="sp-heading">Emails That Worked</h1>
+              <p className="sp-subheading">
                 Real cold emails, annotated line by line, that landed replies
                 from professors at Princeton and ASU.
               </p>
@@ -512,6 +412,15 @@ export default function ExamplesPage() {
                         </li>
                       ))}
                     </ul>
+                  </div>
+                </FadeIn>
+              )}
+
+              {/* ---- Bottom CTA ---- */}
+              {(isPaid || loading) && (
+                <FadeIn delay={500}>
+                  <div style={{ textAlign: "center", marginTop: "16px", marginBottom: "48px" }}>
+                    <Link href="/app" className="sp-cta-link">Search professors →</Link>
                   </div>
                 </FadeIn>
               )}

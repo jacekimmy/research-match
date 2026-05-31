@@ -75,69 +75,59 @@ export default function FollowUpPage() {
   const showAuthWall = mounted && !user;
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f4f0ea", position: "relative", overflowX: "hidden" }}>
-      {/* Background orbs */}
-      <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }}>
-        <div style={{ position: "absolute", width: 600, height: 600, top: -200, right: -150, borderRadius: "50%", background: "radial-gradient(circle, rgba(196,162,101,0.10) 0%, transparent 70%)", filter: "blur(80px)" }} />
-        <div style={{ position: "absolute", width: 500, height: 500, bottom: "10%", left: -100, borderRadius: "50%", background: "radial-gradient(circle, rgba(45,90,61,0.08) 0%, transparent 70%)", filter: "blur(80px)" }} />
-      </div>
+    <div style={{ minHeight: "100vh", background: "#f4f0ea" }}>
+      {/* Nav */}
+      <nav className="sp-nav">
+        <Link href="/app" className="sp-nav-back">
+          ← Research Match
+        </Link>
+        <span className="sp-nav-title">Follow-Up</span>
+        <Link href="/app" className="sp-nav-cta">
+          Search Profs
+        </Link>
+      </nav>
 
       <div style={{ position: "relative", zIndex: 1, maxWidth: 720, margin: "0 auto", padding: "40px 20px 100px" }}>
-        {/* Nav */}
-        <nav style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 52 }}>
-          <Link href="/app" style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: "0.82rem", color: "#6b7280", textDecoration: "none", fontWeight: 500, padding: "8px 0", transition: "color 0.2s" }}>
-            <span style={{ fontSize: "1rem" }}>←</span> Back to search
-          </Link>
-          <Link href="/" style={{ fontSize: "1.2rem", fontWeight: 800, color: "#2d5a3d", textDecoration: "none", fontFamily: "var(--font-playfair), Georgia, serif" }}>
-            Research Match
-          </Link>
-        </nav>
-
-        {/* Header */}
-        <div style={{ textAlign: "center", marginBottom: 52 }}>
-          <div style={{ display: "inline-block", fontSize: "0.68rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.14em", color: "#C4A265", background: "rgba(196,162,101,0.1)", border: "1px solid rgba(196,162,101,0.25)", borderRadius: 999, padding: "5px 16px", marginBottom: 18 }}>
-            Follow-Up Timeline
-          </div>
-          <h1 style={{ fontSize: "clamp(2rem, 5vw, 3rem)", fontWeight: 800, color: "#1a2e1f", letterSpacing: "-0.025em", lineHeight: 1.15, marginBottom: 16, fontFamily: "var(--font-playfair), Georgia, serif" }}>
-            Don&apos;t let a good email<br />go to waste.
+        {/* Hero */}
+        <div className="sp-hero">
+          <div className="sp-eyebrow">Follow-Up Timeline</div>
+          <h1 className="sp-heading">
+            <em>Don&apos;t let a good email</em> go to waste.
           </h1>
-          <p style={{ fontSize: "1rem", color: "#6b7280", lineHeight: 1.7, maxWidth: 480, margin: "0 auto" }}>
+          <p className="sp-subheading">
             Paste the email you sent. We&apos;ll generate two follow-ups timed perfectly, each one written to feel like it came from you.
           </p>
         </div>
 
         {/* Form card */}
-        <div style={{ background: "rgba(255,255,255,0.65)", backdropFilter: "blur(24px)", borderRadius: 24, border: "1px solid rgba(45,90,61,0.1)", boxShadow: "0 8px 48px rgba(45,90,61,0.07), inset 0 1px 0 rgba(255,255,255,0.9)", padding: "36px 32px", marginBottom: 36 }}>
+        <div className="sp-card" style={{ padding: "36px 32px", marginBottom: 36 }}>
           <div style={{ marginBottom: 28 }}>
-            <label style={{ display: "block", fontSize: "0.72rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "#2d5a3d", marginBottom: 10 }}>
+            <label className="sp-label">
               Your Original Email
             </label>
             <textarea
               value={originalEmail}
               onChange={e => setOriginalEmail(e.target.value)}
               placeholder="Paste the full email you sent to the professor here..."
-              style={{ width: "100%", minHeight: 200, padding: "16px 18px", borderRadius: 14, border: "1.5px solid rgba(45,90,61,0.15)", background: "rgba(244,240,234,0.6)", fontSize: "0.9rem", color: "#1a1a1a", lineHeight: 1.7, resize: "vertical", outline: "none", fontFamily: "inherit", transition: "border-color 0.2s, box-shadow 0.2s", boxSizing: "border-box" }}
-              onFocus={e => { e.target.style.borderColor = "rgba(45,90,61,0.4)"; e.target.style.boxShadow = "0 0 0 3px rgba(45,90,61,0.06)"; }}
-              onBlur={e => { e.target.style.borderColor = "rgba(45,90,61,0.15)"; e.target.style.boxShadow = "none"; }}
+              className="sp-input"
+              style={{ minHeight: 200, resize: "vertical" }}
             />
           </div>
 
           <div style={{ marginBottom: 32 }}>
-            <label style={{ display: "block", fontSize: "0.72rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "#2d5a3d", marginBottom: 10 }}>
+            <label className="sp-label">
               Date You Sent It
             </label>
             <input
               type="date"
               value={sentDate}
               onChange={e => setSentDate(e.target.value)}
-              style={{ width: "100%", padding: "14px 18px", borderRadius: 14, border: "1.5px solid rgba(45,90,61,0.15)", background: "rgba(244,240,234,0.6)", fontSize: "0.9rem", color: "#1a1a1a", outline: "none", fontFamily: "inherit", transition: "border-color 0.2s, box-shadow 0.2s", boxSizing: "border-box" }}
-              onFocus={e => { e.target.style.borderColor = "rgba(45,90,61,0.4)"; e.target.style.boxShadow = "0 0 0 3px rgba(45,90,61,0.06)"; }}
-              onBlur={e => { e.target.style.borderColor = "rgba(45,90,61,0.15)"; e.target.style.boxShadow = "none"; }}
+              className="sp-input"
             />
           </div>
 
           {error && (
-            <p style={{ fontSize: "0.85rem", color: "#b54040", marginBottom: 16, padding: "10px 14px", background: "rgba(181,64,64,0.06)", borderRadius: 10, border: "1px solid rgba(181,64,64,0.15)" }}>
+            <p className="sp-error">
               {error}
             </p>
           )}
@@ -146,7 +136,7 @@ export default function FollowUpPage() {
           {showAuthWall && (
             <div style={{ textAlign: "center", padding: "20px 0 4px" }}>
               <p style={{ fontSize: "0.9rem", color: "#6b7280", marginBottom: 16 }}>Create a free account to generate your follow-ups.</p>
-              <Link href="/app?signup=true" className="fu-btn-gold">
+              <Link href="/app?signup=true" className="sp-btn-gold">
                 Create free account
               </Link>
             </div>
@@ -157,7 +147,7 @@ export default function FollowUpPage() {
             <div style={{ textAlign: "center", padding: "20px 0 4px" }}>
               <p style={{ fontSize: "0.9rem", color: "#6b7280", marginBottom: 6 }}>You&apos;ve used your free follow-up.</p>
               <p style={{ fontSize: "0.82rem", color: "#9b8040", marginBottom: 16 }}>Upgrade for unlimited use.</p>
-              <Link href="/app?upgrade=true" className="fu-btn-gold">
+              <Link href="/app?upgrade=true" className="sp-btn-gold">
                 Upgrade to Semester
               </Link>
             </div>
@@ -168,7 +158,7 @@ export default function FollowUpPage() {
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="fu-btn-gold"
+              className="sp-btn-primary"
               style={{ width: "100%", opacity: loading ? 0.75 : 1 }}
             >
               {loading ? (
@@ -201,7 +191,7 @@ export default function FollowUpPage() {
                 {/* Node */}
                 <div style={{ position: "absolute", left: -33, top: 24, width: 18, height: 18, borderRadius: "50%", background: "linear-gradient(135deg, #C4A265, #A8893E)", boxShadow: "0 0 0 4px rgba(196,162,101,0.18), 0 2px 8px rgba(196,162,101,0.35)" }} />
                 {/* Card */}
-                <div style={{ background: "rgba(255,255,255,0.7)", backdropFilter: "blur(20px)", borderRadius: 20, border: "1px solid rgba(196,162,101,0.2)", boxShadow: "0 4px 32px rgba(45,90,61,0.07), inset 0 1px 0 rgba(255,255,255,0.9)", padding: "28px 28px 24px" }}>
+                <div className="fu-timeline-card fu-timeline-card-gold">
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16, flexWrap: "wrap", gap: 8 }}>
                     <div>
                       <span style={{ fontSize: "0.62rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.12em", color: "#C4A265" }}>Follow-Up #1</span>
@@ -212,7 +202,7 @@ export default function FollowUpPage() {
                   <pre style={{ whiteSpace: "pre-wrap", fontFamily: "inherit", fontSize: "0.88rem", color: "#374151", lineHeight: 1.75, margin: 0, marginBottom: 20 }}>{result.followUp1}</pre>
                   <button
                     onClick={() => copy(result.followUp1, 1)}
-                    className="fu-copy-btn"
+                    className="fu-copy-btn fu-copy-btn-gold"
                   >
                     {copied1 ? "✓ Copied!" : "Copy email"}
                   </button>
@@ -224,7 +214,7 @@ export default function FollowUpPage() {
                 {/* Node */}
                 <div style={{ position: "absolute", left: -33, top: 24, width: 18, height: 18, borderRadius: "50%", background: "linear-gradient(135deg, #2d5a3d, #2E9E72)", boxShadow: "0 0 0 4px rgba(45,90,61,0.12), 0 2px 8px rgba(45,90,61,0.25)" }} />
                 {/* Card */}
-                <div style={{ background: "rgba(255,255,255,0.7)", backdropFilter: "blur(20px)", borderRadius: 20, border: "1px solid rgba(45,90,61,0.12)", boxShadow: "0 4px 32px rgba(45,90,61,0.07), inset 0 1px 0 rgba(255,255,255,0.9)", padding: "28px 28px 24px" }}>
+                <div className="fu-timeline-card fu-timeline-card-green">
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16, flexWrap: "wrap", gap: 8 }}>
                     <div>
                       <span style={{ fontSize: "0.62rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.12em", color: "#2d5a3d" }}>Follow-Up #2</span>
@@ -244,7 +234,7 @@ export default function FollowUpPage() {
             </div>
 
             {/* Move on message */}
-            <div className="fu-card-enter-3" style={{ background: "rgba(255,255,255,0.45)", backdropFilter: "blur(16px)", borderRadius: 20, border: "1px solid rgba(45,90,61,0.08)", padding: "28px 32px", textAlign: "center" }}>
+            <div className="fu-move-on-card fu-card-enter-3">
               <div style={{ fontSize: "1.4rem", marginBottom: 10 }}>🤝</div>
               <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#2d5a3d", marginBottom: 10 }}>
                 After 2 follow-ups, it&apos;s time to move on.
