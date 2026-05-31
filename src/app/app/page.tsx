@@ -1394,12 +1394,14 @@ function AppPageInner() {
         {/* ====== HERO (empty / initial state) ====== */}
         {(!showSaved && results.length === 0 && !loading) || heroExiting ? (
           <div className={`rm-hero${heroExiting ? " rm-hero-exit" : ""}`}>
+            {/* Atmospheric background glow — premium */}
+            <div className="rm-hero-glow" aria-hidden="true" />
             <h1
               className="rm-hero-title"
               style={heroExiting ? { filter: "url(#meltFilter)" } : {}}
             >
-              <span style={{ display: "block" }}>Find your</span>
-              <span style={{ display: "block", whiteSpace: "nowrap" }}>research professor.</span>
+              <span className="rm-hero-title-black" style={{ display: "block" }}>Find your</span>
+              <span className="rm-hero-title-green" style={{ display: "block", whiteSpace: "nowrap" }}>research professor.</span>
             </h1>
             {/* Mode toggle */}
             <div className="mode-toggle" ref={toggleRef}>
