@@ -262,9 +262,10 @@ export default function ProfilePage() {
           <div className="profile-identity">
             <div className="profile-avatar-large">{initial}</div>
             <div>
-              <p className="profile-kicker">Profile Settings</p>
-              <h1>{user.email}</h1>
-              <p>Member since {memberSince}. Your research workspace updates as your plan changes.</p>
+              <p className="profile-kicker">Account</p>
+              <h1>Profile Settings</h1>
+              <p className="profile-email-label">{user.email}</p>
+              <p className="profile-since-label">Member since {memberSince}</p>
             </div>
           </div>
 
@@ -291,7 +292,7 @@ export default function ProfilePage() {
           <div className="profile-metric-card">
             <span>Days active</span>
             <strong>{activeDays}</strong>
-            <p>Research rhythm matters</p>
+            <p>Since you joined</p>
           </div>
           <div className="profile-metric-card">
             <span>Buddy weeks</span>
@@ -312,32 +313,38 @@ export default function ProfilePage() {
               </div>
 
               <p className="profile-muted">
-                Every friend who uses your code while buying weekly, semester, or lifetime access gets 25% off. You earn one Buddy Week, stored here until you choose to start it.
+                Share your code — friends get 25% off any plan. You earn one free week per successful referral. Weeks stack and never expire.
               </p>
 
-              <div className="buddy-code-card">
-                <div>
-                  <span>Your code</span>
-                  <strong>{buddyLoading ? "Loading..." : buddyPass.referralCode}</strong>
+              <div className="buddy-share-card">
+                <div className="buddy-share-row">
+                  <div>
+                    <span className="buddy-share-label">Referral code</span>
+                    <strong className="buddy-share-code">
+                      {buddyLoading ? "Loading…" : buddyPass.referralCode}
+                    </strong>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => copyBuddyPass(buddyPass.referralCode, "code")}
+                    className="profile-soft-button"
+                  >
+                    {copyState === "code" ? "✓ Copied" : "Copy code"}
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => copyBuddyPass(buddyPass.referralCode, "code")}
-                  className="profile-soft-button"
-                >
-                  {copyState === "code" ? "Copied" : "Copy"}
-                </button>
-              </div>
-
-              <div className="buddy-link-row">
-                <span>{buddyPass.referralUrl || "Your share link appears here"}</span>
-                <button
-                  type="button"
-                  onClick={() => copyBuddyPass(buddyPass.referralUrl, "link")}
-                  className="profile-soft-button"
-                >
-                  {copyState === "link" ? "Copied" : "Copy link"}
-                </button>
+                <hr className="buddy-share-sep" aria-hidden="true" />
+                <div className="buddy-share-row">
+                  <span className="buddy-share-url">
+                    {buddyPass.referralUrl || "Loading share link…"}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => copyBuddyPass(buddyPass.referralUrl, "link")}
+                    className="profile-soft-button"
+                  >
+                    {copyState === "link" ? "✓ Copied" : "Copy link"}
+                  </button>
+                </div>
               </div>
 
               <div className="buddy-activation-card">
@@ -450,11 +457,14 @@ export default function ProfilePage() {
               <div className="profile-panel-header">
                 <div>
                   <p className="profile-kicker">Account</p>
-                  <h2>Controls</h2>
+                  <h2>Settings</h2>
                 </div>
               </div>
 
-              <Link href="/feedback" className="profile-action-button">Give feedback</Link>
+              <Link href="/feedback" className="profile-action-button">
+                Give feedback
+                <span className="profile-action-arrow" aria-hidden="true">→</span>
+              </Link>
 
               {profile?.plan_type !== "lifetime" && (
                 <button
@@ -464,7 +474,8 @@ export default function ProfilePage() {
                   onClick={openBillingPortal}
                   className="profile-action-button"
                 >
-                  {portalLoading ? "Opening..." : "Manage subscription"}
+                  {portalLoading ? "Opening…" : "Manage subscription"}
+                  {!portalLoading && <span className="profile-action-arrow" aria-hidden="true">→</span>}
                 </button>
               )}
 
@@ -476,7 +487,8 @@ export default function ProfilePage() {
                   onClick={cancelSubscription}
                   className="profile-action-button is-danger"
                 >
-                  {cancelLoading ? "Canceling..." : "Cancel subscription"}
+                  {cancelLoading ? "Canceling…" : "Cancel subscription"}
+                  {!cancelLoading && <span className="profile-action-arrow" aria-hidden="true">→</span>}
                 </button>
               )}
 
@@ -486,6 +498,7 @@ export default function ProfilePage() {
                 className="profile-action-button is-danger"
               >
                 Sign out
+                <span className="profile-action-arrow" aria-hidden="true">→</span>
               </button>
             </section>
           </aside>
