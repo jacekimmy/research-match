@@ -1480,16 +1480,15 @@ function AppPageInner() {
             {error && <p style={{ textAlign: "center", fontSize: "1rem", color: "#c45c5c", marginTop: "20px" }}>{error}</p>}
 
             {/* Saved shortlist pill — hero state */}
-            {saved.length > 0 && (
-              <button
-                className="rm-saved-pill"
-                onClick={() => setShowSaved(true)}
-                aria-label={`View ${saved.length} saved professor${saved.length !== 1 ? "s" : ""}`}
-              >
-                <span aria-hidden="true">★</span>
-                {saved.length} saved
-              </button>
-            )}
+            <button
+              className="rm-saved-pill"
+              onClick={() => { if (saved.length > 0) setShowSaved(true); }}
+              aria-label={saved.length > 0 ? `View ${saved.length} saved professor${saved.length !== 1 ? "s" : ""}` : "Your saved professors shortlist"}
+              style={saved.length === 0 ? { opacity: 0.45, cursor: "default" } : {}}
+            >
+              <span aria-hidden="true">★</span>
+              {saved.length > 0 ? `${saved.length} saved` : "Saved"}
+            </button>
           </div>
 
         ) : (
@@ -1588,19 +1587,18 @@ function AppPageInner() {
               )}
 
               {/* Saved shortlist pill — compact state */}
-              {saved.length > 0 && (
-                <button
-                  className={`rm-saved-pill${showSaved ? " rm-saved-pill-active" : ""}`}
-                  onClick={() => setShowSaved(!showSaved)}
-                  aria-label={showSaved ? "Back to search results" : `View ${saved.length} saved professor${saved.length !== 1 ? "s" : ""}`}
-                >
-                  {showSaved ? (
-                    <><span aria-hidden="true">←</span> Back to search</>
-                  ) : (
-                    <><span aria-hidden="true">★</span> {saved.length} saved</>
-                  )}
-                </button>
-              )}
+              <button
+                className={`rm-saved-pill${showSaved ? " rm-saved-pill-active" : ""}`}
+                onClick={() => { if (saved.length > 0 || showSaved) setShowSaved(!showSaved); }}
+                aria-label={showSaved ? "Back to search results" : `View ${saved.length} saved professor${saved.length !== 1 ? "s" : ""}`}
+                style={saved.length === 0 && !showSaved ? { opacity: 0.45, cursor: "default" } : {}}
+              >
+                {showSaved ? (
+                  <><span aria-hidden="true">←</span> Back to search</>
+                ) : (
+                  <><span aria-hidden="true">★</span> {saved.length > 0 ? `${saved.length} saved` : "Saved"}</>
+                )}
+              </button>
             </div>
 
             {/* STATUS */}
