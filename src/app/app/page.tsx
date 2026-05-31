@@ -1479,16 +1479,18 @@ function AppPageInner() {
 
             {error && <p style={{ textAlign: "center", fontSize: "1rem", color: "#c45c5c", marginTop: "20px" }}>{error}</p>}
 
-            {/* Saved shortlist pill — hero state */}
-            <button
-              className="rm-saved-pill"
-              onClick={() => { if (saved.length > 0) setShowSaved(true); }}
-              aria-label={saved.length > 0 ? `View ${saved.length} saved professor${saved.length !== 1 ? "s" : ""}` : "Your saved professors shortlist"}
-              style={saved.length === 0 ? { opacity: 0.45, cursor: "default" } : {}}
-            >
-              <span aria-hidden="true">★</span>
-              {saved.length > 0 ? `${saved.length} saved` : "Saved"}
-            </button>
+            {/* Saved pill — hero state, centred directly below search bar */}
+            <div style={{ display: "flex", justifyContent: "center", width: "100%", maxWidth: "760px", marginTop: "12px" }}>
+              <button
+                className="rm-saved-pill"
+                onClick={() => { if (saved.length > 0) setShowSaved(true); }}
+                aria-label={saved.length > 0 ? `View ${saved.length} saved professors` : "Your saved professors shortlist"}
+                style={saved.length === 0 ? { opacity: 0.45, cursor: "default" } : {}}
+              >
+                <span aria-hidden="true">★</span>
+                {saved.length > 0 ? `${saved.length} saved` : "Saved"}
+              </button>
+            </div>
           </div>
 
         ) : (
@@ -1512,7 +1514,6 @@ function AppPageInner() {
                     <button ref={btnInterestRef} onClick={() => setSearchMode("interest")} className={`mode-toggle-btn ${searchMode === "interest" ? "mode-toggle-btn-active" : ""}`}>By Interest</button>
                     <button ref={btnNameRef} onClick={() => setSearchMode("name")} className={`mode-toggle-btn ${searchMode === "name" ? "mode-toggle-btn-active" : ""}`}>By Name</button>
                   </div>
-                  <div className="rm-search-and-pill">
                   {searchMode === "interest" ? (
                     <div className="glass-search rm-search">
                       <svg width="24" height="24" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0, marginLeft: "4px", opacity: 0.85 }} aria-hidden="true">
@@ -1584,15 +1585,17 @@ function AppPageInner() {
                       <button onClick={searchByName} className="btn-cta rm-search-btn">Search</button>
                     </div>
                   )}
-                  <button
-                    className="rm-saved-pill"
-                    onClick={() => { if (saved.length > 0) setShowSaved(true); }}
-                    style={saved.length === 0 ? { opacity: 0.45, cursor: "default" } : {}}
-                    aria-label={saved.length > 0 ? `View ${saved.length} saved professors` : "Your saved professors shortlist"}
-                  >
-                    <span aria-hidden="true">★</span>
-                    {saved.length > 0 ? `${saved.length} saved` : "Saved"}
-                  </button>
+                  {/* Pill — right-aligned directly below search bar */}
+                  <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "10px" }}>
+                    <button
+                      className="rm-saved-pill"
+                      onClick={() => { if (saved.length > 0) setShowSaved(true); }}
+                      style={saved.length === 0 ? { opacity: 0.45, cursor: "default" } : {}}
+                      aria-label={saved.length > 0 ? `View ${saved.length} saved professors` : "Your saved professors shortlist"}
+                    >
+                      <span aria-hidden="true">★</span>
+                      {saved.length > 0 ? `${saved.length} saved` : "Saved"}
+                    </button>
                   </div>
                 </>
               )}

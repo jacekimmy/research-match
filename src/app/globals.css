@@ -4139,9 +4139,7 @@ body::after {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  flex-shrink: 0;
   padding: 9px 17px;
-  margin-top: 12px; /* hero state: small breathing room below search */
   border-radius: 999px;
   color: #2d5a3d;
   font-size: 0.8rem;
@@ -4616,19 +4614,6 @@ body::after {
   animation: compactReveal 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
 }
 
-/* Search bar + saved pill on the same row */
-.rm-search-and-pill {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.rm-search-and-pill .glass-search {
-  flex: 1;
-  min-width: 0;
-}
-.rm-search-and-pill .rm-saved-pill {
-  margin-top: 0; /* override the hero default — no top gap when inline */
-}
 
 /* ===== MOBILE OVERRIDES (app page) ===== */
 
