@@ -1512,6 +1512,7 @@ function AppPageInner() {
                     <button ref={btnInterestRef} onClick={() => setSearchMode("interest")} className={`mode-toggle-btn ${searchMode === "interest" ? "mode-toggle-btn-active" : ""}`}>By Interest</button>
                     <button ref={btnNameRef} onClick={() => setSearchMode("name")} className={`mode-toggle-btn ${searchMode === "name" ? "mode-toggle-btn-active" : ""}`}>By Name</button>
                   </div>
+                  <div className="rm-search-and-pill">
                   {searchMode === "interest" ? (
                     <div className="glass-search rm-search">
                       <svg width="24" height="24" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0, marginLeft: "4px", opacity: 0.85 }} aria-hidden="true">
@@ -1583,22 +1584,26 @@ function AppPageInner() {
                       <button onClick={searchByName} className="btn-cta rm-search-btn">Search</button>
                     </div>
                   )}
+                  <button
+                    className="rm-saved-pill"
+                    onClick={() => { if (saved.length > 0) setShowSaved(true); }}
+                    style={saved.length === 0 ? { opacity: 0.45, cursor: "default" } : {}}
+                    aria-label={saved.length > 0 ? `View ${saved.length} saved professors` : "Your saved professors shortlist"}
+                  >
+                    <span aria-hidden="true">★</span>
+                    {saved.length > 0 ? `${saved.length} saved` : "Saved"}
+                  </button>
+                  </div>
                 </>
               )}
-
-              {/* Saved shortlist pill — compact state */}
-              <button
-                className={`rm-saved-pill${showSaved ? " rm-saved-pill-active" : ""}`}
-                onClick={() => { if (saved.length > 0 || showSaved) setShowSaved(!showSaved); }}
-                aria-label={showSaved ? "Back to search results" : `View ${saved.length} saved professor${saved.length !== 1 ? "s" : ""}`}
-                style={saved.length === 0 && !showSaved ? { opacity: 0.45, cursor: "default" } : {}}
-              >
-                {showSaved ? (
-                  <><span aria-hidden="true">←</span> Back to search</>
-                ) : (
-                  <><span aria-hidden="true">★</span> {saved.length > 0 ? `${saved.length} saved` : "Saved"}</>
-                )}
-              </button>
+              {showSaved && (
+                <button
+                  className="rm-saved-pill rm-saved-pill-active"
+                  onClick={() => setShowSaved(false)}
+                >
+                  <span aria-hidden="true">←</span> Back to search
+                </button>
+              )}
             </div>
 
             {/* STATUS */}
