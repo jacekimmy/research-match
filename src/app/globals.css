@@ -7352,6 +7352,43 @@ body::after {
   }
 }
 
+/* ── Upgrade modal backdrop ── */
+.rm-upgrade-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;       /* centered on desktop */
+  justify-content: center;
+  padding: 24px 16px;
+  box-sizing: border-box;
+  background: rgba(245, 240, 230, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* On mobile: anchor to top so the nav bar doesn't cover the heading */
+@media (max-width: 768px) {
+  .rm-upgrade-backdrop {
+    align-items: flex-start;
+    padding-top: 76px;
+  }
+}
+
+.rm-upgrade-card {
+  width: 100%;
+  max-width: 620px;
+  max-height: calc(100vh - 48px);   /* fits within desktop padding */
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .rm-upgrade-card {
+    max-height: calc(100svh - 108px); /* 76px top + 32px bottom */
+  }
+}
+
 @media (max-width: 639px) {
   .lp-hero-title {
     font-size: clamp(3rem, 14vw, 4.2rem) !important;

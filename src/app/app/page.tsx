@@ -2617,8 +2617,8 @@ function AppPageInner() {
 
       {/* UPGRADE MODAL */}
       {showUpgradeModal && (
-        <div style={{ position: "fixed", inset: 0, zIndex: 100, display: "flex", alignItems: "flex-start", justifyContent: "center", overflowY: "auto", padding: "72px 16px 32px", background: "rgba(245,240,230,0.85)", backdropFilter: "blur(12px)" }} onClick={() => setShowUpgradeModal(false)}>
-          <div className="glass-card rm-modal-card" style={{ padding: "32px", maxWidth: "620px", width: "100%", flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
+        <div className="rm-upgrade-backdrop" onClick={() => setShowUpgradeModal(false)}>
+          <div className="glass-card rm-modal-card rm-upgrade-card" style={{ padding: "32px" }} onClick={(e) => e.stopPropagation()}>
             <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "4px" }}>{upgradeModalTitle || "Upgrade your plan"}</h3>
             <p style={{ fontSize: "0.85rem", color: "#6b7280", marginBottom: "20px" }}>{upgradeModalSubtitle || "Unlimited summaries, email checker, and professor email finder."}</p>
             <details
