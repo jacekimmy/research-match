@@ -2124,23 +2124,16 @@ function AppPageInner() {
                           This professor studies the intersection of computational methods and experimental techniques to advance understanding in their field. Their recent work focuses on developing novel approaches that combine interdisciplinary insights.
                         </p>
                       </div>
-                      <div className="locked-summary-overlay" style={{ paddingBottom: "28px" }} onClick={() => {
-                        if (!user) {
-                          setAuthModalCopy("Create a free account to get 2 research summaries.");
-                          setShowAuthModal(true); setAuthMode("signup"); setAuthError("");
-                        } else {
-                          setShowUpgradeModal(true);
-                        }
-                      }}>
+                      <div className="locked-summary-overlay" style={{ paddingBottom: "28px" }} onClick={() => setShowUpgradeModal(true)}>
                         <span style={{ fontSize: "1.6rem", marginBottom: "10px" }}>&#128274;</span>
                         <p style={{ fontSize: "1rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "6px" }}>
-                          {!user ? "You’ve used your free preview" : "You’ve used your 2 free summaries"}
+                          You&apos;ve used your free preview
                         </p>
                         <p style={{ fontSize: "0.85rem", color: "#6b7280", marginBottom: "14px" }}>
-                          {!user ? "Sign up free for 2 summaries, or upgrade for unlimited" : "Upgrade for unlimited access to all professors"}
+                          Upgrade for unlimited access to all professors
                         </p>
                         <span className="locked-upgrade-btn" style={{ padding: "10px 24px", fontSize: "0.85rem" }}>
-                          {!user ? "Sign up free →" : "Upgrade to Semester"}
+                          Upgrade to Semester
                         </span>
                       </div>
                     </div>
@@ -2624,8 +2617,8 @@ function AppPageInner() {
 
       {/* UPGRADE MODAL */}
       {showUpgradeModal && (
-        <div style={{ position: "fixed", inset: 0, zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(245,240,230,0.85)", backdropFilter: "blur(12px)" }} onClick={() => setShowUpgradeModal(false)}>
-          <div className="glass-card rm-modal-card" style={{ padding: "32px", maxWidth: "620px", width: "92%", maxHeight: "90vh", overflowY: "auto" }} onClick={(e) => e.stopPropagation()}>
+        <div style={{ position: "fixed", inset: 0, zIndex: 100, display: "flex", alignItems: "flex-start", justifyContent: "center", overflowY: "auto", padding: "72px 16px 32px", background: "rgba(245,240,230,0.85)", backdropFilter: "blur(12px)" }} onClick={() => setShowUpgradeModal(false)}>
+          <div className="glass-card rm-modal-card" style={{ padding: "32px", maxWidth: "620px", width: "100%", flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
             <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "4px" }}>{upgradeModalTitle || "Upgrade your plan"}</h3>
             <p style={{ fontSize: "0.85rem", color: "#6b7280", marginBottom: "20px" }}>{upgradeModalSubtitle || "Unlimited summaries, email checker, and professor email finder."}</p>
             <details
