@@ -985,7 +985,13 @@ function AppPageInner() {
       if (session?.access_token) headers["Authorization"] = `Bearer ${session.access_token}`;
       const res = await fetch("/api/summarize", { method: "POST", headers, body: JSON.stringify({ authorId: id }) });
       if (res.status === 403) {
-        setShowUpgradeModal(true);
+        if (!user) {
+          // Anon hit server limit — sync local state so locked overlay appears, no modal
+          localStorage.setItem("hasViewedFreeSummary", "true");
+          setHasViewedFreeSummary(true);
+        } else {
+          setShowUpgradeModal(true);
+        }
         return;
       }
       const data = await res.json();
@@ -2118,16 +2124,23 @@ function AppPageInner() {
                           This professor studies the intersection of computational methods and experimental techniques to advance understanding in their field. Their recent work focuses on developing novel approaches that combine interdisciplinary insights.
                         </p>
                       </div>
-                      <div className="locked-summary-overlay" style={{ paddingBottom: "28px" }} onClick={() => setShowUpgradeModal(true)}>
+                      <div className="locked-summary-overlay" style={{ paddingBottom: "28px" }} onClick={() => {
+                        if (!user) {
+                          setAuthModalCopy("Create a free account to get 2 research summaries.");
+                          setShowAuthModal(true); setAuthMode("signup"); setAuthError("");
+                        } else {
+                          setShowUpgradeModal(true);
+                        }
+                      }}>
                         <span style={{ fontSize: "1.6rem", marginBottom: "10px" }}>&#128274;</span>
                         <p style={{ fontSize: "1rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "6px" }}>
-                          You&apos;ve used your free preview
+                          {!user ? "You’ve used your free preview" : "You’ve used your 2 free summaries"}
                         </p>
                         <p style={{ fontSize: "0.85rem", color: "#6b7280", marginBottom: "14px" }}>
-                          Upgrade for unlimited access to all professors
+                          {!user ? "Sign up free for 2 summaries, or upgrade for unlimited" : "Upgrade for unlimited access to all professors"}
                         </p>
                         <span className="locked-upgrade-btn" style={{ padding: "10px 24px", fontSize: "0.85rem" }}>
-                          Upgrade to Semester
+                          {!user ? "Sign up free →" : "Upgrade to Semester"}
                         </span>
                       </div>
                     </div>
