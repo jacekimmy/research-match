@@ -4320,6 +4320,7 @@ body::after {
   text-align: center;
   padding: 0 clamp(24px, 4vw, 56px) 128px;
   position: relative;
+  overflow: hidden;
 }
 
 /* Warm radial atmosphere behind the hero */
