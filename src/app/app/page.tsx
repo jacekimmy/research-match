@@ -325,6 +325,7 @@ function AppPageInner() {
   const [hasChecked, setHasChecked] = useState(false);
   const [showFramework, setShowFramework] = useState(false);
   const [mobileEmailTab, setMobileEmailTab] = useState<"compose" | "reference">("compose");
+  const [freeEmailCheckUsed, setFreeEmailCheckUsed] = useState(false);
 
   // Citation + Paper filter
   const MAX_CITATIONS = 100000;
@@ -377,6 +378,15 @@ function AppPageInner() {
   // Force re-render after mount so toggle slider refs are measured
   const [, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
+
+  // Persist free email check usage in localStorage, scoped per user
+  useEffect(() => {
+    if (user?.id) {
+      setFreeEmailCheckUsed(localStorage.getItem(`rm-email-check-${user.id}`) === "1");
+    } else {
+      setFreeEmailCheckUsed(false);
+    }
+  }, [user?.id]);
 
   // Handle ?upgrade=true or ?upgrade=lifetime or ?upgrade=weekly from landing page
   useEffect(() => {
@@ -582,39 +592,35 @@ function AppPageInner() {
 
   // Summary limit:
   //   Anon: 1 free summary tracked via hasViewedFreeSummary localStorage flag
-  //   Free account: 1 summary total before upgrade paywall
+  //   Free account: 2 summaries total before upgrade paywall
   //   Paid: unlimited
   function getSummariesRemaining(): number {
     if (isPaid) return Infinity;
     if (!user) {
       return hasViewedFreeSummary ? 0 : 1;
     }
-    // Free account: 1 use total
+    // Free account: 2 uses total
     if (profile?.summaries_reset_at && new Date() > new Date(profile.summaries_reset_at)) {
-      return 1; // will reset on next use
+      return 2; // will reset on next use
     }
-    return Math.max(0, 1 - (profile?.summaries_used ?? 0));
+    return Math.max(0, 2 - (profile?.summaries_used ?? 0));
   }
 
   function canSummarize(): boolean {
     if (isPaid) return true;
     if (!user) {
       if (hasViewedFreeSummary) {
-        // Returning anon who already viewed their free summary — gate behind signup
-        setAuthModalCopy("Your summary is ready. Create a free account to check your email before you send it.");
-        setShowAuthModal(true);
-        setAuthMode("signup");
-        setAuthError("");
+        // Returning anon — already used their free preview; locked overlay shown in UI
         return false;
       }
       return true;
     }
-    // Free account: 1 use total
+    // Free account: 2 uses total
     if (profile?.summaries_reset_at && new Date() > new Date(profile.summaries_reset_at)) {
       return true; // reset period passed
     }
-    if (profile && (profile.summaries_used ?? 0) >= 1) {
-      setUpgradeModalTitle("You've used your free summary.");
+    if (profile && (profile.summaries_used ?? 0) >= 2) {
+      setUpgradeModalTitle("You've used your 2 free summaries.");
       setUpgradeModalSubtitle("Upgrade to unlock unlimited professors, questions, and email checking.");
       setShowUpgradeModal(true);
       return false;
@@ -1038,6 +1044,12 @@ function AppPageInner() {
       const flags = data.flags ?? [];
       setEmailFlags(flags);
       setHasChecked(true);
+
+      // Mark free check as used (persisted per user so it survives modal re-opens)
+      if (!isPaid && user?.id) {
+        localStorage.setItem(`rm-email-check-${user.id}`, "1");
+        setFreeEmailCheckUsed(true);
+      }
 
       // Perfect email celebration!
       if (flags.length === 0) {
@@ -2045,9 +2057,27 @@ function AppPageInner() {
                     )}
                     {/* Email checker — anon with summary triggers signup (Step 3); logged-in unlocks fully */}
                     {isPaid || (!!summaries[id] && !!user) ? (
-                      <button onClick={() => openEmailDraft(author)} className="btn-secondary" style={{ marginTop: "16px", padding: "12px 28px", fontSize: "0.95rem" }}>
-                        Draft email to professor &rarr;
-                      </button>
+                      <>
+                        <button onClick={() => openEmailDraft(author)} className="btn-secondary" style={{ marginTop: "16px", padding: "12px 28px", fontSize: "0.95rem" }}>
+                          Draft email to professor &rarr;
+                        </button>
+                        {/* Summary usage notices — only for free logged-in users */}
+                        {!isPaid && !!user && getSummariesRemaining() === 1 && (
+                          <div style={{ marginTop: "10px", padding: "10px 14px", background: "rgba(45,90,61,0.055)", border: "1px solid rgba(45,90,61,0.13)", borderRadius: "10px", display: "flex", alignItems: "center", gap: "8px" }}>
+                            <span style={{ fontSize: "0.82rem", color: "#2d5a3d", opacity: 0.6, flexShrink: 0 }}>ℹ</span>
+                            <span style={{ fontSize: "0.8rem", color: "#2d5a3d", fontWeight: 500 }}>1 free summary left.</span>
+                          </div>
+                        )}
+                        {!isPaid && !!user && getSummariesRemaining() === 0 && (
+                          <div style={{ marginTop: "10px", padding: "10px 14px", background: "rgba(45,90,61,0.055)", border: "1px solid rgba(45,90,61,0.13)", borderRadius: "10px" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                              <span style={{ fontSize: "0.82rem", color: "#2d5a3d", opacity: 0.6, flexShrink: 0 }}>ℹ</span>
+                              <span style={{ fontSize: "0.8rem", color: "#2d5a3d", fontWeight: 500 }}>You&apos;ve used your 2 free summaries.</span>
+                            </div>
+                            <p style={{ fontSize: "0.74rem", color: "#8aaa96", marginTop: "3px", paddingLeft: "21px" }}>Upgrade for unlimited access to all professors.</p>
+                          </div>
+                        )}
+                      </>
                     ) : !user && !!summaries[id] ? (
                       <button
                         onClick={() => { setAuthModalCopy("Your summary is ready. Create a free account to check your email before you send it."); setShowAuthModal(true); setAuthMode("signup"); setAuthError(""); }}
@@ -2066,8 +2096,8 @@ function AppPageInner() {
                   </div>
                 ) : (
                   /* No summary loaded yet — show summarize button (free for all), or upgrade overlay */
-                  !user ? (
-                    /* Anon users: show real summarize button — full summary is the wow moment */
+                  !user && !hasViewedFreeSummary ? (
+                    /* First-time anon: show real summarize button — full summary is the wow moment */
                     <div style={{ marginTop: "28px" }}>
                       <button onClick={() => loadSummary(author)} disabled={isLoadingSummary} className="rm-summarize-btn">
                         {isLoadingSummary ? (
@@ -2412,12 +2442,28 @@ function AppPageInner() {
                   </div>
 
                   <textarea value={emailDraft} onChange={(e) => { setEmailDraft(e.target.value); setHasChecked(false); }} placeholder={`Dear Professor ${emailTarget.display_name},\n\nI'm a [year] [major] student at [your university]...\n\nUse the reference panel to mention specific papers and research.`} className="modal-textarea" style={{ flex: 1, padding: "24px", lineHeight: 1.7 }} />
+                  {/* Pre-check notice: shown to free users before they've used their 1 free check */}
+                  {!isPaid && !freeEmailCheckUsed && !!user && (
+                    <div style={{ margin: "12px 0 4px", padding: "10px 14px", background: "rgba(45,90,61,0.055)", border: "1px solid rgba(45,90,61,0.13)", borderRadius: "10px", display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span style={{ fontSize: "0.82rem", color: "#2d5a3d", opacity: 0.6, flexShrink: 0 }}>ℹ</span>
+                      <span style={{ fontSize: "0.8rem", color: "#2d5a3d" }}>You have 1 free email check — use it on your best draft.</span>
+                    </div>
+                  )}
                   <div className="rm-modal-actions rm-modal-sticky-footer">
                     {!hasEmailChecker && isWeekly ? (
                       <div style={{ display: "flex", alignItems: "center", gap: "12px", flex: 1, background: "rgba(45,90,61,0.05)", border: "1px solid rgba(45,90,61,0.12)", borderRadius: "12px", padding: "12px 16px" }}>
                         <span style={{ fontSize: "1rem" }}>🔒</span>
                         <span style={{ fontSize: "0.85rem", color: "#6b7280", flex: 1 }}>Email checker is on Semester &amp; Lifetime</span>
                         <button onClick={() => { setEmailTarget(null); setShowUpgradeModal(true); }} style={{ fontSize: "0.8rem", fontWeight: 700, color: "#2d5a3d", background: "rgba(45,90,61,0.08)", border: "1px solid rgba(45,90,61,0.2)", borderRadius: "8px", padding: "6px 14px", cursor: "pointer", whiteSpace: "nowrap" }}>Upgrade</button>
+                      </div>
+                    ) : !isPaid && freeEmailCheckUsed ? (
+                      /* Post-check notice: free check consumed, soft upgrade mention */
+                      <div style={{ display: "flex", flexDirection: "column", gap: "3px", flex: 1, background: "rgba(45,90,61,0.055)", border: "1px solid rgba(45,90,61,0.13)", borderRadius: "12px", padding: "12px 16px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                          <span style={{ fontSize: "0.82rem", color: "#2d5a3d", opacity: 0.6, flexShrink: 0 }}>ℹ</span>
+                          <span style={{ fontSize: "0.82rem", color: "#2d5a3d", fontWeight: 500 }}>You&apos;ve used your free email check.</span>
+                        </div>
+                        <p style={{ fontSize: "0.74rem", color: "#8aaa96", paddingLeft: "21px", margin: 0 }}>Upgrade to keep checking emails before you send.</p>
                       </div>
                     ) : (
                       <button onClick={checkEmail} disabled={checkingEmail || !emailDraft.trim()} className="btn-cta" style={{ padding: "14px 36px", fontSize: "1rem" }}>
@@ -2456,7 +2502,8 @@ function AppPageInner() {
                       <p style={{ fontSize: "0.85rem", color: "#6b7280", marginTop: "6px" }}>Copy it and send it with confidence.</p>
                     </div>
                   )}
-                  {!hasChecked && emailDraft.trim().length > 0 && !checkingEmail && (
+                  {/* "Ready to check" hint — only shown to paid users (free users see the pre-check notice instead) */}
+                  {!hasChecked && emailDraft.trim().length > 0 && !checkingEmail && hasEmailChecker && (
                     <p style={{ marginTop: "16px", fontSize: "0.85rem", color: "#6b7280" }}>Hit &quot;Check my email&quot; when you&apos;re ready for feedback.</p>
                   )}
                 </div>

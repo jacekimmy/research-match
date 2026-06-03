@@ -29,6 +29,7 @@ export default function LandingPage() {
   const router = useRouter();
   const { user } = useAuth();
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+  const [shouldAnimate, setShouldAnimate] = useState(false);
   const [heroQuery, setHeroQuery] = useState("");
   const [heroUni, setHeroUni] = useState("");
   const [heroFocused, setHeroFocused] = useState(false);
@@ -137,6 +138,15 @@ export default function LandingPage() {
   };
 
   useEffect(() => { setBillingMounted(true); }, []);
+
+  // First-visit sleeve animation gate
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!sessionStorage.getItem("rm-landing-seen")) {
+      sessionStorage.setItem("rm-landing-seen", "1");
+      setShouldAnimate(true);
+    }
+  }, []);
   useEffect(() => {
     fetch("/api/stats").then(r => r.json()).then(d => {
       startTransition(() => setSearchCount(d.searches));
@@ -392,7 +402,7 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           HERO
       ══════════════════════════════════════════ */}
-      <section className="lp-hero">
+      <section className={`lp-hero${shouldAnimate ? " lp-hero-intro" : ""}`}>
         <div className="lp-hero-inner">
           <div className="lp-hero-eyebrow text-emerald-950/80 font-medium text-[10px] md:text-xs tracking-wider uppercase">
             <span className="lp-eyebrow-dot" />
