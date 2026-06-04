@@ -267,6 +267,10 @@ interface EmailFlag {
   suggestion: string;
 }
 
+// Free summaries a signed-out visitor gets before any account is needed.
+// Mirrors ANON_LIMIT in /api/summarize (the real server-side gate).
+const ANON_SUMMARY_LIMIT = 2;
+
 function AppPageInner() {
   const { user, profile, loading: authLoading2, signUp, signIn, signOut, refreshProfile } = useAuth();
   const searchParams = useSearchParams();
@@ -485,7 +489,7 @@ function AppPageInner() {
   // Grand reveal / welcome back
   const [revealPhase, setRevealPhase] = useState<"curtain" | "content" | "done">("curtain");
   const [welcomeSubtitle, setWelcomeSubtitle] = useState("Your research journey starts here.");
-  const [hasViewedFreeSummary, setHasViewedFreeSummary] = useState(false);
+  const [anonSummariesUsed, setAnonSummariesUsed] = useState(0);
   useEffect(() => {
     const visitCount = parseInt(localStorage.getItem("research-match-visits") || "0", 10);
     localStorage.setItem("research-match-visits", String(visitCount + 1));
@@ -505,7 +509,13 @@ function AppPageInner() {
   }, []);
 
   useEffect(() => {
-    setHasViewedFreeSummary(localStorage.getItem("hasViewedFreeSummary") === "true");
+    const stored = localStorage.getItem("rm-anon-summaries-used");
+    if (stored !== null) {
+      setAnonSummariesUsed(parseInt(stored, 10) || 0);
+    } else if (localStorage.getItem("hasViewedFreeSummary") === "true") {
+      // Migrate the old single-summary boolean flag.
+      setAnonSummariesUsed(1);
+    }
   }, []);
 
   // Exit intent — subtle goodbye on mouse leave (desktop only)
@@ -591,13 +601,13 @@ function AppPageInner() {
   const isSaved = useCallback((author: Author) => savedIds.has(author.id), [savedIds]);
 
   // Summary limit:
-  //   Anon: 1 free summary tracked via hasViewedFreeSummary localStorage flag
+  //   Anon: ANON_SUMMARY_LIMIT free summaries, tracked via rm-anon-summaries-used localStorage counter
   //   Free account: 2 summaries total before upgrade paywall
   //   Paid: unlimited
   function getSummariesRemaining(): number {
     if (isPaid) return Infinity;
     if (!user) {
-      return hasViewedFreeSummary ? 0 : 1;
+      return Math.max(0, ANON_SUMMARY_LIMIT - anonSummariesUsed);
     }
     // Free account: 2 uses total
     if (profile?.summaries_reset_at && new Date() > new Date(profile.summaries_reset_at)) {
@@ -609,11 +619,9 @@ function AppPageInner() {
   function canSummarize(): boolean {
     if (isPaid) return true;
     if (!user) {
-      if (hasViewedFreeSummary) {
-        // Returning anon — already used their free preview; locked overlay shown in UI
-        return false;
-      }
-      return true;
+      // Anon gets ANON_SUMMARY_LIMIT free summaries — no account prompt here.
+      // When exhausted, the locked overlay in the UI handles the upsell.
+      return anonSummariesUsed < ANON_SUMMARY_LIMIT;
     }
     // Free account: 2 uses total
     if (profile?.summaries_reset_at && new Date() > new Date(profile.summaries_reset_at)) {
@@ -987,8 +995,8 @@ function AppPageInner() {
       if (res.status === 403) {
         if (!user) {
           // Anon hit server limit — sync local state so locked overlay appears, no modal
-          localStorage.setItem("hasViewedFreeSummary", "true");
-          setHasViewedFreeSummary(true);
+          localStorage.setItem("rm-anon-summaries-used", String(ANON_SUMMARY_LIMIT));
+          setAnonSummariesUsed(ANON_SUMMARY_LIMIT);
         } else {
           setShowUpgradeModal(true);
         }
@@ -998,10 +1006,13 @@ function AppPageInner() {
       const summaryText = data.summary || data.error || "Summary unavailable. Try again or visit their faculty page.";
       const highlights = data.highlights || [];
       setSummaries((prev) => ({ ...prev, [id]: { summary: summaryText, highlights, questions: data.questions || [] } }));
-      // Mark that anon has viewed their free summary
+      // Count this anon summary toward their free allotment
       if (!user) {
-        localStorage.setItem("hasViewedFreeSummary", "true");
-        setHasViewedFreeSummary(true);
+        setAnonSummariesUsed((prev) => {
+          const next = prev + 1;
+          localStorage.setItem("rm-anon-summaries-used", String(next));
+          return next;
+        });
       }
       // Refresh profile so client UI reflects updated count
       if (highlights.length > 0 && !data.error) refreshProfile();
@@ -1052,9 +1063,10 @@ function AppPageInner() {
       setHasChecked(true);
 
       // Mark free check as used (persisted per user so it survives modal re-opens)
-      if (!isPaid && user?.id) {
+      if (!isPaid && user?.id && !freeEmailCheckUsed) {
         localStorage.setItem(`rm-email-check-${user.id}`, "1");
         setFreeEmailCheckUsed(true);
+        showToast("That was your free email check — upgrade to keep checking emails.");
       }
 
       // Perfect email celebration!
@@ -2029,28 +2041,14 @@ function AppPageInner() {
                         ))}
                       </div>
                     )}
-                    {/* Suggested questions — free for logged-in users, gated for anon (Step 3) */}
+                    {/* Suggested questions — part of the free summary for everyone */}
                     {summary.questions.length > 0 && (
-                      !user ? (
-                        <div style={{ marginTop: "24px", padding: "20px", background: "rgba(45,90,61,0.04)", border: "1px solid rgba(45,90,61,0.12)", borderRadius: "14px", textAlign: "center" }}>
-                          <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "6px" }}>Questions to Ask</p>
-                          <p style={{ fontSize: "0.85rem", color: "#6b7280", marginBottom: "16px" }}>{summary.questions.length} personalized questions — unlocked after signup</p>
-                          <button
-                            onClick={() => { setAuthModalCopy("Your summary is ready. Create a free account to check your email before you send it."); setShowAuthModal(true); setAuthMode("signup"); setAuthError(""); }}
-                            className="rm-summarize-btn"
-                            style={{ width: "100%", justifyContent: "center" }}
-                          >
-                            Create free account →
-                          </button>
-                        </div>
-                      ) : (
-                        <div style={{ marginTop: "24px" }}>
-                          <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "14px" }}>Questions to Ask</p>
-                          {summary.questions.map((q, i) => (
-                            <p key={i} style={{ fontSize: "1rem", color: "#6b7280", paddingLeft: "20px", borderLeft: "3px solid #9dbfaa", marginBottom: "12px", lineHeight: 1.6 }}>{q}</p>
-                          ))}
-                        </div>
-                      )
+                      <div style={{ marginTop: "24px" }}>
+                        <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "14px" }}>Questions to Ask</p>
+                        {summary.questions.map((q, i) => (
+                          <p key={i} style={{ fontSize: "1rem", color: "#6b7280", paddingLeft: "20px", borderLeft: "3px solid #9dbfaa", marginBottom: "12px", lineHeight: 1.6 }}>{q}</p>
+                        ))}
+                      </div>
                     )}
                     {/* Closing tip — only if highlights exist */}
                     {summary.highlights.length > 0 && (
@@ -2102,8 +2100,8 @@ function AppPageInner() {
                   </div>
                 ) : (
                   /* No summary loaded yet — show summarize button (free for all), or upgrade overlay */
-                  !user && !hasViewedFreeSummary ? (
-                    /* First-time anon: show real summarize button — full summary is the wow moment */
+                  !user && getSummariesRemaining() > 0 ? (
+                    /* Anon with free summaries left: show real summarize button — full summary is the wow moment */
                     <div style={{ marginTop: "28px" }}>
                       <button onClick={() => loadSummary(author)} disabled={isLoadingSummary} className="rm-summarize-btn">
                         {isLoadingSummary ? (
@@ -2265,8 +2263,9 @@ function AppPageInner() {
                       cursor: "pointer",
                     }}
                     onClick={() => {
-                      if (!user) { setShowAuthModal(true); setAuthMode("signup"); setAuthError(""); }
-                      else { setShowUpgradeModal(true); }
+                      // Anon just needs to summarize (free) — no account prompt here.
+                      // Logged-in free users get the upgrade path.
+                      if (user) setShowUpgradeModal(true);
                     }}
                     >
                       <span style={{ fontSize: "2rem", marginBottom: "12px" }}>🔒</span>

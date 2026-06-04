@@ -10,7 +10,7 @@ const supabaseAdmin = createClient(
 );
 
 const FREE_LIMIT = 2;
-const ANON_LIMIT = 1;
+const ANON_LIMIT = 2;
 
 interface OpenAlexAuthorship {
   author?: { id?: string };
