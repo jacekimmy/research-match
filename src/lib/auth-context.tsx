@@ -4,6 +4,21 @@ import { supabase } from "./supabase";
 import type { User, AuthError } from "@supabase/supabase-js";
 import { generateReferralCode } from "./buddy-pass";
 
+// Free summaries allowed across a user's lifetime on the free tier. Shared
+// between the anonymous (pre-account) and free-account states so creating an
+// account can't reset the budget. Mirrors FREE_LIMIT / ANON_LIMIT in /api/summarize.
+const FREE_SUMMARY_LIMIT = 2;
+
+/** Free summaries this device already used while signed out. */
+function readAnonSummariesUsed(): number {
+  if (typeof window === "undefined") return 0;
+  const stored = localStorage.getItem("rm-anon-summaries-used");
+  if (stored !== null) return parseInt(stored, 10) || 0;
+  // Legacy single-summary boolean flag.
+  if (localStorage.getItem("hasViewedFreeSummary") === "true") return 1;
+  return 0;
+}
+
 interface Profile {
   id: string;
   email: string;
@@ -84,6 +99,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const nextMonth = new Date();
       nextMonth.setMonth(nextMonth.getMonth() + 1, 1);
       nextMonth.setHours(0, 0, 0, 0);
+      // Carry over summaries already used while signed out, so the free tier is
+      // 2 total across anon + account (not 2 anon AND 2 after sign-up).
+      const carriedSummariesUsed = Math.min(readAnonSummariesUsed(), FREE_SUMMARY_LIMIT);
       await supabase.from("profiles").insert({
         id: data.user.id,
         email,
@@ -91,7 +109,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         referral_code: generateReferralCode(data.user.id),
         searches_used: 0,
         searches_reset_at: nextMonth.toISOString(),
-        summaries_used: 0,
+        summaries_used: carriedSummariesUsed,
         summaries_reset_at: nextMonth.toISOString(),
       });
 
