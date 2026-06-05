@@ -4,6 +4,7 @@ import { Hanken_Grotesk, Fraunces } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { AuthProvider } from "@/lib/auth-context";
+import AnalyticsInit from "./AnalyticsInit";
 
 const inter = Hanken_Grotesk({
   subsets: ["latin"],
@@ -54,6 +55,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
       <body>
+        <AnalyticsInit />
         <AuthProvider>
           {children}
         </AuthProvider>

@@ -1388,6 +1388,27 @@ body::after {
   animation: toastOut 0.35s ease forwards;
 }
 
+/* Countdown bar that retracts left-to-right over the toast's lifetime */
+.toast-timer {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 5px;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.8);
+  transform-origin: left center;
+  animation-name: toastTimerShrink;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+  /* animation-duration is set inline to match the toast's duration */
+}
+
+@keyframes toastTimerShrink {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}
+
 /* ===== SCROLLBAR ===== */
 
 ::-webkit-scrollbar { width: 6px; }

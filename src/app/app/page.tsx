@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
 import { supabase } from "@/lib/supabase";
 import { hasPaidAccess, normalizeReferralCode, planLabelFor } from "@/lib/buddy-pass";
+import { track } from "@/lib/analytics";
 
 export default function AppPageWrapper() {
   return <Suspense><AppPageInner /></Suspense>;
@@ -291,7 +292,7 @@ function AppPageInner() {
   const [showSaved, setShowSaved] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [showWelcome, setShowWelcome] = useState(false);
-  const [toast, setToast] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ msg: string; duration: number } | null>(null);
   const [starBounce, setStarBounce] = useState<string | null>(null);
   const toggleRef = useRef<HTMLDivElement>(null);
   const btnInterestRef = useRef<HTMLButtonElement>(null);
@@ -424,6 +425,14 @@ function AppPageInner() {
   }, [authLoading2, user, searchParams]);
 
   async function startCheckout(priceId: string) {
+    // Funnel: user clicked an upgrade/checkout button on the paywall.
+    const plan =
+      priceId === (process.env.NEXT_PUBLIC_STRIPE_PRICE_WEEKLY || "price_1TMxDSFINW44xCyFWrm6ZTOo") ? "weekly" :
+      priceId === (process.env.NEXT_PUBLIC_STRIPE_PRICE_SEMESTER || "price_1TIuAlFINW44xCyFcxqgQpeV") ? "semester" :
+      priceId === (process.env.NEXT_PUBLIC_STRIPE_PRICE_LIFETIME || "price_1TIuBBFINW44xCyFoSCtUpFN") ? "lifetime" :
+      "unknown";
+    track("upgrade_clicked", { plan });
+
     if (!user) {
       setShowUpgradeModal(false);
       setShowAuthModal(true);
@@ -579,9 +588,15 @@ function AppPageInner() {
   }, [emailTarget]);
 
   // Toast helper
-  const showToast = useCallback((msg: string) => {
-    setToast(msg);
-    setTimeout(() => setToast(null), 2200);
+  const showToast = useCallback((msg: string, duration = 2200) => {
+    setToast({ msg, duration });
+    setTimeout(() => setToast(null), duration);
+  }, []);
+
+  // Opens the upgrade/paywall modal and records which free-tier limit triggered it.
+  const hitPaywall = useCallback((limitType: "summary" | "email_checker") => {
+    track("paywall_hit", { limit_type: limitType });
+    setShowUpgradeModal(true);
   }, []);
 
   function toggleSave(author: Author) {
@@ -630,7 +645,7 @@ function AppPageInner() {
     if (profile && (profile.summaries_used ?? 0) >= 2) {
       setUpgradeModalTitle("You've used your 2 free summaries.");
       setUpgradeModalSubtitle("Upgrade to unlock unlimited professors, questions, and email checking.");
-      setShowUpgradeModal(true);
+      hitPaywall("summary");
       return false;
     }
     return true;
@@ -998,7 +1013,7 @@ function AppPageInner() {
           localStorage.setItem("rm-anon-summaries-used", String(ANON_SUMMARY_LIMIT));
           setAnonSummariesUsed(ANON_SUMMARY_LIMIT);
         } else {
-          setShowUpgradeModal(true);
+          hitPaywall("summary");
         }
         return;
       }
@@ -1008,12 +1023,19 @@ function AppPageInner() {
       setSummaries((prev) => ({ ...prev, [id]: { summary: summaryText, highlights, questions: data.questions || [] } }));
       // Count this anon summary toward their free allotment
       if (!user) {
+        const wasFirstSummary = anonSummariesUsed === 0;
         setAnonSummariesUsed((prev) => {
           const next = prev + 1;
           localStorage.setItem("rm-anon-summaries-used", String(next));
           return next;
         });
+        // After the very first summary, nudge with what's left (no paywall yet).
+        if (wasFirstSummary && highlights.length > 0 && !data.error) {
+          showToast("You have 1 free summary and 1 free email check left.", 5000);
+        }
       }
+      // Funnel: free user reached the core value moment (a real summary).
+      if (isFree && highlights.length > 0 && !data.error) track("summary_used");
       // Refresh profile so client UI reflects updated count
       if (highlights.length > 0 && !data.error) refreshProfile();
     } catch { setSummaries((prev) => ({ ...prev, [id]: { summary: "Summary unavailable. Try again or visit their faculty page.", highlights: [], questions: [] } })); }
@@ -1067,6 +1089,8 @@ function AppPageInner() {
         localStorage.setItem(`rm-email-check-${user.id}`, "1");
         setFreeEmailCheckUsed(true);
         showToast("That was your free email check — upgrade to keep checking emails.");
+        // Funnel: free user reached the email-checker limit (inline upgrade prompt shown).
+        track("paywall_hit", { limit_type: "email_checker" });
       }
 
       // Perfect email celebration!
@@ -2122,7 +2146,7 @@ function AppPageInner() {
                           This professor studies the intersection of computational methods and experimental techniques to advance understanding in their field. Their recent work focuses on developing novel approaches that combine interdisciplinary insights.
                         </p>
                       </div>
-                      <div className="locked-summary-overlay" style={{ paddingBottom: "28px" }} onClick={() => setShowUpgradeModal(true)}>
+                      <div className="locked-summary-overlay" style={{ paddingBottom: "28px" }} onClick={() => hitPaywall("summary")}>
                         <span style={{ fontSize: "1.6rem", marginBottom: "10px" }}>&#128274;</span>
                         <p style={{ fontSize: "1rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "6px" }}>
                           You&apos;ve used your free preview
@@ -2569,7 +2593,12 @@ function AppPageInner() {
         })()}
 
         {/* TOAST */}
-        {toast && <div className="toast">{toast}</div>}
+        {toast && (
+          <div className="toast" key={toast.msg}>
+            {toast.msg}
+            <div className="toast-timer" style={{ animationDuration: `${toast.duration}ms` }} />
+          </div>
+        )}
       </main>
 
       {/* AUTH MODAL */}
