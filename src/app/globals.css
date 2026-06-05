@@ -1376,6 +1376,11 @@ body::after {
   font-size: 0.9rem;
   font-weight: 600;
   z-index: 300;
+  width: max-content;
+  max-width: min(92vw, 460px);
+  box-sizing: border-box;
+  text-align: center;
+  white-space: normal;
   box-shadow:
     0 12px 40px rgba(45, 90, 61, 0.35),
     0 0 0 0.5px rgba(45, 90, 61, 0.2),
@@ -1407,6 +1412,22 @@ body::after {
 @keyframes toastTimerShrink {
   from { transform: scaleX(1); }
   to { transform: scaleX(0); }
+}
+
+/* Mobile: slim single-line pill hugging the bottom edge, out of the way */
+@media (max-width: 480px) {
+  .toast {
+    bottom: 16px;
+    padding: 10px 18px;
+    font-size: 0.78rem;
+    max-width: calc(100vw - 24px);
+  }
+  .toast-timer {
+    left: 14px;
+    right: 14px;
+    bottom: 4px;
+    height: 2px;
+  }
 }
 
 /* ===== SCROLLBAR ===== */

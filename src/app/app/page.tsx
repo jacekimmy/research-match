@@ -1031,7 +1031,7 @@ function AppPageInner() {
         });
         // After the very first summary, nudge with what's left (no paywall yet).
         if (wasFirstSummary && highlights.length > 0 && !data.error) {
-          showToast("You have 1 free summary and 1 free email check left.", 5000);
+          showToast("1 free summary + 1 email check left", 5000);
         }
       }
       // Funnel: free user reached the core value moment (a real summary).
