@@ -594,7 +594,7 @@ function AppPageInner() {
   }, []);
 
   // Opens the upgrade/paywall modal and records which free-tier limit triggered it.
-  const hitPaywall = useCallback((limitType: "summary" | "email_checker") => {
+  const hitPaywall = useCallback((limitType: "summary" | "email_checker" | "professor_results") => {
     track("paywall_hit", { limit_type: limitType });
     setShowUpgradeModal(true);
   }, []);
@@ -1012,6 +1012,8 @@ function AppPageInner() {
           // Anon hit server limit — sync local state so locked overlay appears, no modal
           localStorage.setItem("rm-anon-summaries-used", String(ANON_SUMMARY_LIMIT));
           setAnonSummariesUsed(ANON_SUMMARY_LIMIT);
+          // Record the drop-off even though we don't pop the modal for anon.
+          track("paywall_hit", { limit_type: "summary" });
         } else {
           hitPaywall("summary");
         }
@@ -1835,7 +1837,7 @@ function AppPageInner() {
                   </div>
                   {/* Lock overlay */}
                   <div
-                    onClick={() => setShowUpgradeModal(true)}
+                    onClick={() => hitPaywall("professor_results")}
                     style={{
                       position: "absolute", inset: 0,
                       background: "linear-gradient(to bottom, rgba(245,240,230,0.55) 0%, rgba(245,240,230,0.97) 50%)",
@@ -2225,7 +2227,7 @@ function AppPageInner() {
               Upgrade to see all results, get unlimited searches, and access every email tool.
             </p>
             <button
-              onClick={() => setShowUpgradeModal(true)}
+              onClick={() => hitPaywall("professor_results")}
               style={{
                 background: "#2d5a3d",
                 color: "#fff",
