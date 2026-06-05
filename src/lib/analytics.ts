@@ -51,6 +51,10 @@ export function initAnalytics() {
       return properties;
     },
   });
+  // Expose the instance globally so it's reachable from the browser console
+  // (the ESM import is module-scoped, so `window.posthog` is otherwise undefined
+  // even though PostHog is fully initialized and sending events).
+  (window as unknown as { posthog: typeof posthog }).posthog = posthog;
   initialized = true;
 }
 
