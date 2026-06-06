@@ -4445,6 +4445,18 @@ body::after {
   animation: heroGlowIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+/* On mobile, the large blur(72px) filter bands into blocky green patches on
+   many phone GPUs. The radial gradient already fades smoothly to transparent,
+   so we drop the filter and shrink the element to fit the viewport. */
+@media (max-width: 768px) {
+  .rm-hero-glow {
+    width: 120%;
+    max-width: 480px;
+    height: 380px;
+    filter: none;
+  }
+}
+
 @keyframes heroGlowIn {
   from { opacity: 0; transform: translate(-50%, -55%) scale(0.85); }
   to   { opacity: 1; transform: translate(-50%, -62%) scale(1); }
