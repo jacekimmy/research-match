@@ -2094,7 +2094,7 @@ function AppPageInner() {
                           </span>
                           <span className="rm-email-cta-text">
                             <span className="rm-email-cta-title">Draft &amp; check your email</span>
-                            <span className="rm-email-cta-sub">Catch the red flags professors hate — before you hit send.</span>
+                            <span className="rm-email-cta-sub">Designed with advice from 30+ professors</span>
                           </span>
                           <span className="rm-email-cta-arrow" aria-hidden="true">&rarr;</span>
                         </button>
@@ -2126,7 +2126,7 @@ function AppPageInner() {
                         </span>
                         <span className="rm-email-cta-text">
                           <span className="rm-email-cta-title">Check your email before you send</span>
-                          <span className="rm-email-cta-sub">Free with an account — catch the mistakes that get students ignored.</span>
+                          <span className="rm-email-cta-sub">Designed with advice from 30+ professors</span>
                         </span>
                         <span className="rm-email-cta-arrow" aria-hidden="true">&rarr;</span>
                       </button>
