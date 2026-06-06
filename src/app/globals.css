@@ -4445,11 +4445,13 @@ body::after {
   animation: heroGlowIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-/* On mobile, .rm-hero's overflow:hidden clips this oversized glow into a
-   hard-edged rectangle — the "cutoff" visible on the sides of the hero.
-   It's purely decorative, so hide it on small screens. */
+/* On mobile, .rm-hero's overflow:hidden was slicing the search card's large
+   drop shadow (and the decorative glow) into a hard-edged rectangle — the
+   "cutoff" visible on the sides. Hide the now-pointless glow and stop the hero
+   from clipping so the card shadow can fade out naturally. */
 @media (max-width: 768px) {
   .rm-hero-glow { display: none; }
+  .rm-hero { overflow: visible; }
 }
 
 @keyframes heroGlowIn {
