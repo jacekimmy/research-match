@@ -270,7 +270,7 @@ interface EmailFlag {
 
 // Free summaries a signed-out visitor gets before any account is needed.
 // Mirrors ANON_LIMIT in /api/summarize (the real server-side gate).
-const ANON_SUMMARY_LIMIT = 2;
+const ANON_SUMMARY_LIMIT = 1;
 
 function AppPageInner() {
   const { user, profile, loading: authLoading2, signUp, signIn, signOut, refreshProfile } = useAuth();
@@ -617,18 +617,18 @@ function AppPageInner() {
 
   // Summary limit:
   //   Anon: ANON_SUMMARY_LIMIT free summaries, tracked via rm-anon-summaries-used localStorage counter
-  //   Free account: 2 summaries total before upgrade paywall
+  //   Free account: 1 summary total before upgrade paywall
   //   Paid: unlimited
   function getSummariesRemaining(): number {
     if (isPaid) return Infinity;
     if (!user) {
       return Math.max(0, ANON_SUMMARY_LIMIT - anonSummariesUsed);
     }
-    // Free account: 2 uses total
+    // Free account: 1 use total
     if (profile?.summaries_reset_at && new Date() > new Date(profile.summaries_reset_at)) {
-      return 2; // will reset on next use
+      return 1; // will reset on next use
     }
-    return Math.max(0, 2 - (profile?.summaries_used ?? 0));
+    return Math.max(0, 1 - (profile?.summaries_used ?? 0));
   }
 
   function canSummarize(): boolean {
@@ -638,12 +638,12 @@ function AppPageInner() {
       // When exhausted, the locked overlay in the UI handles the upsell.
       return anonSummariesUsed < ANON_SUMMARY_LIMIT;
     }
-    // Free account: 2 uses total
+    // Free account: 1 use total
     if (profile?.summaries_reset_at && new Date() > new Date(profile.summaries_reset_at)) {
       return true; // reset period passed
     }
-    if (profile && (profile.summaries_used ?? 0) >= 2) {
-      setUpgradeModalTitle("You've used your 2 free summaries.");
+    if (profile && (profile.summaries_used ?? 0) >= 1) {
+      setUpgradeModalTitle("You've used your free summary.");
       setUpgradeModalSubtitle("Upgrade to unlock unlimited professors, questions, and email checking.");
       hitPaywall("summary");
       return false;
@@ -1033,7 +1033,7 @@ function AppPageInner() {
         });
         // After the very first summary, nudge with what's left (no paywall yet).
         if (wasFirstSummary && highlights.length > 0 && !data.error) {
-          showToast("1 free summary + 1 email check left", 5000);
+          showToast("Free summary used — 1 email check left", 5000);
         }
       }
       // Funnel: free user reached the core value moment (a real summary).
@@ -2102,7 +2102,7 @@ function AppPageInner() {
                           <div style={{ marginTop: "10px", padding: "10px 14px", background: "rgba(45,90,61,0.055)", border: "1px solid rgba(45,90,61,0.13)", borderRadius: "10px" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                               <span style={{ fontSize: "0.82rem", color: "#2d5a3d", opacity: 0.6, flexShrink: 0 }}>ℹ</span>
-                              <span style={{ fontSize: "0.8rem", color: "#2d5a3d", fontWeight: 500 }}>You&apos;ve used your 2 free summaries.</span>
+                              <span style={{ fontSize: "0.8rem", color: "#2d5a3d", fontWeight: 500 }}>You&apos;ve used your free summary.</span>
                             </div>
                             <p style={{ fontSize: "0.74rem", color: "#8aaa96", marginTop: "3px", paddingLeft: "21px" }}>Upgrade for unlimited access to all professors.</p>
                           </div>
