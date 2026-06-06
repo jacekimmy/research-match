@@ -7,7 +7,7 @@ import { generateReferralCode } from "./buddy-pass";
 // Free summaries allowed across a user's lifetime on the free tier. Shared
 // between the anonymous (pre-account) and free-account states so creating an
 // account can't reset the budget. Mirrors FREE_LIMIT / ANON_LIMIT in /api/summarize.
-const FREE_SUMMARY_LIMIT = 1;
+const FREE_SUMMARY_LIMIT = 2;
 
 /** Free summaries this device already used while signed out. */
 function readAnonSummariesUsed(): number {
