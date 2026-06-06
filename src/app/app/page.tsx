@@ -2085,11 +2085,18 @@ function AppPageInner() {
                         </p>
                       </div>
                     )}
-                    {/* Email checker — anon with summary triggers signup (Step 3); logged-in unlocks fully */}
+                    {/* Email checker CTA — the primary next step after reading the summary */}
                     {isPaid || (!!summaries[id] && !!user) ? (
                       <>
-                        <button onClick={() => openEmailDraft(author)} className="btn-secondary" style={{ marginTop: "16px", padding: "12px 28px", fontSize: "0.95rem" }}>
-                          Draft email to professor &rarr;
+                        <button onClick={() => openEmailDraft(author)} className="rm-email-cta" style={{ marginTop: "28px" }}>
+                          <span className="rm-email-cta-icon" aria-hidden="true">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-10 5L2 7" /></svg>
+                          </span>
+                          <span className="rm-email-cta-text">
+                            <span className="rm-email-cta-title">Draft &amp; check your email</span>
+                            <span className="rm-email-cta-sub">Catch the red flags professors hate — before you hit send.</span>
+                          </span>
+                          <span className="rm-email-cta-arrow" aria-hidden="true">&rarr;</span>
                         </button>
                         {/* Summary usage notices — only for free logged-in users */}
                         {!isPaid && !!user && getSummariesRemaining() === 1 && (
@@ -2111,10 +2118,17 @@ function AppPageInner() {
                     ) : !user && !!summaries[id] ? (
                       <button
                         onClick={() => { setAuthModalCopy("Your summary is ready. Create a free account to check your email before you send it."); setShowAuthModal(true); setAuthMode("signup"); setAuthError(""); }}
-                        className="btn-secondary"
-                        style={{ marginTop: "16px", padding: "12px 28px", fontSize: "0.95rem" }}
+                        className="rm-email-cta"
+                        style={{ marginTop: "28px" }}
                       >
-                        Check email before you send &rarr;
+                        <span className="rm-email-cta-icon" aria-hidden="true">
+                          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-10 5L2 7" /></svg>
+                        </span>
+                        <span className="rm-email-cta-text">
+                          <span className="rm-email-cta-title">Check your email before you send</span>
+                          <span className="rm-email-cta-sub">Free with an account — catch the mistakes that get students ignored.</span>
+                        </span>
+                        <span className="rm-email-cta-arrow" aria-hidden="true">&rarr;</span>
                       </button>
                     ) : (
                       <div className="rm-locked-row" style={{ marginTop: "16px" }}>
