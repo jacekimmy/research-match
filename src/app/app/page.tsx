@@ -270,7 +270,7 @@ interface EmailFlag {
 
 // Free summaries a signed-out visitor gets before any account is needed.
 // Mirrors ANON_LIMIT in /api/summarize (the real server-side gate).
-const ANON_SUMMARY_LIMIT = 1;
+const ANON_SUMMARY_LIMIT = 2;
 
 function AppPageInner() {
   const { user, profile, loading: authLoading2, signUp, signIn, signOut, refreshProfile } = useAuth();
@@ -615,18 +615,18 @@ function AppPageInner() {
 
   // Summary limit:
   //   Anon: ANON_SUMMARY_LIMIT free summaries, tracked via rm-anon-summaries-used localStorage counter
-  //   Free account: 1 summary total before upgrade paywall
+  //   Free account: 2 summaries total before upgrade paywall
   //   Paid: unlimited
   function getSummariesRemaining(): number {
     if (isPaid) return Infinity;
     if (!user) {
       return Math.max(0, ANON_SUMMARY_LIMIT - anonSummariesUsed);
     }
-    // Free account: 1 use total
+    // Free account: 2 uses total
     if (profile?.summaries_reset_at && new Date() > new Date(profile.summaries_reset_at)) {
-      return 1; // will reset on next use
+      return 2; // will reset on next use
     }
-    return Math.max(0, 1 - (profile?.summaries_used ?? 0));
+    return Math.max(0, 2 - (profile?.summaries_used ?? 0));
   }
 
   function canSummarize(): boolean {
@@ -636,12 +636,12 @@ function AppPageInner() {
       // When exhausted, the locked overlay in the UI handles the upsell.
       return anonSummariesUsed < ANON_SUMMARY_LIMIT;
     }
-    // Free account: 1 use total
+    // Free account: 2 uses total
     if (profile?.summaries_reset_at && new Date() > new Date(profile.summaries_reset_at)) {
       return true; // reset period passed
     }
-    if (profile && (profile.summaries_used ?? 0) >= 1) {
-      setUpgradeModalTitle("You've used your free summary.");
+    if (profile && (profile.summaries_used ?? 0) >= 2) {
+      setUpgradeModalTitle("You've used your 2 free summaries.");
       setUpgradeModalSubtitle("Upgrade to unlock unlimited professors, questions, and email checking.");
       hitPaywall("summary");
       return false;
@@ -1031,7 +1031,7 @@ function AppPageInner() {
         });
         // After the very first summary, nudge with what's left (no paywall yet).
         if (wasFirstSummary && highlights.length > 0 && !data.error) {
-          showToast("Free summary used — 1 email check left", 5000);
+          showToast("1 free summary + 1 email check left", 5000);
         }
       }
       // Funnel: free user reached the core value moment (a real summary).
@@ -2045,8 +2045,10 @@ function AppPageInner() {
                             In most lab sciences (biology, chemistry, medicine, etc.), <strong>1st author</strong> did the hands-on work and <strong>last author</strong> runs the lab. In many other fields (math, CS, economics, humanities), author order is often alphabetical and doesn&apos;t indicate contribution level. When in doubt, check if the professor lists the paper prominently on their own website — that usually means it&apos;s important to them.
                           </div>
                         </div>
-                        {summary.highlights.map((h, i) => (
-                          <div key={i} className="finding-border" style={{ paddingLeft: "20px", marginBottom: "16px" }}>
+                        {summary.highlights.map((h, i) => {
+                          const locked = isFree && i > 0;
+                          return (
+                          <div key={i} className="finding-border" aria-hidden={locked || undefined} style={{ paddingLeft: "20px", marginBottom: "16px", ...(locked ? { filter: "blur(5px)", userSelect: "none", pointerEvents: "none" } as const : {}) }}>
                             <p style={{ fontSize: "1rem", color: "#6b7280", lineHeight: 1.6 }}>{h.detail}</p>
                             <p style={{ fontSize: "0.85rem", color: "#6b7280", fontStyle: "italic", marginTop: "4px" }}>
                               {h.paper}
@@ -2062,16 +2064,32 @@ function AppPageInner() {
                               )}
                             </p>
                           </div>
-                        ))}
+                          );
+                        })}
+                        {isFree && summary.highlights.length > 1 && (
+                          <button type="button" onClick={() => hitPaywall("summary")} className="rm-unlock-row">
+                            <span aria-hidden="true">🔒</span>
+                            {summary.highlights.length - 1} more finding{summary.highlights.length - 1 === 1 ? "" : "s"} — upgrade to unlock
+                          </button>
+                        )}
                       </div>
                     )}
-                    {/* Suggested questions — part of the free summary for everyone */}
+                    {/* Suggested questions — first one free; the rest blurred for free users */}
                     {summary.questions.length > 0 && (
                       <div style={{ marginTop: "24px" }}>
                         <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "14px" }}>Questions to Ask</p>
-                        {summary.questions.map((q, i) => (
-                          <p key={i} style={{ fontSize: "1rem", color: "#6b7280", paddingLeft: "20px", borderLeft: "3px solid #9dbfaa", marginBottom: "12px", lineHeight: 1.6 }}>{q}</p>
-                        ))}
+                        {summary.questions.map((q, i) => {
+                          const locked = isFree && i > 0;
+                          return (
+                            <p key={i} aria-hidden={locked || undefined} style={{ fontSize: "1rem", color: "#6b7280", paddingLeft: "20px", borderLeft: "3px solid #9dbfaa", marginBottom: "12px", lineHeight: 1.6, ...(locked ? { filter: "blur(5px)", userSelect: "none", pointerEvents: "none" } as const : {}) }}>{q}</p>
+                          );
+                        })}
+                        {isFree && summary.questions.length > 1 && (
+                          <button type="button" onClick={() => hitPaywall("summary")} className="rm-unlock-row">
+                            <span aria-hidden="true">🔒</span>
+                            {summary.questions.length - 1} more question{summary.questions.length - 1 === 1 ? "" : "s"} — upgrade to unlock
+                          </button>
+                        )}
                       </div>
                     )}
                     {/* Closing tip — only if highlights exist */}
@@ -2107,7 +2125,7 @@ function AppPageInner() {
                           <div style={{ marginTop: "10px", padding: "10px 14px", background: "rgba(45,90,61,0.055)", border: "1px solid rgba(45,90,61,0.13)", borderRadius: "10px" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                               <span style={{ fontSize: "0.82rem", color: "#2d5a3d", opacity: 0.6, flexShrink: 0 }}>ℹ</span>
-                              <span style={{ fontSize: "0.8rem", color: "#2d5a3d", fontWeight: 500 }}>You&apos;ve used your free summary.</span>
+                              <span style={{ fontSize: "0.8rem", color: "#2d5a3d", fontWeight: 500 }}>You&apos;ve used your 2 free summaries.</span>
                             </div>
                             <p style={{ fontSize: "0.74rem", color: "#8aaa96", marginTop: "3px", paddingLeft: "21px" }}>Upgrade for unlimited access to all professors.</p>
                           </div>

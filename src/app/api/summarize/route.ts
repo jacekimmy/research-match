@@ -9,8 +9,8 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-const FREE_LIMIT = 1;
-const ANON_LIMIT = 1;
+const FREE_LIMIT = 2;
+const ANON_LIMIT = 2;
 
 interface OpenAlexAuthorship {
   author?: { id?: string };
