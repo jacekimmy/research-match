@@ -54,8 +54,8 @@ export async function POST(req: NextRequest) {
       const isPaid = hasPaidAccess(profile);
 
       if (!isPaid) {
-        const needsReset = profile?.summaries_reset_at && new Date() > new Date(profile.summaries_reset_at);
-        const used = needsReset ? 0 : (profile?.summaries_used ?? 0);
+        // Lifetime cap — no monthly reset. 2 summaries total, ever.
+        const used = profile?.summaries_used ?? 0;
         if (used >= FREE_LIMIT) {
           return NextResponse.json({ error: "limit_reached" }, { status: 403 });
         }
@@ -187,20 +187,10 @@ Return only valid JSON, no markdown, no explanation.`;
         const isPaid = hasPaidAccess(profile);
 
         if (!isPaid) {
-          const needsReset = profile?.summaries_reset_at && new Date() > new Date(profile.summaries_reset_at);
-          if (needsReset) {
-            const nextMonth = new Date();
-            nextMonth.setMonth(nextMonth.getMonth() + 1, 1);
-            nextMonth.setHours(0, 0, 0, 0);
-            await supabaseAdmin.from("profiles").update({
-              summaries_used: 1,
-              summaries_reset_at: nextMonth.toISOString(),
-            }).eq("id", userId);
-          } else {
-            await supabaseAdmin.from("profiles").update({
-              summaries_used: (profile?.summaries_used ?? 0) + 1,
-            }).eq("id", userId);
-          }
+          // Lifetime cap — just increment, never reset.
+          await supabaseAdmin.from("profiles").update({
+            summaries_used: (profile?.summaries_used ?? 0) + 1,
+          }).eq("id", userId);
         }
       } else {
         // Increment IP counter for anon user

@@ -622,10 +622,7 @@ function AppPageInner() {
     if (!user) {
       return Math.max(0, ANON_SUMMARY_LIMIT - anonSummariesUsed);
     }
-    // Free account: 2 uses total
-    if (profile?.summaries_reset_at && new Date() > new Date(profile.summaries_reset_at)) {
-      return 2; // will reset on next use
-    }
+    // Free account: 2 total for the life of the account — no monthly reset.
     return Math.max(0, 2 - (profile?.summaries_used ?? 0));
   }
 
@@ -636,10 +633,7 @@ function AppPageInner() {
       // When exhausted, the locked overlay in the UI handles the upsell.
       return anonSummariesUsed < ANON_SUMMARY_LIMIT;
     }
-    // Free account: 2 uses total
-    if (profile?.summaries_reset_at && new Date() > new Date(profile.summaries_reset_at)) {
-      return true; // reset period passed
-    }
+    // Free account: 2 total for the life of the account — no monthly reset.
     if (profile && (profile.summaries_used ?? 0) >= 2) {
       setUpgradeModalTitle("You've used your 2 free summaries.");
       setUpgradeModalSubtitle("Upgrade to unlock unlimited professors, questions, and email checking.");
