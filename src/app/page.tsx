@@ -72,7 +72,7 @@ export default function LandingPage() {
     { label: "Unlimited professor searches" },
     { label: "Unlimited summaries" },
     { label: "Professor email finder" },
-    { label: "Email checker", locked: activePaidPlan === "weekly" },
+    { label: "Email checker" },
     { label: "Responsiveness scores" },
     { label: "Cold Email Playbook" },
   ];
@@ -973,15 +973,12 @@ export default function LandingPage() {
                     "Unlimited professor searches",
                     "Unlimited summaries",
                     "Professor email finder",
+                    "Email checker",
                     "Responsiveness scores",
                     "Cold Email Playbook",
                   ].map((f) => (
                     <li key={f}><span className="lp-check">✓</span>{f}</li>
                   ))}
-                  <li className="lp-feature-locked">
-                    <span className="lp-check">✗</span>
-                    <span style={{ textDecoration: "line-through" }}>Email checker</span>
-                  </li>
                 </ul>
                 <button
                   onClick={() => handleCheckout("weekly")}

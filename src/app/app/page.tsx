@@ -362,9 +362,7 @@ function AppPageInner() {
   const isPaid = hasPaidAccess(profile);
   const isFree = !isPaid;
   const planLabel = planLabelFor(profile);
-  const isWeekly = profile?.plan_type === "weekly";
-  const isGrandfatheredWeekly = isWeekly && profile?.email_checker_grandfathered === true;
-  const hasEmailChecker = isPaid && (!isWeekly || isGrandfatheredWeekly);
+  const hasEmailChecker = isPaid; // every paid plan (incl. weekly) gets the email checker
 
   // Tag helpers
   function addQueryTag() {
@@ -2495,13 +2493,7 @@ function AppPageInner() {
                     </div>
                   )}
                   <div className="rm-modal-actions rm-modal-sticky-footer">
-                    {!hasEmailChecker && isWeekly ? (
-                      <div style={{ display: "flex", alignItems: "center", gap: "12px", flex: 1, background: "rgba(45,90,61,0.05)", border: "1px solid rgba(45,90,61,0.12)", borderRadius: "12px", padding: "12px 16px" }}>
-                        <span style={{ fontSize: "1rem" }}>🔒</span>
-                        <span style={{ fontSize: "0.85rem", color: "#6b7280", flex: 1 }}>Email checker is on Semester &amp; Lifetime</span>
-                        <button onClick={() => { setEmailTarget(null); setShowUpgradeModal(true); }} style={{ fontSize: "0.8rem", fontWeight: 700, color: "#2d5a3d", background: "rgba(45,90,61,0.08)", border: "1px solid rgba(45,90,61,0.2)", borderRadius: "8px", padding: "6px 14px", cursor: "pointer", whiteSpace: "nowrap" }}>Upgrade</button>
-                      </div>
-                    ) : !isPaid && freeEmailCheckUsed ? (
+                    {!isPaid && freeEmailCheckUsed ? (
                       /* Post-check notice: free check consumed, soft upgrade mention */
                       <div style={{ display: "flex", flexDirection: "column", gap: "3px", flex: 1, background: "rgba(45,90,61,0.055)", border: "1px solid rgba(45,90,61,0.13)", borderRadius: "12px", padding: "12px 16px" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>

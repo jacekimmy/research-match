@@ -100,7 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       nextMonth.setMonth(nextMonth.getMonth() + 1, 1);
       nextMonth.setHours(0, 0, 0, 0);
       // Carry over summaries already used while signed out, so the free tier is
-      // 2 total across anon + account (not 2 anon AND 2 after sign-up).
+      // 1 total across anon + account (not 1 anon AND another after sign-up).
       const carriedSummariesUsed = Math.min(readAnonSummariesUsed(), FREE_SUMMARY_LIMIT);
       await supabase.from("profiles").insert({
         id: data.user.id,

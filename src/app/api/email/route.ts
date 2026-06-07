@@ -52,24 +52,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Sign in to check an email." }, { status: 401 });
     }
 
-    // Only block new (non-grandfathered) weekly subscribers.
-    // All other plans (including free) retain original access.
-    // If the column doesn't exist yet (migration not run), profile may be null — fail open.
-    const { data: profile } = await supabaseAdmin
-      .from("profiles")
-      .select("plan_type, email_checker_grandfathered")
-      .eq("id", userId)
-      .single();
-
-    const isBlockedWeekly =
-      profile?.plan_type === "weekly" && !profile?.email_checker_grandfathered;
-
-    if (isBlockedWeekly) {
-      return NextResponse.json(
-        { error: "upgrade_required", message: "Email checker is available on Semester and Lifetime plans." },
-        { status: 403 }
-      );
-    }
+    // Email checker is available on every paid plan (weekly, semester, lifetime).
 
     if (!withinRateLimit(userId)) {
       return NextResponse.json({ error: "Too many email checks. Try again in a minute." }, { status: 429 });
