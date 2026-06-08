@@ -2749,72 +2749,59 @@ function AppPageInner() {
               </p>
             )}
 
-            {/* Lifetime + Semester side by side on desktop */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "12px", marginBottom: "12px" }}>
-              {/* Lifetime */}
-              <div style={{ padding: "18px", borderRadius: "14px", border: "2px solid rgba(168,137,62,0.5)", boxShadow: "0 0 20px rgba(168,137,62,0.08)", background: "rgba(168,137,62,0.05)" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
-                  <p style={{ fontSize: "0.65rem", fontWeight: 700, color: "#A8893E", textTransform: "uppercase", letterSpacing: "0.1em" }}>Lifetime</p>
-                  <span style={{ fontSize: "0.55rem", fontWeight: 700, color: "#fff", background: "linear-gradient(135deg, #A8893E, #c9a84c)", padding: "2px 8px", borderRadius: "999px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Best Value</span>
-                </div>
-                <div style={{ display: "flex", alignItems: "baseline", gap: "6px", marginBottom: "2px" }}>
-                  <span style={{ fontSize: "1.8rem", fontWeight: 800, color: "#A8893E" }}>$59</span>
-                  <span style={{ fontSize: "0.8rem", color: "#A8893E", fontWeight: 600 }}>one-time</span>
-                </div>
-                <p style={{ fontSize: "0.75rem", color: "#9b8040", marginBottom: "10px" }}>Less than 2 semesters. Never pay again.</p>
-                <ul style={{ listStyle: "none", padding: 0, marginBottom: "14px" }}>
-                  {["Everything in Semester, forever", "One payment, lifetime access", "Emails That Worked + Email Template"].map((f) => (
-                    <li key={f} style={{ fontSize: "0.8rem", color: "#6b7280", padding: "3px 0", display: "flex", gap: "8px" }}>
-                      <span style={{ color: "#A8893E" }}>✓</span> {f}
-                    </li>
-                  ))}
-                </ul>
-                <button onClick={async () => {
-                  const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_LIFETIME || "price_1TIuBBFINW44xCyFoSCtUpFN";
-                  await startCheckout(priceId);
-                }} className="btn-cta rm-search-btn" style={{ width: "100%", padding: "10px", fontSize: "0.88rem", background: "linear-gradient(135deg, #A8893E, #c9a84c)" }}>
-                  Claim Lifetime — $59
-                </button>
+            {/* Weekly — the emphasized plan */}
+            <div style={{ padding: "20px", borderRadius: "16px", border: "2px solid rgba(45,90,61,0.5)", boxShadow: "0 10px 30px rgba(45,90,61,0.16)", background: "linear-gradient(135deg, rgba(45,90,61,0.08), rgba(45,90,61,0.03))", marginBottom: "12px" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
+                <p style={{ fontSize: "0.68rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em" }}>Weekly Sprint</p>
+                <span style={{ fontSize: "0.55rem", fontWeight: 700, color: "#fff", background: "linear-gradient(135deg, #2d5a3d, #3a6b4a)", padding: "3px 9px", borderRadius: "999px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Most Popular</span>
               </div>
-
-              {/* Semester */}
-              <div style={{ padding: "18px", borderRadius: "14px", border: "1.5px solid rgba(45,90,61,0.2)", background: "rgba(45,90,61,0.03)" }}>
-                <p style={{ fontSize: "0.65rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "6px" }}>Semester</p>
-                <div style={{ display: "flex", alignItems: "baseline", gap: "6px", marginBottom: "2px" }}>
-                  <span style={{ fontSize: "1.8rem", fontWeight: 800, color: "#2d5a3d" }}>$29</span>
-                  <span style={{ fontSize: "0.8rem", color: "#2d5a3d", fontWeight: 500 }}>/ 4 months</span>
-                </div>
-                <p style={{ fontSize: "0.75rem", color: "#6b7280", marginBottom: "10px" }}>One semester. Everything you need to land a position.</p>
-                <ul style={{ listStyle: "none", padding: 0, marginBottom: "14px" }}>
-                  {["Unlimited research summaries", "Email checker with red-flag detection", "Professor email finder", "Professor responsiveness indicator", "Emails That Worked + Email Template"].map((f) => (
-                    <li key={f} style={{ fontSize: "0.8rem", color: "#6b7280", padding: "3px 0", display: "flex", gap: "8px" }}>
-                      <span style={{ color: "#2d5a3d" }}>✓</span> {f}
-                    </li>
-                  ))}
-                </ul>
-                <button onClick={async () => {
-                  const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_SEMESTER || "price_1TIuAlFINW44xCyFcxqgQpeV";
-                  await startCheckout(priceId);
-                }} className="btn-cta rm-search-btn" style={{ width: "100%", padding: "10px", fontSize: "0.88rem" }}>
-                  Get Semester — $29
-                </button>
+              <div style={{ display: "flex", alignItems: "baseline", gap: "6px", marginBottom: "2px" }}>
+                <span style={{ fontSize: "2.1rem", fontWeight: 800, color: "#2d5a3d" }}>$7</span>
+                <span style={{ fontSize: "0.85rem", color: "#2d5a3d", fontWeight: 600 }}>/ week</span>
               </div>
-            </div>
-
-            {/* Weekly Sprint — slim horizontal row */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "14px 18px", borderRadius: "12px", border: "1px solid rgba(45,90,61,0.15)", background: "rgba(255,255,255,0.6)", flexWrap: "wrap", marginBottom: "12px" }}>
-              <div>
-                <p style={{ fontSize: "0.65rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "2px" }}>Weekly Sprint</p>
-                <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
-                  <span style={{ fontSize: "1.3rem", fontWeight: 800, color: "#2d5a3d" }}>$7</span>
-                  <span style={{ fontSize: "0.78rem", color: "#6b7280" }}>/ week · Crunch time access for 7 days</span>
-                </div>
-              </div>
+              <p style={{ fontSize: "0.78rem", color: "#6b7280", marginBottom: "12px" }}>Full access while you run your outreach. Cancel anytime.</p>
+              <ul style={{ listStyle: "none", padding: 0, marginBottom: "16px" }}>
+                {["Unlimited research summaries", "Email checker with red-flag detection", "Professor email finder", "Professor responsiveness indicator", "Cold Email Playbook"].map((f) => (
+                  <li key={f} style={{ fontSize: "0.82rem", color: "#6b7280", padding: "3px 0", display: "flex", gap: "8px" }}>
+                    <span style={{ color: "#2d5a3d" }}>✓</span> {f}
+                  </li>
+                ))}
+              </ul>
               <button onClick={async () => {
                 const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_WEEKLY || "price_1TMxDSFINW44xCyFWrm6ZTOo";
                 await startCheckout(priceId);
-              }} className="btn-cta" style={{ padding: "9px 20px", fontSize: "0.83rem", background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "none", whiteSpace: "nowrap" }}>
-                Start Sprint — $7
+              }} className="btn-cta rm-search-btn" style={{ width: "100%", padding: "13px", fontSize: "0.95rem", background: "linear-gradient(135deg, #2d5a3d, #3a6b4a)", boxShadow: "0 8px 24px rgba(45,90,61,0.3)", textShadow: "0 1px 2px rgba(18,54,34,0.24)" }}>
+                Start Weekly — $7
+              </button>
+            </div>
+
+            {/* Semester — secondary option */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "14px 18px", borderRadius: "12px", border: "1px solid rgba(45,90,61,0.18)", background: "rgba(45,90,61,0.03)", flexWrap: "wrap", marginBottom: "10px" }}>
+              <div>
+                <p style={{ fontSize: "0.65rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "2px" }}>Semester</p>
+                <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
+                  <span style={{ fontSize: "1.3rem", fontWeight: 800, color: "#2d5a3d" }}>$29</span>
+                  <span style={{ fontSize: "0.78rem", color: "#6b7280" }}>/ 4 months · full semester access</span>
+                </div>
+              </div>
+              <button onClick={async () => {
+                const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_SEMESTER || "price_1TIuAlFINW44xCyFcxqgQpeV";
+                await startCheckout(priceId);
+              }} className="btn-cta" style={{ padding: "10px 22px", fontSize: "0.85rem", background: "rgba(45, 90, 61, 0.1)", color: "#2d5a3d", border: "none", whiteSpace: "nowrap" }}>
+                Get Semester — $29
+              </button>
+            </div>
+
+            {/* Lifetime — de-emphasized one-time option */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", padding: "11px 16px", borderRadius: "12px", border: "1px solid rgba(45,90,61,0.1)", background: "rgba(255,255,255,0.45)", flexWrap: "wrap", marginBottom: "12px" }}>
+              <span style={{ fontSize: "0.8rem", color: "#6b7280" }}>
+                Prefer to pay once? <strong style={{ color: "#2d5a3d", fontWeight: 700 }}>Lifetime — $59</strong>, never pay again.
+              </span>
+              <button onClick={async () => {
+                const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_LIFETIME || "price_1TIuBBFINW44xCyFoSCtUpFN";
+                await startCheckout(priceId);
+              }} style={{ fontSize: "0.8rem", fontWeight: 700, color: "#2d5a3d", background: "none", border: "none", cursor: "pointer", whiteSpace: "nowrap", textDecoration: "underline", fontFamily: "inherit" }}>
+                Get Lifetime →
               </button>
             </div>
 
