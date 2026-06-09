@@ -62,7 +62,6 @@ export default function ProfilePage() {
   const [buddyLoading, setBuddyLoading] = useState(true);
   const [buddyError, setBuddyError] = useState("");
   const [activationLoading, setActivationLoading] = useState(false);
-  const [portalLoading, setPortalLoading] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
   const [copyState, setCopyState] = useState<"idle" | "code" | "link">("idle");
 
@@ -153,26 +152,6 @@ export default function ProfilePage() {
       else alert(data.error || "Could not open checkout.");
     } catch {
       alert("Something went wrong. Please try again.");
-    }
-  }
-
-  async function openBillingPortal() {
-    setPortalLoading(true);
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.access_token) { alert("Please sign in again to manage billing."); return; }
-      const res  = await fetch("/api/customer-portal", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
-        body: JSON.stringify({}),
-      });
-      const data = await res.json();
-      if (data.url) window.location.href = data.url;
-      else alert(data.error || "Could not open billing portal. Please contact support.");
-    } catch {
-      alert("Something went wrong. Please try again.");
-    } finally {
-      setPortalLoading(false);
     }
   }
 
@@ -459,19 +438,6 @@ export default function ProfilePage() {
                   Give feedback
                   <span className="pro-action-arrow" aria-hidden="true">→</span>
                 </Link>
-
-                {profile?.plan_type !== "lifetime" && (
-                  <button
-                    id="manage-subscription-btn"
-                    type="button"
-                    disabled={portalLoading}
-                    onClick={openBillingPortal}
-                    className="pro-action"
-                  >
-                    {portalLoading ? "Opening…" : "Manage subscription"}
-                    {!portalLoading && <span className="pro-action-arrow" aria-hidden="true">→</span>}
-                  </button>
-                )}
 
                 {profile?.plan_type !== "lifetime" && (
                   <button
