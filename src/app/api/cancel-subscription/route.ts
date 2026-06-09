@@ -178,6 +178,10 @@ export async function POST(req: NextRequest) {
     });
   } catch (err) {
     console.error("Cancel subscription error:", err);
-    return NextResponse.json({ error: String(err) }, { status: 500 });
+    const message =
+      err instanceof Stripe.errors.StripeError
+        ? `Could not cancel: ${err.message}`
+        : "Could not cancel subscription. Please contact support.";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

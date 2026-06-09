@@ -86,6 +86,36 @@ async function authenticatedUserId(req: NextRequest) {
   return data.user?.id ?? null;
 }
 
+// Opens a billing portal session. If no Customer Portal configuration has been
+// saved yet (the classic "customers can't cancel" cause — Stripe throws until
+// you save portal settings once in the Dashboard), create a sensible default
+// with cancellation enabled and retry. The first config created becomes the
+// account default, so this self-heals after one call.
+async function createPortalSession(customer: string, returnUrl: string) {
+  try {
+    return await stripe.billingPortal.sessions.create({ customer, return_url: returnUrl });
+  } catch (err) {
+    const missingConfig =
+      err instanceof Stripe.errors.StripeInvalidRequestError &&
+      /configuration/i.test(err.message || "");
+    if (!missingConfig) throw err;
+
+    const config = await stripe.billingPortal.configurations.create({
+      business_profile: { headline: "Manage your Research Match subscription" },
+      features: {
+        invoice_history: { enabled: true },
+        payment_method_update: { enabled: true },
+        subscription_cancel: { enabled: true },
+      },
+    });
+    return await stripe.billingPortal.sessions.create({
+      customer,
+      configuration: config.id,
+      return_url: returnUrl,
+    });
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const userId = await authenticatedUserId(req);
@@ -106,14 +136,15 @@ export async function POST(req: NextRequest) {
 
     const customer = await customerWithCurrentSubscription(customerIds);
 
-    const portalSession = await stripe.billingPortal.sessions.create({
-      customer,
-      return_url: `${origin}/profile`,
-    });
+    const portalSession = await createPortalSession(customer, `${origin}/profile`);
 
     return NextResponse.json({ url: portalSession.url });
   } catch (err) {
     console.error("Customer portal error:", err);
-    return NextResponse.json({ error: String(err) }, { status: 500 });
+    const message =
+      err instanceof Stripe.errors.StripeError
+        ? `Billing portal error: ${err.message}`
+        : "Could not open billing portal. Please contact support.";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
