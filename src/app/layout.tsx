@@ -22,6 +22,10 @@ const playfair = Fraunces({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://researchmatch.site"),
+  verification: {
+    google: "s_3kAnRUjvOPzjElpM04zRSPoHf08YAFpfOWvUJDYDw",
+  },
   title: "Research Match - Find Research Professors in Minutes",
   description: "Search any research interest and university. Get professor matches, plain-English paper summaries, and an email framework built on advice from real professors.",
   icons: {

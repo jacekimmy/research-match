@@ -111,7 +111,7 @@ export default async function BlogPost({ params }: Props) {
     publisher: {
       "@type": "Organization",
       name: "Research Match",
-      url: "https://researchmatch.me",
+      url: "https://researchmatch.site",
     },
     datePublished: post.datePublished,
     dateModified: post.datePublished,

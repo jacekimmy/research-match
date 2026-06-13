@@ -8630,3 +8630,139 @@ body::after {
 @media (max-width: 430px) {
   .sp-nav-title { display: none; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   /research FIELD PAGES (programmatic SEO) — reuses blog-shell/blog-content
+   classes; only the field-specific surfaces below are new.
+═══════════════════════════════════════════════════════════════════ */
+
+/* Real HTML table of professors */
+.rm-research-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 22px 0 10px;
+  border: 1px solid rgba(45, 90, 61, 0.14);
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.5);
+  font-size: 0.95rem;
+}
+.rm-research-table thead {
+  background: rgba(45, 90, 61, 0.08);
+}
+.rm-research-table th {
+  text-align: left;
+  font-family: var(--font-inter), sans-serif;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #2d5a3d;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(45, 90, 61, 0.14);
+}
+.rm-research-table td {
+  padding: 13px 16px;
+  color: #43564b;
+  line-height: 1.5;
+  border-bottom: 1px solid rgba(45, 90, 61, 0.08);
+  vertical-align: top;
+}
+.rm-research-table tbody tr:last-child td { border-bottom: none; }
+.rm-research-table tbody tr:hover { background: rgba(45, 90, 61, 0.035); }
+.rm-research-table td a {
+  color: #2d5a3d;
+  font-weight: 700;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(45, 90, 61, 0.3);
+}
+.rm-research-table td a:hover { border-bottom-color: #2d5a3d; }
+.rm-research-tablenote {
+  font-size: 0.82rem !important;
+  color: #8a9a90 !important;
+  font-style: italic;
+  margin-top: 0 !important;
+}
+
+/* Secondary (text) CTA next to the green button in the conversion panel */
+.rm-research-secondary-cta {
+  display: inline-block;
+  margin-top: 10px;
+  color: #2d5a3d !important;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* FAQ block */
+.rm-research-faq {
+  margin-top: 28px;
+  padding: clamp(24px, 4vw, 38px);
+  border-radius: 24px;
+  border: 1px solid rgba(45, 90, 61, 0.11);
+  background: rgba(255, 255, 255, 0.5);
+}
+.rm-research-faq > h2 {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  color: #153522;
+  margin: 0 0 18px;
+  letter-spacing: -0.02em;
+}
+.rm-research-faq-item { margin-bottom: 20px; }
+.rm-research-faq-item:last-child { margin-bottom: 0; }
+.rm-research-faq-item h3 {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: #2d5a3d;
+  margin: 0 0 6px;
+}
+.rm-research-faq-item p {
+  font-size: 1rem;
+  color: #4f6558;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* Index hub grid */
+.rm-research-index-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 18px;
+  margin-top: 8px;
+}
+.rm-research-index-card {
+  display: flex;
+  flex-direction: column;
+  padding: 24px 24px 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(45, 90, 61, 0.12);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.42));
+  text-decoration: none;
+  transition: transform 0.25s ease-out, box-shadow 0.25s ease-out;
+}
+.rm-research-index-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(45, 90, 61, 0.1);
+}
+.rm-research-index-card h2 {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #153522;
+  margin: 0 0 8px;
+  letter-spacing: -0.02em;
+}
+.rm-research-index-card p {
+  font-size: 0.92rem;
+  color: #52685b;
+  line-height: 1.6;
+  margin: 0 0 16px;
+  flex: 1;
+}
+.rm-research-index-cta {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #2d5a3d;
+}

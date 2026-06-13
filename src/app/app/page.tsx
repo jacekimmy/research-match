@@ -636,7 +636,7 @@ function AppPageInner() {
     // Free account: 2 total for the life of the account — no monthly reset.
     if (profile && (profile.summaries_used ?? 0) >= 2) {
       setUpgradeModalTitle("You've used your 2 free summaries.");
-      setUpgradeModalSubtitle("Upgrade to unlock unlimited professors, questions, and email checking.");
+      setUpgradeModalSubtitle("Keep reading every finding and question, and check your email before you send.");
       hitPaywall("summary");
       return false;
     }
@@ -1845,7 +1845,7 @@ function AppPageInner() {
                         padding: "8px 20px", borderRadius: "10px",
                       }}
                     >
-                      Upgrade to unlock →
+                      See this match →
                     </span>
                   </div>
                 </div>
@@ -2061,9 +2061,17 @@ function AppPageInner() {
                           );
                         })}
                         {isFree && summary.highlights.length > 1 && (
-                          <button type="button" onClick={() => hitPaywall("summary")} className="rm-unlock-row">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setUpgradeModalTitle("Unlock this professor's full summary");
+                              setUpgradeModalSubtitle("Every finding, every question, and the email checker before you send.");
+                              hitPaywall("summary");
+                            }}
+                            className="rm-unlock-row"
+                          >
                             <span aria-hidden="true">🔒</span>
-                            {summary.highlights.length - 1} more finding{summary.highlights.length - 1 === 1 ? "" : "s"} — upgrade to unlock
+                            See the other {summary.highlights.length - 1} finding{summary.highlights.length - 1 === 1 ? "" : "s"} →
                           </button>
                         )}
                       </div>
@@ -2079,9 +2087,17 @@ function AppPageInner() {
                           );
                         })}
                         {isFree && summary.questions.length > 1 && (
-                          <button type="button" onClick={() => hitPaywall("summary")} className="rm-unlock-row">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setUpgradeModalTitle("Unlock this professor's full summary");
+                              setUpgradeModalSubtitle("Every finding, every question, and the email checker before you send.");
+                              hitPaywall("summary");
+                            }}
+                            className="rm-unlock-row"
+                          >
                             <span aria-hidden="true">🔒</span>
-                            {summary.questions.length - 1} more question{summary.questions.length - 1 === 1 ? "" : "s"} — upgrade to unlock
+                            See all {summary.questions.length} questions →
                           </button>
                         )}
                       </div>
@@ -2172,16 +2188,24 @@ function AppPageInner() {
                           This professor studies the intersection of computational methods and experimental techniques to advance understanding in their field. Their recent work focuses on developing novel approaches that combine interdisciplinary insights.
                         </p>
                       </div>
-                      <div className="locked-summary-overlay" style={{ paddingBottom: "28px" }} onClick={() => hitPaywall("summary")}>
+                      <div
+                        className="locked-summary-overlay"
+                        style={{ paddingBottom: "28px" }}
+                        onClick={() => {
+                          setUpgradeModalTitle("See what this professor studies");
+                          setUpgradeModalSubtitle("Their key findings, the questions worth asking, and your email checked before you send.");
+                          hitPaywall("summary");
+                        }}
+                      >
                         <span style={{ fontSize: "1.6rem", marginBottom: "10px" }}>&#128274;</span>
                         <p style={{ fontSize: "1rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "6px" }}>
-                          You&apos;ve used your free preview
+                          See this professor&apos;s research
                         </p>
                         <p style={{ fontSize: "0.85rem", color: "#6b7280", marginBottom: "14px" }}>
-                          Upgrade for unlimited access to all professors
+                          Their key findings and the questions worth asking.
                         </p>
                         <span className="locked-upgrade-btn" style={{ padding: "10px 24px", fontSize: "0.85rem" }}>
-                          Upgrade to Semester
+                          Reveal this summary →
                         </span>
                       </div>
                     </div>
@@ -2667,8 +2691,8 @@ function AppPageInner() {
       {showUpgradeModal && (
         <div className="rm-upgrade-backdrop" onClick={() => setShowUpgradeModal(false)}>
           <div className="glass-card rm-modal-card rm-upgrade-card" style={{ padding: "32px" }} onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "4px" }}>{upgradeModalTitle || "Upgrade your plan"}</h3>
-            <p style={{ fontSize: "0.85rem", color: "#6b7280", marginBottom: "20px" }}>{upgradeModalSubtitle || "Unlimited summaries, email checker, and professor email finder."}</p>
+            <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "4px" }}>{upgradeModalTitle || "Unlock the full toolkit"}</h3>
+            <p style={{ fontSize: "0.85rem", color: "#6b7280", marginBottom: "20px" }}>{upgradeModalSubtitle || "Every finding, every question, the email checker, and the professor email finder."}</p>
             <details
               open={Boolean(checkoutReferralCode)}
               style={{
