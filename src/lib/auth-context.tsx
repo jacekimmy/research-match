@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useState, useCallback, ReactNode 
 import { supabase } from "./supabase";
 import type { User, AuthError } from "@supabase/supabase-js";
 import { generateReferralCode } from "./buddy-pass";
+import { track } from "./analytics";
 
 // Free summaries allowed across a user's lifetime on the free tier. Shared
 // between the anonymous (pre-account) and free-account states so creating an
@@ -112,6 +113,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         summaries_used: carriedSummariesUsed,
         summaries_reset_at: nextMonth.toISOString(),
       });
+
+      // Funnel: a free account was created (fires for every signup entry point).
+      track("account_created");
 
       // Apply promo code if provided
       let promoApplied = false;

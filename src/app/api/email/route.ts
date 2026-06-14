@@ -47,14 +47,18 @@ function withinRateLimit(key: string) {
 
 export async function POST(req: NextRequest) {
   try {
+    // Anonymous checks are allowed: the first check is a no-account "taste" (the
+    // client shows the top flag + count and gates the rest behind signup).
+    // Per-account / per-plan limits are enforced client-side; here we only
+    // rate-limit (by user when signed in, by IP when anonymous) to curb abuse.
     const userId = await authenticatedUserId(req);
-    if (!userId) {
-      return NextResponse.json({ error: "Sign in to check an email." }, { status: 401 });
-    }
+    const ip =
+      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      req.headers.get("x-real-ip") ||
+      "unknown";
+    const rateKey = userId || `anon:${ip}`;
 
-    // Email checker is available on every paid plan (weekly, semester, lifetime).
-
-    if (!withinRateLimit(userId)) {
+    if (!withinRateLimit(rateKey)) {
       return NextResponse.json({ error: "Too many email checks. Try again in a minute." }, { status: 429 });
     }
 

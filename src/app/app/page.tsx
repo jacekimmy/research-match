@@ -331,6 +331,9 @@ function AppPageInner() {
   const [showFramework, setShowFramework] = useState(false);
   const [mobileEmailTab, setMobileEmailTab] = useState<"compose" | "reference">("compose");
   const [freeEmailCheckUsed, setFreeEmailCheckUsed] = useState(false);
+  // True when the current result is a no-account "taste" (top flag shown, rest
+  // gated behind signup). Set per-check; cleared once revealed in full.
+  const [resultGated, setResultGated] = useState(false);
 
   // Citation + Paper filter
   const MAX_CITATIONS = 100000;
@@ -390,6 +393,19 @@ function AppPageInner() {
       setFreeEmailCheckUsed(false);
     }
   }, [user?.id]);
+
+  // When an anonymous visitor signs up while a gated taste result is on screen,
+  // reveal it in full — that revealed check is their one free full check, so the
+  // next email hits the paywall. Read localStorage directly to avoid races with
+  // the effect above.
+  useEffect(() => {
+    if (!user?.id || !hasChecked || !resultGated) return;
+    setResultGated(false);
+    if (localStorage.getItem(`rm-email-check-${user.id}`) !== "1") {
+      localStorage.setItem(`rm-email-check-${user.id}`, "1");
+    }
+    setFreeEmailCheckUsed(true);
+  }, [user?.id, hasChecked, resultGated]);
 
   // Handle ?upgrade=true or ?upgrade=lifetime or ?upgrade=weekly from landing page
   useEffect(() => {
@@ -1039,28 +1055,34 @@ function AppPageInner() {
   function openEmailDraft(author: Author) {
     const id = author.id.split("/").pop()!;
     if (!summaries[id]) loadSummary(author);
-    setEmailTarget(author); setEmailDraft(""); setEmailFlags([]); setHasChecked(false);
+    setEmailTarget(author); setEmailDraft(""); setEmailFlags([]); setHasChecked(false); setResultGated(false);
+  }
+
+  // Opens signup from the gated taste result ("create a free account to see them all").
+  function openCheckerSignup() {
+    setAuthModalCopy("Create a free account to see every issue in this email.");
+    setShowAuthModal(true);
+    setAuthMode("signup");
+    setAuthError("");
   }
 
   async function checkEmail() {
     if (!emailTarget || !emailDraft.trim()) return;
+    // Funnel: user pressed Check, at the moment of value, before any signup gate.
+    track("check_started");
     const id = emailTarget.id.split("/").pop()!;
     const summary = summaries[id];
     setCheckingEmail(true);
     try {
+      // Anonymous checks are allowed (the no-account taste). Send the auth token
+      // only when signed in.
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.access_token) {
-        setEmailFlags([{ type: "error", issue: "Sign in again", suggestion: "Log in again before checking your email." }]);
-        setHasChecked(true);
-        return;
-      }
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (session?.access_token) headers["Authorization"] = `Bearer ${session.access_token}`;
 
       const res = await fetch("/api/email", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
-        },
+        headers,
         body: JSON.stringify({ draft: emailDraft, professorName: emailTarget.display_name, institution: emailTarget.last_known_institutions?.[0]?.display_name || "", topics: emailTarget.topics?.slice(0, 4).map((t) => t.display_name), highlights: summary?.highlights || [], questions: summary?.questions || [] }),
       });
       const data = await res.json();
@@ -1071,6 +1093,7 @@ function AppPageInner() {
           return;
         }
         setEmailFlags([{ type: "error", issue: "Check failed", suggestion: data.message || data.error || "Something went wrong. Try again." }]);
+        setResultGated(false);
         setHasChecked(true);
         return;
       }
@@ -1078,13 +1101,21 @@ function AppPageInner() {
       setEmailFlags(flags);
       setHasChecked(true);
 
-      // Mark free check as used (persisted per user so it survives modal re-opens)
-      if (!isPaid && user?.id && !freeEmailCheckUsed) {
-        localStorage.setItem(`rm-email-check-${user.id}`, "1");
-        setFreeEmailCheckUsed(true);
-        showToast("That was your free email check — upgrade to keep checking emails.");
-        // Funnel: free user reached the email-checker limit (inline upgrade prompt shown).
-        track("paywall_hit", { limit_type: "email_checker" });
+      // Entitlement for THIS result:
+      //  - paid: full, unlimited.
+      //  - signed-in free, first check: full reveal; consume their one free check
+      //    so the next email hits the paywall.
+      //  - anonymous: a gated taste (top flag + count shown, rest behind signup).
+      if (isPaid) {
+        setResultGated(false);
+      } else if (user?.id) {
+        setResultGated(false);
+        if (!freeEmailCheckUsed) {
+          localStorage.setItem(`rm-email-check-${user.id}`, "1");
+          setFreeEmailCheckUsed(true);
+        }
+      } else {
+        setResultGated(true);
       }
 
       // Perfect email celebration!
@@ -2143,7 +2174,7 @@ function AppPageInner() {
                       </>
                     ) : !user && !!summaries[id] ? (
                       <button
-                        onClick={() => { setAuthModalCopy("Your summary is ready. Create a free account to check your email before you send it."); setShowAuthModal(true); setAuthMode("signup"); setAuthError(""); }}
+                        onClick={() => openEmailDraft(author)}
                         className="rm-email-cta"
                         style={{ marginTop: "28px" }}
                       >
@@ -2152,7 +2183,7 @@ function AppPageInner() {
                         </span>
                         <span className="rm-email-cta-text">
                           <span className="rm-email-cta-title">Check your email before you send</span>
-                          <span className="rm-email-cta-sub">Designed with advice from 30+ professors</span>
+                          <span className="rm-email-cta-sub">Free to try — no account needed</span>
                         </span>
                         <span className="rm-email-cta-arrow" aria-hidden="true">&rarr;</span>
                       </button>
@@ -2520,8 +2551,14 @@ function AppPageInner() {
                     )}
                   </div>
 
-                  <textarea value={emailDraft} onChange={(e) => { setEmailDraft(e.target.value); setHasChecked(false); }} placeholder={`Dear Professor ${emailTarget.display_name},\n\nI'm a [year] [major] student at [your university]...\n\nUse the reference panel to mention specific papers and research.`} className="modal-textarea" style={{ flex: 1, padding: "24px", lineHeight: 1.7 }} />
-                  {/* Pre-check notice: shown to free users before they've used their 1 free check */}
+                  <textarea value={emailDraft} onChange={(e) => { setEmailDraft(e.target.value); setHasChecked(false); }} placeholder={"Paste the email you're about to send."} className="modal-textarea" style={{ flex: 1, padding: "24px", lineHeight: 1.7 }} />
+                  {/* Pre-check notice */}
+                  {!user && !hasChecked && (
+                    <div style={{ margin: "12px 0 4px", padding: "10px 14px", background: "rgba(45,90,61,0.055)", border: "1px solid rgba(45,90,61,0.13)", borderRadius: "10px", display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span style={{ fontSize: "0.82rem", color: "#2d5a3d", opacity: 0.6, flexShrink: 0 }}>ℹ</span>
+                      <span style={{ fontSize: "0.8rem", color: "#2d5a3d" }}>Free to try — no account needed.</span>
+                    </div>
+                  )}
                   {!isPaid && !freeEmailCheckUsed && !!user && (
                     <div style={{ margin: "12px 0 4px", padding: "10px 14px", background: "rgba(45,90,61,0.055)", border: "1px solid rgba(45,90,61,0.13)", borderRadius: "10px", display: "flex", alignItems: "center", gap: "8px" }}>
                       <span style={{ fontSize: "0.82rem", color: "#2d5a3d", opacity: 0.6, flexShrink: 0 }}>ℹ</span>
@@ -2545,7 +2582,7 @@ function AppPageInner() {
                             <span className="loading-spinner" style={{ fontSize: "0.9rem" }}>&#127807;</span>
                             Checking...
                           </span>
-                        ) : "Check my email"}
+                        ) : "Check email"}
                       </button>
                     )}
                     <button onClick={handleCopy} disabled={!emailDraft.trim()} style={{ fontSize: "1rem", color: "#6b7280", background: "none", border: "none", cursor: emailDraft.trim() ? "pointer" : "default", opacity: emailDraft.trim() ? 1 : 0.3, fontFamily: "var(--font-playfair), Georgia, serif", transition: "color 0.2s" }}
@@ -2558,23 +2595,79 @@ function AppPageInner() {
                       {wordCount} words
                     </span>
                   </div>
-                  {hasChecked && emailFlags.length > 0 && (
-                    <div style={{ marginTop: "20px", display: "flex", flexDirection: "column", gap: "10px" }}>
-                      {emailFlags.map((flag, i) => (
-                        <div key={i} className={`flag-enter ${flag.type === "error" ? "flag-error" : "flag-warning"}`} style={{ padding: "16px 20px" }}>
-                          <span style={{ fontWeight: 700, fontSize: "0.95rem", color: flag.type === "error" ? "#c45c5c" : "#A8893E" }}>{flag.type === "error" ? "\u26A0" : "\u25CF"} {flag.issue}</span>
-                          <p style={{ fontSize: "0.85rem", color: "#6b7280", marginTop: "4px" }}>{flag.suggestion}</p>
+                  {hasChecked && (() => {
+                    const total = emailFlags.length;
+                    const gated = resultGated; // anonymous taste
+                    const FlagCard = (flag: EmailFlag, i: number) => (
+                      <div key={i} className={`flag-enter ${flag.type === "error" ? "flag-error" : "flag-warning"}`} style={{ padding: "16px 20px" }}>
+                        <span style={{ fontWeight: 700, fontSize: "0.95rem", color: flag.type === "error" ? "#c45c5c" : "#A8893E" }}>{flag.type === "error" ? "\u26A0" : "\u25CF"} {flag.issue}</span>
+                        <p style={{ fontSize: "0.85rem", color: "#6b7280", marginTop: "4px" }}>{flag.suggestion}</p>
+                      </div>
+                    );
+                    const accountBtn = (
+                      <button onClick={openCheckerSignup} className="btn-cta" style={{ marginTop: "14px", padding: "11px 26px", fontSize: "0.9rem" }}>
+                        Create free account \u2192
+                      </button>
+                    );
+
+                    // Perfect email
+                    if (total === 0) {
+                      return (
+                        <div className="email-pass" style={{ marginTop: "20px", padding: "20px 24px", textAlign: "center" }}>
+                          <p style={{ fontSize: "1.4rem", marginBottom: "6px" }}>&#127881;</p>
+                          <p style={{ fontWeight: 700, fontSize: "1.05rem", color: "#2d5a3d" }}>Perfect email! No issues found.</p>
+                          <p style={{ fontSize: "0.85rem", color: "#6b7280", marginTop: "6px" }}>
+                            {gated ? "Clean. Checking your next email needs a free account." : "Copy it and send it with confidence."}
+                          </p>
+                          {gated && accountBtn}
                         </div>
-                      ))}
-                    </div>
-                  )}
-                  {hasChecked && emailFlags.length === 0 && (
-                    <div className="email-pass" style={{ marginTop: "20px", padding: "20px 24px", textAlign: "center" }}>
-                      <p style={{ fontSize: "1.4rem", marginBottom: "6px" }}>&#127881;</p>
-                      <p style={{ fontWeight: 700, fontSize: "1.05rem", color: "#2d5a3d" }}>Perfect email! No issues found.</p>
-                      <p style={{ fontSize: "0.85rem", color: "#6b7280", marginTop: "6px" }}>Copy it and send it with confidence.</p>
-                    </div>
-                  )}
+                      );
+                    }
+
+                    const visible = gated ? emailFlags.slice(0, 1) : emailFlags;
+                    const hidden = gated ? emailFlags.slice(1) : [];
+
+                    return (
+                      <div style={{ marginTop: "20px" }}>
+                        {gated && (
+                          <p style={{ fontSize: "0.85rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "10px" }}>
+                            {total} {total === 1 ? "issue" : "issues"} found.
+                          </p>
+                        )}
+                        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                          {visible.map((flag, i) => FlagCard(flag, i))}
+                        </div>
+
+                        {/* Gated: blur the rest behind a signup overlay */}
+                        {hidden.length > 0 && (
+                          <div style={{ position: "relative", marginTop: "10px" }}>
+                            <div aria-hidden="true" style={{ display: "flex", flexDirection: "column", gap: "10px", filter: "blur(6px)", userSelect: "none", pointerEvents: "none" }}>
+                              {hidden.map((flag, i) => FlagCard(flag, i))}
+                            </div>
+                            <div
+                              onClick={openCheckerSignup}
+                              style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", cursor: "pointer", background: "linear-gradient(to bottom, rgba(245,240,230,0.55) 0%, rgba(245,240,230,0.96) 55%)", padding: "16px", borderRadius: "12px" }}
+                            >
+                              <span style={{ fontSize: "1.2rem", marginBottom: "8px" }}>\uD83D\uDD12</span>
+                              <p style={{ fontSize: "0.92rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "4px" }}>
+                                {hidden.length} more {hidden.length === 1 ? "issue" : "issues"} found
+                              </p>
+                              <p style={{ fontSize: "0.82rem", color: "#6b7280", marginBottom: "12px" }}>Create a free account to see them all.</p>
+                              <span className="btn-cta" style={{ padding: "10px 24px", fontSize: "0.88rem" }}>Create free account \u2192</span>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Gated single-flag (nothing to blur): push the account ask to the next email */}
+                        {gated && hidden.length === 0 && (
+                          <div style={{ marginTop: "14px", padding: "12px 16px", background: "rgba(45,90,61,0.055)", border: "1px solid rgba(45,90,61,0.13)", borderRadius: "12px" }}>
+                            <p style={{ fontSize: "0.85rem", color: "#2d5a3d", fontWeight: 500, margin: 0 }}>Clean otherwise. Checking your next email needs a free account.</p>
+                            {accountBtn}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
                   {/* "Ready to check" hint — only shown to paid users (free users see the pre-check notice instead) */}
                   {!hasChecked && emailDraft.trim().length > 0 && !checkingEmail && hasEmailChecker && (
                     <p style={{ marginTop: "16px", fontSize: "0.85rem", color: "#6b7280" }}>Hit &quot;Check my email&quot; when you&apos;re ready for feedback.</p>
@@ -2797,6 +2890,7 @@ function AppPageInner() {
               }} className="btn-cta rm-search-btn" style={{ width: "100%", padding: "13px", fontSize: "0.95rem", background: "linear-gradient(135deg, #2d5a3d, #3a6b4a)", boxShadow: "0 8px 24px rgba(45,90,61,0.3)", textShadow: "0 1px 2px rgba(18,54,34,0.24)" }}>
                 Start Weekly — $7
               </button>
+              <p style={{ fontSize: "0.74rem", color: "#9b8040", textAlign: "center", marginTop: "8px", fontWeight: 600 }}>No professor reply in 30 days, full refund.</p>
             </div>
 
             {/* Semester — secondary option */}
@@ -2836,7 +2930,6 @@ function AppPageInner() {
                 </p>
               ))}
             </div>
-            <p style={{ fontSize: "0.75rem", color: "#9b8040", textAlign: "center", marginTop: "10px", fontWeight: 600 }}>Get a professor reply in 30 days or your money back.</p>
           </div>
         </div>
       )}

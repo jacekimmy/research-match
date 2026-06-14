@@ -766,7 +766,7 @@ export default function LandingPage() {
       <section id="pricing" className="lp-pricing-section" data-reveal>
         <div className="lp-pricing-header">
           <h2 className="lp-pricing-title">Pick your plan.</h2>
-          <p className="lp-pricing-guarantee">Full refund if it doesn&apos;t work.</p>
+          <p className="lp-pricing-guarantee">No professor reply in 30 days, full refund.</p>
         </div>
 
         {/* Mobile: Tab toggle */}
