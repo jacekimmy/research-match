@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
       {
         source: "/:path*",
         has: [{ type: "host", value: "research-match-three.vercel.app" }],
-        destination: "https://researchmatch.site/:path*",
+        destination: "https://www.researchmatch.site/:path*",
         permanent: true,
       },
     ];

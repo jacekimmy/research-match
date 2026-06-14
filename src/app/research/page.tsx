@@ -5,7 +5,7 @@ import { getAllFieldContent } from "@/lib/research-data";
 export const dynamic = "force-static";
 export const revalidate = false;
 
-const SITE = "https://researchmatch.site";
+const SITE = "https://www.researchmatch.site";
 
 export const metadata: Metadata = {
   title: "Research Fields: Find Professors by Subject",

@@ -81,7 +81,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const origin = req.nextUrl.origin || "https://researchmatch.site";
+    const origin = req.nextUrl.origin || "https://www.researchmatch.site";
     const activeUntil = profile.buddy_pass_active_until;
     const active = activeUntil ? new Date(activeUntil).getTime() > Date.now() : false;
 

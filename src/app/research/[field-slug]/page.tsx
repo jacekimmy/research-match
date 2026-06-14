@@ -15,7 +15,7 @@ export const dynamic = "force-static";
 export const dynamicParams = false;
 export const revalidate = false;
 
-const SITE = "https://researchmatch.site";
+const SITE = "https://www.researchmatch.site";
 
 type Props = { params: Promise<{ "field-slug": string }> };
 

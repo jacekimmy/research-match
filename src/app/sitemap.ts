@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { posts } from "./blog/posts";
 import { getPopulatedFieldSlugs } from "@/lib/research-data";
 
-const SITE = "https://researchmatch.site";
+const SITE = "https://www.researchmatch.site";
 
 // Dynamic sitemap: the previously hand-maintained URLs PLUS every generated
 // /research field page, added automatically. Replaces the old static
