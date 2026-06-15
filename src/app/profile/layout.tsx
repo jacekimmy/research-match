@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
+  robots: "noindex, nofollow",
   title: "Your Profile - Research Match",
   description: "Manage your Research Match account, view your plan, and track your saved professors.",
   openGraph: {

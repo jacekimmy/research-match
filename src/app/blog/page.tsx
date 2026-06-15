@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Research Match Blog - How to Find and Land Undergraduate Research",
   description: "Guides, tips, and real stories about finding professors, writing cold emails, and landing research positions as a student.",
+  alternates: { canonical: "/blog" },
   openGraph: {
     title: "Research Match Blog - How to Find and Land Undergraduate Research",
     description: "Guides, tips, and real stories about finding professors, writing cold emails, and landing research positions as a student.",

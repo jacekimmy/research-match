@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/feedback" },
   title: "Feedback - Research Match",
   description: "Share your experience with Research Match. Help us build a better tool for students looking for research opportunities.",
   openGraph: {

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/follow-up" },
   title: "Follow-Up Timeline Generator - Research Match",
   description: "Paste your original professor email and get two perfectly-timed follow-up drafts. Never wonder when or what to send again.",
   openGraph: {

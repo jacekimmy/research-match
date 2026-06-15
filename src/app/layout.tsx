@@ -23,6 +23,7 @@ const playfair = Fraunces({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.researchmatch.site"),
+  alternates: { canonical: "/" },
   verification: {
     google: "s_3kAnRUjvOPzjElpM04zRSPoHf08YAFpfOWvUJDYDw",
   },

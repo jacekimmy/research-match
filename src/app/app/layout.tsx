@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/app" },
   title: "Search for Research Professors - Research Match",
   description: "Enter your research interest and university to find professors actively publishing in your area. Get summaries, email guidance, and more.",
   openGraph: {
