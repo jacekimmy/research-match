@@ -605,6 +605,63 @@ function AppPageInner() {
     };
   }, [emailTarget]);
 
+  // Liquid-glass buttons (mobile only): a specular sheen tracks touch, buttons
+  // light up on press, and the molten edge animates ONLY while a glass button is
+  // on-screen and the tab is visible (battery-friendly). Desktop is untouched.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!window.matchMedia("(max-width: 768px)").matches) return;
+    const SEL = ".rm-summarize-btn, .rm-search-btn, .btn-cta, .btn-secondary, .lp-plan-cta, .lg-glass";
+    const turb = document.getElementById("lgTurb");
+
+    const onMove = (e: PointerEvent) => {
+      const el = (e.target as Element | null)?.closest?.(SEL) as HTMLElement | null;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      el.style.setProperty("--lgx", `${((e.clientX - r.left) / r.width) * 100}%`);
+      el.style.setProperty("--lgy", `${((e.clientY - r.top) / r.height) * 100}%`);
+    };
+    const onDown = (e: PointerEvent) => {
+      const el = (e.target as Element | null)?.closest?.(SEL);
+      if (el) el.classList.add("lg-active");
+    };
+    const clearActive = () => document.querySelectorAll(".lg-active").forEach((el) => el.classList.remove("lg-active"));
+    document.addEventListener("pointermove", onMove, { passive: true });
+    document.addEventListener("pointerdown", onDown, { passive: true });
+    document.addEventListener("pointerup", clearActive, { passive: true });
+    document.addEventListener("pointercancel", clearActive, { passive: true });
+
+    let inView = 0, t = 0, raf = 0, running = false;
+    const step = () => {
+      if (!running) return;
+      t += 0.008;
+      if (turb) turb.setAttribute("baseFrequency", `${(0.01 + Math.sin(t) * 0.004).toFixed(4)} ${(0.018 + Math.cos(t * 0.8) * 0.004).toFixed(4)}`);
+      raf = requestAnimationFrame(step);
+    };
+    const sync = () => {
+      const should = inView > 0 && document.visibilityState === "visible";
+      if (should && !running) { running = true; raf = requestAnimationFrame(step); }
+      else if (!should && running) { running = false; cancelAnimationFrame(raf); }
+    };
+    const io = new IntersectionObserver((ents) => {
+      ents.forEach((en) => { inView += en.isIntersecting ? 1 : -1; });
+      if (inView < 0) inView = 0;
+      sync();
+    });
+    document.querySelectorAll(SEL).forEach((el) => io.observe(el));
+    document.addEventListener("visibilitychange", sync);
+
+    return () => {
+      document.removeEventListener("pointermove", onMove);
+      document.removeEventListener("pointerdown", onDown);
+      document.removeEventListener("pointerup", clearActive);
+      document.removeEventListener("pointercancel", clearActive);
+      document.removeEventListener("visibilitychange", sync);
+      io.disconnect();
+      cancelAnimationFrame(raf);
+    };
+  }, [results, summaries, showSaved, emailTarget, nearbyProfs]);
+
   // Toast helper
   const showToast = useCallback((msg: string, duration = 2200) => {
     setToast({ msg, duration });
@@ -1317,6 +1374,12 @@ function AppPageInner() {
               xChannelSelector="R"
               yChannelSelector="G"
             />
+          </filter>
+          {/* Liquid-glass molten edge (mobile glass buttons). Animated in JS,
+              paused when no glass button is on-screen. */}
+          <filter id="lgMolten" x="-20%" y="-20%" width="140%" height="140%">
+            <feTurbulence id="lgTurb" type="fractalNoise" baseFrequency="0.01 0.018" numOctaves="2" seed="4" result="lgn" />
+            <feDisplacementMap in="SourceGraphic" in2="lgn" scale="5" xChannelSelector="R" yChannelSelector="G" />
           </filter>
         </defs>
       </svg>
