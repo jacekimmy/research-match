@@ -8766,3 +8766,9 @@ body::after {
   font-weight: 700;
   color: #2d5a3d;
 }
+
+/* ── Email composer modal: no nav collision, even spacing all sides ── */
+body.rm-email-open .rm-floating-nav,
+body.rm-email-open .lp-nav { display: none; }
+.rm-modal-overlay { z-index: 600; }
+.rm-modal { max-height: calc(100svh - 48px); }

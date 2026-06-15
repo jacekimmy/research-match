@@ -586,18 +586,22 @@ function AppPageInner() {
     }
   }, [showUpgradeModal]);
 
-  // Lock body scroll when email modal is open
+  // Lock body scroll AND hide the floating nav when the email modal is open, so
+  // the focused composer never collides with the nav. The modal has its own ✕.
   useEffect(() => {
     if (emailTarget) {
       document.body.style.overflow = "hidden";
       document.body.style.touchAction = "none";
+      document.body.classList.add("rm-email-open");
     } else {
       document.body.style.overflow = "";
       document.body.style.touchAction = "";
+      document.body.classList.remove("rm-email-open");
     }
     return () => {
       document.body.style.overflow = "";
       document.body.style.touchAction = "";
+      document.body.classList.remove("rm-email-open");
     };
   }, [emailTarget]);
 
