@@ -1389,12 +1389,12 @@ function AppPageInner() {
 
           <Link href="/" className="rm-nav-logo">
             <svg width="180" height="32" viewBox="0 0 280 50" xmlns="http://www.w3.org/2000/svg" aria-label="Research Match">
-              <circle cx="22" cy="22" r="15" fill="none" stroke="#659983" strokeWidth="4"/>
-              <path d="M33 33 L43 43" fill="none" stroke="#659983" strokeWidth="4.5" strokeLinecap="round"/>
-              <line x1="16" y1="16" x2="28" y2="16" stroke="#c9ad77" strokeWidth="3" strokeLinecap="round"/>
-              <line x1="16" y1="22" x2="28" y2="22" stroke="#c9ad77" strokeWidth="3" strokeLinecap="round"/>
-              <line x1="16" y1="28" x2="28" y2="28" stroke="#c9ad77" strokeWidth="3" strokeLinecap="round"/>
-              <text x="52" y="30" fontFamily="Georgia, 'Times New Roman', serif" fontSize="22" fontWeight="700" fill="#659983">Research Match</text>
+              <g transform="translate(2,2) scale(0.46)">
+                <path d="M50 84 C30 78 22 60 24 38 C36 42 46 52 50 70" fill="none" stroke="#2d5a47" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M50 84 C70 78 78 60 76 38 C64 42 54 52 50 70" fill="none" stroke="#2d5a47" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round"/>
+                <circle cx="50" cy="32" r="9.5" fill="#c9ad77"/>
+              </g>
+              <text x="52" y="33" fontFamily="Georgia, 'Times New Roman', serif" fontSize="23" fontWeight="700" fill="#2d5a47">Research Match</text>
             </svg>
           </Link>
           <div className="rm-nav-spacer" />
