@@ -2073,7 +2073,7 @@ function AppPageInner() {
                         {summary.highlights.map((h, i) => {
                           const locked = isFree && i > 0;
                           return (
-                          <div key={i} className="finding-border" aria-hidden={locked || undefined} style={{ paddingLeft: "20px", marginBottom: "16px", ...(locked ? { filter: "blur(5px)", userSelect: "none", pointerEvents: "none" } as const : {}) }}>
+                          <div key={i} className="finding-border" aria-hidden={locked || undefined} style={{ paddingLeft: "20px", marginBottom: "16px", ...(locked ? { filter: "blur(5px)", opacity: 0.4, userSelect: "none", pointerEvents: "none" } as const : {}) }}>
                             <p style={{ fontSize: "1rem", color: "#6b7280", lineHeight: 1.6 }}>{h.detail}</p>
                             <p style={{ fontSize: "0.85rem", color: "#6b7280", fontStyle: "italic", marginTop: "4px" }}>
                               {h.paper}
@@ -2114,7 +2114,7 @@ function AppPageInner() {
                         {summary.questions.map((q, i) => {
                           const locked = isFree && i > 0;
                           return (
-                            <p key={i} aria-hidden={locked || undefined} style={{ fontSize: "1rem", color: "#6b7280", paddingLeft: "20px", borderLeft: "3px solid #9dbfaa", marginBottom: "12px", lineHeight: 1.6, ...(locked ? { filter: "blur(5px)", userSelect: "none", pointerEvents: "none" } as const : {}) }}>{q}</p>
+                            <p key={i} aria-hidden={locked || undefined} style={{ fontSize: "1rem", color: "#6b7280", paddingLeft: "20px", borderLeft: "3px solid #9dbfaa", marginBottom: "12px", lineHeight: 1.6, ...(locked ? { filter: "blur(5px)", opacity: 0.4, userSelect: "none", pointerEvents: "none" } as const : {}) }}>{q}</p>
                           );
                         })}
                         {isFree && summary.questions.length > 1 && (
@@ -2606,7 +2606,7 @@ function AppPageInner() {
                     );
                     const accountBtn = (
                       <button onClick={openCheckerSignup} className="btn-cta" style={{ marginTop: "14px", padding: "11px 26px", fontSize: "0.9rem" }}>
-                        Create free account \u2192
+                        Create free account &rarr;
                       </button>
                     );
 
@@ -2648,12 +2648,12 @@ function AppPageInner() {
                               onClick={openCheckerSignup}
                               style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", cursor: "pointer", background: "linear-gradient(to bottom, rgba(245,240,230,0.55) 0%, rgba(245,240,230,0.96) 55%)", padding: "16px", borderRadius: "12px" }}
                             >
-                              <span style={{ fontSize: "1.2rem", marginBottom: "8px" }}>\uD83D\uDD12</span>
+                              <span style={{ fontSize: "1.2rem", marginBottom: "8px" }}>&#128274;</span>
                               <p style={{ fontSize: "0.92rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "4px" }}>
                                 {hidden.length} more {hidden.length === 1 ? "issue" : "issues"} found
                               </p>
                               <p style={{ fontSize: "0.82rem", color: "#6b7280", marginBottom: "12px" }}>Create a free account to see them all.</p>
-                              <span className="btn-cta" style={{ padding: "10px 24px", fontSize: "0.88rem" }}>Create free account \u2192</span>
+                              <span className="btn-cta" style={{ padding: "10px 24px", fontSize: "0.88rem" }}>Create free account &rarr;</span>
                             </div>
                           </div>
                         )}
