@@ -8908,3 +8908,41 @@ body.rm-email-open .lp-nav { display: none; }
   /* name takes the row; responsiveness badge + save star float to the right edge */
   .rm-card-title-row .rm-card-name { margin-right: auto; }
 }
+
+/* ── Locked summary content: prompt overlaid ON the blurred items (no pill below) ── */
+.rm-locked-wrap { position: relative; margin-top: 4px; min-height: 78px; }
+.rm-locked-blur { filter: blur(5px); opacity: 0.4; user-select: none; pointer-events: none; }
+.rm-locked-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  background: linear-gradient(to bottom, rgba(245, 240, 230, 0.3) 0%, rgba(245, 240, 230, 0.82) 55%);
+  color: #2d5a3d;
+  font-size: 0.92rem;
+  font-weight: 650;
+  transition: background 0.2s ease;
+}
+.rm-locked-overlay:hover { background: linear-gradient(to bottom, rgba(245, 240, 230, 0.42) 0%, rgba(245, 240, 230, 0.9) 55%); }
+.rm-locked-overlay > span[aria-hidden] { font-size: 1.15rem; }
+.rm-locked-overlay-sub { font-size: 0.76rem; font-weight: 600; color: #8a938c; }
+
+/* ── Responsiveness as a quiet line under the affiliation (replaces the pill) ── */
+.rm-resp-line { display: inline-flex; align-items: center; gap: 7px; margin-top: 8px; font-size: 0.82rem; font-weight: 600; }
+.rm-resp-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.rm-resp-locked { color: #9aa39d; font-weight: 500; }
+
+/* ── Name row keeps the star on the same line, top-aligned ── */
+.rm-card-title-row { flex-wrap: nowrap; }
+.rm-card-title-row .rm-card-name { margin-right: auto; min-width: 0; }
+.rm-card-title-row .rm-save-btn { flex-shrink: 0; align-self: flex-start; line-height: 1; }

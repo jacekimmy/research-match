@@ -1143,6 +1143,36 @@ function AppPageInner() {
     setAuthError("");
   }
 
+  // Opens the summary paywall (used by the locked-content overlays).
+  function openSummaryPaywall() {
+    setUpgradeModalTitle("Unlock this professor's full summary");
+    setUpgradeModalSubtitle("Every finding, every question, and the email checker before you send.");
+    hitPaywall("summary");
+  }
+
+  // Render helpers so locked items can be shown both inline and inside the blurred overlay.
+  const renderFinding = (h: SummaryData["highlights"][number], i: number) => (
+    <div key={i} className="finding-border" style={{ paddingLeft: "20px", marginBottom: "16px" }}>
+      <p style={{ fontSize: "1rem", color: "#6b7280", lineHeight: 1.6 }}>{h.detail}</p>
+      <p style={{ fontSize: "0.85rem", color: "#6b7280", fontStyle: "italic", marginTop: "4px" }}>
+        {h.paper}
+        {h.authorPosition && h.authorPosition !== "unknown" && (
+          <span style={{ fontStyle: "normal", fontSize: "0.75rem", marginLeft: "8px", padding: "2px 8px", borderRadius: "999px", background: h.authorPosition === "first" ? "rgba(45, 90, 61,0.1)" : h.authorPosition === "last" ? "rgba(196, 154, 60,0.1)" : "rgba(149,173,157,0.1)", color: h.authorPosition === "first" ? "#2d5a3d" : h.authorPosition === "last" ? "#A8893E" : "#6b7280" }}>
+            {h.authorPosition === "first" ? "1st author" : h.authorPosition === "last" ? "last author" : "middle author"}
+          </span>
+        )}
+        {h.doi && (
+          <a href={h.doi} target="_blank" rel="noopener noreferrer" style={{ fontStyle: "normal", fontSize: "0.8rem", marginLeft: "10px", color: "#2d5a3d", textDecoration: "none" }}>
+            Read paper →
+          </a>
+        )}
+      </p>
+    </div>
+  );
+  const renderQuestion = (q: string, i: number) => (
+    <p key={i} style={{ fontSize: "1rem", color: "#6b7280", paddingLeft: "20px", borderLeft: "3px solid #9dbfaa", marginBottom: "12px", lineHeight: 1.6 }}>{q}</p>
+  );
+
   async function checkEmail() {
     if (!emailTarget || !emailDraft.trim()) return;
     // Funnel: user pressed Check, at the moment of value, before any signup gate.
@@ -1994,40 +2024,6 @@ function AppPageInner() {
                       <a href={profileUrl(author)} target="_blank" rel="noopener noreferrer" className="rm-card-name">
                         {author.display_name}
                       </a>
-                      {/* Responsiveness Badge */}
-                      {resp && (
-                        (isPaid || !!summaries[id]) ? (
-                          <span className="resp-badge" title={resp.tooltip} style={{
-                            fontSize: "0.7rem", fontWeight: 700, padding: "4px 12px", borderRadius: "999px",
-                            display: "inline-flex", alignItems: "center", gap: "5px",
-                            background: resp.level === "green" ? "rgba(45, 90, 61,0.1)" : resp.level === "yellow" ? "rgba(196, 162, 101,0.12)" : "rgba(196, 92, 92,0.08)",
-                            color: resp.level === "green" ? "#2d5a3d" : resp.level === "yellow" ? "#A8893E" : "#c45c5c",
-                            border: `1px solid ${resp.level === "green" ? "rgba(45, 90, 61,0.2)" : resp.level === "yellow" ? "rgba(196, 162, 101,0.25)" : "rgba(196, 92, 92,0.15)"}`,
-                            transition: "all 0.3s ease",
-                          }}>
-                            <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: resp.level === "green" ? "#2d5a3d" : resp.level === "yellow" ? "#C4A265" : "#c45c5c" }} />
-                            {resp.label}
-                          </span>
-                        ) : (
-                          <span className="locked-badge-wrap" style={{ position: "relative", display: "inline-flex", alignItems: "center" }}>
-                            <span style={{
-                              fontSize: "0.7rem", fontWeight: 700, padding: "4px 12px", borderRadius: "999px",
-                              background: "rgba(149,173,157,0.08)", color: "transparent", border: "1px solid rgba(45, 90, 61,0.2)",
-                              filter: "blur(4px)", userSelect: "none",
-                            }}>
-                              Likely takes students
-                            </span>
-                            <span style={{
-                              position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
-                              fontSize: "0.65rem", fontWeight: 600, color: "#6b7280", background: "rgba(245,240,230,0.6)",
-                              backdropFilter: "blur(2px)", border: "1px solid rgba(45, 90, 61,0.3)", borderRadius: "999px",
-                              whiteSpace: "nowrap", padding: "4px 10px",
-                            }}>
-                              <span style={{ fontSize: "0.6rem", marginRight: "3px" }}>&#128274;</span> Summarize to unlock
-                            </span>
-                          </span>
-                        )
-                      )}
                       <button
                         onClick={() => toggleSave(author)}
                         style={{ fontSize: "1.4rem", color: isSaved(author) ? "#A8893E" : "#8aaa96", background: "none", border: "none", cursor: "pointer", transition: "color 0.2s, transform 0.2s" }}
@@ -2040,6 +2036,20 @@ function AppPageInner() {
                     <p className="rm-card-affiliation">
                       {formatInstitutionLocation(author.last_known_institutions?.[0]) || "Unknown institution"}
                     </p>
+                    {/* Responsiveness \u2014 a quiet flowy line, not a crowded pill */}
+                    {resp && (
+                      (isPaid || !!summaries[id]) ? (
+                        <div className="rm-resp-line" title={resp.tooltip}>
+                          <span className="rm-resp-dot" style={{ background: resp.level === "green" ? "#2d5a3d" : resp.level === "yellow" ? "#C4A265" : "#c45c5c" }} />
+                          <span style={{ color: resp.level === "green" ? "#3a6b4a" : resp.level === "yellow" ? "#A8893E" : "#c45c5c" }}>{resp.label}</span>
+                        </div>
+                      ) : (
+                        <div className="rm-resp-line rm-resp-locked">
+                          <span aria-hidden="true">&#128274;</span>
+                          <span>Summarize to see if they take students</span>
+                        </div>
+                      )
+                    )}
                   </div>
                   <div className="rm-card-stats">
                     <div className="rm-stat-pill">
@@ -2173,40 +2183,18 @@ function AppPageInner() {
                             In most lab sciences (biology, chemistry, medicine, etc.), <strong>1st author</strong> did the hands-on work and <strong>last author</strong> runs the lab. In many other fields (math, CS, economics, humanities), author order is often alphabetical and doesn&apos;t indicate contribution level. When in doubt, check if the professor lists the paper prominently on their own website — that usually means it&apos;s important to them.
                           </div>
                         </div>
-                        {summary.highlights.map((h, i) => {
-                          const locked = isFree && i > 0;
-                          return (
-                          <div key={i} className="finding-border" aria-hidden={locked || undefined} style={{ paddingLeft: "20px", marginBottom: "16px", ...(locked ? { filter: "blur(5px)", opacity: 0.4, userSelect: "none", pointerEvents: "none" } as const : {}) }}>
-                            <p style={{ fontSize: "1rem", color: "#6b7280", lineHeight: 1.6 }}>{h.detail}</p>
-                            <p style={{ fontSize: "0.85rem", color: "#6b7280", fontStyle: "italic", marginTop: "4px" }}>
-                              {h.paper}
-                              {h.authorPosition && h.authorPosition !== "unknown" && (
-                                <span style={{ fontStyle: "normal", fontSize: "0.75rem", marginLeft: "8px", padding: "2px 8px", borderRadius: "999px", background: h.authorPosition === "first" ? "rgba(45, 90, 61,0.1)" : h.authorPosition === "last" ? "rgba(196, 154, 60,0.1)" : "rgba(149,173,157,0.1)", color: h.authorPosition === "first" ? "#2d5a3d" : h.authorPosition === "last" ? "#A8893E" : "#6b7280" }}>
-                                  {h.authorPosition === "first" ? "1st author" : h.authorPosition === "last" ? "last author" : "middle author"}
-                                </span>
-                              )}
-                              {h.doi && (
-                                <a href={h.doi} target="_blank" rel="noopener noreferrer" style={{ fontStyle: "normal", fontSize: "0.8rem", marginLeft: "10px", color: "#2d5a3d", textDecoration: "none", borderBottom: "1px solid transparent", transition: "border-color 0.2s" }} onMouseEnter={(e) => (e.currentTarget.style.borderBottomColor = "#2d5a3d")} onMouseLeave={(e) => (e.currentTarget.style.borderBottomColor = "transparent")}>
-                                  Read paper →
-                                </a>
-                              )}
-                            </p>
-                          </div>
-                          );
-                        })}
+                        {(isFree ? summary.highlights.slice(0, 1) : summary.highlights).map((h, i) => renderFinding(h, i))}
                         {isFree && summary.highlights.length > 1 && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setUpgradeModalTitle("Unlock this professor's full summary");
-                              setUpgradeModalSubtitle("Every finding, every question, and the email checker before you send.");
-                              hitPaywall("summary");
-                            }}
-                            className="rm-unlock-row"
-                          >
-                            <span aria-hidden="true">🔒</span>
-                            See the other {summary.highlights.length - 1} finding{summary.highlights.length - 1 === 1 ? "" : "s"} →
-                          </button>
+                          <div className="rm-locked-wrap">
+                            <div className="rm-locked-blur" aria-hidden="true">
+                              {summary.highlights.slice(1).map((h, i) => renderFinding(h, i + 1))}
+                            </div>
+                            <button type="button" className="rm-locked-overlay" onClick={openSummaryPaywall}>
+                              <span aria-hidden="true">🔒</span>
+                              See the other {summary.highlights.length - 1} finding{summary.highlights.length - 1 === 1 ? "" : "s"}
+                              <span className="rm-locked-overlay-sub">Free account to unlock</span>
+                            </button>
+                          </div>
                         )}
                       </div>
                     )}
@@ -2214,25 +2202,18 @@ function AppPageInner() {
                     {summary.questions.length > 0 && (
                       <div style={{ marginTop: "24px" }}>
                         <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "14px" }}>Questions to Ask</p>
-                        {summary.questions.map((q, i) => {
-                          const locked = isFree && i > 0;
-                          return (
-                            <p key={i} aria-hidden={locked || undefined} style={{ fontSize: "1rem", color: "#6b7280", paddingLeft: "20px", borderLeft: "3px solid #9dbfaa", marginBottom: "12px", lineHeight: 1.6, ...(locked ? { filter: "blur(5px)", opacity: 0.4, userSelect: "none", pointerEvents: "none" } as const : {}) }}>{q}</p>
-                          );
-                        })}
+                        {(isFree ? summary.questions.slice(0, 1) : summary.questions).map((q, i) => renderQuestion(q, i))}
                         {isFree && summary.questions.length > 1 && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setUpgradeModalTitle("Unlock this professor's full summary");
-                              setUpgradeModalSubtitle("Every finding, every question, and the email checker before you send.");
-                              hitPaywall("summary");
-                            }}
-                            className="rm-unlock-row"
-                          >
-                            <span aria-hidden="true">🔒</span>
-                            See all {summary.questions.length} questions →
-                          </button>
+                          <div className="rm-locked-wrap">
+                            <div className="rm-locked-blur" aria-hidden="true">
+                              {summary.questions.slice(1).map((q, i) => renderQuestion(q, i + 1))}
+                            </div>
+                            <button type="button" className="rm-locked-overlay" onClick={openSummaryPaywall}>
+                              <span aria-hidden="true">🔒</span>
+                              See all {summary.questions.length} questions
+                              <span className="rm-locked-overlay-sub">Free account to unlock</span>
+                            </button>
+                          </div>
                         )}
                       </div>
                     )}
