@@ -8804,9 +8804,9 @@ body.rm-email-open .lp-nav { display: none; }
   .rm-summarize-btn,
   .rm-search-btn,
   .btn-cta {
-    background: rgba(58, 107, 74, 0.16) !important;
-    color: #2f5239 !important;
-    border-color: rgba(58, 107, 74, 0.28) !important;
+    background: rgba(47, 82, 57, 0.85) !important;
+    color: #f4f0ea !important;
+    border-color: rgba(255, 255, 255, 0.22) !important;
   }
   /* the specular highlight that follows the finger (position from JS) */
   .rm-summarize-btn::after,
@@ -8900,4 +8900,11 @@ body.rm-email-open .lp-nav { display: none; }
   .rm-card .rm-card-top { flex-direction: column; align-items: flex-start; gap: 8px; }
   .rm-card .rm-card-stats { flex-direction: row; gap: 16px; align-items: baseline; }
   .rm-results-stack { gap: 16px !important; }
+}
+
+/* ── Mobile card header polish: tighter name/affiliation, badge+star pushed right ── */
+@media (max-width: 768px) {
+  .rm-card-affiliation { margin-top: 2px !important; }
+  /* name takes the row; responsiveness badge + save star float to the right edge */
+  .rm-card-title-row .rm-card-name { margin-right: auto; }
 }

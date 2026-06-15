@@ -756,6 +756,7 @@ function AppPageInner() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ topics: allTopics, universities: allUnis }),
+        signal: AbortSignal.timeout(20000),
       });
       const resolved = await resolveRes.json();
       if (!resolveRes.ok) { setError(resolved.error || "Failed to resolve search terms."); setLoading(false); return; }
@@ -907,6 +908,7 @@ function AppPageInner() {
                 has_institution: !!(a.last_known_institutions?.length > 0),
               })),
             }),
+            signal: AbortSignal.timeout(15000),
           });
           const scoreData = await scoreRes.json();
           const scoreMap = new Map<string, number>();
