@@ -8889,7 +8889,8 @@ body.rm-email-open .lp-nav { display: none; }
   }
   .rm-mobile-searchbar-edit { color: #9aa39d; font-size: 15px; position: relative; z-index: 1; }
 
-  .rm-compact-collapsed { display: none; }
+  /* .rm-compact-collapsed now animates via grid-template-rows (see the fluid
+     reopen block appended at end of file), not an instant display:none snap. */
 
   .rm-results-verbose { display: none; }
   .rm-results-count { display: inline; font-size: 13px; color: #8a938c; }
@@ -8946,3 +8947,116 @@ body.rm-email-open .lp-nav { display: none; }
 .rm-card-title-row { flex-wrap: nowrap; }
 .rm-card-title-row .rm-card-name { margin-right: auto; min-width: 0; }
 .rm-card-title-row .rm-save-btn { flex-shrink: 0; align-self: flex-start; line-height: 1; }
+
+/* ============================================================
+   MOBILE-ONLY: fluid, Apple-like reopen/collapse of the compact
+   search form. Technique: grid-template-rows 0fr -> 1fr on
+   .rm-compact-header, with the form moved into ONE inner wrapper
+   (.rm-compact-inner) that is the single grid track. Real height
+   animates, so the results below glide down. The inner wrapper clips
+   ONLY while animating (overflow flips via transition-behavior:
+   allow-discrete) so the suggestions dropdown is never clipped once
+   open. ALL rules live inside @media(max-width:768px) so desktop --
+   which still carries .rm-compact-collapsed in the DOM -- is
+   byte-for-byte unchanged. This replaces the old instant
+   .rm-compact-collapsed { display:none } snap.
+   ============================================================ */
+@media (max-width: 768px) {
+
+  /* Header becomes a single-row grid we animate. OPEN = 1fr.
+     Cancel the one-shot compactReveal on mobile so it can't fight the
+     grow transition on reopen (desktop keeps compactReveal via the
+     untouched base rule). */
+  .rm-compact-header {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition:
+      grid-template-rows 0.5s cubic-bezier(0.32, 0.72, 0, 1),
+      margin-bottom      0.5s cubic-bezier(0.32, 0.72, 0, 1);
+    animation: none;
+    will-change: grid-template-rows;
+  }
+
+  /* Sole grid item: the squeezable clipper + content settle.
+     OPEN declares overflow:visible so the suggestions dropdown
+     (300px, absolute, hangs off the FIRST field) is never clipped. */
+  .rm-compact-inner {
+    min-height: 0;
+    overflow: visible;
+    opacity: 1;
+    transform: translateY(0);
+    transition:
+      opacity   0.42s ease-out 0.06s,
+      transform 0.46s cubic-bezier(0.32, 0.72, 0, 1) 0.04s,
+      overflow  0s linear 0.5s;     /* discrete: defer flip-to-visible to OPEN end */
+    transition-behavior: allow-discrete;
+  }
+
+  /* COLLAPSED (pill showing): row -> 0fr, recover the 24px gap, content
+     settles out, clip turns on immediately so the shrinking box never
+     spills over the results. */
+  .rm-compact-header.rm-compact-collapsed {
+    grid-template-rows: 0fr;
+    margin-bottom: 0;
+  }
+  .rm-compact-header.rm-compact-collapsed .rm-compact-inner {
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition:
+      opacity   0.30s ease-in,
+      transform 0.34s cubic-bezier(0.32, 0.72, 0, 1),
+      overflow  0s linear 0s;       /* clip immediately on close */
+    transition-behavior: allow-discrete;
+  }
+
+  /* Graceful degradation: where transition-behavior:allow-discrete is
+     unsupported (Safari < 17.4), drop only the discrete OVERFLOW
+     TRANSITION -- keep overflow:hidden on the collapsed inner (it is
+     what visually hides the form) and overflow:visible when open (so a
+     focused dropdown is never clipped). The grow/shrink still animates
+     via the grid row track. */
+  @supports not (transition-behavior: allow-discrete) {
+    .rm-compact-inner {
+      overflow: visible;
+      transition:
+        opacity   0.42s ease-out 0.06s,
+        transform 0.46s cubic-bezier(0.32, 0.72, 0, 1) 0.04s;
+    }
+    .rm-compact-header.rm-compact-collapsed .rm-compact-inner {
+      overflow: hidden;
+      transition:
+        opacity   0.30s ease-in,
+        transform 0.34s cubic-bezier(0.32, 0.72, 0, 1);
+    }
+  }
+
+  /* Pill polish: the pencil glyph nudges when the form is open. The pill
+     button already sets aria-expanded={mobileSearchOpen}, so no JSX
+     change is needed. */
+  .rm-mobile-searchbar-edit {
+    display: inline-block;
+    transition: transform 0.45s cubic-bezier(0.32, 0.72, 0, 1), color 0.3s ease;
+  }
+  .rm-mobile-searchbar[aria-expanded="true"] .rm-mobile-searchbar-edit {
+    transform: rotate(-12deg);
+    color: #3a6b4a;
+  }
+}
+
+/* Reduced motion -> instant, correct, dropdown still uncliped (overflow
+   states above still apply; only the motion is removed). */
+@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+  .rm-compact-header,
+  .rm-compact-inner,
+  .rm-compact-header.rm-compact-collapsed,
+  .rm-compact-header.rm-compact-collapsed .rm-compact-inner,
+  .rm-mobile-searchbar-edit {
+    transition: none;
+    animation: none;
+  }
+  .rm-compact-inner,
+  .rm-compact-header.rm-compact-collapsed .rm-compact-inner {
+    transform: none;
+  }
+}

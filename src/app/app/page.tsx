@@ -1710,6 +1710,7 @@ function AppPageInner() {
               </button>
             )}
             <div className={`rm-compact-header${(!showSaved && results.length > 0 && !mobileSearchOpen) ? " rm-compact-collapsed" : ""}`}>
+              <div className="rm-compact-inner">
               {!showSaved && (
                 <>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
@@ -1819,6 +1820,7 @@ function AppPageInner() {
                   <span aria-hidden="true">←</span> Back to search
                 </button>
               )}
+              </div>
             </div>
 
             {/* STATUS */}
