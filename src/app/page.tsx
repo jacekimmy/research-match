@@ -388,6 +388,7 @@ export default function LandingPage() {
           </Link>
           <div className="lp-nav-spacer" />
           <div className="lp-nav-links">
+            <Link href="/research" className="lp-nav-link">Research</Link>
             <Link href="/blog" className="lp-nav-link">Blog</Link>
             <a href="#pricing" className="lp-nav-link">Pricing</a>
             <Link href="/feedback" className="lp-nav-link">Feedback</Link>
@@ -1238,6 +1239,7 @@ export default function LandingPage() {
           </div>
           <div className="lp-footer-links">
             <Link href="/app">Tool</Link>
+            <Link href="/research">Research</Link>
             <Link href="/examples">Examples</Link>
             <Link href="/blog">Blog</Link>
             <a href="#pricing">Pricing</a>
