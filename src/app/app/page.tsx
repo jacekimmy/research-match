@@ -1331,7 +1331,11 @@ function AppPageInner() {
         <div className={`grand-reveal ${revealPhase === "content" ? "grand-reveal-lifting" : ""}`}>
           <div className="grand-reveal-inner">
             <div className="grand-reveal-logo">
-              <span className="grand-reveal-icon">&#127807;</span>
+              <svg className="grand-reveal-icon" width="64" height="64" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M50 84 C30 78 22 60 24 38 C36 42 46 52 50 70" fill="none" stroke="#2d5a47" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M50 84 C70 78 78 60 76 38 C64 42 54 52 50 70" fill="none" stroke="#2d5a47" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />
+                <circle cx="50" cy="32" r="9.5" fill="#c9ad77" />
+              </svg>
               <h2 className="grand-reveal-title">Research Match</h2>
             </div>
             <div className="grand-reveal-line" />

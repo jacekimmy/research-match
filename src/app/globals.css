@@ -700,8 +700,8 @@ body::after {
 }
 
 @keyframes revealIconSpin {
-  0% { transform: rotate(-180deg) scale(0); opacity: 0; }
-  60% { transform: rotate(15deg) scale(1.2); opacity: 1; }
+  0% { transform: rotate(-10deg) scale(0.4); opacity: 0; }
+  60% { transform: rotate(4deg) scale(1.12); opacity: 1; }
   100% { transform: rotate(0deg) scale(1); opacity: 1; }
 }
 
