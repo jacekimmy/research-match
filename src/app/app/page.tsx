@@ -276,6 +276,9 @@ function AppPageInner() {
   const { user, profile, loading: authLoading2, signUp, signIn, signOut, refreshProfile } = useAuth();
   const searchParams = useSearchParams();
   const [searchMode, setSearchMode] = useState<"interest" | "name">("interest");
+  // Mobile: the full search form collapses into a one-line pill once there are
+  // results; tapping the pill reopens it. Desktop ignores this entirely.
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [queryTags, setQueryTags] = useState<string[]>([]);
   const [university, setUniversity] = useState("");
@@ -726,6 +729,7 @@ function AppPageInner() {
     const allTopics = [...queryTags, ...query.split(",").map(s => s.trim()).filter(Boolean)];
     const allUnis = [...uniTags, ...university.split(",").map(s => s.trim()).filter(Boolean)];
     if (allTopics.length === 0) return;
+    setMobileSearchOpen(false);
     setLoading(true);
     setError("");
     setResults([]);
@@ -1043,6 +1047,7 @@ function AppPageInner() {
 
   async function searchByName() {
     if (!profName.trim()) return;
+    setMobileSearchOpen(false);
     setLoading(true);
     setError("");
     setResults([]);
@@ -1644,7 +1649,26 @@ function AppPageInner() {
         ) : (
           /* ====== COMPACT SEARCH + RESULTS ====== */
           <>
-            <div className="rm-compact-header">
+            {/* Mobile: collapsed search pill (tap to reopen the full form) */}
+            {!showSaved && results.length > 0 && (
+              <button
+                type="button"
+                className="rm-mobile-searchbar lg-glass"
+                aria-expanded={mobileSearchOpen}
+                aria-label="Edit search"
+                onClick={() => setMobileSearchOpen((v) => !v)}
+              >
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true" style={{ flexShrink: 0, position: "relative", zIndex: 1 }}>
+                  <circle cx="11" cy="11" r="7" stroke="#3a6b4a" strokeWidth="2" />
+                  <path d="M21 21l-4-4" stroke="#3a6b4a" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+                <span className="rm-mobile-searchbar-q">
+                  {searchMode === "name" ? (profName || "Search by name") : (resolvedTopic || "Edit search")}
+                </span>
+                <span className="rm-mobile-searchbar-edit" aria-hidden="true">✎</span>
+              </button>
+            )}
+            <div className={`rm-compact-header${(!showSaved && results.length > 0 && !mobileSearchOpen) ? " rm-compact-collapsed" : ""}`}>
               {!showSaved && (
                 <>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
@@ -1766,14 +1790,15 @@ function AppPageInner() {
             {error && <p style={{ textAlign: "center", fontSize: "1.1rem", color: "#c45c5c", marginBottom: "32px" }}>{error}</p>}
 
             {!showSaved && results.length > 0 && (
-              <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap", marginBottom: "20px" }}>
-                <p style={{ fontSize: "1rem", color: "#6b7280", margin: 0 }}>
+              <div className="rm-results-header" style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap", marginBottom: "20px" }}>
+                <p className="rm-results-verbose" style={{ fontSize: "1rem", color: "#6b7280", margin: 0 }}>
                   Results for <span style={{ color: "#2d5a3d", fontWeight: 700 }}>{resolvedTopic}</span>
                   {resolvedInstitution && <> at <span style={{ color: "#2d5a3d", fontWeight: 700 }}>{resolvedInstitution}</span></>}
                   {filteredList.length < results.length && (
                     <span style={{ color: "#9ca3af" }}> · {filteredList.length} of {results.length} match filter</span>
                   )}
                 </p>
+                <span className="rm-results-count" aria-hidden="true">{filteredList.length} professors</span>
 
                 {/* Filter button */}
                 <div style={{ position: "relative", marginLeft: "auto" }}>

@@ -8860,3 +8860,44 @@ body.rm-email-open .lp-nav { display: none; }
   .rm-card-stats { gap: 14px !important; }
   .rm-results-stack { gap: 14px !important; }
 }
+
+/* ── Mobile page redesign: collapsed search pill, quiet header, airy cards ── */
+.rm-mobile-searchbar { display: none; }
+.rm-results-count { display: none; }
+@media (max-width: 768px) {
+  .rm-mobile-searchbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    margin: 0 0 14px;
+    padding: 13px 16px;
+    border-radius: 16px;
+    font-family: inherit;
+    cursor: pointer;
+    text-align: left;
+  }
+  .rm-mobile-searchbar-q {
+    flex: 1;
+    font-size: 15px;
+    color: #2f4636;
+    position: relative;
+    z-index: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .rm-mobile-searchbar-edit { color: #9aa39d; font-size: 15px; position: relative; z-index: 1; }
+
+  .rm-compact-collapsed { display: none; }
+
+  .rm-results-verbose { display: none; }
+  .rm-results-count { display: inline; font-size: 13px; color: #8a938c; }
+  .rm-results-header { margin-bottom: 12px !important; }
+
+  /* Card: stack identity over one quiet stats line, more air */
+  .rm-card { padding: 22px 20px !important; }
+  .rm-card .rm-card-top { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .rm-card .rm-card-stats { flex-direction: row; gap: 16px; align-items: baseline; }
+  .rm-results-stack { gap: 16px !important; }
+}
