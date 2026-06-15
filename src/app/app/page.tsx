@@ -1105,12 +1105,12 @@ function AppPageInner() {
       <p style={{ fontSize: "0.85rem", color: "#6b7280", fontStyle: "italic", marginTop: "4px" }}>
         {h.paper}
         {h.authorPosition && h.authorPosition !== "unknown" && (
-          <span style={{ fontStyle: "normal", fontSize: "0.75rem", marginLeft: "8px", padding: "2px 8px", borderRadius: "999px", background: h.authorPosition === "first" ? "rgba(45, 90, 61,0.1)" : h.authorPosition === "last" ? "rgba(196, 154, 60,0.1)" : "rgba(149,173,157,0.1)", color: h.authorPosition === "first" ? "#2d5a3d" : h.authorPosition === "last" ? "#A8893E" : "#6b7280" }}>
+          <span style={{ fontStyle: "normal", fontSize: "0.75rem", marginLeft: "8px", padding: "2px 8px", borderRadius: "999px", background: h.authorPosition === "first" ? "rgba(101, 153, 131,0.1)" : h.authorPosition === "last" ? "rgba(196, 151, 60,0.1)" : "rgba(149, 173, 163,0.1)", color: h.authorPosition === "first" ? "#659983" : h.authorPosition === "last" ? "#a8853e" : "#6b7280" }}>
             {h.authorPosition === "first" ? "1st author" : h.authorPosition === "last" ? "last author" : "middle author"}
           </span>
         )}
         {h.doi && (
-          <a href={h.doi} target="_blank" rel="noopener noreferrer" style={{ fontStyle: "normal", fontSize: "0.8rem", marginLeft: "10px", color: "#2d5a3d", textDecoration: "none" }}>
+          <a href={h.doi} target="_blank" rel="noopener noreferrer" style={{ fontStyle: "normal", fontSize: "0.8rem", marginLeft: "10px", color: "#2d5a47", textDecoration: "none" }}>
             Read paper →
           </a>
         )}
@@ -1118,7 +1118,7 @@ function AppPageInner() {
     </div>
   );
   const renderQuestion = (q: string, i: number) => (
-    <p key={i} style={{ fontSize: "1rem", color: "#6b7280", paddingLeft: "20px", borderLeft: "3px solid #9dbfaa", marginBottom: "12px", lineHeight: 1.6 }}>{q}</p>
+    <p key={i} style={{ fontSize: "1rem", color: "#6b7280", paddingLeft: "20px", borderLeft: "3px solid #9dbfb1", marginBottom: "12px", lineHeight: 1.6 }}>{q}</p>
   );
 
   async function checkEmail() {
@@ -1179,7 +1179,7 @@ function AppPageInner() {
           particleCount: 100,
           spread: 70,
           origin: { y: 0.6 },
-          colors: ["#2d5a3d", "#8aaa96", "#9dbfaa", "#2d5a3d", "#f4f0ea"],
+          colors: ["#659983", "#8aaa9d", "#9dbfb1", "#659983", "#f4f0ea"],
         });
         setTimeout(() => {
           confetti({
@@ -1187,14 +1187,14 @@ function AppPageInner() {
             angle: 60,
             spread: 55,
             origin: { x: 0 },
-            colors: ["#2d5a3d", "#8aaa96", "#9dbfaa"],
+            colors: ["#659983", "#8aaa9d", "#9dbfb1"],
           });
           confetti({
             particleCount: 50,
             angle: 120,
             spread: 55,
             origin: { x: 1 },
-            colors: ["#2d5a3d", "#8aaa96", "#9dbfaa"],
+            colors: ["#659983", "#8aaa9d", "#9dbfb1"],
           });
         }, 300);
       }
@@ -1389,12 +1389,12 @@ function AppPageInner() {
 
           <Link href="/" className="rm-nav-logo">
             <svg width="180" height="32" viewBox="0 0 280 50" xmlns="http://www.w3.org/2000/svg" aria-label="Research Match">
-              <circle cx="22" cy="22" r="15" fill="none" stroke="#2d5a3d" strokeWidth="4"/>
-              <path d="M33 33 L43 43" fill="none" stroke="#2d5a3d" strokeWidth="4.5" strokeLinecap="round"/>
-              <line x1="16" y1="16" x2="28" y2="16" stroke="#C4A265" strokeWidth="3" strokeLinecap="round"/>
-              <line x1="16" y1="22" x2="28" y2="22" stroke="#C4A265" strokeWidth="3" strokeLinecap="round"/>
-              <line x1="16" y1="28" x2="28" y2="28" stroke="#C4A265" strokeWidth="3" strokeLinecap="round"/>
-              <text x="52" y="30" fontFamily="Georgia, 'Times New Roman', serif" fontSize="22" fontWeight="700" fill="#2d5a3d">Research Match</text>
+              <circle cx="22" cy="22" r="15" fill="none" stroke="#659983" strokeWidth="4"/>
+              <path d="M33 33 L43 43" fill="none" stroke="#659983" strokeWidth="4.5" strokeLinecap="round"/>
+              <line x1="16" y1="16" x2="28" y2="16" stroke="#c9ad77" strokeWidth="3" strokeLinecap="round"/>
+              <line x1="16" y1="22" x2="28" y2="22" stroke="#c9ad77" strokeWidth="3" strokeLinecap="round"/>
+              <line x1="16" y1="28" x2="28" y2="28" stroke="#c9ad77" strokeWidth="3" strokeLinecap="round"/>
+              <text x="52" y="30" fontFamily="Georgia, 'Times New Roman', serif" fontSize="22" fontWeight="700" fill="#659983">Research Match</text>
             </svg>
           </Link>
           <div className="rm-nav-spacer" />
@@ -1420,23 +1420,23 @@ function AppPageInner() {
           ) : (
             <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
               {isFree && (
-                <button onClick={() => setShowUpgradeModal(true)} style={{ fontSize: "0.78rem", fontWeight: 700, color: "#A8893E", background: "rgba(196, 162, 101, 0.12)", padding: "7px 14px", borderRadius: "999px", border: "1px solid rgba(196, 162, 101, 0.25)", cursor: "pointer", transition: "all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)", fontFamily: "var(--font-playfair), Georgia, serif", whiteSpace: "nowrap" }}>
+                <button onClick={() => setShowUpgradeModal(true)} style={{ fontSize: "0.78rem", fontWeight: 700, color: "#a8853e", background: "rgba(201, 173, 119, 0.12)", padding: "7px 14px", borderRadius: "999px", border: "1px solid rgba(201, 173, 119, 0.25)", cursor: "pointer", transition: "all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)", fontFamily: "var(--font-playfair), Georgia, serif", whiteSpace: "nowrap" }}>
                   Upgrade
                 </button>
               )}
               {isPaid && profile?.plan_type === "lifetime" && (
-                <span className="rm-nav-badge" style={{ color: "#fff", background: "linear-gradient(135deg, #2d5a3d, #2E9E72)" }}>{planLabel}</span>
+                <span className="rm-nav-badge" style={{ color: "#fff", background: "linear-gradient(135deg, #659983, #2e9e6f)" }}>{planLabel}</span>
               )}
               {isPaid && profile?.plan_type !== "lifetime" && (
-                <span className="rm-nav-badge" style={{ color: "#fff", background: "#2d5a3d" }}>{planLabel}</span>
+                <span className="rm-nav-badge" style={{ color: "#fff", background: "#659983" }}>{planLabel}</span>
               )}
               <Link href="/profile" style={{
                 width: "36px", height: "36px", borderRadius: "50%",
-                background: "linear-gradient(135deg, #2d5a3d, #2E9E72)",
+                background: "linear-gradient(135deg, #659983, #2e9e6f)",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 color: "#fff", fontSize: "0.82rem", fontWeight: 700,
                 textDecoration: "none", transition: "transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease",
-                boxShadow: "0 2px 8px rgba(45, 90, 61, 0.25)",
+                boxShadow: "0 2px 8px rgba(101, 153, 131, 0.25)",
                 border: "2px solid rgba(255,255,255,0.45)",
                 flexShrink: 0,
               }} className="profile-avatar">
@@ -1642,8 +1642,8 @@ function AppPageInner() {
                 onClick={() => setMobileSearchOpen((v) => !v)}
               >
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true" style={{ flexShrink: 0, position: "relative", zIndex: 1 }}>
-                  <circle cx="11" cy="11" r="7" stroke="#3a6b4a" strokeWidth="2" />
-                  <path d="M21 21l-4-4" stroke="#3a6b4a" strokeWidth="2" strokeLinecap="round" />
+                  <circle cx="11" cy="11" r="7" stroke="#659983" strokeWidth="2" />
+                  <path d="M21 21l-4-4" stroke="#659983" strokeWidth="2" strokeLinecap="round" />
                 </svg>
                 <span className="rm-mobile-searchbar-q">
                   {searchMode === "name" ? (profName || "Search by name") : (resolvedTopic || "Edit search")}
@@ -1684,11 +1684,11 @@ function AppPageInner() {
                   {searchMode === "interest" ? (
                     <div className="glass-search rm-search">
                       <svg width="24" height="24" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0, marginLeft: "4px", opacity: 0.85 }} aria-hidden="true">
-                        <circle cx="80" cy="80" r="52" fill="none" stroke="#2d5a3d" strokeWidth="7"/>
-                        <path d="M118 118 L155 155" fill="none" stroke="#2d5a3d" strokeWidth="8" strokeLinecap="round"/>
-                        <line x1="64" y1="64" x2="96" y2="64" stroke="#C4A265" strokeWidth="5" strokeLinecap="round"/>
-                        <line x1="64" y1="80" x2="96" y2="80" stroke="#C4A265" strokeWidth="5" strokeLinecap="round"/>
-                        <line x1="64" y1="96" x2="96" y2="96" stroke="#C4A265" strokeWidth="5" strokeLinecap="round"/>
+                        <circle cx="80" cy="80" r="52" fill="none" stroke="#659983" strokeWidth="7"/>
+                        <path d="M118 118 L155 155" fill="none" stroke="#659983" strokeWidth="8" strokeLinecap="round"/>
+                        <line x1="64" y1="64" x2="96" y2="64" stroke="#c9ad77" strokeWidth="5" strokeLinecap="round"/>
+                        <line x1="64" y1="80" x2="96" y2="80" stroke="#c9ad77" strokeWidth="5" strokeLinecap="round"/>
+                        <line x1="64" y1="96" x2="96" y2="96" stroke="#c9ad77" strokeWidth="5" strokeLinecap="round"/>
                       </svg>
                       <div className="rm-search-input-wrap" ref={suggestionsRef} style={{ position: "relative" }}>
                         <label className="rm-search-label">Research Interest</label>
@@ -1739,11 +1739,11 @@ function AppPageInner() {
                   ) : (
                     <div className="glass-search rm-search">
                       <svg width="24" height="24" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0, marginLeft: "4px", opacity: 0.85 }} aria-hidden="true">
-                        <circle cx="80" cy="80" r="52" fill="none" stroke="#2d5a3d" strokeWidth="7"/>
-                        <path d="M118 118 L155 155" fill="none" stroke="#2d5a3d" strokeWidth="8" strokeLinecap="round"/>
-                        <line x1="64" y1="64" x2="96" y2="64" stroke="#C4A265" strokeWidth="5" strokeLinecap="round"/>
-                        <line x1="64" y1="80" x2="96" y2="80" stroke="#C4A265" strokeWidth="5" strokeLinecap="round"/>
-                        <line x1="64" y1="96" x2="96" y2="96" stroke="#C4A265" strokeWidth="5" strokeLinecap="round"/>
+                        <circle cx="80" cy="80" r="52" fill="none" stroke="#659983" strokeWidth="7"/>
+                        <path d="M118 118 L155 155" fill="none" stroke="#659983" strokeWidth="8" strokeLinecap="round"/>
+                        <line x1="64" y1="64" x2="96" y2="64" stroke="#c9ad77" strokeWidth="5" strokeLinecap="round"/>
+                        <line x1="64" y1="80" x2="96" y2="80" stroke="#c9ad77" strokeWidth="5" strokeLinecap="round"/>
+                        <line x1="64" y1="96" x2="96" y2="96" stroke="#c9ad77" strokeWidth="5" strokeLinecap="round"/>
                       </svg>
                       <div className="rm-search-input-wrap" style={{ flex: 1 }}>
                         <label className="rm-search-label">Professor Name</label>
@@ -1777,8 +1777,8 @@ function AppPageInner() {
             {!showSaved && results.length > 0 && (
               <div className="rm-results-header" style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap", marginBottom: "20px" }}>
                 <p className="rm-results-verbose" style={{ fontSize: "1rem", color: "#6b7280", margin: 0 }}>
-                  Results for <span style={{ color: "#2d5a3d", fontWeight: 700 }}>{resolvedTopic}</span>
-                  {resolvedInstitution && <> at <span style={{ color: "#2d5a3d", fontWeight: 700 }}>{resolvedInstitution}</span></>}
+                  Results for <span style={{ color: "#2d5a47", fontWeight: 700 }}>{resolvedTopic}</span>
+                  {resolvedInstitution && <> at <span style={{ color: "#2d5a47", fontWeight: 700 }}>{resolvedInstitution}</span></>}
                   {filteredList.length < results.length && (
                     <span style={{ color: "#9ca3af" }}> · {filteredList.length} of {results.length} match filter</span>
                   )}
@@ -1798,9 +1798,9 @@ function AppPageInner() {
                         style={{
                           display: "inline-flex", alignItems: "center", gap: "8px",
                           padding: "8px 16px",
-                          background: anyActive ? "#2d5a3d" : "rgba(45,90,61,0.07)",
-                          color: anyActive ? "#fff" : "#2d5a3d",
-                          border: "1.5px solid rgba(45,90,61,0.25)",
+                          background: anyActive ? "#659983" : "rgba(101, 153, 131,0.07)",
+                          color: anyActive ? "#fff" : "#659983",
+                          border: "1.5px solid rgba(101, 153, 131,0.25)",
                           borderRadius: "999px", cursor: "pointer",
                           fontSize: "0.82rem", fontWeight: 600,
                           fontFamily: "DM Sans, Inter, sans-serif",
@@ -1820,16 +1820,16 @@ function AppPageInner() {
                       position: "absolute", right: 0, top: "calc(100% + 8px)",
                       background: "rgba(255,255,255,0.97)",
                       backdropFilter: "blur(20px)",
-                      border: "1.5px solid rgba(45,90,61,0.15)",
+                      border: "1.5px solid rgba(101, 153, 131,0.15)",
                       borderRadius: "18px",
                       padding: "20px 24px",
                       width: "310px",
-                      boxShadow: "0 8px 32px rgba(45,90,61,0.12)",
+                      boxShadow: "0 8px 32px rgba(101, 153, 131,0.12)",
                       zIndex: 100,
                     }}>
 
                       {/* ── Citations ── */}
-                      <p style={{ fontSize: "0.68rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.09em", marginBottom: "2px" }}>Citations</p>
+                      <p style={{ fontSize: "0.68rem", fontWeight: 700, color: "#2d5a47", textTransform: "uppercase", letterSpacing: "0.09em", marginBottom: "2px" }}>Citations</p>
                       <p style={{ fontSize: "1.05rem", fontWeight: 700, color: "#1a1a1a", marginBottom: "12px" }}>
                         {formatCitations(citationRange[0])} – {citationRange[1] >= MAX_CITATIONS ? "100k+" : formatCitations(citationRange[1])}
                       </p>
@@ -1851,10 +1851,10 @@ function AppPageInner() {
                       </div>
 
                       {/* Divider */}
-                      <div style={{ height: "1px", background: "rgba(45,90,61,0.1)", margin: "18px 0" }} />
+                      <div style={{ height: "1px", background: "rgba(101, 153, 131,0.1)", margin: "18px 0" }} />
 
                       {/* ── Papers ── */}
-                      <p style={{ fontSize: "0.68rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.09em", marginBottom: "2px" }}>Papers Published</p>
+                      <p style={{ fontSize: "0.68rem", fontWeight: 700, color: "#2d5a47", textTransform: "uppercase", letterSpacing: "0.09em", marginBottom: "2px" }}>Papers Published</p>
                       <p style={{ fontSize: "1.05rem", fontWeight: 700, color: "#1a1a1a", marginBottom: "12px" }}>
                         {paperRange[0]} – {paperRange[1] >= MAX_PAPERS ? "500+" : String(paperRange[1])}
                       </p>
@@ -1933,7 +1933,7 @@ function AppPageInner() {
                         </div>
                       </>
                     )}
-                    <div style={{ marginTop: "28px", height: "60px", background: "rgba(45,90,61,0.06)", borderRadius: "12px" }} />
+                    <div style={{ marginTop: "28px", height: "60px", background: "rgba(101, 153, 131,0.06)", borderRadius: "12px" }} />
                   </div>
                   {/* Lock overlay */}
                   <div
@@ -1948,7 +1948,7 @@ function AppPageInner() {
                   >
                     <span
                       style={{
-                        background: "#2d5a3d", color: "#fff", fontSize: "0.8rem", fontWeight: 700,
+                        background: "#659983", color: "#fff", fontSize: "0.8rem", fontWeight: 700,
                         padding: "8px 20px", borderRadius: "10px",
                       }}
                     >
@@ -1969,7 +1969,7 @@ function AppPageInner() {
                       </a>
                       <button
                         onClick={() => toggleSave(author)}
-                        style={{ fontSize: "1.4rem", color: isSaved(author) ? "#A8893E" : "#8aaa96", background: "none", border: "none", cursor: "pointer", transition: "color 0.2s, transform 0.2s" }}
+                        style={{ fontSize: "1.4rem", color: isSaved(author) ? "#a8853e" : "#8aaa9d", background: "none", border: "none", cursor: "pointer", transition: "color 0.2s, transform 0.2s" }}
                         className={`rm-save-btn ${starBounce === id ? "star-bounce" : ""}`}
                         title={isSaved(author) ? "Remove from saved" : "Save professor"}
                       >
@@ -1983,8 +1983,8 @@ function AppPageInner() {
                     {resp && (
                       (isPaid || !!summaries[id]) ? (
                         <div className="rm-resp-line" title={resp.tooltip}>
-                          <span className="rm-resp-dot" style={{ background: resp.level === "green" ? "#2d5a3d" : resp.level === "yellow" ? "#C4A265" : "#c45c5c" }} />
-                          <span style={{ color: resp.level === "green" ? "#3a6b4a" : resp.level === "yellow" ? "#A8893E" : "#c45c5c" }}>{resp.label}</span>
+                          <span className="rm-resp-dot" style={{ background: resp.level === "green" ? "#659983" : resp.level === "yellow" ? "#c9ad77" : "#c45c5c" }} />
+                          <span style={{ color: resp.level === "green" ? "#659983" : resp.level === "yellow" ? "#a8853e" : "#c45c5c" }}>{resp.label}</span>
                         </div>
                       ) : (
                         <div className="rm-resp-line rm-resp-locked">
@@ -2027,30 +2027,30 @@ function AppPageInner() {
                         </button>
                       )}
                       {isLookingUp && (
-                        <div style={{ padding: "14px 18px", background: "rgba(45, 90, 61,0.03)", borderRadius: "12px", border: "1px solid rgba(45, 90, 61,0.2)", display: "flex", alignItems: "center", gap: "8px" }}>
+                        <div style={{ padding: "14px 18px", background: "rgba(101, 153, 131,0.03)", borderRadius: "12px", border: "1px solid rgba(101, 153, 131,0.2)", display: "flex", alignItems: "center", gap: "8px" }}>
                           <span className="loading-spinner" style={{ fontSize: "0.9rem" }}>&#127807;</span>
                           <span style={{ fontSize: "0.85rem", color: "#6b7280" }}>Searching ORCID, OpenAlex, and faculty pages...</span>
                         </div>
                       )}
                       {lookup && (
-                        <div style={{ padding: "14px 18px", background: "rgba(45, 90, 61,0.03)", borderRadius: "12px", border: "1px solid rgba(45, 90, 61,0.2)" }}>
+                        <div style={{ padding: "14px 18px", background: "rgba(101, 153, 131,0.03)", borderRadius: "12px", border: "1px solid rgba(101, 153, 131,0.2)" }}>
                           {lookup.emails.length > 0 ? (
                             <>
                               <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" }}>
-                                <span style={{ fontSize: "0.7rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em" }}>Email results</span>
+                                <span style={{ fontSize: "0.7rem", fontWeight: 700, color: "#2d5a47", textTransform: "uppercase", letterSpacing: "0.1em" }}>Email results</span>
                               </div>
                               <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                                 {lookup.emails.map((e, i) => (
                                   <div key={i} style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
                                     <span style={{
                                       fontSize: "0.6rem", fontWeight: 600, padding: "2px 8px", borderRadius: "4px",
-                                      color: e.confidence === "verified" ? "#2d5a3d" : e.confidence === "likely" ? "#C4A265" : "#6b7280",
-                                      background: e.confidence === "verified" ? "rgba(45, 90, 61,0.1)" : e.confidence === "likely" ? "rgba(196, 162, 101,0.1)" : "rgba(122,142,136,0.1)",
+                                      color: e.confidence === "verified" ? "#659983" : e.confidence === "likely" ? "#c9ad77" : "#6b7280",
+                                      background: e.confidence === "verified" ? "rgba(101, 153, 131,0.1)" : e.confidence === "likely" ? "rgba(201, 173, 119,0.1)" : "rgba(122,142,136,0.1)",
                                     }}>
                                       {e.confidence === "verified" ? "verified" : e.confidence === "likely" ? "likely" : "guess"} &middot; {e.source}
                                     </span>
-                                    <span style={{ fontSize: "0.85rem", color: "#2d5a3d", fontWeight: e.confidence === "verified" ? 600 : 400, fontFamily: "monospace" }}>{e.email}</span>
-                                    <button onClick={() => { navigator.clipboard.writeText(e.email); showToast("Email copied!"); }} style={{ fontSize: "0.65rem", color: "#ffffff", background: "#2d5a3d", border: "none", borderRadius: "6px", padding: "3px 10px", cursor: "pointer", transition: "all 0.2s" }}>
+                                    <span style={{ fontSize: "0.85rem", color: "#2d5a47", fontWeight: e.confidence === "verified" ? 600 : 400, fontFamily: "monospace" }}>{e.email}</span>
+                                    <button onClick={() => { navigator.clipboard.writeText(e.email); showToast("Email copied!"); }} style={{ fontSize: "0.65rem", color: "#ffffff", background: "#659983", border: "none", borderRadius: "6px", padding: "3px 10px", cursor: "pointer", transition: "all 0.2s" }}>
                                       Copy
                                     </button>
                                   </div>
@@ -2061,29 +2061,29 @@ function AppPageInner() {
                             <p style={{ fontSize: "0.85rem", color: "#6b7280", marginBottom: "8px" }}>No verified emails found in public databases.</p>
                           )}
                           {/* Search links */}
-                          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginTop: "10px", paddingTop: "10px", borderTop: "1px solid rgba(45, 90, 61,0.2)" }}>
+                          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginTop: "10px", paddingTop: "10px", borderTop: "1px solid rgba(101, 153, 131,0.2)" }}>
                             {lookup.searchUrls.google && (
-                              <a href={lookup.searchUrls.google} target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.7rem", color: "#2d5a3d", textDecoration: "underline" }}>
+                              <a href={lookup.searchUrls.google} target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.7rem", color: "#2d5a47", textDecoration: "underline" }}>
                                 Search Google →
                               </a>
                             )}
                             {lookup.searchUrls.directory && (
-                              <a href={lookup.searchUrls.directory} target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.7rem", color: "#2d5a3d", textDecoration: "underline" }}>
+                              <a href={lookup.searchUrls.directory} target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.7rem", color: "#2d5a47", textDecoration: "underline" }}>
                                 University directory →
                               </a>
                             )}
                             {lookup.homepageUrl && (
-                              <a href={lookup.homepageUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.7rem", color: "#2d5a3d", textDecoration: "underline" }}>
+                              <a href={lookup.homepageUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.7rem", color: "#2d5a47", textDecoration: "underline" }}>
                                 Faculty page →
                               </a>
                             )}
                             {lookup.orcidUrl && (
-                              <a href={lookup.orcidUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.7rem", color: "#2d5a3d", textDecoration: "underline" }}>
+                              <a href={lookup.orcidUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.7rem", color: "#2d5a47", textDecoration: "underline" }}>
                                 ORCID profile →
                               </a>
                             )}
                           </div>
-                          <p style={{ fontSize: "0.65rem", color: "#8aaa96", fontStyle: "italic", marginTop: "8px" }}>
+                          <p style={{ fontSize: "0.65rem", color: "#8aaa9d", fontStyle: "italic", marginTop: "8px" }}>
                             Sources: ORCID, OpenAlex, faculty pages. Pattern guesses marked accordingly.
                           </p>
                         </div>
@@ -2113,15 +2113,15 @@ function AppPageInner() {
                     {summary.highlights.length > 0 && (
                       <div style={{ marginTop: "24px" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
-                          <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em" }}>Key Findings</p>
+                          <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "#2d5a47", textTransform: "uppercase", letterSpacing: "0.1em" }}>Key Findings</p>
                           <button
                             onClick={(e) => {
                               const el = e.currentTarget.nextElementSibling as HTMLElement;
                               if (el) el.style.display = el.style.display === "none" ? "block" : "none";
                             }}
-                            style={{ fontSize: "0.7rem", fontWeight: 700, color: "#6b7280", cursor: "pointer", background: "rgba(45, 90, 61,0.15)", border: "1px solid #8aaa96", borderRadius: "999px", width: "18px", height: "18px", display: "inline-flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-playfair), Georgia, serif", transition: "all 0.2s ease" }}
+                            style={{ fontSize: "0.7rem", fontWeight: 700, color: "#6b7280", cursor: "pointer", background: "rgba(101, 153, 131,0.15)", border: "1px solid #8aaa9d", borderRadius: "999px", width: "18px", height: "18px", display: "inline-flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-playfair), Georgia, serif", transition: "all 0.2s ease" }}
                           >?</button>
-                          <div style={{ display: "none", padding: "14px 18px", background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)", border: "1px solid rgba(45, 90, 61,0.3)", borderRadius: "12px", fontSize: "0.85rem", color: "#6b7280", lineHeight: 1.6, marginTop: "4px", marginBottom: "8px" }}>
+                          <div style={{ display: "none", padding: "14px 18px", background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)", border: "1px solid rgba(101, 153, 131,0.3)", borderRadius: "12px", fontSize: "0.85rem", color: "#6b7280", lineHeight: 1.6, marginTop: "4px", marginBottom: "8px" }}>
                             In most lab sciences (biology, chemistry, medicine, etc.), <strong>1st author</strong> did the hands-on work and <strong>last author</strong> runs the lab. In many other fields (math, CS, economics, humanities), author order is often alphabetical and doesn&apos;t indicate contribution level. When in doubt, check if the professor lists the paper prominently on their own website — that usually means it&apos;s important to them.
                           </div>
                         </div>
@@ -2142,7 +2142,7 @@ function AppPageInner() {
                     {/* Suggested questions — first one free; the rest blurred for free users */}
                     {summary.questions.length > 0 && (
                       <div style={{ marginTop: "24px" }}>
-                        <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "14px" }}>Questions to Ask</p>
+                        <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "#2d5a47", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "14px" }}>Questions to Ask</p>
                         {(isFree ? summary.questions.slice(0, 1) : summary.questions).map((q, i) => renderQuestion(q, i))}
                         {isFree && summary.questions.length > 1 && (
                           <div className="rm-locked-wrap">
@@ -2159,8 +2159,8 @@ function AppPageInner() {
                     )}
                     {/* Closing tip — only if highlights exist */}
                     {summary.highlights.length > 0 && (
-                      <div style={{ marginTop: "24px", padding: "16px 20px", background: "rgba(45, 90, 61,0.15)", border: "1px solid rgba(45, 90, 61,0.3)", borderRadius: "14px" }}>
-                        <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "6px" }}>Closing Tip</p>
+                      <div style={{ marginTop: "24px", padding: "16px 20px", background: "rgba(101, 153, 131,0.15)", border: "1px solid rgba(101, 153, 131,0.3)", borderRadius: "14px" }}>
+                        <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "#2d5a47", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "6px" }}>Closing Tip</p>
                         <p style={{ fontSize: "0.9rem", color: "#6b7280", lineHeight: 1.6 }}>
                           End your email with: &ldquo;If you&apos;re not currently taking students, is there someone in your group you&apos;d recommend I reach out to?&rdquo;
                         </p>
@@ -2181,18 +2181,18 @@ function AppPageInner() {
                         </button>
                         {/* Summary usage notices — only for free logged-in users */}
                         {!isPaid && !!user && getSummariesRemaining() === 1 && (
-                          <div style={{ marginTop: "10px", padding: "10px 14px", background: "rgba(45,90,61,0.055)", border: "1px solid rgba(45,90,61,0.13)", borderRadius: "10px", display: "flex", alignItems: "center", gap: "8px" }}>
-                            <span style={{ fontSize: "0.82rem", color: "#2d5a3d", opacity: 0.6, flexShrink: 0 }}>ℹ</span>
-                            <span style={{ fontSize: "0.8rem", color: "#2d5a3d", fontWeight: 500 }}>1 free summary left.</span>
+                          <div style={{ marginTop: "10px", padding: "10px 14px", background: "rgba(101, 153, 131,0.055)", border: "1px solid rgba(101, 153, 131,0.13)", borderRadius: "10px", display: "flex", alignItems: "center", gap: "8px" }}>
+                            <span style={{ fontSize: "0.82rem", color: "#2d5a47", opacity: 0.6, flexShrink: 0 }}>ℹ</span>
+                            <span style={{ fontSize: "0.8rem", color: "#2d5a47", fontWeight: 500 }}>1 free summary left.</span>
                           </div>
                         )}
                         {!isPaid && !!user && getSummariesRemaining() === 0 && (
-                          <div style={{ marginTop: "10px", padding: "10px 14px", background: "rgba(45,90,61,0.055)", border: "1px solid rgba(45,90,61,0.13)", borderRadius: "10px" }}>
+                          <div style={{ marginTop: "10px", padding: "10px 14px", background: "rgba(101, 153, 131,0.055)", border: "1px solid rgba(101, 153, 131,0.13)", borderRadius: "10px" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                              <span style={{ fontSize: "0.82rem", color: "#2d5a3d", opacity: 0.6, flexShrink: 0 }}>ℹ</span>
-                              <span style={{ fontSize: "0.8rem", color: "#2d5a3d", fontWeight: 500 }}>You&apos;ve used your 2 free summaries.</span>
+                              <span style={{ fontSize: "0.82rem", color: "#2d5a47", opacity: 0.6, flexShrink: 0 }}>ℹ</span>
+                              <span style={{ fontSize: "0.8rem", color: "#2d5a47", fontWeight: 500 }}>You&apos;ve used your 2 free summaries.</span>
                             </div>
-                            <p style={{ fontSize: "0.74rem", color: "#8aaa96", marginTop: "3px", paddingLeft: "21px" }}>Upgrade for unlimited access to all professors.</p>
+                            <p style={{ fontSize: "0.74rem", color: "#8aaa9d", marginTop: "3px", paddingLeft: "21px" }}>Upgrade for unlimited access to all professors.</p>
                           </div>
                         )}
                       </>
@@ -2251,7 +2251,7 @@ function AppPageInner() {
                           hitPaywall("summary");
                         }}
                       >
-                        <p style={{ fontSize: "1rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "6px" }}>
+                        <p style={{ fontSize: "1rem", fontWeight: 700, color: "#2d5a47", marginBottom: "6px" }}>
                           See this professor&apos;s research
                         </p>
                         <p style={{ fontSize: "0.85rem", color: "#6b7280", marginBottom: "14px" }}>
@@ -2314,13 +2314,13 @@ function AppPageInner() {
         {!isPaid && !showSaved && displayList.length > 3 && (
           <div style={{
             marginTop: "8px",
-            background: "linear-gradient(135deg, rgba(45,90,61,0.06) 0%, rgba(45,90,61,0.03) 100%)",
-            border: "1.5px solid rgba(45,90,61,0.15)",
+            background: "linear-gradient(135deg, rgba(101, 153, 131,0.06) 0%, rgba(101, 153, 131,0.03) 100%)",
+            border: "1.5px solid rgba(101, 153, 131,0.15)",
             borderRadius: "20px",
             padding: "32px 28px",
             textAlign: "center",
           }}>
-            <p style={{ fontWeight: 700, fontSize: "1.05rem", color: "#2d5a3d", marginBottom: "8px" }}>
+            <p style={{ fontWeight: 700, fontSize: "1.05rem", color: "#2d5a47", marginBottom: "8px" }}>
               {displayList.length - 3} more professor{displayList.length - 3 === 1 ? "" : "s"} found for your search
             </p>
             <p style={{ fontSize: "0.9rem", color: "#6b7280", marginBottom: "22px", maxWidth: "420px", margin: "0 auto 22px" }}>
@@ -2329,7 +2329,7 @@ function AppPageInner() {
             <button
               onClick={() => hitPaywall("professor_results")}
               style={{
-                background: "#2d5a3d",
+                background: "#659983",
                 color: "#fff",
                 border: "none",
                 borderRadius: "14px",
@@ -2337,11 +2337,11 @@ function AppPageInner() {
                 fontSize: "0.95rem",
                 fontWeight: 700,
                 cursor: "pointer",
-                boxShadow: "0 4px 16px rgba(45,90,61,0.25)",
+                boxShadow: "0 4px 16px rgba(101, 153, 131,0.25)",
                 transition: "transform 0.15s, box-shadow 0.15s",
               }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-2px)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 8px 24px rgba(45,90,61,0.35)"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform = ""; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(45,90,61,0.25)"; }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-2px)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 8px 24px rgba(101, 153, 131,0.35)"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform = ""; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(101, 153, 131,0.25)"; }}
             >
               {`Unlock all ${displayList.length} professors →`}
             </button>
@@ -2352,14 +2352,14 @@ function AppPageInner() {
         {!showSaved && results.length > 0 && (nearbyLoading || nearbyProfs.length > 0) && (
           <div style={{ marginTop: "60px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "20px", marginBottom: "28px" }}>
-              <div style={{ flex: 1, height: "1px", background: "linear-gradient(to right, transparent, rgba(45, 90, 61,0.5), transparent)" }} />
+              <div style={{ flex: 1, height: "1px", background: "linear-gradient(to right, transparent, rgba(101, 153, 131,0.5), transparent)" }} />
               <h2 style={{
-                fontSize: "1.4rem", fontWeight: 700, color: "#2d5a3d",
+                fontSize: "1.4rem", fontWeight: 700, color: "#2d5a47",
                 letterSpacing: "-0.01em",
               }}>
                 Nearby researchers
               </h2>
-              <div style={{ flex: 1, height: "1px", background: "linear-gradient(to right, transparent, rgba(45, 90, 61,0.5), transparent)" }} />
+              <div style={{ flex: 1, height: "1px", background: "linear-gradient(to right, transparent, rgba(101, 153, 131,0.5), transparent)" }} />
             </div>
 
             {nearbyLoading && (
@@ -2394,7 +2394,7 @@ function AppPageInner() {
                       if (user) setShowUpgradeModal(true);
                     }}
                     >
-                      <p style={{ fontSize: "0.95rem", fontWeight: 700, color: "#2d5a3d", textAlign: "center", marginBottom: "6px" }}>
+                      <p style={{ fontSize: "0.95rem", fontWeight: 700, color: "#2d5a47", textAlign: "center", marginBottom: "6px" }}>
                         Summarize a professor to unlock
                       </p>
                       <p style={{ fontSize: "0.8rem", color: "#6b7280", textAlign: "center" }}>
@@ -2405,7 +2405,7 @@ function AppPageInner() {
 
                   {/* Card content (visible but blurred for free) */}
                   <a href={profileUrl(author)} target="_blank" rel="noopener noreferrer" style={{
-                    fontSize: "1.2rem", fontWeight: 700, color: "#2d5a3d",
+                    fontSize: "1.2rem", fontWeight: 700, color: "#2d5a47",
                     textDecoration: "none", display: "block", marginBottom: "4px",
                     transition: "color 0.2s",
                   }}>
@@ -2480,16 +2480,16 @@ function AppPageInner() {
                   </div>
 
                   {/* Check their website banner */}
-                  <div className="rm-email-tip rm-email-tip-before" style={{ padding: "14px 18px", background: "rgba(45, 90, 61,0.08)", border: "1.5px solid rgba(45, 90, 61,0.18)", borderRadius: "14px", marginBottom: "16px", display: "flex", alignItems: "flex-start", gap: "10px" }}>
+                  <div className="rm-email-tip rm-email-tip-before" style={{ padding: "14px 18px", background: "rgba(101, 153, 131,0.08)", border: "1.5px solid rgba(101, 153, 131,0.18)", borderRadius: "14px", marginBottom: "16px", display: "flex", alignItems: "flex-start", gap: "10px" }}>
                     <span style={{ fontSize: "1.1rem", flexShrink: 0 }}>&#128161;</span>
-                    <p style={{ fontSize: "0.85rem", color: "#2d5a3d", lineHeight: 1.6 }}>
+                    <p style={{ fontSize: "0.85rem", color: "#2d5a47", lineHeight: 1.6 }}>
                       <strong>Before emailing</strong>, check the professor&apos;s faculty page for specific contact instructions. Less than 5% of students do this and it instantly sets you apart.
                     </p>
                   </div>
 
                   {/* Volunteer framing tip */}
-                  <div className="rm-email-tip rm-email-tip-volunteer" style={{ padding: "12px 18px", background: "rgba(45, 90, 61,0.12)", border: "1px solid rgba(45, 90, 61,0.25)", borderRadius: "14px", marginBottom: "16px" }}>
-                    <p style={{ fontSize: "0.82rem", color: "#2d5a3d", lineHeight: 1.6 }}>
+                  <div className="rm-email-tip rm-email-tip-volunteer" style={{ padding: "12px 18px", background: "rgba(101, 153, 131,0.12)", border: "1px solid rgba(101, 153, 131,0.25)", borderRadius: "14px", marginBottom: "16px" }}>
+                    <p style={{ fontSize: "0.82rem", color: "#2d5a47", lineHeight: 1.6 }}>
                       <strong>Tip:</strong> Consider saying you&apos;d like to <em>volunteer</em> rather than asking for a position. It lowers the commitment for professors and makes them more likely to say yes.
                     </p>
                   </div>
@@ -2503,10 +2503,10 @@ function AppPageInner() {
                         width: "100%", padding: "10px 18px",
                         display: "flex", alignItems: "center", justifyContent: "space-between",
                         background: "transparent",
-                        border: "1.5px solid rgba(45,90,61,0.35)",
+                        border: "1.5px solid rgba(101, 153, 131,0.35)",
                         borderRadius: "12px", cursor: "pointer",
                         fontFamily: "DM Sans, Inter, sans-serif",
-                        fontSize: "0.88rem", fontWeight: 600, color: "#2d5a3d",
+                        fontSize: "0.88rem", fontWeight: 600, color: "#2d5a47",
                         transition: "background 0.2s",
                       }}
                     >
@@ -2520,7 +2520,7 @@ function AppPageInner() {
                         width: "100%", padding: "10px 18px",
                         display: "flex", alignItems: "center", justifyContent: "space-between",
                         background: "transparent",
-                        border: "1.5px solid rgba(45,90,61,0.2)",
+                        border: "1.5px solid rgba(101, 153, 131,0.2)",
                         borderRadius: "12px", cursor: "pointer",
                         fontFamily: "DM Sans, Inter, sans-serif",
                         fontSize: "0.88rem", fontWeight: 600, color: "#6b7280",
@@ -2528,7 +2528,7 @@ function AppPageInner() {
                       }}
                     >
                       <span>✦ Email Framework</span>
-                      <span style={{ fontSize: "0.72rem", background: "rgba(45,90,61,0.08)", padding: "3px 10px", borderRadius: "999px", color: "#2d5a3d" }}>Free with account</span>
+                      <span style={{ fontSize: "0.72rem", background: "rgba(101, 153, 131,0.08)", padding: "3px 10px", borderRadius: "999px", color: "#2d5a47" }}>Free with account</span>
                     </button>
                     )}
 
@@ -2536,24 +2536,24 @@ function AppPageInner() {
                       <div style={{
                         marginTop: "10px",
                         background: "rgba(255,255,255,0.7)",
-                        border: "1px solid rgba(45,90,61,0.15)",
+                        border: "1px solid rgba(101, 153, 131,0.15)",
                         borderRadius: "14px", padding: "20px",
                       }}>
-                        <p style={{ fontSize: "0.78rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "12px" }}>Template</p>
+                        <p style={{ fontSize: "0.78rem", fontWeight: 700, color: "#2d5a47", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "12px" }}>Template</p>
                         <p style={{ fontSize: "0.85rem", lineHeight: 1.8, color: "#1a1a1a", marginBottom: "16px" }}>
                           &ldquo;I came across your recent work on{" "}
-                          <span style={{ background: "rgba(45,90,61,0.1)", color: "#2d5a3d", padding: "2px 6px", borderRadius: "4px", fontWeight: 600 }}>[SPECIFIC TOPIC]</span>
+                          <span style={{ background: "rgba(101, 153, 131,0.1)", color: "#2d5a47", padding: "2px 6px", borderRadius: "4px", fontWeight: 600 }}>[SPECIFIC TOPIC]</span>
                           {" "}and was particularly struck by{" "}
-                          <span style={{ background: "rgba(45,90,61,0.1)", color: "#2d5a3d", padding: "2px 6px", borderRadius: "4px", fontWeight: 600 }}>[SPECIFIC FINDING]</span>
+                          <span style={{ background: "rgba(101, 153, 131,0.1)", color: "#2d5a47", padding: "2px 6px", borderRadius: "4px", fontWeight: 600 }}>[SPECIFIC FINDING]</span>
                           . This connects directly to my interest in{" "}
-                          <span style={{ background: "rgba(45,90,61,0.1)", color: "#2d5a3d", padding: "2px 6px", borderRadius: "4px", fontWeight: 600 }}>[YOUR RESEARCH ANGLE]</span>
+                          <span style={{ background: "rgba(101, 153, 131,0.1)", color: "#2d5a47", padding: "2px 6px", borderRadius: "4px", fontWeight: 600 }}>[YOUR RESEARCH ANGLE]</span>
                           {" "}because{" "}
-                          <span style={{ background: "rgba(45,90,61,0.1)", color: "#2d5a3d", padding: "2px 6px", borderRadius: "4px", fontWeight: 600 }}>[ONE GENUINE REASON]</span>
+                          <span style={{ background: "rgba(101, 153, 131,0.1)", color: "#2d5a47", padding: "2px 6px", borderRadius: "4px", fontWeight: 600 }}>[ONE GENUINE REASON]</span>
                           . I&apos;m especially curious whether{" "}
-                          <span style={{ background: "rgba(45,90,61,0.1)", color: "#2d5a3d", padding: "2px 6px", borderRadius: "4px", fontWeight: 600 }}>[INTELLIGENT QUESTION]</span>
+                          <span style={{ background: "rgba(101, 153, 131,0.1)", color: "#2d5a47", padding: "2px 6px", borderRadius: "4px", fontWeight: 600 }}>[INTELLIGENT QUESTION]</span>
                           .&rdquo;
                         </p>
-                        <div style={{ height: "1px", background: "rgba(45,90,61,0.12)", marginBottom: "14px" }} />
+                        <div style={{ height: "1px", background: "rgba(101, 153, 131,0.12)", marginBottom: "14px" }} />
                         <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "#c45c5c", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "10px" }}>Avoid These Phrases</p>
                         {[
                           { phrase: "I found your work fascinating", reason: "Name the specific finding instead." },
@@ -2574,26 +2574,26 @@ function AppPageInner() {
                   <textarea value={emailDraft} onChange={(e) => { setEmailDraft(e.target.value); setHasChecked(false); }} placeholder={"Paste the email you're about to send."} className="modal-textarea" style={{ flex: 1, padding: "24px", lineHeight: 1.7 }} />
                   {/* Pre-check notice */}
                   {!user && !hasChecked && (
-                    <div style={{ margin: "12px 0 4px", padding: "10px 14px", background: "rgba(45,90,61,0.055)", border: "1px solid rgba(45,90,61,0.13)", borderRadius: "10px", display: "flex", alignItems: "center", gap: "8px" }}>
-                      <span style={{ fontSize: "0.82rem", color: "#2d5a3d", opacity: 0.6, flexShrink: 0 }}>ℹ</span>
-                      <span style={{ fontSize: "0.8rem", color: "#2d5a3d" }}>Free to try — no account needed.</span>
+                    <div style={{ margin: "12px 0 4px", padding: "10px 14px", background: "rgba(101, 153, 131,0.055)", border: "1px solid rgba(101, 153, 131,0.13)", borderRadius: "10px", display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span style={{ fontSize: "0.82rem", color: "#2d5a47", opacity: 0.6, flexShrink: 0 }}>ℹ</span>
+                      <span style={{ fontSize: "0.8rem", color: "#2d5a47" }}>Free to try — no account needed.</span>
                     </div>
                   )}
                   {!isPaid && !freeEmailCheckUsed && !!user && (
-                    <div style={{ margin: "12px 0 4px", padding: "10px 14px", background: "rgba(45,90,61,0.055)", border: "1px solid rgba(45,90,61,0.13)", borderRadius: "10px", display: "flex", alignItems: "center", gap: "8px" }}>
-                      <span style={{ fontSize: "0.82rem", color: "#2d5a3d", opacity: 0.6, flexShrink: 0 }}>ℹ</span>
-                      <span style={{ fontSize: "0.8rem", color: "#2d5a3d" }}>You have 1 free email check — use it on your best draft.</span>
+                    <div style={{ margin: "12px 0 4px", padding: "10px 14px", background: "rgba(101, 153, 131,0.055)", border: "1px solid rgba(101, 153, 131,0.13)", borderRadius: "10px", display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span style={{ fontSize: "0.82rem", color: "#2d5a47", opacity: 0.6, flexShrink: 0 }}>ℹ</span>
+                      <span style={{ fontSize: "0.8rem", color: "#2d5a47" }}>You have 1 free email check — use it on your best draft.</span>
                     </div>
                   )}
                   <div className="rm-modal-actions rm-modal-sticky-footer">
                     {!isPaid && freeEmailCheckUsed ? (
                       /* Post-check notice: free check consumed, soft upgrade mention */
-                      <div style={{ display: "flex", flexDirection: "column", gap: "3px", flex: 1, background: "rgba(45,90,61,0.055)", border: "1px solid rgba(45,90,61,0.13)", borderRadius: "12px", padding: "12px 16px" }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "3px", flex: 1, background: "rgba(101, 153, 131,0.055)", border: "1px solid rgba(101, 153, 131,0.13)", borderRadius: "12px", padding: "12px 16px" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                          <span style={{ fontSize: "0.82rem", color: "#2d5a3d", opacity: 0.6, flexShrink: 0 }}>ℹ</span>
-                          <span style={{ fontSize: "0.82rem", color: "#2d5a3d", fontWeight: 500 }}>You&apos;ve used your free email check.</span>
+                          <span style={{ fontSize: "0.82rem", color: "#2d5a47", opacity: 0.6, flexShrink: 0 }}>ℹ</span>
+                          <span style={{ fontSize: "0.82rem", color: "#2d5a47", fontWeight: 500 }}>You&apos;ve used your free email check.</span>
                         </div>
-                        <p style={{ fontSize: "0.74rem", color: "#8aaa96", paddingLeft: "21px", margin: 0 }}>Upgrade to keep checking emails before you send.</p>
+                        <p style={{ fontSize: "0.74rem", color: "#8aaa9d", paddingLeft: "21px", margin: 0 }}>Upgrade to keep checking emails before you send.</p>
                       </div>
                     ) : (
                       <button onClick={checkEmail} disabled={checkingEmail || !emailDraft.trim()} className="btn-cta" style={{ padding: "14px 36px", fontSize: "1rem" }}>
@@ -2606,7 +2606,7 @@ function AppPageInner() {
                       </button>
                     )}
                     <button onClick={handleCopy} disabled={!emailDraft.trim()} style={{ fontSize: "1rem", color: "#6b7280", background: "none", border: "none", cursor: emailDraft.trim() ? "pointer" : "default", opacity: emailDraft.trim() ? 1 : 0.3, fontFamily: "var(--font-playfair), Georgia, serif", transition: "color 0.2s" }}
-                      onMouseEnter={e => { if (emailDraft.trim()) e.currentTarget.style.color = "#2d5a3d"; }}
+                      onMouseEnter={e => { if (emailDraft.trim()) e.currentTarget.style.color = "#659983"; }}
                       onMouseLeave={e => { e.currentTarget.style.color = "#6b7280"; }}
                     >
                       Copy to clipboard
@@ -2620,7 +2620,7 @@ function AppPageInner() {
                     const gated = resultGated; // anonymous taste
                     const FlagCard = (flag: EmailFlag, i: number) => (
                       <div key={i} className={`flag-enter ${flag.type === "error" ? "flag-error" : "flag-warning"}`} style={{ padding: "16px 20px" }}>
-                        <span style={{ fontWeight: 700, fontSize: "0.95rem", color: flag.type === "error" ? "#c45c5c" : "#A8893E" }}>{flag.type === "error" ? "\u26A0" : "\u25CF"} {flag.issue}</span>
+                        <span style={{ fontWeight: 700, fontSize: "0.95rem", color: flag.type === "error" ? "#c45c5c" : "#a8853e" }}>{flag.type === "error" ? "\u26A0" : "\u25CF"} {flag.issue}</span>
                         <p style={{ fontSize: "0.85rem", color: "#6b7280", marginTop: "4px" }}>{flag.suggestion}</p>
                       </div>
                     );
@@ -2635,7 +2635,7 @@ function AppPageInner() {
                       return (
                         <div className="email-pass" style={{ marginTop: "20px", padding: "20px 24px", textAlign: "center" }}>
                           <p style={{ fontSize: "1.4rem", marginBottom: "6px" }}>&#127881;</p>
-                          <p style={{ fontWeight: 700, fontSize: "1.05rem", color: "#2d5a3d" }}>Perfect email! No issues found.</p>
+                          <p style={{ fontWeight: 700, fontSize: "1.05rem", color: "#2d5a47" }}>Perfect email! No issues found.</p>
                           <p style={{ fontSize: "0.85rem", color: "#6b7280", marginTop: "6px" }}>
                             {gated ? "Clean. Checking your next email needs a free account." : "Copy it and send it with confidence."}
                           </p>
@@ -2650,7 +2650,7 @@ function AppPageInner() {
                     return (
                       <div style={{ marginTop: "20px" }}>
                         {gated && (
-                          <p style={{ fontSize: "0.85rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "10px" }}>
+                          <p style={{ fontSize: "0.85rem", fontWeight: 700, color: "#2d5a47", marginBottom: "10px" }}>
                             {total} {total === 1 ? "issue" : "issues"} found.
                           </p>
                         )}
@@ -2668,7 +2668,7 @@ function AppPageInner() {
                               onClick={openCheckerSignup}
                               style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", cursor: "pointer", background: "linear-gradient(to bottom, rgba(245,240,230,0.55) 0%, rgba(245,240,230,0.96) 55%)", padding: "16px", borderRadius: "12px" }}
                             >
-                              <p style={{ fontSize: "0.92rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "4px" }}>
+                              <p style={{ fontSize: "0.92rem", fontWeight: 700, color: "#2d5a47", marginBottom: "4px" }}>
                                 {hidden.length} more {hidden.length === 1 ? "issue" : "issues"} found
                               </p>
                               <p style={{ fontSize: "0.82rem", color: "#6b7280", marginBottom: "12px" }}>Create a free account to see them all.</p>
@@ -2679,8 +2679,8 @@ function AppPageInner() {
 
                         {/* Gated single-flag (nothing to blur): push the account ask to the next email */}
                         {gated && hidden.length === 0 && (
-                          <div style={{ marginTop: "14px", padding: "12px 16px", background: "rgba(45,90,61,0.055)", border: "1px solid rgba(45,90,61,0.13)", borderRadius: "12px" }}>
-                            <p style={{ fontSize: "0.85rem", color: "#2d5a3d", fontWeight: 500, margin: 0 }}>Clean otherwise. Checking your next email needs a free account.</p>
+                          <div style={{ marginTop: "14px", padding: "12px 16px", background: "rgba(101, 153, 131,0.055)", border: "1px solid rgba(101, 153, 131,0.13)", borderRadius: "12px" }}>
+                            <p style={{ fontSize: "0.85rem", color: "#2d5a47", fontWeight: 500, margin: 0 }}>Clean otherwise. Checking your next email needs a free account.</p>
                             {accountBtn}
                           </div>
                         )}
@@ -2693,7 +2693,7 @@ function AppPageInner() {
                   )}
                 </div>
                 <div className={`modal-sidebar rm-modal-right${mobileEmailTab === "compose" ? " rm-modal-panel-hidden" : ""}`}>
-                  <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "24px" }}>Reference</p>
+                  <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "#2d5a47", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "24px" }}>Reference</p>
                   <div style={{ marginBottom: "24px" }}>
                     <p style={{ fontSize: "1.4rem", fontWeight: 700, color: "#1a1a1a" }}>{emailTarget.display_name}</p>
                     <p style={{ fontSize: "0.9rem", color: "#6b7280", marginTop: "4px" }}>{formatInstitutionLocation(emailTarget.last_known_institutions?.[0])}</p>
@@ -2701,7 +2701,7 @@ function AppPageInner() {
                       {emailTarget.topics?.slice(0, 4).map((t, i) => <span key={i} className="tag" style={{ fontSize: "0.7rem" }}>{t.display_name}</span>)}
                     </div>
                   </div>
-                  <div style={{ height: "1px", background: "linear-gradient(to right, transparent, #8aaa96, transparent)", opacity: 0.5, marginBottom: "24px" }} />
+                  <div style={{ height: "1px", background: "linear-gradient(to right, transparent, #8aaa9d, transparent)", opacity: 0.5, marginBottom: "24px" }} />
                   {isLoadingTargetSummary && (
                     <div style={{ textAlign: "center", padding: "20px 0" }}>
                       <span className="loading-spinner">&#127807;</span>
@@ -2711,18 +2711,18 @@ function AppPageInner() {
                   {targetSummary && (
                     <>
                       <div style={{ marginBottom: "24px" }}>
-                        <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "10px" }}>Their Research</p>
+                        <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "#2d5a47", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "10px" }}>Their Research</p>
                         <p style={{ fontSize: "0.9rem", color: "#6b7280", lineHeight: 1.7 }}>{targetSummary.summary}</p>
                       </div>
                       {targetSummary.highlights.length > 0 && (
                         <div style={{ marginBottom: "24px" }}>
-                          <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "14px" }}>Papers to Mention</p>
+                          <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "#2d5a47", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "14px" }}>Papers to Mention</p>
                           {targetSummary.highlights.map((h, i) => (
                             <div key={i} style={{ marginBottom: "14px" }}>
-                              <p style={{ fontSize: "0.85rem", fontWeight: 700, color: "#2d5a3d" }}>
+                              <p style={{ fontSize: "0.85rem", fontWeight: 700, color: "#2d5a47" }}>
                                 {h.paper}
                                 {h.doi && (
-                                  <a href={h.doi} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 400, fontSize: "0.75rem", marginLeft: "8px", color: "#2d5a3d" }}>
+                                  <a href={h.doi} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 400, fontSize: "0.75rem", marginLeft: "8px", color: "#2d5a47" }}>
                                     Read →
                                   </a>
                                 )}
@@ -2734,9 +2734,9 @@ function AppPageInner() {
                       )}
                       {targetSummary.questions.length > 0 && (
                         <div>
-                          <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "14px" }}>Questions to Ask</p>
+                          <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "#2d5a47", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "14px" }}>Questions to Ask</p>
                           {targetSummary.questions.map((q, i) => (
-                            <p key={i} style={{ fontSize: "0.8rem", color: "#6b7280", paddingLeft: "14px", borderLeft: "2px solid #9dbfaa", marginBottom: "12px", lineHeight: 1.6 }}>{q}</p>
+                            <p key={i} style={{ fontSize: "0.8rem", color: "#6b7280", paddingLeft: "14px", borderLeft: "2px solid #9dbfb1", marginBottom: "12px", lineHeight: 1.6 }}>{q}</p>
                           ))}
                         </div>
                       )}
@@ -2761,17 +2761,17 @@ function AppPageInner() {
       {showAuthModal && (
         <div style={{ position: "fixed", inset: 0, zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(245,240,230,0.85)", backdropFilter: "blur(12px)" }} onClick={() => setShowAuthModal(false)}>
           <div className="glass-card rm-modal-card" style={{ padding: "40px", maxWidth: "400px", width: "90%" }} onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "8px" }}>
+            <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#2d5a47", marginBottom: "8px" }}>
               {authMode === "signup" ? "Create your free account" : "Welcome back"}
             </h3>
             <p style={{ fontSize: "0.9rem", color: "#6b7280", marginBottom: "24px" }}>
               {authModalCopy || (authMode === "signup" ? "Free access to research summaries, email checker, and more." : "Log in to your account.")}
             </p>
             {authError && <p style={{ fontSize: "0.85rem", color: "#c45c5c", marginBottom: "16px", background: "rgba(196, 92, 92,0.08)", padding: "10px 14px", borderRadius: "10px" }}>{authError}</p>}
-            <input type="email" placeholder="Email" value={authEmail} onChange={(e) => setAuthEmail(e.target.value)} style={{ width: "100%", padding: "12px 16px", fontSize: "1rem", border: "1.5px solid rgba(45, 90, 61,0.4)", borderRadius: "12px", background: "rgba(255,255,255,0.5)", color: "#1a1a1a", fontFamily: "inherit", marginBottom: "12px", outline: "none" }} />
-            <input type="password" placeholder="Password" value={authPassword} onChange={(e) => setAuthPassword(e.target.value)} style={{ width: "100%", padding: "12px 16px", fontSize: "1rem", border: "1.5px solid rgba(45, 90, 61,0.4)", borderRadius: "12px", background: "rgba(255,255,255,0.5)", color: "#1a1a1a", fontFamily: "inherit", marginBottom: "12px", outline: "none" }} />
+            <input type="email" placeholder="Email" value={authEmail} onChange={(e) => setAuthEmail(e.target.value)} style={{ width: "100%", padding: "12px 16px", fontSize: "1rem", border: "1.5px solid rgba(101, 153, 131,0.4)", borderRadius: "12px", background: "rgba(255,255,255,0.5)", color: "#1a1a1a", fontFamily: "inherit", marginBottom: "12px", outline: "none" }} />
+            <input type="password" placeholder="Password" value={authPassword} onChange={(e) => setAuthPassword(e.target.value)} style={{ width: "100%", padding: "12px 16px", fontSize: "1rem", border: "1.5px solid rgba(101, 153, 131,0.4)", borderRadius: "12px", background: "rgba(255,255,255,0.5)", color: "#1a1a1a", fontFamily: "inherit", marginBottom: "12px", outline: "none" }} />
             {authMode === "signup" && (
-              <input type="text" placeholder="Promo code (optional)" value={authPromoCode} onChange={(e) => setAuthPromoCode(e.target.value)} style={{ width: "100%", padding: "12px 16px", fontSize: "1rem", border: "1.5px solid rgba(45, 90, 61,0.4)", borderRadius: "12px", background: "rgba(255,255,255,0.5)", color: "#1a1a1a", fontFamily: "inherit", marginBottom: "20px", outline: "none" }} />
+              <input type="text" placeholder="Promo code (optional)" value={authPromoCode} onChange={(e) => setAuthPromoCode(e.target.value)} style={{ width: "100%", padding: "12px 16px", fontSize: "1rem", border: "1.5px solid rgba(101, 153, 131,0.4)", borderRadius: "12px", background: "rgba(255,255,255,0.5)", color: "#1a1a1a", fontFamily: "inherit", marginBottom: "20px", outline: "none" }} />
             )}
             {authMode !== "signup" && <div style={{ marginBottom: "8px" }} />}
             <button disabled={authLoading} onClick={async () => {
@@ -2791,7 +2791,7 @@ function AppPageInner() {
             </button>
             <p style={{ fontSize: "0.85rem", color: "#6b7280", textAlign: "center", marginTop: "16px" }}>
               {authMode === "signup" ? "Already have an account?" : "Don't have an account?"}{" "}
-              <button onClick={() => { setAuthMode(authMode === "signup" ? "login" : "signup"); setAuthError(""); }} style={{ color: "#2d5a3d", fontWeight: 600, background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: "0.85rem" }}>
+              <button onClick={() => { setAuthMode(authMode === "signup" ? "login" : "signup"); setAuthError(""); }} style={{ color: "#2d5a47", fontWeight: 600, background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: "0.85rem" }}>
                 {authMode === "signup" ? "Log in" : "Sign up"}
               </button>
             </p>
@@ -2803,7 +2803,7 @@ function AppPageInner() {
       {showUpgradeModal && (
         <div className="rm-upgrade-backdrop" onClick={() => setShowUpgradeModal(false)}>
           <div className="glass-card rm-modal-card rm-upgrade-card" style={{ padding: "32px" }} onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "4px" }}>{upgradeModalTitle || "Unlock the full toolkit"}</h3>
+            <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#2d5a47", marginBottom: "4px" }}>{upgradeModalTitle || "Unlock the full toolkit"}</h3>
             <p style={{ fontSize: "0.85rem", color: "#6b7280", marginBottom: "20px" }}>{upgradeModalSubtitle || "Every finding, every question, the email checker, and the professor email finder."}</p>
             <details
               open={Boolean(checkoutReferralCode)}
@@ -2811,7 +2811,7 @@ function AppPageInner() {
                 marginBottom: "14px",
                 borderRadius: "16px",
                 background: "rgba(255,255,255,0.48)",
-                border: "1px solid rgba(45,90,61,0.1)",
+                border: "1px solid rgba(101, 153, 131,0.1)",
                 boxShadow: "inset 0 1px 0 rgba(255,255,255,0.65)",
                 overflow: "hidden",
               }}
@@ -2821,7 +2821,7 @@ function AppPageInner() {
                   listStyle: "none",
                   cursor: "pointer",
                   padding: "12px 14px",
-                  color: "#2d5a3d",
+                  color: "#2d5a47",
                   fontSize: "0.82rem",
                   fontWeight: 750,
                   letterSpacing: "0.01em",
@@ -2833,11 +2833,11 @@ function AppPageInner() {
                 Have a Research Buddy Pass?
                 <span style={{
                   fontSize: "0.68rem",
-                  color: "#55705f",
+                  color: "#557065",
                   fontWeight: 750,
                   padding: "5px 9px",
                   borderRadius: "999px",
-                  background: "rgba(45,90,61,0.08)",
+                  background: "rgba(101, 153, 131,0.08)",
                   whiteSpace: "nowrap",
                 }}>
                   Optional
@@ -2856,10 +2856,10 @@ function AppPageInner() {
                   style={{
                     width: "100%",
                     minWidth: 0,
-                    border: "1px solid rgba(45,90,61,0.12)",
+                    border: "1px solid rgba(101, 153, 131,0.12)",
                     outline: "none",
                     background: "rgba(255,255,255,0.64)",
-                    color: "#1f3f2d",
+                    color: "#1f3f32",
                     fontSize: "0.9rem",
                     fontWeight: 650,
                     letterSpacing: "0.02em",
@@ -2886,66 +2886,66 @@ function AppPageInner() {
             )}
 
             {/* Weekly — the emphasized plan */}
-            <div style={{ padding: "20px", borderRadius: "16px", border: "2px solid rgba(45,90,61,0.5)", boxShadow: "0 10px 30px rgba(45,90,61,0.16)", background: "linear-gradient(135deg, rgba(45,90,61,0.08), rgba(45,90,61,0.03))", marginBottom: "12px" }}>
+            <div style={{ padding: "20px", borderRadius: "16px", border: "2px solid rgba(101, 153, 131,0.5)", boxShadow: "0 10px 30px rgba(101, 153, 131,0.16)", background: "linear-gradient(135deg, rgba(101, 153, 131,0.08), rgba(101, 153, 131,0.03))", marginBottom: "12px" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
-                <p style={{ fontSize: "0.68rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em" }}>Weekly Sprint</p>
-                <span style={{ fontSize: "0.55rem", fontWeight: 700, color: "#fff", background: "linear-gradient(135deg, #2d5a3d, #3a6b4a)", padding: "3px 9px", borderRadius: "999px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Most Popular</span>
+                <p style={{ fontSize: "0.68rem", fontWeight: 700, color: "#2d5a47", textTransform: "uppercase", letterSpacing: "0.1em" }}>Weekly Sprint</p>
+                <span style={{ fontSize: "0.55rem", fontWeight: 700, color: "#fff", background: "linear-gradient(135deg, #659983, #557f6c)", padding: "3px 9px", borderRadius: "999px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Most Popular</span>
               </div>
               <div style={{ display: "flex", alignItems: "baseline", gap: "6px", marginBottom: "2px" }}>
-                <span style={{ fontSize: "2.1rem", fontWeight: 800, color: "#2d5a3d" }}>$7</span>
-                <span style={{ fontSize: "0.85rem", color: "#2d5a3d", fontWeight: 600 }}>/ week</span>
+                <span style={{ fontSize: "2.1rem", fontWeight: 800, color: "#2d5a47" }}>$7</span>
+                <span style={{ fontSize: "0.85rem", color: "#2d5a47", fontWeight: 600 }}>/ week</span>
               </div>
               <p style={{ fontSize: "0.78rem", color: "#6b7280", marginBottom: "12px" }}>Full access while you run your outreach. Cancel anytime.</p>
               <ul style={{ listStyle: "none", padding: 0, marginBottom: "16px" }}>
                 {["Unlimited research summaries", "Email checker with red-flag detection", "Professor email finder", "Professor responsiveness indicator", "Cold Email Playbook"].map((f) => (
                   <li key={f} style={{ fontSize: "0.82rem", color: "#6b7280", padding: "3px 0", display: "flex", gap: "8px" }}>
-                    <span style={{ color: "#2d5a3d" }}>✓</span> {f}
+                    <span style={{ color: "#2d5a47" }}>✓</span> {f}
                   </li>
                 ))}
               </ul>
               <button onClick={async () => {
                 const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_WEEKLY || "price_1TMxDSFINW44xCyFWrm6ZTOo";
                 await startCheckout(priceId);
-              }} className="btn-cta rm-search-btn" style={{ width: "100%", padding: "13px", fontSize: "0.95rem", background: "linear-gradient(135deg, #2d5a3d, #3a6b4a)", boxShadow: "0 8px 24px rgba(45,90,61,0.3)", textShadow: "0 1px 2px rgba(18,54,34,0.24)" }}>
+              }} className="btn-cta rm-search-btn" style={{ width: "100%", padding: "13px", fontSize: "0.95rem", background: "linear-gradient(135deg, #659983, #557f6c)", boxShadow: "0 8px 24px rgba(101, 153, 131,0.3)", textShadow: "0 1px 2px rgba(18, 54, 39,0.24)" }}>
                 Start Weekly — $7
               </button>
-              <p style={{ fontSize: "0.74rem", color: "#9b8040", textAlign: "center", marginTop: "8px", fontWeight: 600 }}>No professor reply in 30 days, full refund.</p>
+              <p style={{ fontSize: "0.74rem", color: "#9b7d40", textAlign: "center", marginTop: "8px", fontWeight: 600 }}>No professor reply in 30 days, full refund.</p>
             </div>
 
             {/* Semester — secondary option */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "14px 18px", borderRadius: "12px", border: "1px solid rgba(45,90,61,0.18)", background: "rgba(45,90,61,0.03)", flexWrap: "wrap", marginBottom: "10px" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "14px 18px", borderRadius: "12px", border: "1px solid rgba(101, 153, 131,0.18)", background: "rgba(101, 153, 131,0.03)", flexWrap: "wrap", marginBottom: "10px" }}>
               <div>
-                <p style={{ fontSize: "0.65rem", fontWeight: 700, color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "2px" }}>Semester</p>
+                <p style={{ fontSize: "0.65rem", fontWeight: 700, color: "#2d5a47", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "2px" }}>Semester</p>
                 <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
-                  <span style={{ fontSize: "1.3rem", fontWeight: 800, color: "#2d5a3d" }}>$29</span>
+                  <span style={{ fontSize: "1.3rem", fontWeight: 800, color: "#2d5a47" }}>$29</span>
                   <span style={{ fontSize: "0.78rem", color: "#6b7280" }}>/ 4 months · full semester access</span>
                 </div>
               </div>
               <button onClick={async () => {
                 const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_SEMESTER || "price_1TIuAlFINW44xCyFcxqgQpeV";
                 await startCheckout(priceId);
-              }} className="btn-cta" style={{ padding: "10px 22px", fontSize: "0.85rem", background: "rgba(45, 90, 61, 0.1)", color: "#2d5a3d", border: "none", whiteSpace: "nowrap" }}>
+              }} className="btn-cta" style={{ padding: "10px 22px", fontSize: "0.85rem", background: "rgba(101, 153, 131, 0.1)", color: "#2d5a47", border: "none", whiteSpace: "nowrap" }}>
                 Get Semester — $29
               </button>
             </div>
 
             {/* Lifetime — de-emphasized one-time option */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", padding: "11px 16px", borderRadius: "12px", border: "1px solid rgba(45,90,61,0.1)", background: "rgba(255,255,255,0.45)", flexWrap: "wrap", marginBottom: "12px" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", padding: "11px 16px", borderRadius: "12px", border: "1px solid rgba(101, 153, 131,0.1)", background: "rgba(255,255,255,0.45)", flexWrap: "wrap", marginBottom: "12px" }}>
               <span style={{ fontSize: "0.8rem", color: "#6b7280" }}>
-                Prefer to pay once? <strong style={{ color: "#2d5a3d", fontWeight: 700 }}>Lifetime — $59</strong>, never pay again.
+                Prefer to pay once? <strong style={{ color: "#2d5a47", fontWeight: 700 }}>Lifetime — $59</strong>, never pay again.
               </span>
               <button onClick={async () => {
                 const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_LIFETIME || "price_1TIuBBFINW44xCyFoSCtUpFN";
                 await startCheckout(priceId);
-              }} style={{ fontSize: "0.8rem", fontWeight: 700, color: "#2d5a3d", background: "none", border: "none", cursor: "pointer", whiteSpace: "nowrap", textDecoration: "underline", fontFamily: "inherit" }}>
+              }} style={{ fontSize: "0.8rem", fontWeight: 700, color: "#2d5a47", background: "none", border: "none", cursor: "pointer", whiteSpace: "nowrap", textDecoration: "underline", fontFamily: "inherit" }}>
                 Get Lifetime →
               </button>
             </div>
 
-            <div style={{ padding: "10px 14px", background: "rgba(45,90,61,0.04)", borderRadius: "10px", border: "1px solid rgba(45,90,61,0.1)", display: "flex", gap: "16px", flexWrap: "wrap" }}>
+            <div style={{ padding: "10px 14px", background: "rgba(101, 153, 131,0.04)", borderRadius: "10px", border: "1px solid rgba(101, 153, 131,0.1)", display: "flex", gap: "16px", flexWrap: "wrap" }}>
               {["Email Template (professor-tested)", "Emails That Worked (real examples)", "Follow-Up Guide"].map((b) => (
                 <p key={b} style={{ fontSize: "0.72rem", color: "#6b7280", display: "flex", gap: "5px", margin: 0 }}>
-                  <span style={{ color: "#A8893E" }}>✓</span> {b}
+                  <span style={{ color: "#a8853e" }}>✓</span> {b}
                 </p>
               ))}
             </div>

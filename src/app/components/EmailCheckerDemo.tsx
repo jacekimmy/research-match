@@ -241,7 +241,7 @@ export default function EmailCheckerDemo() {
         style={{
           fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
           fontWeight: 800,
-          color: "#2d5a3d",
+          color: "#2d5a47",
           textAlign: "center",
           marginBottom: "40px",
           letterSpacing: "-0.03em",
@@ -312,7 +312,7 @@ export default function EmailCheckerDemo() {
               gap: "6px",
               fontSize: "0.75rem",
               fontWeight: 600,
-              color: isGoodPhase ? "#2d5a3d" : phase === "idle" ? "#6b7280" : "#c45c5c",
+              color: isGoodPhase ? "#659983" : phase === "idle" ? "#6b7280" : "#c45c5c",
               transition: "color 0.4s ease",
             }}
           >
@@ -321,10 +321,10 @@ export default function EmailCheckerDemo() {
                 width: 7,
                 height: 7,
                 borderRadius: "50%",
-                background: isGoodPhase ? "#2d5a3d" : phase === "idle" ? "#6b7280" : "#c45c5c",
+                background: isGoodPhase ? "#659983" : phase === "idle" ? "#6b7280" : "#c45c5c",
                 transition: "background 0.4s ease",
                 boxShadow: isGoodPhase
-                  ? "0 0 6px rgba(45, 90, 61, 0.5)"
+                  ? "0 0 6px rgba(101, 153, 131, 0.5)"
                   : phase !== "idle"
                   ? "0 0 6px rgba(196, 92, 92, 0.4)"
                   : "none",
@@ -378,7 +378,7 @@ export default function EmailCheckerDemo() {
                     display: "inline-block",
                     width: "2px",
                     height: "1.1em",
-                    background: "#2d5a3d",
+                    background: "#659983",
                     marginLeft: "1px",
                     verticalAlign: "text-bottom",
                     animation: "cursorBlink 0.6s step-end infinite",
@@ -415,17 +415,17 @@ export default function EmailCheckerDemo() {
                       borderRadius: "999px",
                       fontSize: "0.78rem",
                       fontWeight: 600,
-                      background: isGreen ? "rgba(45, 90, 61, 0.08)" : "rgba(196, 92, 92, 0.08)",
-                      color: isGreen ? "#2d5a3d" : "#c45c5c",
-                      border: `1px solid ${isGreen ? "rgba(45, 90, 61, 0.18)" : "rgba(196, 92, 92, 0.18)"}`,
+                      background: isGreen ? "rgba(101, 153, 131, 0.08)" : "rgba(196, 92, 92, 0.08)",
+                      color: isGreen ? "#659983" : "#c45c5c",
+                      border: `1px solid ${isGreen ? "rgba(101, 153, 131, 0.18)" : "rgba(196, 92, 92, 0.18)"}`,
                       transition: "all 0.4s ease",
                       animation: isGreen ? "none" : "fadeSlideIn 0.3s ease both",
                     }}
                   >
                     {isGreen ? (
                       <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
-                        <circle cx="8" cy="8" r="6.5" stroke="#2d5a3d" strokeWidth="1.5" />
-                        <path d="M5.5 8L7.2 9.8L10.5 6.2" stroke="#2d5a3d" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        <circle cx="8" cy="8" r="6.5" stroke="#659983" strokeWidth="1.5" />
+                        <path d="M5.5 8L7.2 9.8L10.5 6.2" stroke="#659983" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     ) : (
                       <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
@@ -478,18 +478,18 @@ export default function EmailCheckerDemo() {
                 fontWeight: 600,
                 borderRadius: "999px",
                 cursor: "pointer",
-                background: "rgba(45, 90, 61, 0.08)",
-                color: "#2d5a3d",
-                border: "1px solid rgba(45, 90, 61, 0.2)",
+                background: "rgba(101, 153, 131, 0.08)",
+                color: "#2d5a47",
+                border: "1px solid rgba(101, 153, 131, 0.2)",
                 transition: "all 0.2s ease",
                 animation: "fadeSlideIn 0.4s ease both",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(45, 90, 61, 0.14)";
+                e.currentTarget.style.background = "rgba(101, 153, 131, 0.14)";
                 e.currentTarget.style.transform = "translateY(-1px)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(45, 90, 61, 0.08)";
+                e.currentTarget.style.background = "rgba(101, 153, 131, 0.08)";
                 e.currentTarget.style.transform = "translateY(0)";
               }}
             >

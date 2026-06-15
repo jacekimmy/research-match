@@ -317,17 +317,17 @@ export default function LandingPage() {
           width: 8px !important;
           height: 8px !important;
           border-radius: 999px !important;
-          background: rgba(45, 90, 61, 0.18) !important;
+          background: rgba(101, 153, 131, 0.18) !important;
           cursor: pointer !important;
           transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
         }
         .lp-pricing-dot:hover {
-          background: rgba(45, 90, 61, 0.35) !important;
+          background: rgba(101, 153, 131, 0.35) !important;
         }
         .lp-pricing-dot.active {
           width: 28px !important;
-          background: #2d5a3d !important;
-          box-shadow: 0 2px 8px rgba(45, 90, 61, 0.28) !important;
+          background: #659983 !important;
+          box-shadow: 0 2px 8px rgba(101, 153, 131, 0.28) !important;
         }
 
         /* ── Mobile Layout (<= 900px) ── */
@@ -378,12 +378,12 @@ export default function LandingPage() {
         <div className="lp-nav-pill">
           <Link href="/" className="lp-nav-logo">
             <svg width="180" height="32" viewBox="0 0 280 50" xmlns="http://www.w3.org/2000/svg" aria-label="Research Match">
-              <circle cx="22" cy="22" r="15" fill="none" stroke="#2d5a3d" strokeWidth="4" />
-              <path d="M33 33 L43 43" fill="none" stroke="#2d5a3d" strokeWidth="4.5" strokeLinecap="round" />
-              <line x1="16" y1="16" x2="28" y2="16" stroke="#C4A265" strokeWidth="3" strokeLinecap="round" />
-              <line x1="16" y1="22" x2="28" y2="22" stroke="#C4A265" strokeWidth="3" strokeLinecap="round" />
-              <line x1="16" y1="28" x2="28" y2="28" stroke="#C4A265" strokeWidth="3" strokeLinecap="round" />
-              <text x="52" y="30" fontFamily="Georgia, 'Times New Roman', serif" fontSize="22" fontWeight="700" fill="#2d5a3d">Research Match</text>
+              <circle cx="22" cy="22" r="15" fill="none" stroke="#659983" strokeWidth="4" />
+              <path d="M33 33 L43 43" fill="none" stroke="#659983" strokeWidth="4.5" strokeLinecap="round" />
+              <line x1="16" y1="16" x2="28" y2="16" stroke="#c9ad77" strokeWidth="3" strokeLinecap="round" />
+              <line x1="16" y1="22" x2="28" y2="22" stroke="#c9ad77" strokeWidth="3" strokeLinecap="round" />
+              <line x1="16" y1="28" x2="28" y2="28" stroke="#c9ad77" strokeWidth="3" strokeLinecap="round" />
+              <text x="52" y="30" fontFamily="Georgia, 'Times New Roman', serif" fontSize="22" fontWeight="700" fill="#659983">Research Match</text>
             </svg>
           </Link>
           <div className="lp-nav-spacer" />
@@ -459,7 +459,7 @@ export default function LandingPage() {
         {/* Scroll cue */}
         <div className="lp-scroll-cue">
           <svg className="lp-scroll-chevron" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M6 9l6 6 6-6" stroke="#2d5a3d" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M6 9l6 6 6-6" stroke="#659983" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </div>
       </section>
@@ -512,9 +512,9 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           WHY NOT CHATGPT
       ══════════════════════════════════════════ */}
-      <section className="lp-chatgpt-section" style={{ background: "linear-gradient(to bottom, #ffffff, rgba(255,255,255,0))", padding: "100px 24px", margin: "0 0 20px 0", borderTop: "1px solid rgba(45,90,61,0.06)", borderBottom: "1px solid rgba(45,90,61,0.06)" }}>
+      <section className="lp-chatgpt-section" style={{ background: "linear-gradient(to bottom, #ffffff, rgba(255,255,255,0))", padding: "100px 24px", margin: "0 0 20px 0", borderTop: "1px solid rgba(101, 153, 131,0.06)", borderBottom: "1px solid rgba(101, 153, 131,0.06)" }}>
         <div style={{ maxWidth: "900px", margin: "0 auto" }} data-reveal>
-          <h2 style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "clamp(1.8rem, 3vw, 2.4rem)", fontWeight: 700, color: "#2d5a3d", textAlign: "center", marginBottom: "64px", letterSpacing: "-0.02em" }}>
+          <h2 style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "clamp(1.8rem, 3vw, 2.4rem)", fontWeight: 700, color: "#2d5a47", textAlign: "center", marginBottom: "64px", letterSpacing: "-0.02em" }}>
             Why not just use ChatGPT?
           </h2>
 
@@ -524,8 +524,8 @@ export default function LandingPage() {
               <div style={{ padding: "0 28px 20px 0", borderBottom: "2px solid #e5e7eb" }}>
                 <span style={{ fontSize: "0.75rem", fontWeight: 800, letterSpacing: "0.15em", textTransform: "uppercase", color: "#9ca3af" }}>ChatGPT</span>
               </div>
-              <div style={{ padding: "0 0 20px 28px", borderBottom: "2px solid #2d5a3d", borderLeft: "none" }}>
-                <span style={{ fontSize: "0.75rem", fontWeight: 800, letterSpacing: "0.15em", textTransform: "uppercase", color: "#2d5a3d" }}>Research Match</span>
+              <div style={{ padding: "0 0 20px 28px", borderBottom: "2px solid #659983", borderLeft: "none" }}>
+                <span style={{ fontSize: "0.75rem", fontWeight: 800, letterSpacing: "0.15em", textTransform: "uppercase", color: "#2d5a47" }}>Research Match</span>
               </div>
             </div>
 
@@ -549,8 +549,8 @@ export default function LandingPage() {
                   <span style={{ flexShrink: 0, marginTop: "3px", fontSize: "0.85rem", color: "#d1d5db", fontWeight: 700 }}>✕</span>
                   <p style={{ margin: 0, fontSize: "0.95rem", color: "#9ca3af", lineHeight: 1.7 }}>{row.bad}</p>
                 </div>
-                <div style={{ padding: "32px 0 32px 28px", borderBottom: i === 2 ? "none" : "1px solid rgba(45,90,61,0.08)", borderLeft: "1px solid rgba(45,90,61,0.08)", display: "flex", gap: "16px", alignItems: "flex-start" }}>
-                  <span style={{ flexShrink: 0, marginTop: "3px", fontSize: "0.85rem", color: "#2d5a3d", fontWeight: 700 }}>✓</span>
+                <div style={{ padding: "32px 0 32px 28px", borderBottom: i === 2 ? "none" : "1px solid rgba(101, 153, 131,0.08)", borderLeft: "1px solid rgba(101, 153, 131,0.08)", display: "flex", gap: "16px", alignItems: "flex-start" }}>
+                  <span style={{ flexShrink: 0, marginTop: "3px", fontSize: "0.85rem", color: "#2d5a47", fontWeight: 700 }}>✓</span>
                   <p style={{ margin: 0, fontSize: "0.95rem", color: "#1a1a1a", lineHeight: 1.7, fontWeight: 500 }}>{row.good}</p>
                 </div>
               </div>
@@ -779,9 +779,9 @@ export default function LandingPage() {
             justifyContent: 'center',
             alignItems: 'center',
             flexWrap: 'nowrap',
-            background: 'rgba(45, 90, 61, 0.08)',
+            background: 'rgba(101, 153, 131, 0.08)',
             backdropFilter: 'blur(12px)',
-            border: '1px solid rgba(45, 90, 61, 0.1)',
+            border: '1px solid rgba(101, 153, 131, 0.1)',
             borderRadius: '100px',
             padding: '0',
             margin: '0 auto 40px',
@@ -808,9 +808,9 @@ export default function LandingPage() {
             <div style={{
               width: '100%',
               height: '100%',
-              background: '#2d5a3d',
+              background: '#659983',
               borderRadius: '100px',
-              boxShadow: '0 4px 12px rgba(45, 90, 61, 0.3)'
+              boxShadow: '0 4px 12px rgba(101, 153, 131, 0.3)'
             }} />
           </div>
           {pricingOptions.map((tab, idx) => (
@@ -896,7 +896,7 @@ export default function LandingPage() {
               </div>
               <div className="lp-paid-price-row">
                 <div>
-                  <div className="lp-price-amount" style={{ color: "#2d5a3d" }}>{paidPlan.price}</div>
+                  <div className="lp-price-amount" style={{ color: "#2d5a47" }}>{paidPlan.price}</div>
                   <div className="lp-price-period" style={{ opacity: 0.7 }}>{paidPlan.period}</div>
                 </div>
                 <p className="lp-paid-promise">Everything you need to find, judge, and contact professors without getting stuck.</p>
@@ -919,7 +919,7 @@ export default function LandingPage() {
                 onClick={() => handleCheckout(activePaidPlan)}
                 disabled={checkoutLoading === activePaidPlan}
                 className="lp-price-btn"
-                style={{ background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "1px solid rgba(45, 90, 61, 0.2)", cursor: "pointer", width: "100%" }}
+                style={{ background: "rgba(101, 153, 131, 0.08)", color: "#2d5a47", border: "1px solid rgba(101, 153, 131, 0.2)", cursor: "pointer", width: "100%" }}
               >
                 {checkoutLoading === activePaidPlan ? "Loading…" : paidPlan.cta}
               </button>
@@ -965,7 +965,7 @@ export default function LandingPage() {
             <div className="lp-pricing-slider-slide">
               <div className="lp-price-card">
                 <div className="lp-price-tier">Weekly Sprint</div>
-                <div className="lp-price-amount" style={{ color: "#2d5a3d" }}>$7</div>
+                <div className="lp-price-amount" style={{ color: "#2d5a47" }}>$7</div>
                 <div className="lp-price-period" style={{ opacity: 0.7 }}>1 week access</div>
                 <ul className="lp-price-features">
                   <li style={{ fontWeight: 700 }}><span className="lp-check">✓</span>Finish the outreach job:</li>
@@ -984,7 +984,7 @@ export default function LandingPage() {
                   onClick={() => handleCheckout("weekly")}
                   disabled={checkoutLoading === "weekly"}
                   className="lp-price-btn"
-                  style={{ background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "1px solid rgba(45, 90, 61, 0.2)", cursor: "pointer", width: "100%" }}
+                  style={{ background: "rgba(101, 153, 131, 0.08)", color: "#2d5a47", border: "1px solid rgba(101, 153, 131, 0.2)", cursor: "pointer", width: "100%" }}
                 >
                   {checkoutLoading === "weekly" ? "Loading…" : "Start 1-Week Sprint — $7"}
                 </button>
@@ -996,7 +996,7 @@ export default function LandingPage() {
               <div className="lp-price-card lp-price-card-best">
                 <div className="lp-best-value-badge">Best Value</div>
                 <div className="lp-price-tier">Semester</div>
-                <div className="lp-price-amount" style={{ color: "#2d5a3d" }}>$29</div>
+                <div className="lp-price-amount" style={{ color: "#2d5a47" }}>$29</div>
                 <div className="lp-price-period" style={{ opacity: 0.7 }}>4 months access</div>
                 <ul className="lp-price-features">
                   <li style={{ fontWeight: 700 }}><span className="lp-check">✓</span>Finish the outreach job:</li>
@@ -1015,7 +1015,7 @@ export default function LandingPage() {
                   onClick={() => handleCheckout("semester")}
                   disabled={checkoutLoading === "semester"}
                   className="lp-price-btn"
-                  style={{ background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "1px solid rgba(45, 90, 61, 0.2)", cursor: "pointer", width: "100%" }}
+                  style={{ background: "rgba(101, 153, 131, 0.08)", color: "#2d5a47", border: "1px solid rgba(101, 153, 131, 0.2)", cursor: "pointer", width: "100%" }}
                 >
                   {checkoutLoading === "semester" ? "Loading…" : "Get Semester Access for $29"}
                 </button>
@@ -1026,7 +1026,7 @@ export default function LandingPage() {
             <div className="lp-pricing-slider-slide">
               <div className="lp-price-card lp-price-card-lifetime lp-price-card-lifetime-hero">
                 <div className="lp-price-tier">Lifetime</div>
-                <div className="lp-price-amount" style={{ color: "#2d5a3d" }}>$59</div>
+                <div className="lp-price-amount" style={{ color: "#2d5a47" }}>$59</div>
                 <div className="lp-price-period" style={{ opacity: 0.7 }}>Yours forever.</div>
                 <ul className="lp-price-features">
                   <li style={{ fontWeight: 700 }}><span className="lp-check">✓</span>Everything in Semester, plus:</li>
@@ -1049,7 +1049,7 @@ export default function LandingPage() {
                     onClick={() => handleCheckout("lifetime")}
                     disabled={checkoutLoading === "lifetime"}
                     className="lp-price-btn"
-                    style={{ background: "rgba(45, 90, 61, 0.08)", color: "#2d5a3d", border: "1px solid rgba(45, 90, 61, 0.2)", cursor: "pointer", width: "100%" }}
+                    style={{ background: "rgba(101, 153, 131, 0.08)", color: "#2d5a47", border: "1px solid rgba(101, 153, 131, 0.2)", cursor: "pointer", width: "100%" }}
                   >
                     {checkoutLoading === "lifetime" ? "Loading…" : "Claim your spot for $59"}
                   </button>
@@ -1076,8 +1076,8 @@ export default function LandingPage() {
             margin: "30px auto 28px",
             borderRadius: "20px",
             background: "rgba(255,255,255,0.7)",
-            border: "1px solid rgba(45,90,61,0.10)",
-            boxShadow: "0 10px 32px rgba(45,90,61,0.08), inset 0 1px 0 rgba(255,255,255,0.9)",
+            border: "1px solid rgba(101, 153, 131,0.10)",
+            boxShadow: "0 10px 32px rgba(101, 153, 131,0.08), inset 0 1px 0 rgba(255,255,255,0.9)",
             backdropFilter: "blur(18px)",
             WebkitBackdropFilter: "blur(18px)",
             overflow: "hidden",
@@ -1104,7 +1104,7 @@ export default function LandingPage() {
             }}
           >
             <span style={{ textAlign: "left" }}>
-              <span style={{ display: "block", fontSize: "0.95rem", fontWeight: 700, color: "#1a2e1f", letterSpacing: "-0.01em" }}>Have a referral code?</span>
+              <span style={{ display: "block", fontSize: "0.95rem", fontWeight: 700, color: "#1a2e26", letterSpacing: "-0.01em" }}>Have a referral code?</span>
               <span style={{ display: "block", fontSize: "0.82rem", color: "#6b7280", marginTop: "2px" }}>Enter it here and you both get a reward</span>
             </span>
             <span
@@ -1117,8 +1117,8 @@ export default function LandingPage() {
                 alignItems: "center",
                 justifyContent: "center",
                 flexShrink: 0,
-                background: "rgba(45,90,61,0.08)",
-                color: "#2d5a3d",
+                background: "rgba(101, 153, 131,0.08)",
+                color: "#2d5a47",
                 fontSize: "1.1rem",
                 transform: buddyPassOpen ? "rotate(45deg)" : "rotate(0deg)",
                 transition: "transform 360ms cubic-bezier(0.22, 1, 0.36, 1)",
@@ -1145,10 +1145,10 @@ export default function LandingPage() {
               style={{
                 width: "100%",
                 minWidth: 0,
-                border: "1px solid rgba(45,90,61,0.12)",
+                border: "1px solid rgba(101, 153, 131,0.12)",
                 outline: "none",
                 background: "rgba(255,255,255,0.68)",
-                color: "#1f3f2d",
+                color: "#1f3f32",
                 fontSize: "0.92rem",
                 fontWeight: 750,
                 fontFamily: "inherit",
@@ -1179,8 +1179,8 @@ export default function LandingPage() {
         </div>
 
         {/* Global Bonus Strip (Moved out of cards for a cleaner UI) */}
-        <div style={{ maxWidth: "800px", margin: "40px auto 30px", padding: "20px 24px", background: "rgba(45, 90, 61, 0.03)", borderRadius: "16px", border: "1px solid rgba(45, 90, 61, 0.1)", textAlign: "center" }} data-reveal>
-          <p style={{ fontSize: "0.8rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "#2d5a3d", marginBottom: "8px" }}>🎁 Included with Paid Plans</p>
+        <div style={{ maxWidth: "800px", margin: "40px auto 30px", padding: "20px 24px", background: "rgba(101, 153, 131, 0.03)", borderRadius: "16px", border: "1px solid rgba(101, 153, 131, 0.1)", textAlign: "center" }} data-reveal>
+          <p style={{ fontSize: "0.8rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "#2d5a47", marginBottom: "8px" }}>🎁 Included with Paid Plans</p>
           <p style={{ fontSize: "1.05rem", color: "#1a1a1a", fontWeight: 500, margin: 0 }}>
             The <strong>Cold Email Playbook</strong>: Annotated winning emails, a proven paragraph template, and the follow-up guide.
           </p>
@@ -1190,7 +1190,7 @@ export default function LandingPage() {
         <div className="lp-waitlist" data-reveal>
           <p className="lp-waitlist-text">Guaranteed response plan coming soon, join the waitlist</p>
           {inlineWaitlistDone ? (
-            <p style={{ color: "#2d5a3d", fontWeight: 600 }}>You&apos;re on the list.</p>
+            <p style={{ color: "#2d5a47", fontWeight: 600 }}>You&apos;re on the list.</p>
           ) : (
             <div className="lp-waitlist-form">
               <input
@@ -1201,7 +1201,7 @@ export default function LandingPage() {
                 onKeyDown={(e) => e.key === "Enter" && joinInlineWaitlist()}
                 className="lp-waitlist-input"
               />
-              <button onClick={joinInlineWaitlist} style={{ padding: "14px 28px", fontSize: "0.9rem", fontWeight: 700, fontFamily: "var(--font-inter), sans-serif", background: "#2d5a3d", color: "#fff", border: "none", borderRadius: "999px", cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.2s ease", boxShadow: "0 4px 16px rgba(45,90,61,0.25)" }}>
+              <button onClick={joinInlineWaitlist} style={{ padding: "14px 28px", fontSize: "0.9rem", fontWeight: 700, fontFamily: "var(--font-inter), sans-serif", background: "#659983", color: "#fff", border: "none", borderRadius: "999px", cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.2s ease", boxShadow: "0 4px 16px rgba(101, 153, 131,0.25)" }}>
                 Join waitlist
               </button>
             </div>
@@ -1260,13 +1260,13 @@ export default function LandingPage() {
             {waitlistDone ? (
               <div style={{ textAlign: "center" }}>
                 <p style={{ fontSize: "2.5rem", marginBottom: "16px" }}>🎉</p>
-                <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "10px" }}>You&apos;re on the list!</h3>
+                <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#2d5a47", marginBottom: "10px" }}>You&apos;re on the list!</h3>
                 <p style={{ fontSize: "0.95rem", color: "#6b7280", lineHeight: 1.6 }}>We&apos;ll email you when it launches.</p>
                 <button onClick={() => setWaitlistTier(null)} className="btn-secondary" style={{ marginTop: "24px", padding: "12px 28px" }}>Close</button>
               </div>
             ) : (
               <>
-                <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "10px" }}>Join the waitlist</h3>
+                <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#2d5a47", marginBottom: "10px" }}>Join the waitlist</h3>
                 <p style={{ fontSize: "0.9rem", color: "#6b7280", marginBottom: "24px", lineHeight: 1.6 }}>Enter your email to get notified when it launches.</p>
                 <input
                   type="email"
@@ -1274,7 +1274,7 @@ export default function LandingPage() {
                   value={waitlistEmail}
                   onChange={(e) => setWaitlistEmail(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && joinWaitlist()}
-                  style={{ width: "100%", padding: "14px 18px", fontSize: "1rem", border: "1.5px solid rgba(45, 90, 61,0.4)", borderRadius: "14px", background: "rgba(255,255,255,0.5)", color: "#1a1a1a", fontFamily: "inherit", marginBottom: "16px", outline: "none" }}
+                  style={{ width: "100%", padding: "14px 18px", fontSize: "1rem", border: "1.5px solid rgba(101, 153, 131,0.4)", borderRadius: "14px", background: "rgba(255,255,255,0.5)", color: "#1a1a1a", fontFamily: "inherit", marginBottom: "16px", outline: "none" }}
                 />
                 <button onClick={joinWaitlist} disabled={waitlistLoading || !waitlistEmail} className="btn-cta landing-cta-primary rm-search-btn" style={{ width: "100%", padding: "14px", fontSize: "1rem" }}>
                   {waitlistLoading ? "Joining…" : "Join Waitlist"}

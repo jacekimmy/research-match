@@ -8,9 +8,9 @@
   overflow-x: hidden;
   padding: 28px 20px 88px;
   background:
-    radial-gradient(ellipse 70% 50% at 0% 0%,   rgba(45, 90, 61, 0.13), transparent 55%),
-    radial-gradient(ellipse 55% 45% at 100% 5%,  rgba(196, 162, 101, 0.16), transparent 50%),
-    radial-gradient(ellipse 90% 55% at 50% 110%, rgba(45, 90, 61, 0.07), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 0% 0%,   rgba(101, 153, 131, 0.13), transparent 55%),
+    radial-gradient(ellipse 55% 45% at 100% 5%,  rgba(201, 173, 119, 0.16), transparent 50%),
+    radial-gradient(ellipse 90% 55% at 50% 110%, rgba(101, 153, 131, 0.07), transparent 55%),
     linear-gradient(180deg, #f5f1e8 0%, #ede9de 100%);
 }
 
@@ -34,13 +34,13 @@
 .profileMount :global(.pro-ambient-a) {
   width: 600px; height: 600px;
   top: -200px; left: -250px;
-  background: radial-gradient(circle, rgba(45,90,61,0.22), transparent 70%);
+  background: radial-gradient(circle, rgba(101, 153, 131,0.22), transparent 70%);
   animation: blobDrift 14s ease-in-out infinite alternate;
 }
 .profileMount :global(.pro-ambient-b) {
   width: 480px; height: 480px;
   right: -180px; bottom: 60px;
-  background: radial-gradient(circle, rgba(196,162,101,0.24), transparent 70%);
+  background: radial-gradient(circle, rgba(201, 173, 119,0.24), transparent 70%);
   animation: blobDrift 18s ease-in-out infinite alternate-reverse;
 }
 @keyframes blobDrift {
@@ -62,10 +62,10 @@
   -webkit-backdrop-filter: blur(40px) saturate(1.7) brightness(1.03);
   border: 1px solid rgba(255,255,255,0.64);
   box-shadow:
-    0 48px 120px rgba(45,90,61,0.1),
-    0 10px 32px rgba(45,90,61,0.06),
+    0 48px 120px rgba(101, 153, 131,0.1),
+    0 10px 32px rgba(101, 153, 131,0.06),
     inset 0 1.5px 0 rgba(255,255,255,0.95),
-    inset 0 -1px 0 rgba(45,90,61,0.04);
+    inset 0 -1px 0 rgba(101, 153, 131,0.04);
 }
 
 /* ══════════════════════════════════════════════════════════════════
@@ -84,26 +84,26 @@
   gap: 8px;
   padding: 10px 20px;
   border-radius: 999px;
-  color: #2d5a3d;
+  color: #2d5a47;
   font-size: 0.86rem;
   font-weight: 800;
   text-decoration: none;
   background: rgba(255,255,255,0.62);
-  border: 1px solid rgba(45,90,61,0.13);
-  box-shadow: 0 8px 24px rgba(45,90,61,0.07), inset 0 1px 0 rgba(255,255,255,0.84);
+  border: 1px solid rgba(101, 153, 131,0.13);
+  box-shadow: 0 8px 24px rgba(101, 153, 131,0.07), inset 0 1px 0 rgba(255,255,255,0.84);
   backdrop-filter: blur(20px);
   transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
 }
 .profileMount :global(.pro-back:hover) {
   transform: translateY(-2px);
   background: rgba(255,255,255,0.78);
-  box-shadow: 0 14px 36px rgba(45,90,61,0.11), inset 0 1px 0 rgba(255,255,255,0.9);
+  box-shadow: 0 14px 36px rgba(101, 153, 131,0.11), inset 0 1px 0 rgba(255,255,255,0.9);
 }
 .profileMount :global(.pro-back:active) { transform: scale(0.96); }
 
 .profileMount :global(.pro-brand) {
   padding: 8px 4px;
-  color: #2d5a3d;
+  color: #2d5a47;
   font-family: var(--font-playfair), Georgia, serif;
   font-size: 1.05rem;
   font-weight: 600;
@@ -161,10 +161,10 @@
   font-family: var(--font-playfair), Georgia, serif;
   background:
     radial-gradient(circle at 33% 24%, rgba(255,255,255,0.38), transparent 48%),
-    linear-gradient(148deg, #4a9468 0%, #2d5a3d 44%, #1c4230 100%);
+    linear-gradient(148deg, #659983 0%, #4a9475 44%, #1c4232 100%);
   box-shadow:
-    0 24px 56px rgba(45,90,61,0.32),
-    0 6px 16px rgba(45,90,61,0.18),
+    0 24px 56px rgba(101, 153, 131,0.32),
+    0 6px 16px rgba(101, 153, 131,0.18),
     inset 0 1px 0 rgba(255,255,255,0.32),
     inset 0 -2px 8px rgba(0,0,0,0.14);
   cursor: default;
@@ -173,8 +173,8 @@
 .profileMount :global(.pro-avatar:hover) {
   transform: translateY(-5px) rotate(-2.5deg) scale(1.05);
   box-shadow:
-    0 34px 72px rgba(45,90,61,0.38),
-    0 8px 22px rgba(45,90,61,0.22),
+    0 34px 72px rgba(101, 153, 131,0.38),
+    0 8px 22px rgba(101, 153, 131,0.22),
     inset 0 1px 0 rgba(255,255,255,0.34);
 }
 
@@ -182,7 +182,7 @@
 .profileMount :global(.pro-hero-text) { min-width: 0; }
 .profileMount :global(.pro-eyebrow) {
   margin: 0 0 5px;
-  color: #2d5a3d;
+  color: #2d5a47;
   font-size: 0.68rem;
   font-weight: 900;
   letter-spacing: 0.17em;
@@ -190,7 +190,7 @@
 }
 .profileMount :global(.pro-name) {
   margin: 0 0 5px;
-  color: #172e20;
+  color: #172e24;
   font-family: var(--font-playfair), Georgia, serif;
   font-size: clamp(1.65rem,3.2vw,2.7rem);
   font-weight: 500;
@@ -199,14 +199,14 @@
 }
 .profileMount :global(.pro-email) {
   margin: 0 0 2px;
-  color: #5f7a6b;
+  color: #5f7a6f;
   font-size: 0.9rem;
   font-weight: 600;
   overflow-wrap: anywhere;
 }
 .profileMount :global(.pro-since) {
   margin: 0;
-  color: #90a899;
+  color: #90a89e;
   font-size: 0.78rem;
 }
 
@@ -222,35 +222,35 @@
   border-radius: 26px;
   min-width: 185px;
   background: rgba(255,255,255,0.68);
-  border: 1px solid rgba(45,90,61,0.14);
+  border: 1px solid rgba(101, 153, 131,0.14);
   box-shadow:
-    0 8px 24px rgba(45,90,61,0.07),
+    0 8px 24px rgba(101, 153, 131,0.07),
     inset 0 1px 0 rgba(255,255,255,0.92);
   transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s ease;
 }
 .profileMount :global(.pro-plan-badge:hover) {
   transform: translateY(-3px);
-  box-shadow: 0 16px 40px rgba(45,90,61,0.1), inset 0 1px 0 rgba(255,255,255,0.94);
+  box-shadow: 0 16px 40px rgba(101, 153, 131,0.1), inset 0 1px 0 rgba(255,255,255,0.94);
 }
 
 .profileMount :global(.pro-plan-dot) {
   width: 14px; height: 14px;
   flex-shrink: 0;
   border-radius: 999px;
-  background: #bccfc6;
-  box-shadow: 0 0 0 5px rgba(188,207,198,0.2);
+  background: #bccfc7;
+  box-shadow: 0 0 0 5px rgba(188, 207, 199,0.2);
   transition: background 0.5s ease, box-shadow 0.5s ease;
 }
 .profileMount :global(.pro-plan-dot.is-live) {
-  background: #31b882;
+  background: #31b880;
   box-shadow:
-    0 0 0 5px rgba(49,184,130,0.18),
-    0 0 20px rgba(49,184,130,0.45);
+    0 0 0 5px rgba(49, 184, 128,0.18),
+    0 0 20px rgba(49, 184, 128,0.45);
   animation: livePulse 2.6s ease-in-out infinite;
 }
 @keyframes livePulse {
-  0%,100% { box-shadow: 0 0 0 5px rgba(49,184,130,0.18), 0 0 20px rgba(49,184,130,0.45); }
-  50%      { box-shadow: 0 0 0 9px rgba(49,184,130,0.08), 0 0 32px rgba(49,184,130,0.55); }
+  0%,100% { box-shadow: 0 0 0 5px rgba(49, 184, 128,0.18), 0 0 20px rgba(49, 184, 128,0.45); }
+  50%      { box-shadow: 0 0 0 9px rgba(49, 184, 128,0.08), 0 0 32px rgba(49, 184, 128,0.55); }
 }
 .profileMount :global(.pro-plan-info) { min-width: 0; }
 .profileMount :global(.pro-plan-lbl) {
@@ -264,7 +264,7 @@
 }
 .profileMount :global(.pro-plan-name) {
   display: block;
-  color: #172e20;
+  color: #172e24;
   font-size: 1.05rem;
   font-weight: 800;
   white-space: nowrap;
@@ -289,8 +289,8 @@
 .profileMount :global(.pro-stat:hover) {
   transform: translateY(-6px) scale(1.015);
   box-shadow:
-    0 36px 88px rgba(45,90,61,0.13),
-    0 10px 28px rgba(45,90,61,0.07),
+    0 36px 88px rgba(101, 153, 131,0.13),
+    0 10px 28px rgba(101, 153, 131,0.07),
     inset 0 1.5px 0 rgba(255,255,255,0.96);
 }
 .profileMount :global(.pro-stat-label) {
@@ -304,7 +304,7 @@
 }
 .profileMount :global(.pro-stat-value) {
   display: block;
-  color: #172e20;
+  color: #172e24;
   font-family: var(--font-playfair), Georgia, serif;
   font-size: clamp(1.7rem,3vw,2.6rem);
   font-weight: 500;
@@ -351,7 +351,7 @@
 }
 .profileMount :global(.pro-kicker) {
   margin: 0 0 4px;
-  color: #2d5a3d;
+  color: #2d5a47;
   font-size: 0.67rem;
   font-weight: 900;
   letter-spacing: 0.17em;
@@ -359,7 +359,7 @@
 }
 .profileMount :global(.pro-panel-title) {
   margin: 0;
-  color: #172e20;
+  color: #172e24;
   font-family: var(--font-playfair), Georgia, serif;
   font-size: clamp(1.3rem,2.2vw,1.85rem);
   font-weight: 500;
@@ -370,9 +370,9 @@
   flex-shrink: 0;
   padding: 6px 12px;
   border-radius: 999px;
-  color: #2d5a3d;
-  background: rgba(45,90,61,0.1);
-  border: 1px solid rgba(45,90,61,0.15);
+  color: #2d5a47;
+  background: rgba(101, 153, 131,0.1);
+  border: 1px solid rgba(101, 153, 131,0.15);
   font-size: 0.67rem;
   font-weight: 900;
   letter-spacing: 0.1em;
@@ -393,16 +393,16 @@
   overflow: hidden;
   margin-bottom: 14px;
   background: rgba(255,255,255,0.62);
-  border: 1px solid rgba(45,90,61,0.15);
+  border: 1px solid rgba(101, 153, 131,0.15);
   box-shadow:
-    0 14px 40px rgba(45,90,61,0.08),
+    0 14px 40px rgba(101, 153, 131,0.08),
     inset 0 1.5px 0 rgba(255,255,255,0.92);
   transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
 }
 .profileMount :global(.bp-share:hover) {
-  border-color: rgba(45,90,61,0.24);
+  border-color: rgba(101, 153, 131,0.24);
   box-shadow:
-    0 22px 60px rgba(45,90,61,0.11),
+    0 22px 60px rgba(101, 153, 131,0.11),
     inset 0 1.5px 0 rgba(255,255,255,0.94);
   transform: translateY(-2px);
 }
@@ -425,7 +425,7 @@
 }
 .profileMount :global(.bp-code) {
   display: block;
-  color: #172e20;
+  color: #172e24;
   font-size: clamp(1.65rem,4.8vw,2.6rem);
   font-weight: 800;
   letter-spacing: 0.1em;
@@ -445,7 +445,7 @@
   height: 1px;
   margin: 0;
   border: none;
-  background: linear-gradient(90deg, transparent 0%, rgba(45,90,61,0.11) 20%, rgba(45,90,61,0.11) 80%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, rgba(101, 153, 131,0.11) 20%, rgba(101, 153, 131,0.11) 80%, transparent 100%);
 }
 
 /* Copy button */
@@ -453,9 +453,9 @@
   flex-shrink: 0;
   padding: 10px 17px;
   border-radius: 999px;
-  color: #2d5a3d;
-  background: rgba(45,90,61,0.1);
-  border: 1px solid rgba(45,90,61,0.15);
+  color: #2d5a47;
+  background: rgba(101, 153, 131,0.1);
+  border: 1px solid rgba(101, 153, 131,0.15);
   font-size: 0.78rem;
   font-weight: 900;
   font-family: inherit;
@@ -464,19 +464,19 @@
   transition: all 0.28s cubic-bezier(0.16,1,0.3,1);
 }
 .profileMount :global(.bp-copy:hover) {
-  background: rgba(45,90,61,0.17);
-  border-color: rgba(45,90,61,0.24);
+  background: rgba(101, 153, 131,0.17);
+  border-color: rgba(101, 153, 131,0.24);
   transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 8px 22px rgba(45,90,61,0.13);
+  box-shadow: 0 8px 22px rgba(101, 153, 131,0.13);
 }
 .profileMount :global(.bp-copy:active) {
   transform: scale(0.9);
   box-shadow: none;
 }
 .profileMount :global(.bp-copy.copied) {
-  color: #196e47;
-  background: rgba(45,90,61,0.18);
-  border-color: rgba(45,90,61,0.28);
+  color: #196e4b;
+  background: rgba(101, 153, 131,0.18);
+  border-color: rgba(101, 153, 131,0.28);
   animation: copyPop 0.4s cubic-bezier(0.34,1.56,0.64,1);
 }
 @keyframes copyPop {
@@ -493,21 +493,21 @@
   padding: 18px 20px;
   border-radius: 22px;
   background: rgba(255,255,255,0.58);
-  border: 1px solid rgba(45,90,61,0.12);
+  border: 1px solid rgba(101, 153, 131,0.12);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.9);
   margin-bottom: 14px;
   transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
 }
 .profileMount :global(.bp-activate.is-on) {
-  background: rgba(49,184,130,0.07);
-  border-color: rgba(49,184,130,0.3);
+  background: rgba(49, 184, 128,0.07);
+  border-color: rgba(49, 184, 128,0.3);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.88),
-    0 0 0 1px rgba(49,184,130,0.12);
+    0 0 0 1px rgba(49, 184, 128,0.12);
 }
 .profileMount :global(.bp-activate-text h3) {
   margin: 0 0 4px;
-  color: #172e20;
+  color: #172e24;
   font-size: 1rem;
   font-weight: 800;
 }
@@ -523,11 +523,11 @@
   flex-shrink: 0;
   width: 68px; height: 38px;
   padding: 4px;
-  border: 1px solid rgba(45,90,61,0.15);
+  border: 1px solid rgba(101, 153, 131,0.15);
   border-radius: 999px;
-  background: rgba(45,90,61,0.12);
+  background: rgba(101, 153, 131,0.12);
   cursor: pointer;
-  box-shadow: inset 0 2px 8px rgba(45,90,61,0.1);
+  box-shadow: inset 0 2px 8px rgba(101, 153, 131,0.1);
   transition: all 0.38s cubic-bezier(0.16,1,0.3,1);
 }
 .profileMount :global(.bp-toggle span) {
@@ -535,19 +535,19 @@
   width: 28px; height: 28px;
   border-radius: 999px;
   background: #fff;
-  box-shadow: 0 4px 14px rgba(45,90,61,0.22);
+  box-shadow: 0 4px 14px rgba(101, 153, 131,0.22);
   transition: transform 0.44s cubic-bezier(0.2,1.65,0.35,1);
 }
 .profileMount :global(.bp-toggle.is-on) {
-  background: linear-gradient(135deg, #2d5a3d, #31b882);
-  border-color: rgba(49,184,130,0.32);
-  box-shadow: 0 10px 28px rgba(45,90,61,0.3), inset 0 1px 0 rgba(255,255,255,0.22);
+  background: linear-gradient(135deg, #659983, #31b880);
+  border-color: rgba(49, 184, 128,0.32);
+  box-shadow: 0 10px 28px rgba(101, 153, 131,0.3), inset 0 1px 0 rgba(255,255,255,0.22);
 }
 .profileMount :global(.bp-toggle.is-on span) { transform: translateX(30px); }
 .profileMount :global(.bp-toggle:disabled) { cursor: default; opacity: 0.62; }
 .profileMount :global(.bp-toggle:not(:disabled):hover) {
   transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 12px 28px rgba(45,90,61,0.2), inset 0 2px 8px rgba(45,90,61,0.1);
+  box-shadow: 0 12px 28px rgba(101, 153, 131,0.2), inset 0 2px 8px rgba(101, 153, 131,0.1);
 }
 
 /* Stats pills */
@@ -562,18 +562,18 @@
   gap: 5px;
   padding: 7px 13px;
   border-radius: 999px;
-  background: rgba(45,90,61,0.07);
-  border: 1px solid rgba(45,90,61,0.11);
+  background: rgba(101, 153, 131,0.07);
+  border: 1px solid rgba(101, 153, 131,0.11);
   cursor: default;
   transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
 }
 .profileMount :global(.bp-pill:hover) {
-  background: rgba(45,90,61,0.13);
+  background: rgba(101, 153, 131,0.13);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(45,90,61,0.08);
+  box-shadow: 0 6px 16px rgba(101, 153, 131,0.08);
 }
 .profileMount :global(.bp-pill strong) {
-  color: #172e20;
+  color: #172e24;
   font-size: 0.9rem;
   font-weight: 800;
 }
@@ -599,12 +599,12 @@
   gap: 11px;
   padding: 9px 10px;
   border-radius: 13px;
-  color: #172e20;
+  color: #172e24;
   transition: background 0.22s ease, transform 0.28s cubic-bezier(0.16,1,0.3,1);
   cursor: default;
 }
 .profileMount :global(.pro-feature:hover) {
-  background: rgba(45,90,61,0.07);
+  background: rgba(101, 153, 131,0.07);
   transform: translateX(4px);
 }
 .profileMount :global(.pro-feature.locked) {
@@ -622,8 +622,8 @@
   border-radius: 8px;
   font-size: 0.7rem;
   font-weight: 900;
-  color: #2d5a3d;
-  background: rgba(45,90,61,0.12);
+  color: #2d5a47;
+  background: rgba(101, 153, 131,0.12);
 }
 .profileMount :global(.pro-feature.locked .pro-feature-icon) {
   background: rgba(0,0,0,0.06);
@@ -651,19 +651,19 @@
   font-weight: 900;
   font-size: 0.92rem;
   color: #fffaf0;
-  background: linear-gradient(145deg, #4a9468, #2d5a3d);
+  background: linear-gradient(145deg, #659983, #4a9475);
   box-shadow:
-    0 18px 44px rgba(45,90,61,0.26),
+    0 18px 44px rgba(101, 153, 131,0.26),
     inset 0 1px 0 rgba(255,255,255,0.24);
   transition: all 0.34s cubic-bezier(0.16,1,0.3,1);
 }
 .profileMount :global(.pro-upgrade:hover) {
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 28px 60px rgba(45,90,61,0.32), inset 0 1px 0 rgba(255,255,255,0.26);
+  box-shadow: 0 28px 60px rgba(101, 153, 131,0.32), inset 0 1px 0 rgba(255,255,255,0.26);
 }
 .profileMount :global(.pro-upgrade:active) {
   transform: scale(0.96);
-  box-shadow: 0 8px 20px rgba(45,90,61,0.2);
+  box-shadow: 0 8px 20px rgba(101, 153, 131,0.2);
 }
 
 /* ══════════════════════════════════════════════════════════════════
@@ -681,17 +681,17 @@
   padding: 12px 14px;
   border-radius: 18px;
   background: rgba(255,255,255,0.5);
-  border: 1px solid rgba(45,90,61,0.1);
+  border: 1px solid rgba(101, 153, 131,0.1);
   transition: all 0.28s cubic-bezier(0.16,1,0.3,1);
 }
 .profileMount :global(.pro-referral-row:hover) {
   transform: translateY(-2px);
   background: rgba(255,255,255,0.7);
-  border-color: rgba(45,90,61,0.18);
-  box-shadow: 0 10px 26px rgba(45,90,61,0.08);
+  border-color: rgba(101, 153, 131,0.18);
+  box-shadow: 0 10px 26px rgba(101, 153, 131,0.08);
 }
 .profileMount :global(.pro-referral-email) {
-  color: #172e20;
+  color: #172e24;
   font-size: 0.86rem;
   font-weight: 700;
   margin: 0 0 2px;
@@ -705,22 +705,22 @@
   flex-shrink: 0;
   padding: 5px 11px;
   border-radius: 999px;
-  color: #2d5a3d;
-  background: rgba(45,90,61,0.1);
-  border: 1px solid rgba(45,90,61,0.15);
+  color: #2d5a47;
+  background: rgba(101, 153, 131,0.1);
+  border: 1px solid rgba(101, 153, 131,0.15);
   font-size: 0.74rem;
   font-weight: 900;
 }
 .profileMount :global(.pro-referral-empty) {
   padding: 20px;
   border-radius: 18px;
-  border: 1.5px dashed rgba(45,90,61,0.2);
+  border: 1.5px dashed rgba(101, 153, 131,0.2);
   background: rgba(255,255,255,0.3);
   text-align: center;
 }
 .profileMount :global(.pro-referral-empty strong) {
   display: block;
-  color: #172e20;
+  color: #172e24;
   font-size: 0.9rem;
   margin-bottom: 5px;
 }
@@ -746,9 +746,9 @@
   justify-content: space-between;
   padding: 13px 16px;
   border-radius: 16px;
-  color: #1a3628;
+  color: #1a362a;
   background: rgba(255,255,255,0.52);
-  border: 1px solid rgba(45,90,61,0.11);
+  border: 1px solid rgba(101, 153, 131,0.11);
   font-weight: 800;
   font-size: 0.88rem;
   font-family: inherit;
@@ -760,8 +760,8 @@
 .profileMount :global(.pro-action:hover) {
   transform: translateY(-2px);
   background: rgba(255,255,255,0.76);
-  border-color: rgba(45,90,61,0.18);
-  box-shadow: 0 10px 28px rgba(45,90,61,0.09);
+  border-color: rgba(101, 153, 131,0.18);
+  box-shadow: 0 10px 28px rgba(101, 153, 131,0.09);
 }
 .profileMount :global(.pro-action:active) {
   transform: scale(0.975);
@@ -785,14 +785,14 @@
 
 /* Arrow icon */
 .profileMount :global(.pro-action-arrow) {
-  color: #afc4b7;
+  color: #afc4bb;
   font-size: 0.84rem;
   flex-shrink: 0;
   transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1), color 0.22s ease;
 }
 .profileMount :global(.pro-action:hover .pro-action-arrow) {
   transform: translateX(5px);
-  color: #2d5a3d;
+  color: #2d5a47;
 }
 .profileMount :global(.pro-action.danger:hover .pro-action-arrow) {
   color: #9e3f3f;
@@ -829,12 +829,12 @@
   font-family: var(--font-playfair), Georgia, serif;
   font-weight: 800;
   font-size: 1.15rem;
-  background: linear-gradient(145deg, #4a9468, #2d5a3d);
-  box-shadow: 0 18px 44px rgba(45,90,61,0.28);
+  background: linear-gradient(145deg, #659983, #4a9475);
+  box-shadow: 0 18px 44px rgba(101, 153, 131,0.28);
 }
 .profileMount :global(.pro-signed-out h1) {
   margin: 0 0 10px;
-  color: #172e20;
+  color: #172e24;
   font-family: var(--font-playfair), Georgia, serif;
   font-size: 1.65rem;
   font-weight: 500;
@@ -856,13 +856,13 @@
   font-weight: 900;
   font-size: 0.92rem;
   text-decoration: none;
-  background: linear-gradient(145deg, #4a9468, #2d5a3d);
-  box-shadow: 0 16px 40px rgba(45,90,61,0.28);
+  background: linear-gradient(145deg, #659983, #4a9475);
+  box-shadow: 0 16px 40px rgba(101, 153, 131,0.28);
   transition: all 0.32s cubic-bezier(0.16,1,0.3,1);
 }
 .profileMount :global(.pro-go-btn:hover) {
   transform: translateY(-3px);
-  box-shadow: 0 26px 56px rgba(45,90,61,0.34);
+  box-shadow: 0 26px 56px rgba(101, 153, 131,0.34);
 }
 
 /* ══════════════════════════════════════════════════════════════════
@@ -874,7 +874,7 @@
 .profileMount :global(.pro-action:focus-visible),
 .profileMount :global(.pro-upgrade:focus-visible),
 .profileMount :global(.bp-toggle:focus-visible) {
-  outline: 2px solid rgba(45,90,61,0.48);
+  outline: 2px solid rgba(101, 153, 131,0.48);
   outline-offset: 3px;
 }
 

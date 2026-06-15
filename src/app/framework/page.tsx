@@ -107,7 +107,7 @@ export default function FrameworkPage() {
           ))}
 
           <p style={{ fontSize: "0.82rem", color: "#9ca3af", marginTop: "8px" }}>
-            Click any <span style={{ color: "#2d5a3d", fontWeight: 700 }}>[bracket]</span> to see guidance on how to fill it in.
+            Click any <span style={{ color: "#2d5a47", fontWeight: 700 }}>[bracket]</span> to see guidance on how to fill it in.
           </p>
         </div>
 

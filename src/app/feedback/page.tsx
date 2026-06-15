@@ -96,7 +96,7 @@ export default function FeedbackPage() {
           particleCount: 40,
           spread: 60,
           origin: { y: 0.7 },
-          colors: ["#2d5a3d", "#8aaa96", "#9dbfaa"],
+          colors: ["#659983", "#8aaa9d", "#9dbfb1"],
           gravity: 1.2,
         }));
       }
@@ -155,9 +155,9 @@ export default function FeedbackPage() {
   }
 
   const categoryStyle = (cat: string) => {
-    if (cat === "Feature Request") return { background: "rgba(45, 90, 61,0.1)", color: "#2d5a3d", border: "1px solid rgba(45, 90, 61,0.2)" };
+    if (cat === "Feature Request") return { background: "rgba(101, 153, 131,0.1)", color: "#2d5a47", border: "1px solid rgba(101, 153, 131,0.2)" };
     if (cat === "Bug Report") return { background: "rgba(196, 92, 92,0.1)", color: "#c45c5c", border: "1px solid rgba(196, 92, 92,0.2)" };
-    return { background: "rgba(149,173,157,0.1)", color: "#6b7280", border: "1px solid rgba(149,173,157,0.2)" };
+    return { background: "rgba(149, 173, 163,0.1)", color: "#6b7280", border: "1px solid rgba(149, 173, 163,0.2)" };
   };
 
   return (
@@ -204,12 +204,12 @@ export default function FeedbackPage() {
               onChange={(e) => setCategory(e.target.value)}
               style={{
                 padding: "10px 16px", fontSize: "0.9rem", borderRadius: "12px",
-                border: "1.5px solid rgba(45, 90, 61,0.35)", background: "rgba(255,255,255,0.5)",
+                border: "1.5px solid rgba(101, 153, 131,0.35)", background: "rgba(255,255,255,0.5)",
                 color: "#1a1a1a", fontFamily: "var(--font-playfair), Georgia, serif",
                 cursor: "pointer", outline: "none", transition: "all 0.3s ease",
               }}
-              onFocus={(e) => { e.currentTarget.style.borderColor = "#2d5a3d"; e.currentTarget.style.boxShadow = "0 0 0 4px rgba(45, 90, 61,0.08)"; }}
-              onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(45, 90, 61,0.35)"; e.currentTarget.style.boxShadow = "none"; }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = "#659983"; e.currentTarget.style.boxShadow = "0 0 0 4px rgba(101, 153, 131,0.08)"; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(101, 153, 131,0.35)"; e.currentTarget.style.boxShadow = "none"; }}
             >
               {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
@@ -219,12 +219,12 @@ export default function FeedbackPage() {
               placeholder="Your name (optional)"
               style={{
                 padding: "10px 16px", fontSize: "0.9rem", borderRadius: "12px",
-                border: "1.5px solid rgba(45, 90, 61,0.35)", background: "rgba(255,255,255,0.5)",
+                border: "1.5px solid rgba(101, 153, 131,0.35)", background: "rgba(255,255,255,0.5)",
                 color: "#1a1a1a", fontFamily: "var(--font-playfair), Georgia, serif",
                 outline: "none", flex: 1, minWidth: "150px", transition: "all 0.3s ease",
               }}
-              onFocus={(e) => { e.currentTarget.style.borderColor = "#2d5a3d"; e.currentTarget.style.boxShadow = "0 0 0 4px rgba(45, 90, 61,0.08)"; }}
-              onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(45, 90, 61,0.35)"; e.currentTarget.style.boxShadow = "none"; }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = "#659983"; e.currentTarget.style.boxShadow = "0 0 0 4px rgba(101, 153, 131,0.08)"; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(101, 153, 131,0.35)"; e.currentTarget.style.boxShadow = "none"; }}
             />
             <button type="submit" disabled={!content.trim() || submitting} className="btn-cta" style={{ padding: "12px 32px", fontSize: "0.95rem" }}>
               {submitting ? (
@@ -237,7 +237,7 @@ export default function FeedbackPage() {
           </div>
           {submitted && (
             <div className="email-pass" style={{ marginTop: "16px", padding: "12px 18px", textAlign: "center" }}>
-              <p style={{ fontWeight: 700, fontSize: "0.95rem", color: "#2d5a3d" }}>&#10003; Thanks for your feedback!</p>
+              <p style={{ fontWeight: 700, fontSize: "0.95rem", color: "#2d5a47" }}>&#10003; Thanks for your feedback!</p>
             </div>
           )}
         </form>
@@ -283,7 +283,7 @@ export default function FeedbackPage() {
                 padding: "24px 28px", display: "flex", gap: "20px", alignItems: "flex-start",
                 animationDelay: `${idx * 0.06}s`,
                 opacity: item.resolved ? 0.7 : 1,
-                borderColor: item.resolved ? "rgba(45, 90, 61,0.25)" : undefined,
+                borderColor: item.resolved ? "rgba(101, 153, 131,0.25)" : undefined,
               }}>
                 {/* Upvote */}
                 <button
@@ -292,39 +292,39 @@ export default function FeedbackPage() {
                   className={isBouncing ? "star-bounce" : ""}
                   style={{
                     display: "flex", flexDirection: "column", alignItems: "center", gap: "2px",
-                    background: hasVoted ? "rgba(45, 90, 61,0.12)" : "rgba(45, 90, 61,0.12)",
-                    border: `1.5px solid ${hasVoted ? "rgba(45, 90, 61,0.3)" : "rgba(45, 90, 61,0.3)"}`,
+                    background: hasVoted ? "rgba(101, 153, 131,0.12)" : "rgba(101, 153, 131,0.12)",
+                    border: `1.5px solid ${hasVoted ? "rgba(101, 153, 131,0.3)" : "rgba(101, 153, 131,0.3)"}`,
                     borderRadius: "14px", padding: "12px 16px", cursor: hasVoted ? "default" : "pointer",
                     transition: "all 0.35s cubic-bezier(0.4, 0, 0.2, 1)", minWidth: "56px",
-                    boxShadow: hasVoted ? "inset 0 1px 3px rgba(45, 90, 61,0.08)" : "none",
+                    boxShadow: hasVoted ? "inset 0 1px 3px rgba(101, 153, 131,0.08)" : "none",
                   }}
                   onMouseEnter={(e) => {
                     if (!hasVoted) {
                       e.currentTarget.style.transform = "translateY(-3px)";
-                      e.currentTarget.style.boxShadow = "0 6px 16px rgba(45, 90, 61,0.12)";
-                      e.currentTarget.style.background = "rgba(45, 90, 61,0.08)";
-                      e.currentTarget.style.borderColor = "rgba(45, 90, 61,0.3)";
+                      e.currentTarget.style.boxShadow = "0 6px 16px rgba(101, 153, 131,0.12)";
+                      e.currentTarget.style.background = "rgba(101, 153, 131,0.08)";
+                      e.currentTarget.style.borderColor = "rgba(101, 153, 131,0.3)";
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (!hasVoted) {
                       e.currentTarget.style.transform = "translateY(0)";
                       e.currentTarget.style.boxShadow = "none";
-                      e.currentTarget.style.background = "rgba(45, 90, 61,0.12)";
-                      e.currentTarget.style.borderColor = "rgba(45, 90, 61,0.3)";
+                      e.currentTarget.style.background = "rgba(101, 153, 131,0.12)";
+                      e.currentTarget.style.borderColor = "rgba(101, 153, 131,0.3)";
                     }
                   }}
                 >
                   <span style={{
                     fontSize: "1.1rem",
-                    color: hasVoted ? "#2d5a3d" : "#6b7280",
+                    color: hasVoted ? "#659983" : "#6b7280",
                     transition: "all 0.3s ease",
                     transform: hasVoted ? "scale(1.1)" : "scale(1)",
                     display: "inline-block",
                   }}>&#9650;</span>
                   <span style={{
                     fontSize: "1rem", fontWeight: 700,
-                    color: hasVoted ? "#2d5a3d" : "#1a1a1a",
+                    color: hasVoted ? "#659983" : "#1a1a1a",
                     fontFamily: "var(--font-playfair), Georgia, serif",
                     transition: "all 0.3s ease",
                   }}>{item.upvotes}</span>
@@ -343,13 +343,13 @@ export default function FeedbackPage() {
                       {item.category}
                     </span>
                     <span style={{ fontSize: "0.8rem", color: "#6b7280" }}>{item.author_name}</span>
-                    <span style={{ fontSize: "0.8rem", color: "#8aaa96" }}>&middot;</span>
+                    <span style={{ fontSize: "0.8rem", color: "#8aaa9d" }}>&middot;</span>
                     <span style={{ fontSize: "0.8rem", color: "#6b7280" }}>{timeAgo(item.created_at)}</span>
                     {item.resolved && (
                       <span style={{
                         fontSize: "0.7rem", fontWeight: 700, padding: "3px 10px",
-                        borderRadius: "999px", background: "rgba(45, 90, 61,0.12)",
-                        color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.06em",
+                        borderRadius: "999px", background: "rgba(101, 153, 131,0.12)",
+                        color: "#2d5a47", textTransform: "uppercase", letterSpacing: "0.06em",
                       }}>
                         ✓ Resolved
                       </span>
@@ -359,16 +359,16 @@ export default function FeedbackPage() {
                         onClick={() => handleResolve(item.id)}
                         style={{
                           fontSize: "0.72rem", fontWeight: 600, padding: "3px 10px",
-                          borderRadius: "999px", background: "rgba(45, 90, 61,0.06)",
-                          color: "#6b7280", border: "1px solid rgba(45, 90, 61,0.3)",
+                          borderRadius: "999px", background: "rgba(101, 153, 131,0.06)",
+                          color: "#6b7280", border: "1px solid rgba(101, 153, 131,0.3)",
                           cursor: "pointer", transition: "all 0.2s ease",
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.background = "rgba(45, 90, 61,0.15)";
-                          e.currentTarget.style.color = "#2d5a3d";
+                          e.currentTarget.style.background = "rgba(101, 153, 131,0.15)";
+                          e.currentTarget.style.color = "#659983";
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.background = "rgba(45, 90, 61,0.06)";
+                          e.currentTarget.style.background = "rgba(101, 153, 131,0.06)";
                           e.currentTarget.style.color = "#6b7280";
                         }}
                       >

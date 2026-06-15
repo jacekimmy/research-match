@@ -59,18 +59,18 @@ export default function ContactPage() {
             thomasjacekim@gmail.com
           </a>
 
-          <div style={{ height: "1px", background: "rgba(45,90,61,0.15)", marginBottom: "28px" }} />
+          <div style={{ height: "1px", background: "rgba(101, 153, 131,0.15)", marginBottom: "28px" }} />
 
           {submitted ? (
             <div style={{
               textAlign: "center", padding: "32px 20px",
-              background: "rgba(45,90,61,0.06)", borderRadius: "14px",
-              border: "1px solid rgba(45,90,61,0.15)",
+              background: "rgba(101, 153, 131,0.06)", borderRadius: "14px",
+              border: "1px solid rgba(101, 153, 131,0.15)",
             }}>
               <p style={{ fontSize: "1.5rem", marginBottom: "12px" }}>&#10003;</p>
               <p style={{
                 fontFamily: "var(--font-playfair), Georgia, serif",
-                fontSize: "1.1rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "8px",
+                fontSize: "1.1rem", fontWeight: 700, color: "#2d5a47", marginBottom: "8px",
               }}>
                 Thanks! We&apos;ll get back to you soon.
               </p>

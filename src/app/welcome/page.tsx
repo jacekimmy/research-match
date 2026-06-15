@@ -29,7 +29,7 @@ export default function WelcomePage() {
         style={{
           position: "fixed",
           inset: 0,
-          background: "#2d5a3d",
+          background: "#659983",
         }}
       />
     );

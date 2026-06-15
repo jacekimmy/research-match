@@ -146,7 +146,7 @@ export default function FollowUpPage() {
           {showUpgradeWall && (
             <div style={{ textAlign: "center", padding: "20px 0 4px" }}>
               <p style={{ fontSize: "0.9rem", color: "#6b7280", marginBottom: 6 }}>You&apos;ve used your free follow-up.</p>
-              <p style={{ fontSize: "0.82rem", color: "#9b8040", marginBottom: 16 }}>Upgrade for unlimited use.</p>
+              <p style={{ fontSize: "0.82rem", color: "#9b7d40", marginBottom: 16 }}>Upgrade for unlimited use.</p>
               <Link href="/app?upgrade=true" className="sp-btn-gold">
                 Upgrade to Semester
               </Link>
@@ -184,20 +184,20 @@ export default function FollowUpPage() {
             {/* Timeline container */}
             <div style={{ position: "relative", paddingLeft: 40 }}>
               {/* Vertical line */}
-              <div style={{ position: "absolute", left: 14, top: 24, bottom: 24, width: 2, background: "linear-gradient(180deg, #C4A265 0%, rgba(196,162,101,0.3) 50%, rgba(45,90,61,0.2) 100%)", borderRadius: 999 }} />
+              <div style={{ position: "absolute", left: 14, top: 24, bottom: 24, width: 2, background: "linear-gradient(180deg, #c9ad77 0%, rgba(201, 173, 119,0.3) 50%, rgba(101, 153, 131,0.2) 100%)", borderRadius: 999 }} />
 
               {/* Follow-Up 1 */}
               <div style={{ position: "relative", marginBottom: 32 }} className="fu-card-enter-1">
                 {/* Node */}
-                <div style={{ position: "absolute", left: -33, top: 24, width: 18, height: 18, borderRadius: "50%", background: "linear-gradient(135deg, #C4A265, #A8893E)", boxShadow: "0 0 0 4px rgba(196,162,101,0.18), 0 2px 8px rgba(196,162,101,0.35)" }} />
+                <div style={{ position: "absolute", left: -33, top: 24, width: 18, height: 18, borderRadius: "50%", background: "linear-gradient(135deg, #c9ad77, #a8853e)", boxShadow: "0 0 0 4px rgba(201, 173, 119,0.18), 0 2px 8px rgba(201, 173, 119,0.35)" }} />
                 {/* Card */}
                 <div className="fu-timeline-card fu-timeline-card-gold">
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16, flexWrap: "wrap", gap: 8 }}>
                     <div>
-                      <span style={{ fontSize: "0.62rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.12em", color: "#C4A265" }}>Follow-Up #1</span>
-                      <p style={{ fontSize: "0.88rem", fontWeight: 600, color: "#2d5a3d", marginTop: 4 }}>Send on {result.date1}</p>
+                      <span style={{ fontSize: "0.62rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.12em", color: "#c9ad77" }}>Follow-Up #1</span>
+                      <p style={{ fontSize: "0.88rem", fontWeight: 600, color: "#2d5a47", marginTop: 4 }}>Send on {result.date1}</p>
                     </div>
-                    <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "#C4A265", background: "rgba(196,162,101,0.1)", border: "1px solid rgba(196,162,101,0.2)", borderRadius: 999, padding: "4px 12px" }}>7 days later</span>
+                    <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "#c9ad77", background: "rgba(201, 173, 119,0.1)", border: "1px solid rgba(201, 173, 119,0.2)", borderRadius: 999, padding: "4px 12px" }}>7 days later</span>
                   </div>
                   <pre style={{ whiteSpace: "pre-wrap", fontFamily: "inherit", fontSize: "0.88rem", color: "#374151", lineHeight: 1.75, margin: 0, marginBottom: 20 }}>{result.followUp1}</pre>
                   <button
@@ -212,15 +212,15 @@ export default function FollowUpPage() {
               {/* Follow-Up 2 */}
               <div style={{ position: "relative", marginBottom: 36 }} className="fu-card-enter-2">
                 {/* Node */}
-                <div style={{ position: "absolute", left: -33, top: 24, width: 18, height: 18, borderRadius: "50%", background: "linear-gradient(135deg, #2d5a3d, #2E9E72)", boxShadow: "0 0 0 4px rgba(45,90,61,0.12), 0 2px 8px rgba(45,90,61,0.25)" }} />
+                <div style={{ position: "absolute", left: -33, top: 24, width: 18, height: 18, borderRadius: "50%", background: "linear-gradient(135deg, #659983, #2e9e6f)", boxShadow: "0 0 0 4px rgba(101, 153, 131,0.12), 0 2px 8px rgba(101, 153, 131,0.25)" }} />
                 {/* Card */}
                 <div className="fu-timeline-card fu-timeline-card-green">
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16, flexWrap: "wrap", gap: 8 }}>
                     <div>
-                      <span style={{ fontSize: "0.62rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.12em", color: "#2d5a3d" }}>Follow-Up #2</span>
-                      <p style={{ fontSize: "0.88rem", fontWeight: 600, color: "#2d5a3d", marginTop: 4 }}>Send on {result.date2}</p>
+                      <span style={{ fontSize: "0.62rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.12em", color: "#2d5a47" }}>Follow-Up #2</span>
+                      <p style={{ fontSize: "0.88rem", fontWeight: 600, color: "#2d5a47", marginTop: 4 }}>Send on {result.date2}</p>
                     </div>
-                    <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "#2d5a3d", background: "rgba(45,90,61,0.07)", border: "1px solid rgba(45,90,61,0.15)", borderRadius: 999, padding: "4px 12px" }}>14 days later</span>
+                    <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "#2d5a47", background: "rgba(101, 153, 131,0.07)", border: "1px solid rgba(101, 153, 131,0.15)", borderRadius: 999, padding: "4px 12px" }}>14 days later</span>
                   </div>
                   <pre style={{ whiteSpace: "pre-wrap", fontFamily: "inherit", fontSize: "0.88rem", color: "#374151", lineHeight: 1.75, margin: 0, marginBottom: 20 }}>{result.followUp2}</pre>
                   <button
@@ -236,7 +236,7 @@ export default function FollowUpPage() {
             {/* Move on message */}
             <div className="fu-move-on-card fu-card-enter-3">
               <div style={{ fontSize: "1.4rem", marginBottom: 10 }}>🤝</div>
-              <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#2d5a3d", marginBottom: 10 }}>
+              <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#2d5a47", marginBottom: 10 }}>
                 After 2 follow-ups, it&apos;s time to move on.
               </h3>
               <p style={{ fontSize: "0.88rem", color: "#6b7280", lineHeight: 1.7, maxWidth: 420, margin: "0 auto 24px" }}>

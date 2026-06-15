@@ -184,12 +184,12 @@ export default function MobileLanding() {
       `}</style>
       {/* Background splotches with parallax */}
       <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "100%", pointerEvents: "none", zIndex: -1, overflow: "hidden", maxWidth: "100vw" }}>
-        <div ref={(el) => { splotchRefs.current[0] = el; }} style={{ position: "absolute", top: "5%", right: "-10%", width: 160, height: 160, borderRadius: "50%", background: "radial-gradient(ellipse at 35% 40%, rgba(45, 90, 61,0.2) 0%, transparent 70%)", filter: "blur(80px)", willChange: "transform" }} />
-        <div ref={(el) => { splotchRefs.current[1] = el; }} style={{ position: "absolute", top: "25%", left: "-5%", width: 180, height: 180, borderRadius: "50%", background: "radial-gradient(ellipse at 60% 30%, rgba(45, 90, 61,0.25) 0%, transparent 70%)", filter: "blur(80px)", willChange: "transform" }} />
-        <div ref={(el) => { splotchRefs.current[2] = el; }} style={{ position: "absolute", top: "45%", right: "5%", width: 140, height: 140, borderRadius: "50%", background: "radial-gradient(ellipse at 40% 60%, rgba(45, 90, 61,0.2) 0%, transparent 70%)", filter: "blur(80px)", willChange: "transform" }} />
-        <div ref={(el) => { splotchRefs.current[3] = el; }} style={{ position: "absolute", top: "60%", left: "10%", width: 200, height: 200, borderRadius: "50%", background: "radial-gradient(ellipse at 50% 50%, rgba(45, 90, 61,0.15) 0%, transparent 70%)", filter: "blur(100px)", willChange: "transform" }} />
-        <div ref={(el) => { splotchRefs.current[4] = el; }} style={{ position: "absolute", top: "78%", right: "15%", width: 150, height: 150, borderRadius: "50%", background: "radial-gradient(ellipse at 55% 40%, rgba(45, 90, 61,0.18) 0%, transparent 70%)", filter: "blur(80px)", willChange: "transform" }} />
-        <div ref={(el) => { splotchRefs.current[5] = el; }} style={{ position: "absolute", top: "92%", left: "30%", width: 180, height: 180, borderRadius: "50%", background: "radial-gradient(ellipse at 45% 55%, rgba(61, 120, 80,0.18) 0%, transparent 70%)", filter: "blur(80px)", willChange: "transform" }} />
+        <div ref={(el) => { splotchRefs.current[0] = el; }} style={{ position: "absolute", top: "5%", right: "-10%", width: 160, height: 160, borderRadius: "50%", background: "radial-gradient(ellipse at 35% 40%, rgba(101, 153, 131,0.2) 0%, transparent 70%)", filter: "blur(80px)", willChange: "transform" }} />
+        <div ref={(el) => { splotchRefs.current[1] = el; }} style={{ position: "absolute", top: "25%", left: "-5%", width: 180, height: 180, borderRadius: "50%", background: "radial-gradient(ellipse at 60% 30%, rgba(101, 153, 131,0.25) 0%, transparent 70%)", filter: "blur(80px)", willChange: "transform" }} />
+        <div ref={(el) => { splotchRefs.current[2] = el; }} style={{ position: "absolute", top: "45%", right: "5%", width: 140, height: 140, borderRadius: "50%", background: "radial-gradient(ellipse at 40% 60%, rgba(101, 153, 131,0.2) 0%, transparent 70%)", filter: "blur(80px)", willChange: "transform" }} />
+        <div ref={(el) => { splotchRefs.current[3] = el; }} style={{ position: "absolute", top: "60%", left: "10%", width: 200, height: 200, borderRadius: "50%", background: "radial-gradient(ellipse at 50% 50%, rgba(101, 153, 131,0.15) 0%, transparent 70%)", filter: "blur(100px)", willChange: "transform" }} />
+        <div ref={(el) => { splotchRefs.current[4] = el; }} style={{ position: "absolute", top: "78%", right: "15%", width: 150, height: 150, borderRadius: "50%", background: "radial-gradient(ellipse at 55% 40%, rgba(101, 153, 131,0.18) 0%, transparent 70%)", filter: "blur(80px)", willChange: "transform" }} />
+        <div ref={(el) => { splotchRefs.current[5] = el; }} style={{ position: "absolute", top: "92%", left: "30%", width: 180, height: 180, borderRadius: "50%", background: "radial-gradient(ellipse at 45% 55%, rgba(61, 120, 95,0.18) 0%, transparent 70%)", filter: "blur(80px)", willChange: "transform" }} />
       </div>
 
       {/* Nav */}
@@ -197,13 +197,13 @@ export default function MobileLanding() {
         display: "flex", justifyContent: "space-between", alignItems: "center",
         padding: "16px 20px",
       }}>
-        <span style={{ fontSize: "1.1rem", fontWeight: 800, color: "#2d5a3d", letterSpacing: "-0.02em", whiteSpace: "nowrap" }}>
+        <span style={{ fontSize: "1.1rem", fontWeight: 800, color: "#2d5a47", letterSpacing: "-0.02em", whiteSpace: "nowrap" }}>
           Research Match
         </span>
         <Link href="/app" style={{
           padding: "8px 18px", fontSize: "0.8rem", textDecoration: "none",
           whiteSpace: "nowrap", flexShrink: 0,
-          background: "#C4A265", color: "#ffffff", borderRadius: "999px",
+          background: "#c9ad77", color: "#ffffff", borderRadius: "999px",
           fontWeight: 700, fontFamily: "var(--font-playfair), Georgia, serif",
         }}>
           Start Searching
@@ -216,7 +216,7 @@ export default function MobileLanding() {
       <section style={{ padding: "32px 20px 72px", textAlign: "center" }}>
         <h1 style={{
           fontSize: "1.9rem", fontWeight: 800,
-          color: "#2d5a3d", lineHeight: 1.12, marginBottom: "20px",
+          color: "#2d5a47", lineHeight: 1.12, marginBottom: "20px",
           letterSpacing: "-0.03em",
           fontFamily: "var(--font-playfair), Georgia, serif",
         }}>
@@ -234,7 +234,7 @@ export default function MobileLanding() {
           <div style={{ marginBottom: "12px" }}>
             <label style={{
               display: "block", fontSize: "0.65rem", fontWeight: 700,
-              color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.12em",
+              color: "#2d5a47", textTransform: "uppercase", letterSpacing: "0.12em",
               marginBottom: "6px", textAlign: "left", paddingLeft: "4px",
             }}>Research Interest</label>
             <input
@@ -246,7 +246,7 @@ export default function MobileLanding() {
               className="mobile-input"
               style={{
                 width: "100%", padding: "14px 16px", fontSize: "1rem",
-                border: "1.5px solid rgba(45, 90, 61,0.4)", borderRadius: "14px",
+                border: "1.5px solid rgba(101, 153, 131,0.4)", borderRadius: "14px",
                 background: "rgba(255,255,255,0.5)", color: "#1a1a1a",
                 fontFamily: "var(--font-playfair), Georgia, serif", outline: "none",
                 minHeight: "48px",
@@ -257,7 +257,7 @@ export default function MobileLanding() {
           <div style={{ marginBottom: "12px" }}>
             <label style={{
               display: "block", fontSize: "0.65rem", fontWeight: 700,
-              color: "#2d5a3d", textTransform: "uppercase", letterSpacing: "0.12em",
+              color: "#2d5a47", textTransform: "uppercase", letterSpacing: "0.12em",
               marginBottom: "6px", textAlign: "left", paddingLeft: "4px",
             }}>University</label>
             <input
@@ -269,7 +269,7 @@ export default function MobileLanding() {
               className="mobile-input"
               style={{
                 width: "100%", padding: "14px 16px", fontSize: "1rem",
-                border: "1.5px solid rgba(45, 90, 61,0.4)", borderRadius: "14px",
+                border: "1.5px solid rgba(101, 153, 131,0.4)", borderRadius: "14px",
                 background: "rgba(255,255,255,0.5)", color: "#1a1a1a",
                 fontFamily: "var(--font-playfair), Georgia, serif", outline: "none",
                 minHeight: "48px",
@@ -284,7 +284,7 @@ export default function MobileLanding() {
               width: "100%", padding: "16px", fontSize: "1.1rem", fontWeight: 700,
               fontFamily: "var(--font-playfair), Georgia, serif",
               border: "none", borderRadius: "14px", cursor: "pointer",
-              color: "#ffffff", background: "#C4A265",
+              color: "#ffffff", background: "#c9ad77",
               minHeight: "48px",
             }}
           >
@@ -298,8 +298,8 @@ export default function MobileLanding() {
       <section style={{
         background: "#ede8df", padding: "52px 20px",
         display: "flex", flexDirection: "column", gap: "32px",
-        borderTop: "1px solid rgba(45, 90, 61,0.3)",
-        borderBottom: "1px solid rgba(45, 90, 61,0.3)",
+        borderTop: "1px solid rgba(101, 153, 131,0.3)",
+        borderBottom: "1px solid rgba(101, 153, 131,0.3)",
         margin: "0 0 0 0",
       }}>
         {[
@@ -309,7 +309,7 @@ export default function MobileLanding() {
         ].map((stat, i) => (
           <div key={i} style={{ textAlign: "center" }}>
             <div style={{
-              fontSize: "1.8rem", fontWeight: 800, color: "#2d5a3d",
+              fontSize: "1.8rem", fontWeight: 800, color: "#2d5a47",
               letterSpacing: "-0.03em",
               fontFamily: "var(--font-playfair), Georgia, serif",
             }}>{stat.num}</div>
@@ -331,8 +331,8 @@ export default function MobileLanding() {
           {["MIT", "Stanford", "Harvard", "Princeton", "Berkeley", "Yale", "Columbia", "Cornell", "CMU", "UCLA", "NYU", "UMich"].map((uni) => (
             <span key={uni} style={{
               padding: "5px 14px", borderRadius: "999px", fontSize: "0.78rem",
-              background: "rgba(45, 90, 61,0.07)",
-              border: "1px solid rgba(45, 90, 61,0.15)",
+              background: "rgba(101, 153, 131,0.07)",
+              border: "1px solid rgba(101, 153, 131,0.15)",
               color: "#1a1a1a", fontWeight: 500,
             }}>{uni}</span>
           ))}
@@ -342,7 +342,7 @@ export default function MobileLanding() {
       {/* How it works — vertical timeline */}
       <section style={{ padding: "72px 20px 84px" }}>
         <h2 style={{
-          fontSize: "1.6rem", fontWeight: 700, color: "#2d5a3d",
+          fontSize: "1.6rem", fontWeight: 700, color: "#2d5a47",
           textAlign: "center", marginBottom: "12px",
           fontFamily: "var(--font-playfair), Georgia, serif",
         }}>
@@ -350,7 +350,7 @@ export default function MobileLanding() {
         </h2>
         <div style={{
           width: 60, height: 3, margin: "0 auto 36px",
-          background: "linear-gradient(90deg, transparent, #8aaa96, transparent)",
+          background: "linear-gradient(90deg, transparent, #8aaa9d, transparent)",
           borderRadius: 2,
         }} />
 
@@ -374,7 +374,7 @@ export default function MobileLanding() {
                   top: "44px",
                   bottom: "0",
                   width: "2px",
-                  background: "linear-gradient(to bottom, #8aaa96, rgba(45, 90, 61,0.2))",
+                  background: "linear-gradient(to bottom, #8aaa9d, rgba(101, 153, 131,0.2))",
                 }} />
               )}
               {/* Step circle */}
@@ -385,14 +385,14 @@ export default function MobileLanding() {
                 width: "28px",
                 height: "28px",
                 borderRadius: "50%",
-                background: "#2d5a3d",
+                background: "#659983",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 fontSize: "0.75rem",
                 fontWeight: 700,
                 color: "#ffffff",
-                boxShadow: "0 2px 8px rgba(45, 90, 61,0.3)",
+                boxShadow: "0 2px 8px rgba(101, 153, 131,0.3)",
                 zIndex: 1,
               }}>
                 {item.step}
@@ -405,12 +405,12 @@ export default function MobileLanding() {
                 border: "1px solid rgba(255,255,255,0.6)",
                 borderRadius: "16px",
                 padding: "24px 20px",
-                boxShadow: "0 4px 24px rgba(45, 90, 61,0.06), inset 0 1px 0 rgba(255,255,255,0.8)",
+                boxShadow: "0 4px 24px rgba(101, 153, 131,0.06), inset 0 1px 0 rgba(255,255,255,0.8)",
               }}>
                 <div style={{ fontSize: "2rem", marginBottom: "12px" }}>{item.icon}</div>
                 <div style={{
                   display: "inline-block", fontSize: "0.6rem", fontWeight: 700,
-                  color: "#2d5a3d", background: "rgba(45, 90, 61,0.08)",
+                  color: "#2d5a47", background: "rgba(101, 153, 131,0.08)",
                   padding: "4px 12px", borderRadius: "999px", marginBottom: "10px",
                   textTransform: "uppercase", letterSpacing: "0.12em",
                 }}>
@@ -432,13 +432,13 @@ export default function MobileLanding() {
       <section style={{ padding: "20px 20px 100px" }}>
         <div style={{
           padding: "36px 24px", textAlign: "center",
-          border: "2px solid rgba(45, 90, 61,0.2)",
-          background: "rgba(45, 90, 61,0.04)",
+          border: "2px solid rgba(101, 153, 131,0.2)",
+          background: "rgba(101, 153, 131,0.04)",
           borderRadius: "20px",
           backdropFilter: "blur(16px)",
           WebkitBackdropFilter: "blur(16px)",
         }}>
-          <h3 style={{ fontSize: "1.35rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "14px", fontFamily: "var(--font-playfair), Georgia, serif" }}>
+          <h3 style={{ fontSize: "1.35rem", fontWeight: 700, color: "#2d5a47", marginBottom: "14px", fontFamily: "var(--font-playfair), Georgia, serif" }}>
             Sound like yourself, not a chatbot
           </h3>
           <p style={{ fontSize: "1rem", color: "#6b7280", lineHeight: 1.7 }}>
@@ -450,7 +450,7 @@ export default function MobileLanding() {
       {/* Why cold emails fail */}
       <section style={{ padding: "20px 20px 100px" }}>
         <h2 style={{
-          fontSize: "1.5rem", fontWeight: 700, color: "#2d5a3d",
+          fontSize: "1.5rem", fontWeight: 700, color: "#2d5a47",
           textAlign: "center", marginBottom: "12px",
           fontFamily: "var(--font-playfair), Georgia, serif",
         }}>
@@ -458,7 +458,7 @@ export default function MobileLanding() {
         </h2>
         <div style={{
           width: 60, height: 3, margin: "0 auto 28px",
-          background: "linear-gradient(90deg, transparent, #8aaa96, transparent)",
+          background: "linear-gradient(90deg, transparent, #8aaa9d, transparent)",
           borderRadius: 2,
         }} />
         <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
@@ -479,7 +479,7 @@ export default function MobileLanding() {
           ))}
         </div>
         <p style={{
-          fontSize: "1rem", color: "#2d5a3d", textAlign: "center",
+          fontSize: "1rem", color: "#2d5a47", textAlign: "center",
           marginTop: "24px", lineHeight: 1.7, fontWeight: 500,
         }}>
           Research Match helps you avoid all three. Our email checker catches generic and AI-sounding language before you hit send, so your message sounds like you, not a chatbot.
@@ -495,13 +495,13 @@ export default function MobileLanding() {
       <section style={{ padding: "20px 20px 100px" }}>
         <div style={{
           padding: "32px 24px", textAlign: "center",
-          border: "2px solid rgba(45, 90, 61,0.15)",
-          background: "linear-gradient(135deg, rgba(45, 90, 61,0.04), rgba(45, 90, 61,0.08))",
+          border: "2px solid rgba(101, 153, 131,0.15)",
+          background: "linear-gradient(135deg, rgba(101, 153, 131,0.04), rgba(101, 153, 131,0.08))",
           borderRadius: "20px",
           backdropFilter: "blur(16px)",
           WebkitBackdropFilter: "blur(16px)",
         }}>
-          <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "10px", fontFamily: "var(--font-playfair), Georgia, serif" }}>
+          <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#2d5a47", marginBottom: "10px", fontFamily: "var(--font-playfair), Georgia, serif" }}>
             Free: The Research Position Starter Kit
           </h3>
           <p style={{ fontSize: "0.9rem", color: "#6b7280", lineHeight: 1.7, marginBottom: "18px" }}>
@@ -513,7 +513,7 @@ export default function MobileLanding() {
               padding: "14px 32px", fontSize: "0.95rem", fontWeight: 700,
               fontFamily: "var(--font-playfair), Georgia, serif",
               border: "none", borderRadius: "14px", cursor: "pointer",
-              color: "#ffffff", background: "#2d5a3d",
+              color: "#ffffff", background: "#659983",
               width: "100%", minHeight: "48px",
             }}
           >
@@ -525,7 +525,7 @@ export default function MobileLanding() {
       {/* Social proof — stacked testimonials */}
       <section style={{ padding: "20px 20px 100px" }}>
         <h2 style={{
-          fontSize: "1.5rem", fontWeight: 700, color: "#2d5a3d",
+          fontSize: "1.5rem", fontWeight: 700, color: "#2d5a47",
           textAlign: "center", marginBottom: "12px",
           fontFamily: "var(--font-playfair), Georgia, serif",
         }}>
@@ -533,7 +533,7 @@ export default function MobileLanding() {
         </h2>
         <div style={{
           width: 60, height: 3, margin: "0 auto 28px",
-          background: "linear-gradient(90deg, transparent, #8aaa96, transparent)",
+          background: "linear-gradient(90deg, transparent, #8aaa9d, transparent)",
           borderRadius: 2,
         }} />
         <div style={{ display: "flex", flexDirection: "column", gap: "22px" }}>
@@ -552,13 +552,13 @@ export default function MobileLanding() {
                 border: "1px solid rgba(255,255,255,0.6)",
                 borderRadius: "20px",
                 padding: "26px 22px",
-                boxShadow: "0 4px 24px rgba(45, 90, 61,0.06), inset 0 1px 0 rgba(255,255,255,0.8)",
+                boxShadow: "0 4px 24px rgba(101, 153, 131,0.06), inset 0 1px 0 rgba(255,255,255,0.8)",
                 transition: "transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease",
                 willChange: "transform",
               }}
             >
               <div style={{
-                fontSize: "2.5rem", lineHeight: 1, color: "rgba(45, 90, 61,0.12)",
+                fontSize: "2.5rem", lineHeight: 1, color: "rgba(101, 153, 131,0.12)",
                 fontFamily: "Georgia, serif", marginBottom: "-8px",
               }}>&ldquo;</div>
               <p style={{ fontSize: "1.02rem", color: "#1a1a1a", lineHeight: 1.65, marginBottom: "14px" }}>
@@ -575,8 +575,8 @@ export default function MobileLanding() {
       {/* Founder note */}
       <section style={{ padding: "20px 20px 100px" }}>
         <div style={{
-          padding: "28px 24px", borderLeft: "4px solid #2d5a3d",
-          background: "rgba(45, 90, 61,0.03)", borderRadius: "0 14px 14px 0",
+          padding: "28px 24px", borderLeft: "4px solid #659983",
+          background: "rgba(101, 153, 131,0.03)", borderRadius: "0 14px 14px 0",
         }}>
           <p style={{
             fontSize: "1rem", color: "#6b7280", lineHeight: 1.75,
@@ -584,7 +584,7 @@ export default function MobileLanding() {
           }}>
             &ldquo;Early in my research journey, I used this approach to cold email 5 professors. A Princeton astrophysics professor responded within 24 hours and said I was &lsquo;way ahead of the curve.&rsquo; That&apos;s why I built Research Match.&rdquo;
           </p>
-          <p style={{ fontSize: "0.85rem", color: "#2d5a3d", fontWeight: 700, marginTop: "14px" }}>
+          <p style={{ fontSize: "0.85rem", color: "#2d5a47", fontWeight: 700, marginTop: "14px" }}>
             - Jace, Founder
           </p>
         </div>
@@ -593,7 +593,7 @@ export default function MobileLanding() {
       {/* Pricing — stacked vertically, Lifetime first */}
       <section id="pricing" style={{ padding: "40px 20px 60px" }}>
         <h2 style={{
-          fontSize: "1.6rem", fontWeight: 700, color: "#2d5a3d",
+          fontSize: "1.6rem", fontWeight: 700, color: "#2d5a47",
           textAlign: "center", marginBottom: "12px",
           fontFamily: "var(--font-playfair), Georgia, serif",
         }}>
@@ -611,15 +611,15 @@ export default function MobileLanding() {
         </p>
         <div style={{
           width: 60, height: 3, margin: "0 auto 32px",
-          background: "linear-gradient(90deg, transparent, #8aaa96, transparent)",
+          background: "linear-gradient(90deg, transparent, #8aaa9d, transparent)",
           borderRadius: 2,
         }} />
 
         <div className="pricing-tabs-container" style={{
-          background: "rgba(45,90,61,0.08)", borderRadius: "999px", padding: "4px", marginBottom: "28px"
+          background: "rgba(101, 153, 131,0.08)", borderRadius: "999px", padding: "4px", marginBottom: "28px"
         }}>
-          <button onClick={() => setActivePricingTab('lifetime')} style={{ flex: 1, padding: "12px", borderRadius: "999px", border: "none", background: activePricingTab === 'lifetime' ? "#ffffff" : "transparent", color: activePricingTab === 'lifetime' ? "#A8893E" : "#6b7280", fontWeight: 700, fontSize: "0.85rem", boxShadow: activePricingTab === 'lifetime' ? "0 2px 8px rgba(0,0,0,0.05)" : "none", transition: "all 0.2s" }}>Lifetime</button>
-          <button onClick={() => setActivePricingTab('semester')} style={{ flex: 1, padding: "12px", borderRadius: "999px", border: "none", background: activePricingTab === 'semester' ? "#ffffff" : "transparent", color: activePricingTab === 'semester' ? "#2d5a3d" : "#6b7280", fontWeight: 700, fontSize: "0.85rem", boxShadow: activePricingTab === 'semester' ? "0 2px 8px rgba(0,0,0,0.05)" : "none", transition: "all 0.2s" }}>Semester</button>
+          <button onClick={() => setActivePricingTab('lifetime')} style={{ flex: 1, padding: "12px", borderRadius: "999px", border: "none", background: activePricingTab === 'lifetime' ? "#ffffff" : "transparent", color: activePricingTab === 'lifetime' ? "#a8853e" : "#6b7280", fontWeight: 700, fontSize: "0.85rem", boxShadow: activePricingTab === 'lifetime' ? "0 2px 8px rgba(0,0,0,0.05)" : "none", transition: "all 0.2s" }}>Lifetime</button>
+          <button onClick={() => setActivePricingTab('semester')} style={{ flex: 1, padding: "12px", borderRadius: "999px", border: "none", background: activePricingTab === 'semester' ? "#ffffff" : "transparent", color: activePricingTab === 'semester' ? "#659983" : "#6b7280", fontWeight: 700, fontSize: "0.85rem", boxShadow: activePricingTab === 'semester' ? "0 2px 8px rgba(0,0,0,0.05)" : "none", transition: "all 0.2s" }}>Semester</button>
           <button onClick={() => setActivePricingTab('free')} style={{ flex: 1, padding: "12px", borderRadius: "999px", border: "none", background: activePricingTab === 'free' ? "#ffffff" : "transparent", color: activePricingTab === 'free' ? "#1a1a1a" : "#6b7280", fontWeight: 700, fontSize: "0.85rem", boxShadow: activePricingTab === 'free' ? "0 2px 8px rgba(0,0,0,0.05)" : "none", transition: "all 0.2s" }}>Free</button>
         </div>
 
@@ -631,26 +631,26 @@ export default function MobileLanding() {
               className={`mobile-card-enter `}
               style={{
               padding: "36px 24px", position: "relative",
-              border: "2px solid rgba(196, 162, 101, 0.5)",
+              border: "2px solid rgba(201, 173, 119, 0.5)",
               background: "linear-gradient(165deg, rgba(255,250,235,0.85) 0%, rgba(255,245,220,0.6) 50%, rgba(245,235,200,0.4) 100%)",
-              boxShadow: "0 0 40px rgba(196, 162, 101, 0.15), 0 8px 40px rgba(196, 162, 101, 0.1), inset 0 1px 0 rgba(255,255,255,0.8)",
+              boxShadow: "0 0 40px rgba(201, 173, 119, 0.15), 0 8px 40px rgba(201, 173, 119, 0.1), inset 0 1px 0 rgba(255,255,255,0.8)",
               borderRadius: "20px",
               overflow: "visible",
             }}
           >
             <span style={{
               position: "absolute", top: "-13px", left: "50%", transform: "translateX(-50%)",
-              background: "linear-gradient(135deg, #A8893E, #C4A265, #A8893E)",
+              background: "linear-gradient(135deg, #a8853e, #c9ad77, #a8853e)",
               color: "#ffffff",
               fontSize: "0.6rem", fontWeight: 700,
               padding: "6px 16px", borderRadius: "999px", textTransform: "uppercase", letterSpacing: "0.1em",
               whiteSpace: "nowrap",
-              boxShadow: "0 2px 12px rgba(196, 162, 101, 0.3)",
+              boxShadow: "0 2px 12px rgba(201, 173, 119, 0.3)",
             }}>Best Value</span>
-            <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#A8893E", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Lifetime</p>
-            <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#A8893E", letterSpacing: "-0.02em", marginBottom: "4px" }}>$59</p>
-            <p style={{ fontSize: "0.8rem", color: "#A8893E", marginBottom: "4px", fontWeight: 600 }}>One payment. Yours forever.</p>
-            <p style={{ fontSize: "0.78rem", color: "#9b8040", marginBottom: "16px" }}>That&apos;s less than 2 semesters. Never pay again.</p>
+            <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#a8853e", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Lifetime</p>
+            <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#a8853e", letterSpacing: "-0.02em", marginBottom: "4px" }}>$59</p>
+            <p style={{ fontSize: "0.8rem", color: "#a8853e", marginBottom: "4px", fontWeight: 600 }}>One payment. Yours forever.</p>
+            <p style={{ fontSize: "0.78rem", color: "#9b7d40", marginBottom: "16px" }}>That&apos;s less than 2 semesters. Never pay again.</p>
             <ul style={{ listStyle: "none", padding: 0, marginBottom: "16px" }}>
               <li style={{ fontSize: "0.9rem", color: "#1a1a1a", padding: "7px 0", fontWeight: 700 }}>Everything in Semester, forever:</li>
               {[
@@ -662,19 +662,19 @@ export default function MobileLanding() {
                 "Responsiveness indicator",
               ].map((f) => (
                 <li key={f} style={{ fontSize: "0.9rem", color: "#6b7280", padding: "7px 0", display: "flex", gap: "10px", alignItems: "flex-start" }}>
-                  <span style={{ color: "#A8893E", flexShrink: 0, fontSize: "0.85rem" }}>{"\u2713"}</span> {f}
+                  <span style={{ color: "#a8853e", flexShrink: 0, fontSize: "0.85rem" }}>{"\u2713"}</span> {f}
                 </li>
               ))}
             </ul>
-            <div style={{ borderTop: "1px solid rgba(168,137,62,0.2)", paddingTop: "12px", marginBottom: "20px" }}>
-              <p style={{ fontSize: "0.68rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#A8893E", marginBottom: "8px" }}>Free Bonuses Included:</p>
+            <div style={{ borderTop: "1px solid rgba(168, 133, 62,0.2)", paddingTop: "12px", marginBottom: "20px" }}>
+              <p style={{ fontSize: "0.68rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#a8853e", marginBottom: "8px" }}>Free Bonuses Included:</p>
               {[
                 "Emails That Worked — 2 real emails that got replies, fully annotated",
                 "Email Template — the paragraph professors actually read",
                 "Follow-Up Guide (coming soon)",
               ].map((f) => (
                 <p key={f} style={{ fontSize: "0.82rem", color: "#6b7280", padding: "4px 0", display: "flex", gap: "8px", alignItems: "flex-start" }}>
-                  <span style={{ color: "#A8893E", flexShrink: 0 }}>✓</span> {f}
+                  <span style={{ color: "#a8853e", flexShrink: 0 }}>✓</span> {f}
                 </p>
               ))}
             </div>
@@ -691,16 +691,16 @@ export default function MobileLanding() {
               <Link href="/app?upgrade=lifetime" className="mobile-btn" style={{
                 display: "block", textAlign: "center", padding: "16px",
                 textDecoration: "none", fontSize: "1rem", width: "100%",
-                background: "linear-gradient(135deg, #A8893E, #C4A265)",
+                background: "linear-gradient(135deg, #a8853e, #c9ad77)",
                 color: "#ffffff", borderRadius: "14px", fontWeight: 700,
                 fontFamily: "var(--font-playfair), Georgia, serif",
-                boxShadow: "0 4px 16px rgba(196, 162, 101, 0.3)",
+                boxShadow: "0 4px 16px rgba(201, 173, 119, 0.3)",
                 minHeight: "48px", lineHeight: "48px", paddingTop: 0, paddingBottom: 0,
               }}>
                 Claim Lifetime Access — $59
               </Link>
             )}
-            <p style={{ fontSize: "0.72rem", color: "#9b8040", fontStyle: "italic", textAlign: "center", marginTop: "10px" }}>Not satisfied in 30 days? Full refund. No questions asked.</p>
+            <p style={{ fontSize: "0.72rem", color: "#9b7d40", fontStyle: "italic", textAlign: "center", marginTop: "10px" }}>Not satisfied in 30 days? Full refund. No questions asked.</p>
           </div>
           </div>
 
@@ -711,8 +711,8 @@ export default function MobileLanding() {
               className={`mobile-card-enter `}
               style={{
               padding: "36px 24px", position: "relative",
-              background: "#2d5a3d",
-              boxShadow: "0 12px 40px rgba(45, 90, 61,0.3)",
+              background: "#659983",
+              boxShadow: "0 12px 40px rgba(101, 153, 131,0.3)",
               borderRadius: "20px",
               overflow: "visible",
             }}
@@ -730,25 +730,25 @@ export default function MobileLanding() {
                 "Professor responsiveness indicator",
               ].map((f) => (
                 <li key={f} style={{ fontSize: "0.9rem", color: "rgba(245,240,230,0.85)", padding: "7px 0", display: "flex", gap: "10px", alignItems: "flex-start" }}>
-                  <span style={{ color: "#9dbfaa", flexShrink: 0, fontSize: "0.85rem" }}>✓</span> {f}
+                  <span style={{ color: "#9dbfb1", flexShrink: 0, fontSize: "0.85rem" }}>✓</span> {f}
                 </li>
               ))}
             </ul>
-            <div style={{ borderTop: "1px solid rgba(157,191,170,0.25)", paddingTop: "12px", marginBottom: "20px" }}>
-              <p style={{ fontSize: "0.68rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#9dbfaa", marginBottom: "8px" }}>Free Bonuses Included:</p>
+            <div style={{ borderTop: "1px solid rgba(157, 191, 177,0.25)", paddingTop: "12px", marginBottom: "20px" }}>
+              <p style={{ fontSize: "0.68rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#9dbfb1", marginBottom: "8px" }}>Free Bonuses Included:</p>
               {[
                 "Emails That Worked — 2 real emails that got replies, fully annotated",
                 "Email Template — the paragraph professors actually read",
                 "Follow-Up Guide (coming soon)",
               ].map((f) => (
                 <p key={f} style={{ fontSize: "0.82rem", color: "rgba(245,240,230,0.7)", padding: "4px 0", display: "flex", gap: "8px", alignItems: "flex-start" }}>
-                  <span style={{ color: "#9dbfaa", flexShrink: 0 }}>✓</span> {f}
+                  <span style={{ color: "#9dbfb1", flexShrink: 0 }}>✓</span> {f}
                 </p>
               ))}
             </div>
             <Link href="/app?upgrade=true" className="mobile-btn" style={{
               display: "block", textAlign: "center", padding: "16px", textDecoration: "none", fontSize: "1rem", width: "100%", minHeight: "48px",
-              background: "#f4f0ea", color: "#2d5a3d", borderRadius: "14px", fontWeight: 700,
+              background: "#f4f0ea", color: "#2d5a47", borderRadius: "14px", fontWeight: 700,
               fontFamily: "var(--font-playfair), Georgia, serif",
             }}>
               Get Semester Access — $29
@@ -769,15 +769,15 @@ export default function MobileLanding() {
               WebkitBackdropFilter: "blur(16px) saturate(1.2)",
               border: "1px solid rgba(255,255,255,0.6)",
               borderRadius: "20px",
-              boxShadow: "0 4px 24px rgba(45, 90, 61,0.06), inset 0 1px 0 rgba(255,255,255,0.8)",
+              boxShadow: "0 4px 24px rgba(101, 153, 131,0.06), inset 0 1px 0 rgba(255,255,255,0.8)",
             }}
           >
             <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "10px" }}>Free</p>
-            <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#2d5a3d", marginBottom: "24px", letterSpacing: "-0.02em" }}>$0</p>
+            <p style={{ fontSize: "2.6rem", fontWeight: 800, color: "#2d5a47", marginBottom: "24px", letterSpacing: "-0.02em" }}>$0</p>
             <ul style={{ listStyle: "none", padding: 0, marginBottom: "24px" }}>
               {["Unlimited professor searches", "3 research summaries", "Author position labels", "Save professors", "Paper links"].map((f) => (
                 <li key={f} style={{ fontSize: "0.9rem", color: "#6b7280", padding: "7px 0", display: "flex", gap: "10px", alignItems: "center" }}>
-                  <span style={{ color: "#2d5a3d", fontSize: "0.85rem" }}>{"\u2713"}</span> {f}
+                  <span style={{ color: "#2d5a47", fontSize: "0.85rem" }}>{"\u2713"}</span> {f}
                 </li>
               ))}
             </ul>
@@ -794,7 +794,7 @@ export default function MobileLanding() {
             Guaranteed response plan coming soon, join the waitlist
           </p>
           {inlineWaitlistDone ? (
-            <p style={{ fontSize: "0.95rem", color: "#2d5a3d", fontWeight: 600 }}>
+            <p style={{ fontSize: "0.95rem", color: "#2d5a47", fontWeight: 600 }}>
               You&apos;re on the list! We&apos;ll email you when new plans launch.
             </p>
           ) : (
@@ -808,7 +808,7 @@ export default function MobileLanding() {
                 className="mobile-input"
                 style={{
                   padding: "14px 18px", fontSize: "1rem",
-                  border: "1.5px solid rgba(45, 90, 61,0.4)", borderRadius: "14px",
+                  border: "1.5px solid rgba(101, 153, 131,0.4)", borderRadius: "14px",
                   background: "rgba(255,255,255,0.5)", color: "#1a1a1a",
                   fontFamily: "inherit", outline: "none", width: "100%",
                   minHeight: "48px",
@@ -830,7 +830,7 @@ export default function MobileLanding() {
       {/* Footer */}
       <footer style={{
         padding: "28px 20px",
-        borderTop: "1px solid rgba(45, 90, 61,0.3)",
+        borderTop: "1px solid rgba(101, 153, 131,0.3)",
         textAlign: "center",
       }}>
         <span style={{ fontSize: "0.9rem", color: "#6b7280", fontWeight: 600, display: "block", marginBottom: "14px" }}>Research Match</span>
@@ -859,13 +859,13 @@ export default function MobileLanding() {
             WebkitBackdropFilter: "blur(40px) saturate(1.5)",
             border: "1.5px solid rgba(255,255,255,0.7)",
             borderRadius: "24px",
-            boxShadow: "0 32px 80px rgba(45, 90, 61,0.12)",
+            boxShadow: "0 32px 80px rgba(101, 153, 131,0.12)",
             padding: "36px 28px", maxWidth: "380px", width: "100%",
           }} onClick={(e) => e.stopPropagation()}>
             {waitlistDone ? (
               <div style={{ textAlign: "center" }}>
                 <p style={{ fontSize: "2.5rem", marginBottom: "16px" }}>{"\u{1F389}"}</p>
-                <h3 style={{ fontSize: "1.3rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "10px" }}>
+                <h3 style={{ fontSize: "1.3rem", fontWeight: 700, color: "#2d5a47", marginBottom: "10px" }}>
                   You&apos;re on the list!
                 </h3>
                 <p style={{ fontSize: "0.95rem", color: "#6b7280", lineHeight: 1.6 }}>
@@ -875,7 +875,7 @@ export default function MobileLanding() {
               </div>
             ) : (
               <>
-                <h3 style={{ fontSize: "1.3rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "10px" }}>
+                <h3 style={{ fontSize: "1.3rem", fontWeight: 700, color: "#2d5a47", marginBottom: "10px" }}>
                   Join the {waitlistTier === "research_pro" ? "Research Pro" : "Pro"} waitlist
                 </h3>
                 <p style={{ fontSize: "0.9rem", color: "#6b7280", marginBottom: "20px", lineHeight: 1.6 }}>
@@ -890,7 +890,7 @@ export default function MobileLanding() {
                   className="mobile-input"
                   style={{
                     width: "100%", padding: "14px 18px", fontSize: "1rem",
-                    border: "1.5px solid rgba(45, 90, 61,0.4)", borderRadius: "14px",
+                    border: "1.5px solid rgba(101, 153, 131,0.4)", borderRadius: "14px",
                     background: "rgba(255,255,255,0.5)", color: "#1a1a1a",
                     fontFamily: "inherit", marginBottom: "14px", outline: "none",
                     minHeight: "48px",

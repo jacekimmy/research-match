@@ -143,7 +143,7 @@ function ResultBox({ text }: { text: string }) {
   return (
     <div className="ex-result-box">
       <span className="ex-result-icon">&#10003;</span>
-      <p style={{ margin: 0, lineHeight: 1.7, fontWeight: 500, color: "#2d5a3d" }}>{text}</p>
+      <p style={{ margin: 0, lineHeight: 1.7, fontWeight: 500, color: "#2d5a47" }}>{text}</p>
     </div>
   );
 }
@@ -226,7 +226,7 @@ function GatedOverlay() {
           background: "rgba(255,255,255,0.8)",
           backdropFilter: "blur(16px)",
           WebkitBackdropFilter: "blur(16px)",
-          border: "1px solid rgba(45, 90, 61,0.2)",
+          border: "1px solid rgba(101, 153, 131,0.2)",
           borderRadius: "20px",
           padding: "48px 40px",
           maxWidth: "500px",
@@ -239,7 +239,7 @@ function GatedOverlay() {
             width: "56px",
             height: "56px",
             borderRadius: "16px",
-            background: "linear-gradient(135deg, #2d5a3d, #24956A)",
+            background: "linear-gradient(135deg, #659983, #249566)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -255,7 +255,7 @@ function GatedOverlay() {
             fontFamily: "'Playfair Display', serif",
             fontSize: "1.35rem",
             fontWeight: 700,
-            color: "#2d5a3d",
+            color: "#2d5a47",
             marginBottom: "14px",
             lineHeight: 1.35,
           }}
@@ -277,7 +277,7 @@ function GatedOverlay() {
           href="/app?upgrade=true"
           style={{
             display: "inline-block",
-            background: "linear-gradient(135deg, #2d5a3d, #24956A)",
+            background: "linear-gradient(135deg, #659983, #249566)",
             color: "#fff",
             padding: "14px 36px",
             borderRadius: "12px",
@@ -285,7 +285,7 @@ function GatedOverlay() {
             fontSize: "1rem",
             textDecoration: "none",
             transition: "transform 0.2s ease, box-shadow 0.2s ease",
-            boxShadow: "0 4px 16px rgba(45, 90, 61,0.3)",
+            boxShadow: "0 4px 16px rgba(101, 153, 131,0.3)",
           }}
         >
           Upgrade Now
@@ -359,7 +359,7 @@ export default function ExamplesPage() {
                       background: "rgba(255, 255, 255, 0.45)",
                       backdropFilter: "blur(16px)",
                       WebkitBackdropFilter: "blur(16px)",
-                      border: "1px solid rgba(45, 90, 61, 0.15)",
+                      border: "1px solid rgba(101, 153, 131, 0.15)",
                       borderRadius: "20px",
                       padding: "40px 36px",
                       boxShadow: "0 8px 32px rgba(0, 0, 0, 0.06)",
@@ -371,7 +371,7 @@ export default function ExamplesPage() {
                         fontFamily: "'Playfair Display', serif",
                         fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
                         fontWeight: 700,
-                        color: "#2d5a3d",
+                        color: "#2d5a47",
                         marginBottom: "24px",
                       }}
                     >
@@ -398,8 +398,8 @@ export default function ExamplesPage() {
                               width: "24px",
                               height: "24px",
                               borderRadius: "50%",
-                              background: "rgba(45, 90, 61, 0.12)",
-                              color: "#2d5a3d",
+                              background: "rgba(101, 153, 131, 0.12)",
+                              color: "#2d5a47",
                               fontSize: "0.75rem",
                               fontWeight: 700,
                               flexShrink: 0,

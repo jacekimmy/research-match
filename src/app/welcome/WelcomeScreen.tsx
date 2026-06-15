@@ -2,7 +2,7 @@
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 
-const CONFETTI_COLORS = ["#C4A265", "#F5EFE0", "#E8C97B", "#FFF8ED", "#D4B896", "#EDE0C4", "#FAEBD7"];
+const CONFETTI_COLORS = ["#c9ad77", "#F5EFE0", "#e8c47b", "#FFF8ED", "#d4bf96", "#EDE0C4", "#FAEBD7"];
 
 interface Particle {
   x: number;
@@ -188,11 +188,11 @@ export default function WelcomeScreen() {
           gap: 10px;
           background: linear-gradient(
             110deg,
-            #b8860b 0%,
-            #C4A265 25%,
-            #e8c97b 50%,
-            #C4A265 75%,
-            #b8860b 100%
+            #b87e0b 0%,
+            #c9ad77 25%,
+            #e8c47b 50%,
+            #c9ad77 75%,
+            #b87e0b 100%
           );
           background-size: 250% auto;
           color: #1a1209;
@@ -206,8 +206,8 @@ export default function WelcomeScreen() {
           text-decoration: none;
           letter-spacing: 0.015em;
           box-shadow:
-            0 0 0 1px rgba(196,162,101,0.3),
-            0 8px 32px rgba(196,162,101,0.45),
+            0 0 0 1px rgba(201, 173, 119,0.3),
+            0 8px 32px rgba(201, 173, 119,0.45),
             0 2px 8px rgba(0,0,0,0.2);
           transition: transform 0.2s, box-shadow 0.2s;
           animation: wc-btn-shimmer 3.5s linear infinite;
@@ -216,15 +216,15 @@ export default function WelcomeScreen() {
         .wc-btn:hover {
           transform: translateY(-3px) scale(1.03);
           box-shadow:
-            0 0 0 1px rgba(196,162,101,0.4),
-            0 14px 44px rgba(196,162,101,0.6),
+            0 0 0 1px rgba(201, 173, 119,0.4),
+            0 14px 44px rgba(201, 173, 119,0.6),
             0 4px 16px rgba(0,0,0,0.25);
         }
         .wc-btn:active {
           transform: scale(0.97);
           box-shadow:
-            0 0 0 1px rgba(196,162,101,0.3),
-            0 4px 16px rgba(196,162,101,0.3);
+            0 0 0 1px rgba(201, 173, 119,0.3),
+            0 4px 16px rgba(201, 173, 119,0.3);
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -249,7 +249,7 @@ export default function WelcomeScreen() {
         style={{
           position: "fixed",
           inset: 0,
-          background: "#2d5a3d",
+          background: "#659983",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -265,7 +265,7 @@ export default function WelcomeScreen() {
             position: "absolute",
             inset: 0,
             background:
-              "radial-gradient(ellipse 70% 60% at 50% 46%, rgba(196,162,101,0.16) 0%, transparent 70%)",
+              "radial-gradient(ellipse 70% 60% at 50% 46%, rgba(201, 173, 119,0.16) 0%, transparent 70%)",
             pointerEvents: "none",
             animation: "wc-glow-pulse 4s ease-in-out infinite",
           }}
@@ -307,7 +307,7 @@ export default function WelcomeScreen() {
             className="wc-sparkle"
             style={{
               fontSize: "clamp(1.5rem, 4vw, 2.2rem)",
-              color: "#C4A265",
+              color: "#c9ad77",
               marginBottom: "18px",
               letterSpacing: "0.3em",
             }}
@@ -326,7 +326,7 @@ export default function WelcomeScreen() {
               lineHeight: 1.0,
               letterSpacing: "-0.025em",
               margin: "0 0 22px",
-              textShadow: "0 2px 40px rgba(196,162,101,0.2)",
+              textShadow: "0 2px 40px rgba(201, 173, 119,0.2)",
             }}
           >
             You&rsquo;re in.
@@ -355,7 +355,7 @@ export default function WelcomeScreen() {
               width: "52px",
               height: "1.5px",
               background:
-                "linear-gradient(90deg, transparent, rgba(196,162,101,0.65), transparent)",
+                "linear-gradient(90deg, transparent, rgba(201, 173, 119,0.65), transparent)",
               margin: "0 auto 30px",
             }}
           />
@@ -386,7 +386,7 @@ export default function WelcomeScreen() {
               >
                 <span
                   style={{
-                    color: "#C4A265",
+                    color: "#c9ad77",
                     fontSize: "0.7rem",
                     flexShrink: 0,
                   }}

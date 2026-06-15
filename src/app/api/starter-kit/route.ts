@@ -145,7 +145,7 @@ function buildContentStream(): string[] {
   const PAGE_RIGHT = 556;
 
   // ── Decorative header bar ──
-  L.push("0.11 0.478 0.337 rg"); // #1C7A56
+  L.push("0.11 0.478 0.337 rg"); // #1c7a53
   L.push("0 762 612 30 re f");
 
   // ── Title ──
