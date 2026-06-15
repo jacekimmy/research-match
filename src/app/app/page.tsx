@@ -8,6 +8,15 @@ import { supabase } from "@/lib/supabase";
 import { hasPaidAccess, normalizeReferralCode, planLabelFor } from "@/lib/buddy-pass";
 import { track } from "@/lib/analytics";
 
+// OpenAlex can occasionally hang; without a timeout a single stalled request
+// freezes the search spinner forever. oaFetch bounds every client OpenAlex call
+// so the search always resolves (the catch/finally clears loading). Callers may
+// still pass their own init (e.g. a shorter signal) — it overrides the default.
+const OA_TIMEOUT_MS = 15000;
+function oaFetch(url: string, init?: RequestInit): Promise<Response> {
+  return fetch(url, { signal: AbortSignal.timeout(OA_TIMEOUT_MS), ...init });
+}
+
 export default function AppPageWrapper() {
   return <Suspense><AppPageInner /></Suspense>;
 }
@@ -763,7 +772,7 @@ function AppPageInner() {
       if (topicIds.length === 0) {
         // Text search fallback — use first topic
         const instFilter = institutionIds.length > 0 ? `&filter=authorships.institutions.id:${institutionIds[0]}` : "";
-        const worksRes = await fetch(`https://api.openalex.org/works?search=${encodeURIComponent(allTopics[0])}${instFilter}&sort=publication_date:desc&per_page=20&select=authorships`);
+        const worksRes = await oaFetch(`https://api.openalex.org/works?search=${encodeURIComponent(allTopics[0])}${instFilter}&sort=publication_date:desc&per_page=20&select=authorships`);
         const worksData = await worksRes.json();
         const works = worksData.results ?? [];
         
@@ -782,7 +791,7 @@ function AppPageInner() {
 
         const shortIds = Array.from(authorIdsToFetch.keys());
         if (shortIds.length > 0) {
-          const fetches = shortIds.map(id => fetch(`https://api.openalex.org/authors/${id}?select=id,display_name,last_known_institutions,works_count,cited_by_count,topics,geo`).then(r => r.ok ? r.json() : null));
+          const fetches = shortIds.map(id => oaFetch(`https://api.openalex.org/authors/${id}?select=id,display_name,last_known_institutions,works_count,cited_by_count,topics,geo`).then(r => r.ok ? r.json() : null).catch(() => null));
           const results = await Promise.all(fetches);
           
           const authorMap = new Map<string, Author>();
@@ -802,13 +811,13 @@ function AppPageInner() {
         if (institutionIds.length > 0) {
           // Search WITH institution filter first
           const instFilter = `last_known_institutions.id:${institutionIds.join("|")}`;
-          const res = await fetch(`https://api.openalex.org/authors?filter=topics.id:${topicFilter},${instFilter}&per_page=50&sort=cited_by_count:desc`);
+          const res = await oaFetch(`https://api.openalex.org/authors?filter=topics.id:${topicFilter},${instFilter}&per_page=50&sort=cited_by_count:desc`);
           const data = await res.json();
           authors = (data.results || []).filter((a: Author) => fullInstIds.includes(a.last_known_institutions?.[0]?.id));
 
           // If still no results, try a text-based works search at that institution
           if (authors.length === 0) {
-            const worksRes = await fetch(`https://api.openalex.org/works?search=${encodeURIComponent(allTopics[0])}&filter=authorships.institutions.id:${institutionIds.join("|")}&sort=cited_by_count:desc&per_page=50&select=authorships`);
+            const worksRes = await oaFetch(`https://api.openalex.org/works?search=${encodeURIComponent(allTopics[0])}&filter=authorships.institutions.id:${institutionIds.join("|")}&sort=cited_by_count:desc&per_page=50&select=authorships`);
             const worksData = await worksRes.json();
             
             const authorIdsToFetch = new Map<string, string>();
@@ -826,7 +835,7 @@ function AppPageInner() {
 
             const shortIds = Array.from(authorIdsToFetch.keys());
             if (shortIds.length > 0) {
-              const fetches = shortIds.map(id => fetch(`https://api.openalex.org/authors/${id}?select=id,display_name,last_known_institutions,works_count,cited_by_count,topics,geo`).then(r => r.ok ? r.json() : null));
+              const fetches = shortIds.map(id => oaFetch(`https://api.openalex.org/authors/${id}?select=id,display_name,last_known_institutions,works_count,cited_by_count,topics,geo`).then(r => r.ok ? r.json() : null).catch(() => null));
               const results = await Promise.all(fetches);
               
               const authorMap = new Map<string, Author>();
@@ -843,7 +852,7 @@ function AppPageInner() {
 
           // If still nothing, fall back to global results with a note
           if (authors.length === 0) {
-            const globalRes = await fetch(`https://api.openalex.org/authors?filter=topics.id:${topicFilter}&per_page=20&sort=cited_by_count:desc`);
+            const globalRes = await oaFetch(`https://api.openalex.org/authors?filter=topics.id:${topicFilter}&per_page=20&sort=cited_by_count:desc`);
             const globalData = await globalRes.json();
             authors = globalData.results || [];
             if (authors.length > 0) {
@@ -852,7 +861,7 @@ function AppPageInner() {
           }
         } else {
           // No institution filter — global search
-          const res = await fetch(`https://api.openalex.org/authors?filter=topics.id:${topicFilter}&per_page=50&sort=cited_by_count:desc`);
+          const res = await oaFetch(`https://api.openalex.org/authors?filter=topics.id:${topicFilter}&per_page=50&sort=cited_by_count:desc`);
           const data = await res.json();
           authors = data.results || [];
         }
@@ -918,7 +927,7 @@ function AppPageInner() {
       if (authors.length > 0 && institutionIds.length === 1 && institutionNames.length === 1) {
         setNearbyProfs([]);
         setNearbyLoading(true);
-        const resolveTopicId = topicIds[0] ?? await fetch(`https://api.openalex.org/topics?search=${encodeURIComponent(allTopics[0])}&per_page=1`)
+        const resolveTopicId = topicIds[0] ?? await oaFetch(`https://api.openalex.org/topics?search=${encodeURIComponent(allTopics[0])}&per_page=1`)
           .then(r => r.json()).then(d => d.results?.[0]?.id?.split("/").pop() ?? null).catch(() => null);
         if (resolveTopicId) {
           fetchNearby(resolveTopicId, institutionNames[0], authors.map(a => a.id));
@@ -1005,7 +1014,7 @@ function AppPageInner() {
         await Promise.all(samplesToCheck.map(async (coId) => {
           try {
             const cId = coId.split("/").pop();
-            const r = await fetch(`https://api.openalex.org/authors/${cId}?select=works_count`, { signal: AbortSignal.timeout(3000) });
+            const r = await oaFetch(`https://api.openalex.org/authors/${cId}?select=works_count`, { signal: AbortSignal.timeout(3000) });
             const d = await r.json();
             if (d.works_count < 5) studentCount++;
           } catch { /* skip */ }
@@ -1057,7 +1066,7 @@ function AppPageInner() {
     setShowSaved(false);
     fetch("/api/log-search", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ research_interest: profName, university: null, is_authenticated: !!user }) }).catch(() => {});
     try {
-      const res = await fetch(`https://api.openalex.org/authors?search=${encodeURIComponent(profName.trim())}&per_page=10&sort=cited_by_count:desc`);
+      const res = await oaFetch(`https://api.openalex.org/authors?search=${encodeURIComponent(profName.trim())}&per_page=10&sort=cited_by_count:desc`);
       const data = await res.json();
       const authors: Author[] = data.results || [];
       if (authors.length === 0) setError(`No professors found matching "${profName}".`);
