@@ -8772,3 +8772,132 @@ body.rm-email-open .rm-floating-nav,
 body.rm-email-open .lp-nav { display: none; }
 .rm-modal-overlay { z-index: 600; }
 .rm-modal { max-height: calc(100svh - 48px); }
+
+/* ═══════════════════════════════════════════════════════════════════
+   MOBILE LIQUID-GLASS + PREMIUM PALETTE  (≤ 768px only; desktop untouched)
+   Buttons become reactive liquid glass: a specular sheen tracks touch
+   (--lgx/--lgy, set in JS), they light up on press (.lg-active), and the
+   molten edge animates only while on-screen (.lg-inview, gated in JS).
+═══════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* — Reactive liquid-glass buttons — */
+  .rm-summarize-btn,
+  .rm-search-btn,
+  .btn-cta,
+  .btn-secondary,
+  .lp-plan-cta,
+  .lg-glass {
+    position: relative;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.4) !important;
+    color: #355c43 !important;
+    border: 1px solid rgba(255, 255, 255, 0.6) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(1.35);
+    backdrop-filter: blur(16px) saturate(1.35);
+    box-shadow:
+      0 6px 20px rgba(45, 90, 61, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.7) !important;
+    text-shadow: none !important;
+    transition: transform 0.2s ease, box-shadow 0.3s ease, background 0.3s ease;
+  }
+  /* primary actions get a soft green tint so hierarchy survives the glass */
+  .rm-summarize-btn,
+  .rm-search-btn,
+  .btn-cta {
+    background: rgba(58, 107, 74, 0.16) !important;
+    color: #2f5239 !important;
+    border-color: rgba(58, 107, 74, 0.28) !important;
+  }
+  /* the specular highlight that follows the finger (position from JS) */
+  .rm-summarize-btn::after,
+  .rm-search-btn::after,
+  .btn-cta::after,
+  .btn-secondary::after,
+  .lp-plan-cta::after,
+  .lg-glass::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(120px 120px at var(--lgx, 50%) var(--lgy, -20%),
+      rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0) 60%);
+    opacity: 0.55;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    filter: url(#lgMolten);
+    transition: opacity 0.25s ease;
+  }
+  /* press: light up + settle, just before the action fires */
+  .lg-active {
+    transform: scale(0.975);
+    box-shadow:
+      0 0 0 3px rgba(196, 162, 101, 0.22),
+      0 10px 28px rgba(45, 90, 61, 0.16) !important;
+  }
+  .lg-active::after { opacity: 1; }
+  @media (prefers-reduced-motion: reduce) {
+    .rm-summarize-btn::after, .rm-search-btn::after, .btn-cta::after,
+    .btn-secondary::after, .lp-plan-cta::after, .lg-glass::after { transition: none; }
+    .lg-active { transform: none; }
+  }
+
+  /* — Premium palette: lighten the bold greens/blacks, soften weights — */
+  .rm-card-name { color: #2f4636 !important; font-weight: 500 !important; }
+  .rm-card-affiliation { color: #8a938c !important; }
+  .rm-hero-title-black { color: #3a3a38 !important; }
+  .rm-summary-copy, .rm-summary-block p { color: #55605a !important; }
+  .rm-stat-num { color: #3a6b4a !important; font-weight: 500 !important; }
+  .rm-stat-label { color: #9aa39d !important; }
+
+  /* — Declutter the card: drop tags, soften the stat pills into quiet text — */
+  .rm-card .rm-topic-row { display: none; }
+  .rm-card .rm-card-divider { display: none; }
+  .rm-stat-pill {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+  .rm-card-stats { gap: 14px !important; }
+  .rm-results-stack { gap: 14px !important; }
+}
+
+/* ── Mobile page redesign: collapsed search pill, quiet header, airy cards ── */
+.rm-mobile-searchbar { display: none; }
+.rm-results-count { display: none; }
+@media (max-width: 768px) {
+  .rm-mobile-searchbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    margin: 0 0 14px;
+    padding: 13px 16px;
+    border-radius: 16px;
+    font-family: inherit;
+    cursor: pointer;
+    text-align: left;
+  }
+  .rm-mobile-searchbar-q {
+    flex: 1;
+    font-size: 15px;
+    color: #2f4636;
+    position: relative;
+    z-index: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .rm-mobile-searchbar-edit { color: #9aa39d; font-size: 15px; position: relative; z-index: 1; }
+
+  .rm-compact-collapsed { display: none; }
+
+  .rm-results-verbose { display: none; }
+  .rm-results-count { display: inline; font-size: 13px; color: #8a938c; }
+  .rm-results-header { margin-bottom: 12px !important; }
+
+  /* Card: stack identity over one quiet stats line, more air */
+  .rm-card { padding: 22px 20px !important; }
+  .rm-card .rm-card-top { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .rm-card .rm-card-stats { flex-direction: row; gap: 16px; align-items: baseline; }
+  .rm-results-stack { gap: 16px !important; }
+}
