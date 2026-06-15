@@ -1772,8 +1772,7 @@ function AppPageInner() {
             {/* STATUS */}
             {loading && (
               <div style={{ textAlign: "center", marginBottom: "32px" }}>
-                <span className="loading-spinner">&#127807;</span>
-                <p style={{ fontSize: "1.1rem", color: "#6b7280", marginTop: "12px" }}>Searching...</p>
+                <p style={{ fontSize: "1.1rem", color: "#6b7280" }}>Searching<span className="rm-dots" aria-hidden="true"><i></i><i></i><i></i></span></p>
               </div>
             )}
             {error && <p style={{ textAlign: "center", fontSize: "1.1rem", color: "#c45c5c", marginBottom: "32px" }}>{error}</p>}
@@ -2032,8 +2031,7 @@ function AppPageInner() {
                       )}
                       {isLookingUp && (
                         <div style={{ padding: "14px 18px", background: "rgba(101, 153, 131,0.03)", borderRadius: "12px", border: "1px solid rgba(101, 153, 131,0.2)", display: "flex", alignItems: "center", gap: "8px" }}>
-                          <span className="loading-spinner" style={{ fontSize: "0.9rem" }}>&#127807;</span>
-                          <span style={{ fontSize: "0.85rem", color: "#6b7280" }}>Searching ORCID, OpenAlex, and faculty pages...</span>
+                          <span style={{ fontSize: "0.85rem", color: "#6b7280" }}>Searching ORCID, OpenAlex, and faculty pages<span className="rm-dots" aria-hidden="true"><i></i><i></i><i></i></span></span>
                         </div>
                       )}
                       {lookup && (
@@ -2229,10 +2227,7 @@ function AppPageInner() {
                     <div style={{ marginTop: "28px" }}>
                       <button onClick={() => loadSummary(author)} disabled={isLoadingSummary} className="rm-summarize-btn">
                         {isLoadingSummary ? (
-                          <>
-                            <span className="loading-spinner" style={{ fontSize: "1rem" }}>&#127807;</span>
-                            Generating summary...
-                          </>
+                          <>Generating summary<span className="rm-dots" aria-hidden="true"><i></i><i></i><i></i></span></>
                         ) : (
                           <>Summarize research <span style={{ fontSize: "1.1em", marginLeft: "2px" }}>→</span></>
                         )}
@@ -2271,10 +2266,7 @@ function AppPageInner() {
                     <div style={{ marginTop: "28px" }}>
                       <button onClick={() => loadSummary(author)} disabled={isLoadingSummary} className="rm-summarize-btn">
                         {isLoadingSummary ? (
-                          <>
-                            <span className="loading-spinner" style={{ fontSize: "1rem" }}>&#127807;</span>
-                            Generating summary...
-                          </>
+                          <>Generating summary<span className="rm-dots" aria-hidden="true"><i></i><i></i><i></i></span></>
                         ) : (
                           <>Summarize research <span style={{ fontSize: "1.1em", marginLeft: "2px" }}>→</span></>
                         )}
@@ -2368,8 +2360,7 @@ function AppPageInner() {
 
             {nearbyLoading && (
               <div style={{ textAlign: "center", padding: "30px 0" }}>
-                <span className="loading-spinner">🍃</span>
-                <p style={{ color: "#6b7280", marginTop: "10px", fontSize: "0.9rem" }}>Finding similar researchers...</p>
+                <p style={{ color: "#6b7280", fontSize: "0.9rem" }}>Finding similar researchers<span className="rm-dots" aria-hidden="true"><i></i><i></i><i></i></span></p>
               </div>
             )}
 
@@ -2436,7 +2427,7 @@ function AppPageInner() {
                       style={{ marginTop: "16px", padding: "8px 20px", fontSize: "0.8rem", width: "100%" }}
                     >
                       {loadingSummary[author.id.split("/").pop()!] ? (
-                        <><span className="loading-spinner" style={{ fontSize: "0.9rem" }}>🍃</span> Summarizing...</>
+                        <>Summarizing<span className="rm-dots" aria-hidden="true"><i></i><i></i><i></i></span></>
                       ) : summaries[author.id.split("/").pop()!] ? "View summary ↓" : "Summarize research →"}
                     </button>
                   )}
@@ -2602,9 +2593,8 @@ function AppPageInner() {
                     ) : (
                       <button onClick={checkEmail} disabled={checkingEmail || !emailDraft.trim()} className="btn-cta" style={{ padding: "14px 36px", fontSize: "1rem" }}>
                         {checkingEmail ? (
-                          <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
-                            <span className="loading-spinner" style={{ fontSize: "0.9rem" }}>&#127807;</span>
-                            Checking...
+                          <span style={{ display: "inline-flex", alignItems: "center" }}>
+                            Checking<span className="rm-dots" aria-hidden="true"><i></i><i></i><i></i></span>
                           </span>
                         ) : "Check email"}
                       </button>
@@ -2708,8 +2698,7 @@ function AppPageInner() {
                   <div style={{ height: "1px", background: "linear-gradient(to right, transparent, #8aaa9d, transparent)", opacity: 0.5, marginBottom: "24px" }} />
                   {isLoadingTargetSummary && (
                     <div style={{ textAlign: "center", padding: "20px 0" }}>
-                      <span className="loading-spinner">&#127807;</span>
-                      <p style={{ fontSize: "0.9rem", color: "#6b7280", marginTop: "8px" }}>Loading research info...</p>
+                      <p style={{ fontSize: "0.9rem", color: "#6b7280" }}>Loading research info<span className="rm-dots" aria-hidden="true"><i></i><i></i><i></i></span></p>
                     </div>
                   )}
                   {targetSummary && (
