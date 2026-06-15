@@ -617,62 +617,10 @@ function AppPageInner() {
     };
   }, [emailTarget]);
 
-  // Liquid-glass buttons (mobile only): a specular sheen tracks touch, buttons
-  // light up on press, and the molten edge animates ONLY while a glass button is
-  // on-screen and the tab is visible (battery-friendly). Desktop is untouched.
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (!window.matchMedia("(max-width: 768px)").matches) return;
-    const SEL = ".rm-summarize-btn, .rm-search-btn, .btn-cta, .btn-secondary, .lp-plan-cta, .lg-glass";
-    const turb = document.getElementById("lgTurb");
-
-    const onMove = (e: PointerEvent) => {
-      const el = (e.target as Element | null)?.closest?.(SEL) as HTMLElement | null;
-      if (!el) return;
-      const r = el.getBoundingClientRect();
-      el.style.setProperty("--lgx", `${((e.clientX - r.left) / r.width) * 100}%`);
-      el.style.setProperty("--lgy", `${((e.clientY - r.top) / r.height) * 100}%`);
-    };
-    const onDown = (e: PointerEvent) => {
-      const el = (e.target as Element | null)?.closest?.(SEL);
-      if (el) el.classList.add("lg-active");
-    };
-    const clearActive = () => document.querySelectorAll(".lg-active").forEach((el) => el.classList.remove("lg-active"));
-    document.addEventListener("pointermove", onMove, { passive: true });
-    document.addEventListener("pointerdown", onDown, { passive: true });
-    document.addEventListener("pointerup", clearActive, { passive: true });
-    document.addEventListener("pointercancel", clearActive, { passive: true });
-
-    let inView = 0, t = 0, raf = 0, running = false;
-    const step = () => {
-      if (!running) return;
-      t += 0.008;
-      if (turb) turb.setAttribute("baseFrequency", `${(0.01 + Math.sin(t) * 0.004).toFixed(4)} ${(0.018 + Math.cos(t * 0.8) * 0.004).toFixed(4)}`);
-      raf = requestAnimationFrame(step);
-    };
-    const sync = () => {
-      const should = inView > 0 && document.visibilityState === "visible";
-      if (should && !running) { running = true; raf = requestAnimationFrame(step); }
-      else if (!should && running) { running = false; cancelAnimationFrame(raf); }
-    };
-    const io = new IntersectionObserver((ents) => {
-      ents.forEach((en) => { inView += en.isIntersecting ? 1 : -1; });
-      if (inView < 0) inView = 0;
-      sync();
-    });
-    document.querySelectorAll(SEL).forEach((el) => io.observe(el));
-    document.addEventListener("visibilitychange", sync);
-
-    return () => {
-      document.removeEventListener("pointermove", onMove);
-      document.removeEventListener("pointerdown", onDown);
-      document.removeEventListener("pointerup", clearActive);
-      document.removeEventListener("pointercancel", clearActive);
-      document.removeEventListener("visibilitychange", sync);
-      io.disconnect();
-      cancelAnimationFrame(raf);
-    };
-  }, [results, summaries, showSaved, emailTarget, nearbyProfs]);
+  // (Removed the per-pointer liquid-glass sheen + animated SVG molten filter:
+  // it caused mobile lag and a cursor-following white hot-spot. Mobile buttons
+  // are now a solid calm green with a fixed gloss and a cheap CSS :active press
+  // — see the mobile button block in globals.css.)
 
   // Toast helper
   const showToast = useCallback((msg: string, duration = 2200) => {
@@ -1421,12 +1369,6 @@ function AppPageInner() {
               yChannelSelector="G"
             />
           </filter>
-          {/* Liquid-glass molten edge (mobile glass buttons). Animated in JS,
-              paused when no glass button is on-screen. */}
-          <filter id="lgMolten" x="-20%" y="-20%" width="140%" height="140%">
-            <feTurbulence id="lgTurb" type="fractalNoise" baseFrequency="0.01 0.018" numOctaves="2" seed="4" result="lgn" />
-            <feDisplacementMap in="SourceGraphic" in2="lgn" scale="5" xChannelSelector="R" yChannelSelector="G" />
-          </filter>
         </defs>
       </svg>
 
@@ -2004,7 +1946,6 @@ function AppPageInner() {
                       cursor: "pointer", padding: "20px",
                     }}
                   >
-                    <span style={{ fontSize: "1.4rem", marginBottom: "12px" }}>🔒</span>
                     <span
                       style={{
                         background: "#2d5a3d", color: "#fff", fontSize: "0.8rem", fontWeight: 700,
@@ -2047,7 +1988,7 @@ function AppPageInner() {
                         </div>
                       ) : (
                         <div className="rm-resp-line rm-resp-locked">
-                          <span aria-hidden="true">&#128274;</span>
+                          <span className="rm-resp-dot" style={{ background: "#c4cdc6" }} />
                           <span>Summarize to see if they take students</span>
                         </div>
                       )
@@ -2151,9 +2092,8 @@ function AppPageInner() {
                   );
                 })() : (
                   <div className="rm-locked-row rm-feature-lock" style={{ marginTop: "18px" }}>
-                    <span style={{ fontSize: "0.9rem", opacity: 0.6 }}>&#128274;</span>
                     <span style={{ fontSize: "0.85rem", color: "#6b7280", flex: 1 }}>Professor email finder</span>
-                    <span style={{ fontSize: "0.72rem", color: "#8aaa96", fontStyle: "italic", letterSpacing: "0.02em" }}>Summarize to unlock</span>
+                    <span className="rm-locked-tag">Summarize to unlock</span>
                   </div>
                 )}
 
@@ -2192,7 +2132,6 @@ function AppPageInner() {
                               {summary.highlights.slice(1).map((h, i) => renderFinding(h, i + 1))}
                             </div>
                             <button type="button" className="rm-locked-overlay" onClick={openSummaryPaywall}>
-                              <span aria-hidden="true">🔒</span>
                               See the other {summary.highlights.length - 1} finding{summary.highlights.length - 1 === 1 ? "" : "s"}
                               <span className="rm-locked-overlay-sub">Free account to unlock</span>
                             </button>
@@ -2211,7 +2150,6 @@ function AppPageInner() {
                               {summary.questions.slice(1).map((q, i) => renderQuestion(q, i + 1))}
                             </div>
                             <button type="button" className="rm-locked-overlay" onClick={openSummaryPaywall}>
-                              <span aria-hidden="true">🔒</span>
                               See all {summary.questions.length} questions
                               <span className="rm-locked-overlay-sub">Free account to unlock</span>
                             </button>
@@ -2275,9 +2213,8 @@ function AppPageInner() {
                       </button>
                     ) : (
                       <div className="rm-locked-row" style={{ marginTop: "16px" }}>
-                        <span style={{ fontSize: "0.9rem", opacity: 0.6 }}>&#128274;</span>
                         <span style={{ fontSize: "0.85rem", color: "#6b7280", flex: 1 }}>Email checker</span>
-                        <span style={{ fontSize: "0.72rem", color: "#8aaa96", fontStyle: "italic", letterSpacing: "0.02em" }}>Summarize to unlock</span>
+                        <span className="rm-locked-tag">Summarize to unlock</span>
                       </div>
                     )}
                   </div>
@@ -2314,7 +2251,6 @@ function AppPageInner() {
                           hitPaywall("summary");
                         }}
                       >
-                        <span style={{ fontSize: "1.6rem", marginBottom: "10px" }}>&#128274;</span>
                         <p style={{ fontSize: "1rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "6px" }}>
                           See this professor&apos;s research
                         </p>
@@ -2384,7 +2320,6 @@ function AppPageInner() {
             padding: "32px 28px",
             textAlign: "center",
           }}>
-            <p style={{ fontSize: "1.4rem", marginBottom: "12px" }}>🔒</p>
             <p style={{ fontWeight: 700, fontSize: "1.05rem", color: "#2d5a3d", marginBottom: "8px" }}>
               {displayList.length - 3} more professor{displayList.length - 3 === 1 ? "" : "s"} found for your search
             </p>
@@ -2459,7 +2394,6 @@ function AppPageInner() {
                       if (user) setShowUpgradeModal(true);
                     }}
                     >
-                      <span style={{ fontSize: "2rem", marginBottom: "12px" }}>🔒</span>
                       <p style={{ fontSize: "0.95rem", fontWeight: 700, color: "#2d5a3d", textAlign: "center", marginBottom: "6px" }}>
                         Summarize a professor to unlock
                       </p>
@@ -2734,7 +2668,6 @@ function AppPageInner() {
                               onClick={openCheckerSignup}
                               style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", cursor: "pointer", background: "linear-gradient(to bottom, rgba(245,240,230,0.55) 0%, rgba(245,240,230,0.96) 55%)", padding: "16px", borderRadius: "12px" }}
                             >
-                              <span style={{ fontSize: "1.2rem", marginBottom: "8px" }}>&#128274;</span>
                               <p style={{ fontSize: "0.92rem", fontWeight: 700, color: "#2d5a3d", marginBottom: "4px" }}>
                                 {hidden.length} more {hidden.length === 1 ? "issue" : "issues"} found
                               </p>

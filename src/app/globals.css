@@ -1804,10 +1804,23 @@ body::after {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 16px;
-  background: rgba(45, 90, 61, 0.03);
-  border: 1px solid rgba(45, 90, 61, 0.09);
+  padding: 13px 16px;
+  background: rgba(45, 90, 61, 0.04);
+  border: 1px solid rgba(45, 90, 61, 0.13);
   border-radius: 12px;
+}
+/* the "Summarize to unlock" hint — a tidy tag inside the locked row, not
+   loose floating words */
+.rm-locked-tag {
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: #355c43;
+  background: rgba(45, 90, 61, 0.1);
+  padding: 4px 11px;
+  border-radius: 999px;
+  white-space: nowrap;
 }
 
 /* ─── Card divider ─── */
@@ -4954,12 +4967,12 @@ body::after {
   }
 
   .rm-locked-row {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
   }
 
   .rm-locked-row > span:last-child {
-    width: 100%;
-    margin-left: 24px;
+    width: auto;
+    margin-left: auto;
   }
 }
 
@@ -8774,70 +8787,99 @@ body.rm-email-open .lp-nav { display: none; }
 .rm-modal { max-height: calc(100svh - 48px); }
 
 /* ═══════════════════════════════════════════════════════════════════
-   MOBILE LIQUID-GLASS + PREMIUM PALETTE  (≤ 768px only; desktop untouched)
-   Buttons become reactive liquid glass: a specular sheen tracks touch
-   (--lgx/--lgy, set in JS), they light up on press (.lg-active), and the
-   molten edge animates only while on-screen (.lg-inview, gated in JS).
+   MOBILE BUTTONS + PREMIUM PALETTE  (≤ 768px only; desktop untouched)
+   Primary buttons are a single calm green with a fixed top gloss (same
+   no matter where you tap) and a cheap CSS :active press. No backdrop
+   blur, no pointer-tracked sheen, no animated SVG filter -> no lag.
 ═══════════════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
-  /* — Reactive liquid-glass buttons — */
-  .rm-summarize-btn,
-  .rm-search-btn,
-  .btn-cta,
-  .btn-secondary,
-  .lp-plan-cta,
-  .lg-glass {
-    position: relative;
-    overflow: hidden;
-    background: rgba(255, 255, 255, 0.4) !important;
-    color: #355c43 !important;
-    border: 1px solid rgba(255, 255, 255, 0.6) !important;
-    -webkit-backdrop-filter: blur(16px) saturate(1.35);
-    backdrop-filter: blur(16px) saturate(1.35);
-    box-shadow:
-      0 6px 20px rgba(45, 90, 61, 0.08),
-      inset 0 1px 0 rgba(255, 255, 255, 0.7) !important;
-    text-shadow: none !important;
-    transition: transform 0.2s ease, box-shadow 0.3s ease, background 0.3s ease;
-  }
-  /* primary actions get a soft green tint so hierarchy survives the glass */
+  /* — Unified calm-green buttons. No backdrop blur, no cursor-tracking sheen,
+       no animated SVG filter -> smooth on mobile. A single fixed gloss sits at
+       the top of every primary button, identical no matter where you tap. — */
   .rm-summarize-btn,
   .rm-search-btn,
   .btn-cta {
-    background: rgba(47, 82, 57, 0.85) !important;
+    position: relative;
+    overflow: hidden;
+    background: #4d6a54 !important;          /* the calm green (matches Sign up) */
     color: #f4f0ea !important;
-    border-color: rgba(255, 255, 255, 0.22) !important;
+    border: 1px solid rgba(255, 255, 255, 0.16) !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    text-shadow: none !important;
+    box-shadow:
+      0 6px 18px rgba(45, 90, 61, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+    transition: transform 0.16s ease, box-shadow 0.25s ease, filter 0.2s ease;
   }
-  /* the specular highlight that follows the finger (position from JS) */
+  /* fixed top gloss — consistent, never follows the pointer */
   .rm-summarize-btn::after,
   .rm-search-btn::after,
-  .btn-cta::after,
-  .btn-secondary::after,
-  .lp-plan-cta::after,
-  .lg-glass::after {
+  .btn-cta::after {
     content: "";
     position: absolute;
-    inset: 0;
-    background: radial-gradient(120px 120px at var(--lgx, 50%) var(--lgy, -20%),
-      rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0) 60%);
-    opacity: 0.55;
+    left: 0; right: 0; top: 0;
+    height: 56%;
+    background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.22) 0%,
+      rgba(255, 255, 255, 0.07) 45%,
+      rgba(255, 255, 255, 0) 100%);
     pointer-events: none;
-    mix-blend-mode: screen;
-    filter: url(#lgMolten);
-    transition: opacity 0.25s ease;
+    border-radius: inherit;
   }
-  /* press: light up + settle, just before the action fires */
-  .lg-active {
-    transform: scale(0.975);
+  /* press: settle + brighten, identical everywhere (cheap CSS :active, no JS) */
+  .rm-summarize-btn:active,
+  .rm-search-btn:active,
+  .btn-cta:active {
+    transform: scale(0.98);
+    filter: brightness(1.07);
     box-shadow:
-      0 0 0 3px rgba(196, 162, 101, 0.22),
-      0 10px 28px rgba(45, 90, 61, 0.16) !important;
+      0 3px 10px rgba(45, 90, 61, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
   }
-  .lg-active::after { opacity: 1; }
+
+  /* — Secondary / ghost buttons: light, clean, no blur — */
+  .btn-secondary,
+  .lp-plan-cta {
+    position: relative;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.66) !important;
+    color: #3f6b50 !important;
+    border: 1px solid rgba(77, 106, 84, 0.26) !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    text-shadow: none !important;
+    box-shadow: 0 2px 8px rgba(45, 90, 61, 0.06) !important;
+    transition: transform 0.16s ease, background 0.2s ease;
+  }
+  .btn-secondary:active,
+  .lp-plan-cta:active { transform: scale(0.98); background: rgba(255, 255, 255, 0.82) !important; }
+
+  /* — Collapsed search pill: light glass (single element, cheap), no sheen — */
+  .lg-glass {
+    position: relative;
+    background: rgba(255, 255, 255, 0.55) !important;
+    color: #2f4636 !important;
+    border: 1px solid rgba(77, 106, 84, 0.18) !important;
+    -webkit-backdrop-filter: blur(14px) saturate(1.3);
+    backdrop-filter: blur(14px) saturate(1.3);
+    box-shadow: 0 4px 16px rgba(45, 90, 61, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    transition: transform 0.16s ease;
+  }
+  .lg-glass:active { transform: scale(0.99); }
+
+  /* the prominent in-card email CTA shares the same calm green */
+  .rm-email-cta {
+    background: linear-gradient(135deg, #4d6a54 0%, #567c61 100%) !important;
+    box-shadow: 0 6px 18px rgba(45, 90, 61, 0.18) !important;
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .rm-summarize-btn::after, .rm-search-btn::after, .btn-cta::after,
-    .btn-secondary::after, .lp-plan-cta::after, .lg-glass::after { transition: none; }
-    .lg-active { transform: none; }
+    .rm-summarize-btn:active, .rm-search-btn:active, .btn-cta:active,
+    .lp-plan-cta:active, .btn-secondary:active, .lg-glass:active {
+      transform: none;
+      filter: none;
+    }
   }
 
   /* — Premium palette: lighten the bold greens/blacks, soften weights — */
