@@ -601,19 +601,28 @@ function AppPageInner() {
   // Lock body scroll AND hide the floating nav when the email modal is open, so
   // the focused composer never collides with the nav. The modal has its own ✕.
   useEffect(() => {
-    if (emailTarget) {
-      document.body.style.overflow = "hidden";
-      document.body.style.touchAction = "none";
-      document.body.classList.add("rm-email-open");
-    } else {
-      document.body.style.overflow = "";
-      document.body.style.touchAction = "";
-      document.body.classList.remove("rm-email-open");
-    }
+    if (!emailTarget) return;
+    // iOS-safe scroll lock: body { overflow: hidden } does NOT stop the document
+    // scrolling on iOS Safari, so the professor list scrolled behind the modal.
+    // Pin the body with position: fixed at the current offset and restore on close.
+    const scrollY = window.scrollY;
+    const b = document.body;
+    b.style.position = "fixed";
+    b.style.top = `-${scrollY}px`;
+    b.style.left = "0";
+    b.style.right = "0";
+    b.style.width = "100%";
+    b.style.overflow = "hidden";
+    b.classList.add("rm-email-open");
     return () => {
-      document.body.style.overflow = "";
-      document.body.style.touchAction = "";
-      document.body.classList.remove("rm-email-open");
+      b.style.position = "";
+      b.style.top = "";
+      b.style.left = "";
+      b.style.right = "";
+      b.style.width = "";
+      b.style.overflow = "";
+      b.classList.remove("rm-email-open");
+      window.scrollTo(0, scrollY);
     };
   }, [emailTarget]);
 

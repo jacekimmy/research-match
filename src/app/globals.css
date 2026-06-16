@@ -1813,12 +1813,15 @@ body::after {
    loose floating words */
 .rm-locked-tag {
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.01em;
   color: #355c4c;
   background: rgba(101, 153, 131, 0.1);
-  padding: 4px 11px;
+  padding: 5px 12px;
   border-radius: 999px;
   white-space: nowrap;
 }
@@ -2978,6 +2981,12 @@ body::after {
 
   .modal-glass.rm-modal {
     border-radius: 24px 24px 0 0;
+    /* Opaque on mobile: the translucent glass + backdrop-filter let the
+       scrolling page show through the sheet on iOS. A solid fill (and no
+       backdrop-filter) makes the bottom sheet read as a real sheet. */
+    background: #f7f4ee;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 
   /* Drag handle indicator at top of sheet */
@@ -3043,7 +3052,7 @@ body::after {
   .rm-modal-sticky-footer {
     position: sticky;
     bottom: 0;
-    background: rgba(255, 255, 255, 0.97);
+    background: #f7f4ee;
     padding: 12px 0 16px;
     margin-top: 12px;
     border-top: 1px solid rgba(101, 153, 131, 0.12);
