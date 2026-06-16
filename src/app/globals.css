@@ -2951,7 +2951,6 @@ body::after {
   }
 
   .rm-locked-row > span:last-child {
-    padding-left: 0;
     margin-left: auto;
   }
 
