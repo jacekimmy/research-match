@@ -3036,16 +3036,17 @@ body::after {
     flex: 1;
   }
 
-  /* Sticky action bar at bottom of compose panel */
+  /* Sticky action bar at bottom of compose panel. Solid fill — NOT a
+     backdrop-filter: a translucent blur here nests inside the modal's own
+     backdrop-filter on a sticky + internally-scrolling layer, which garbles
+     the bottom of the panel on iOS Safari. */
   .rm-modal-sticky-footer {
     position: sticky;
     bottom: 0;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.97);
     padding: 12px 0 16px;
     margin-top: 12px;
-    border-top: 1px solid rgba(101, 153, 131, 0.1);
+    border-top: 1px solid rgba(101, 153, 131, 0.12);
   }
 
   .rm-modal-actions {
