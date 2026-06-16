@@ -2532,7 +2532,6 @@ function AppPageInner() {
                       }}
                     >
                       <span>✦ Email Framework</span>
-                      <span style={{ fontSize: "0.72rem", background: "rgba(101, 153, 131,0.08)", padding: "3px 10px", borderRadius: "999px", color: "#2d5a47" }}>Free with account</span>
                     </button>
                     )}
 
