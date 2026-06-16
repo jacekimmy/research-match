@@ -27,9 +27,10 @@
   position: fixed;
   pointer-events: none;
   border-radius: 999px;
-  filter: blur(80px);
-  opacity: 0.48;
-  will-change: transform;
+  /* Lighter blur + no permanent will-change: two big blur(80px) layers pinned
+     as GPU layers for the whole session was a sustained battery/heat drain. */
+  filter: blur(44px);
+  opacity: 0.42;
 }
 .profileMount :global(.pro-ambient-a) {
   width: 600px; height: 600px;

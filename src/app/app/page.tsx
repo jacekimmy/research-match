@@ -334,6 +334,12 @@ function AppPageInner() {
   ];
   const DEFAULT_PLACEHOLDER = PLACEHOLDER_EXAMPLES[0];
   const suggestionsRef = useRef<HTMLDivElement>(null);
+  // Bumped on every new search; the background responsiveness pass checks it so a
+  // stale run can't write badges onto a newer result set.
+  const searchRunIdRef = useRef(0);
+  // Always-current email-modal target id, so an in-flight email check can detect
+  // that the user switched professors and not render its result under the wrong one.
+  const emailTargetIdRef = useRef<string | null>(null);
 
   const [emailTarget, setEmailTarget] = useState<Author | null>(null);
   const [emailDraft, setEmailDraft] = useState("");
@@ -626,6 +632,10 @@ function AppPageInner() {
     };
   }, [emailTarget]);
 
+  useEffect(() => {
+    emailTargetIdRef.current = emailTarget ? emailTarget.id.split("/").pop()! : null;
+  }, [emailTarget]);
+
   // (Removed the per-pointer liquid-glass sheen + animated SVG molten filter:
   // it caused mobile lag and a cursor-following white hot-spot. Mobile buttons
   // are now a solid calm green with a fixed gloss and a cheap CSS :active press
@@ -695,6 +705,7 @@ function AppPageInner() {
     const allTopics = [...queryTags, ...query.split(",").map(s => s.trim()).filter(Boolean)];
     const allUnis = [...uniTags, ...university.split(",").map(s => s.trim()).filter(Boolean)];
     if (allTopics.length === 0) return;
+    searchRunIdRef.current++;
     setMobileSearchOpen(false);
     setLoading(true);
     setError("");
@@ -915,7 +926,9 @@ function AppPageInner() {
   }
 
   async function fetchResponsiveness(authors: Author[]) {
+    const runId = searchRunIdRef.current;
     for (const author of authors) {
+      if (runId !== searchRunIdRef.current) return; // a newer search started — stop painting stale badges
       const authorId = author.id.split("/").pop()!;
       try {
         const now = new Date();
@@ -967,17 +980,20 @@ function AppPageInner() {
           }
         }
 
-        // Estimate student co-authors: sample up to 5 unique co-authors from same institution
-        let studentCount = 0;
+        // Estimate student co-authors: sample up to 5 unique co-authors from same institution.
+        // Collect booleans then count — `studentCount++` inside concurrent async
+        // callbacks interleaves across awaits and silently loses increments, which
+        // could flip the recruiting badge color.
         const samplesToCheck = Array.from(newStudentCoAuthors).slice(0, 5);
-        await Promise.all(samplesToCheck.map(async (coId) => {
+        const studentChecks = await Promise.all(samplesToCheck.map(async (coId) => {
           try {
             const cId = coId.split("/").pop();
             const r = await oaFetch(`https://api.openalex.org/authors/${cId}?select=works_count`, { signal: AbortSignal.timeout(3000) });
             const d = await r.json();
-            if (d.works_count < 5) studentCount++;
-          } catch { /* skip */ }
+            return d.works_count < 5;
+          } catch { return false; }
         }));
+        const studentCount = studentChecks.filter(Boolean).length;
 
         let level: "green" | "yellow" | "red";
         let label: string;
@@ -1006,6 +1022,7 @@ function AppPageInner() {
           tooltip = `No apparent student co-authors found in recent papers — lab may not have open positions`;
         }
 
+        if (runId !== searchRunIdRef.current) return; // results changed during the awaits above
         setResponsiveness(prev => ({ ...prev, [authorId]: { level, label, tooltip } }));
       } catch {
         // Skip on error — don't show badge
@@ -1015,6 +1032,7 @@ function AppPageInner() {
 
   async function searchByName() {
     if (!profName.trim()) return;
+    searchRunIdRef.current++;
     setMobileSearchOpen(false);
     setLoading(true);
     setError("");
@@ -1150,6 +1168,10 @@ function AppPageInner() {
         body: JSON.stringify({ draft: emailDraft, professorName: emailTarget.display_name, institution: emailTarget.last_known_institutions?.[0]?.display_name || "", topics: emailTarget.topics?.slice(0, 4).map((t) => t.display_name), highlights: summary?.highlights || [], questions: summary?.questions || [] }),
       });
       const data = await res.json();
+      // If the user closed the modal or switched professors while this was in
+      // flight, drop the result so it never renders under the wrong professor
+      // (and doesn't wrongly consume the free check).
+      if (emailTargetIdRef.current !== id) return;
       if (!res.ok) {
         if (data.error === "upgrade_required") {
           setEmailTarget(null);
@@ -1278,19 +1300,31 @@ function AppPageInner() {
   // Animate the SVG displacement filter while hero is exiting
   useEffect(() => {
     if (heroExiting) {
+      // Skip the heavy SVG distortion when the user prefers reduced motion or the
+      // tab is hidden — the CSS titleMelt still carries the transition.
+      const reduceMotion =
+        typeof window !== "undefined" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduceMotion || document.hidden) return;
       const startTime = performance.now();
       const duration = 460;
+      let lastUpdate = 0;
       const animate = (now: number) => {
         const t = Math.min((now - startTime) / duration, 1);
-        // Accelerate: starts slow, ends fast
-        const eased = t * t * (3 - 2 * t);
-        const scale = eased * 130;
-        const freq = 0.015 + eased * 0.055;
-        if (meltTurbulenceRef.current) {
-          meltTurbulenceRef.current.setAttribute("baseFrequency", `${freq.toFixed(4)} ${(freq * 1.8).toFixed(4)}`);
-        }
-        if (meltDisplacementRef.current) {
-          meltDisplacementRef.current.setAttribute("scale", `${scale.toFixed(1)}`);
+        // Throttle filter mutations to ~30fps — re-evaluating feTurbulence every
+        // frame on a large heading is the main-thread cost; 30fps is plenty here.
+        if (now - lastUpdate >= 32 || t >= 1) {
+          lastUpdate = now;
+          // Accelerate: starts slow, ends fast
+          const eased = t * t * (3 - 2 * t);
+          const scale = eased * 130;
+          const freq = 0.015 + eased * 0.055;
+          if (meltTurbulenceRef.current) {
+            meltTurbulenceRef.current.setAttribute("baseFrequency", `${freq.toFixed(4)} ${(freq * 1.8).toFixed(4)}`);
+          }
+          if (meltDisplacementRef.current) {
+            meltDisplacementRef.current.setAttribute("scale", `${scale.toFixed(1)}`);
+          }
         }
         if (t < 1) {
           meltRafRef.current = requestAnimationFrame(animate);
@@ -1369,7 +1403,7 @@ function AppPageInner() {
               ref={meltTurbulenceRef}
               type="turbulence"
               baseFrequency="0.015 0.027"
-              numOctaves="3"
+              numOctaves="2"
               seed="5"
               result="noise"
             />

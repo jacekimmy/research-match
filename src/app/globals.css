@@ -23,6 +23,9 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+  /* The toast countdown sets animation-duration as an inline style, which beats
+     the per-property !important above; the `animation` shorthand cancels it. */
+  .toast-timer { animation: none !important; }
 }
 
 /* ===== BACKGROUND SPLOTCHES ===== */
@@ -1033,54 +1036,15 @@ body::after {
 /* ===== CARD STAGGER — crystallize from liquid ink ===== */
 
 @keyframes cardFromInk {
-  0%   {
-    opacity: 0;
-    transform: scaleX(0.45) scaleY(0.25) translateY(-15px);
-    filter: blur(30px);
-    box-shadow:
-      0 0 80px 12px rgba(101, 153, 131, 0.85),
-      0 0 160px 30px rgba(101, 153, 131, 0.45),
-      inset 0 0 30px rgba(101, 153, 131, 0.4);
-    border-color: rgba(101, 153, 131, 0.85);
-  }
-  20%  {
-    opacity: 0.75;
-    transform: scaleX(1.06) scaleY(1.04) translateY(5px);
-    filter: blur(9px);
-    box-shadow:
-      0 0 40px 6px rgba(101, 153, 131, 0.55),
-      0 0 80px 14px rgba(101, 153, 131, 0.25),
-      inset 0 0 14px rgba(101, 153, 131, 0.2);
-  }
-  42%  {
-    opacity: 0.9;
-    transform: scaleX(0.99) scaleY(1.01) translateY(2px);
-    filter: blur(2px);
-    box-shadow:
-      0 0 18px 3px rgba(101, 153, 131, 0.3),
-      0 4px 24px rgba(101, 153, 131, 0.06),
-      0 1px 4px rgba(101, 153, 131, 0.04),
-      inset 0 1px 0 rgba(255, 255, 255, 0.85);
-  }
-  65%  {
-    transform: scaleX(1.005) scaleY(0.998);
-    filter: blur(0);
-    box-shadow:
-      0 0 6px 1px rgba(101, 153, 131, 0.12),
-      0 4px 24px rgba(101, 153, 131, 0.06),
-      0 1px 4px rgba(101, 153, 131, 0.04),
-      inset 0 1px 0 rgba(255, 255, 255, 0.85);
-  }
-  100% {
-    opacity: 1;
-    transform: scaleX(1) scaleY(1) translateY(0);
-    filter: blur(0);
-    box-shadow:
-      0 4px 24px rgba(101, 153, 131, 0.06),
-      0 1px 4px rgba(101, 153, 131, 0.04),
-      inset 0 1px 0 rgba(255, 255, 255, 0.85);
-    border-color: rgba(255, 255, 255, 0.65);
-  }
+  /* Compositor-only (opacity + transform). The old version animated
+     filter: blur(30px->0) and 160px box-shadows on every card at once, which
+     pegged the GPU and dropped frames when 10-20 results crystallized in. The
+     scale/translate spring keeps the "crystallize" feel at a fraction of the cost. */
+  0%   { opacity: 0; transform: scaleX(0.45) scaleY(0.25) translateY(-15px); }
+  20%  { opacity: 0.75; transform: scaleX(1.06) scaleY(1.04) translateY(5px); }
+  42%  { opacity: 0.9; transform: scaleX(0.99) scaleY(1.01) translateY(2px); }
+  65%  { transform: scaleX(1.005) scaleY(0.998); }
+  100% { opacity: 1; transform: scaleX(1) scaleY(1) translateY(0); }
 }
 
 /* ── Professor name crystallizes from green ink ── */
@@ -1931,6 +1895,9 @@ body::after {
   cursor: pointer;
   transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
   letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .suggestion-item:hover {
@@ -2892,8 +2859,13 @@ body::after {
   .rm-card {
     padding: 24px 20px;
     border-radius: 22px;
-    backdrop-filter: blur(20px) saturate(1.5);
-    -webkit-backdrop-filter: blur(20px) saturate(1.5);
+    /* No backdrop-filter on mobile: a 10-20 card scroll list each running a
+       blur layer is the heaviest GPU cost / scroll-jank source on the phone.
+       A solid fill keeps the glass look via the gradient + inset highlight. */
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    will-change: auto;
   }
 
   /* Disable lift on touch */
@@ -4893,6 +4865,11 @@ body::after {
   /* Suggestions dropdown full width on mobile */
   .suggestions-dropdown {
     border-radius: 12px;
+    /* Drop the blur on mobile: the bg is already near-opaque and this is a
+       scrollable layer, so the backdrop-filter is pure GPU cost for no gain. */
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(255, 255, 255, 0.96);
   }
 
   /* Tag chips — smaller on mobile so they don't overflow */
@@ -5750,13 +5727,19 @@ body::after {
   width: max-content;
   animation: lpTestimonialsMarquee 58s linear infinite;
   animation-play-state: paused;
-  will-change: transform;
 }
 .lp-social-section.lp-revealed .lp-quotes-track {
   animation-play-state: running;
 }
 .lp-testimonial-paused .lp-quotes-track {
   animation-play-state: paused;
+}
+/* Pause the marquee when its section is scrolled off-screen or the tab is
+   hidden — otherwise it composites a transform forever, draining battery for
+   something nobody is looking at. (Toggled by JS on the landing page.) */
+.lp-social-section.lp-offscreen .lp-quotes-track,
+body.lp-tab-hidden .lp-quotes-track {
+  animation-play-state: paused !important;
 }
 .lp-quotes-group {
   display: flex;

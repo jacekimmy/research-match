@@ -183,6 +183,26 @@ export default function LandingPage() {
     return () => observer.disconnect();
   }, []);
 
+  // Pause the testimonial marquee when it scrolls off-screen or the tab is
+  // hidden, so it stops compositing a transform forever (battery/heat).
+  useEffect(() => {
+    const section = document.querySelector(".lp-social-section");
+    if (!section) return;
+    const io = new IntersectionObserver(
+      ([entry]) => section.classList.toggle("lp-offscreen", !entry.isIntersecting),
+      { threshold: 0 }
+    );
+    io.observe(section);
+    const onVis = () => document.body.classList.toggle("lp-tab-hidden", document.hidden);
+    document.addEventListener("visibilitychange", onVis);
+    onVis();
+    return () => {
+      io.disconnect();
+      document.removeEventListener("visibilitychange", onVis);
+      document.body.classList.remove("lp-tab-hidden");
+    };
+  }, []);
+
   function heroSearch() {
     if (!heroQuery.trim()) return;
     const params = new URLSearchParams();
