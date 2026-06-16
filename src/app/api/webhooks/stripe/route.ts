@@ -196,13 +196,15 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // Subscription updated — catch status transitions like past_due, unpaid, canceled
-  // Also catch cancel_at_period_end=true (user pressed "Cancel" in portal —
-  // Stripe keeps status "active" until period ends but won't renew).
+  // Subscription updated — downgrade only on TERMINAL states. We intentionally do
+  // NOT downgrade on "past_due": that's the dunning/retry window, and we keep access
+  // through it (grace period) so a card that recovers on a later retry never causes a
+  // mid-cycle lockout. Also catch cancel_at_period_end=true (user pressed "Cancel" —
+  // Stripe keeps status "active" until the period ends but won't renew).
   if (event.type === "customer.subscription.updated") {
     const sub = event.data.object as Stripe.Subscription;
     const prevSub = event.data.previous_attributes as Partial<Stripe.Subscription> | undefined;
-    const downgradeStatuses = ["past_due", "unpaid", "canceled", "incomplete_expired"];
+    const downgradeStatuses = ["unpaid", "canceled", "incomplete_expired"];
 
     const justScheduledCancel =
       sub.cancel_at_period_end === true &&
@@ -260,7 +262,10 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // Invoice payment failed — downgrade immediately on failed renewal
+  // Invoice payment failed — do NOT downgrade here. Keep access through Stripe's
+  // retry/dunning window (grace period); the downgrade happens only when the
+  // subscription reaches a terminal state (customer.subscription.updated / .deleted
+  // above). Just log it for visibility.
   if (event.type === "invoice.payment_failed") {
     // In Stripe API version 2026-02-25, subscription reference is nested under invoice.parent
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -274,13 +279,7 @@ export async function POST(req: NextRequest) {
             : undefined);
     if (subscriptionId) {
       const userId = await userIdFromSubscription(subscriptionId);
-      if (userId) {
-        await supabaseAdmin
-          .from("profiles")
-          .update({ plan_type: "free" })
-          .eq("id", userId);
-        console.log(`⬇️  Payment failed → downgraded userId: ${userId} to free`);
-      }
+      console.log(`⏳  Payment failed (grace period — access kept) userId: ${userId ?? "unknown"} sub: ${subscriptionId}`);
     }
   }
 
