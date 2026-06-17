@@ -220,6 +220,7 @@ interface Author {
   display_name: string;
   orcid?: string | null;
   last_known_institutions: { id: string; display_name: string; country_code: string; geo?: { city?: string; region?: string; country?: string } }[];
+  affiliations?: { institution?: { id?: string }; years?: number[] }[];
   works_count: number;
   cited_by_count: number;
   topics: { id?: string; display_name: string }[];
@@ -284,6 +285,28 @@ function promoteMatchedInstitution(a: Author, fullInstIds: string[]): boolean {
   return true;
 }
 
+// Reorder an author's institutions so the one to SHOW on the card is first: their
+// "home" institution, i.e. the affiliation with the most recent activity, then the
+// longest tenure. OpenAlex's default ordering can surface a secondary affiliation
+// (e.g. Anna Schuh shows "Muhimbili" though Oxford is her 21-year home). We still
+// match against ALL of an author's institutions elsewhere, so they stay findable by
+// any of them — this only affects what the card displays when no university was typed.
+function homeInstitutionFirst(a: Author): void {
+  const arr = a.last_known_institutions ?? [];
+  if (arr.length <= 1) return;
+  const affs = a.affiliations ?? [];
+  if (affs.length === 0) return;
+  const score = (instId?: string) => {
+    const af = instId ? affs.find((x) => x.institution?.id === instId) : undefined;
+    const years = af?.years ?? [];
+    return years.length ? { recent: Math.max(...years), span: Math.max(...years) - Math.min(...years) } : { recent: 0, span: 0 };
+  };
+  arr.sort((x, y) => {
+    const sx = score(x?.id), sy = score(y?.id);
+    return sy.recent - sx.recent || sy.span - sx.span;
+  });
+}
+
 // OpenAlex disambiguation fragments: a real person split into ghost entities with
 // a couple of works and no ORCID. We never want to show one in place of the
 // canonical record (the "2 papers / 0 citations" Benjamin bug).
@@ -321,11 +344,12 @@ function dedupeAuthors(authors: Author[]): Author[] {
 // when a university was typed — surfaces those affiliated with it first.
 async function lookupAuthorsByName(name: string, fullInstIds: string[]): Promise<Author[]> {
   const res = await oaFetch(
-    `https://api.openalex.org/authors?search=${encodeURIComponent(name.trim())}&per_page=25&sort=cited_by_count:desc&select=id,display_name,orcid,last_known_institutions,works_count,cited_by_count,topics`
+    `https://api.openalex.org/authors?search=${encodeURIComponent(name.trim())}&per_page=25&sort=cited_by_count:desc&select=id,display_name,orcid,last_known_institutions,affiliations,works_count,cited_by_count,topics`
   );
   const data = await res.json();
   let authors = ((data.results ?? []) as Author[]).filter((a) => nameMatches(name, a.display_name));
   authors = dedupeAuthors(authors);
+  authors.forEach(homeInstitutionFirst);
   if (fullInstIds.length > 0) {
     const atInst = authors.filter((a) => promoteMatchedInstitution(a, fullInstIds));
     if (atInst.length > 0) authors = atInst;
@@ -840,7 +864,7 @@ function AppPageInner() {
 
         const shortIds = Array.from(authorIdsToFetch.keys());
         if (shortIds.length > 0) {
-          const fetches = shortIds.map(id => oaFetch(`https://api.openalex.org/authors/${id}?select=id,display_name,orcid,last_known_institutions,works_count,cited_by_count,topics,geo`).then(r => r.ok ? r.json() : null).catch(() => null));
+          const fetches = shortIds.map(id => oaFetch(`https://api.openalex.org/authors/${id}?select=id,display_name,orcid,last_known_institutions,affiliations,works_count,cited_by_count,topics,geo`).then(r => r.ok ? r.json() : null).catch(() => null));
           const results = await Promise.all(fetches);
           
           const authorMap = new Map<string, Author>();
@@ -885,7 +909,7 @@ function AppPageInner() {
 
             const shortIds = Array.from(authorIdsToFetch.keys());
             if (shortIds.length > 0) {
-              const fetches = shortIds.map(id => oaFetch(`https://api.openalex.org/authors/${id}?select=id,display_name,orcid,last_known_institutions,works_count,cited_by_count,topics,geo`).then(r => r.ok ? r.json() : null).catch(() => null));
+              const fetches = shortIds.map(id => oaFetch(`https://api.openalex.org/authors/${id}?select=id,display_name,orcid,last_known_institutions,affiliations,works_count,cited_by_count,topics,geo`).then(r => r.ok ? r.json() : null).catch(() => null));
               const results = await Promise.all(fetches);
               
               const authorMap = new Map<string, Author>();
@@ -920,6 +944,10 @@ function AppPageInner() {
       // ghost records, so a real professor never surfaces as a "2 papers / 0 citations"
       // stub in place of their canonical, ORCID-backed profile.
       authors = dedupeAuthors(authors);
+      // When no university was searched, show each professor's home institution
+      // (longest-tenured) on the card instead of OpenAlex's possibly-secondary primary.
+      // (With a university, the matched one is already promoted to the front.)
+      if (institutionIds.length === 0) authors.forEach(homeInstitutionFirst);
       // Specificity filter: keep professors where the searched topic appears in their top topics.
       // Be more lenient when searching a specific university (smaller faculty pool).
       // With multiple topic IDs (synonyms), this is already much broader than before.
