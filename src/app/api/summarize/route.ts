@@ -136,26 +136,64 @@ Return a JSON object with two fields:
 
 Return only valid JSON, no markdown, no explanation.`;
 
-    const chat = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
-      messages: [
-        {
-          role: "system",
-          content: "You explain research in plain, specific language. You never use academic filler words. You never use em dashes; use commas or periods instead. You always return valid JSON.",
-        },
-        { role: "user", content: prompt },
-      ],
-      max_tokens: 700,
-      temperature: 0.3,
-      response_format: { type: "json_object" },
-    });
+    const SYSTEM = "You explain research in plain, specific language. You never use academic filler words. You never use em dashes; use commas or periods instead. You always return a single, valid JSON object.";
 
-    const raw = chat.choices[0]?.message?.content?.trim() ?? "{}";
-    let parsed: { summary?: string; highlights?: { paper: string; detail: string }[]; questions?: string[] };
-    try {
-      parsed = JSON.parse(raw);
-    } catch {
-      parsed = { summary: raw, highlights: [] };
+    // Pull a JSON object out of a model response, tolerating stray prose/markdown.
+    const tryExtractJSON = (s: string | null | undefined) => {
+      if (!s) return null;
+      try { return JSON.parse(s); } catch { /* not clean JSON */ }
+      const m = s.match(/\{[\s\S]*\}/);
+      if (m) { try { return JSON.parse(m[0]); } catch { /* still bad */ } }
+      return null;
+    };
+
+    let parsed: { summary?: string; highlights?: { paper: string; detail: string }[]; questions?: string[] } | null = null;
+
+    // Attempts 1-2: JSON mode. Groq occasionally returns json_validate_failed (the model
+    // emits invalid JSON); retrying with different sampling usually clears it, and the
+    // error body carries the raw generation we can sometimes salvage.
+    for (let attempt = 0; attempt < 2 && !parsed; attempt++) {
+      try {
+        const chat = await groq.chat.completions.create({
+          model: "llama-3.3-70b-versatile",
+          messages: [{ role: "system", content: SYSTEM }, { role: "user", content: prompt }],
+          max_tokens: 700,
+          temperature: attempt === 0 ? 0.3 : 0.5,
+          response_format: { type: "json_object" },
+        });
+        parsed = tryExtractJSON(chat.choices[0]?.message?.content);
+      } catch (err) {
+        const e = err as { error?: { failed_generation?: string }; failed_generation?: string };
+        parsed = tryExtractJSON(e.error?.failed_generation ?? e.failed_generation);
+        if (!parsed) console.warn(`summarize JSON attempt ${attempt + 1} failed:`, (err as Error)?.message);
+      }
+    }
+
+    // Attempt 3: plain mode (no schema enforcement can't 400 us), parse it ourselves.
+    if (!parsed) {
+      try {
+        const chat = await groq.chat.completions.create({
+          model: "llama-3.3-70b-versatile",
+          messages: [
+            { role: "system", content: SYSTEM },
+            { role: "user", content: `${prompt}\n\nReturn ONLY one valid JSON object. Every string value MUST be wrapped in double quotes.` },
+          ],
+          max_tokens: 700,
+          temperature: 0.4,
+        });
+        parsed = tryExtractJSON(chat.choices[0]?.message?.content);
+      } catch (err) {
+        console.error("summarize fallback failed:", err);
+      }
+    }
+
+    // Never dump a raw error to the user — return a clean, retry-able message.
+    if (!parsed) {
+      return NextResponse.json({
+        summary: "We couldn't generate a summary for this professor right now. Please try again.",
+        highlights: [],
+        questions: [],
+      });
     }
 
     const highlightsWithPosition = (parsed.highlights ?? []).map((h) => ({
@@ -220,6 +258,9 @@ Return only valid JSON, no markdown, no explanation.`;
     return NextResponse.json(result);
   } catch (err) {
     console.error("summarize error:", err);
-    return NextResponse.json({ error: String(err) }, { status: 500 });
+    return NextResponse.json(
+      { error: "Something went wrong generating the summary. Please try again." },
+      { status: 500 }
+    );
   }
 }
