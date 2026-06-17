@@ -8,6 +8,7 @@ import { supabase } from "@/lib/supabase";
 import { hasPaidAccess, normalizeReferralCode, planLabelFor } from "@/lib/buddy-pass";
 import { track } from "@/lib/analytics";
 import { foldName, looksLikePersonName, nameMatches } from "@/lib/author-normalize";
+import { useMobile } from "@/lib/use-mobile";
 
 // OpenAlex can occasionally hang; without a timeout a single stalled request
 // freezes the search spinner forever. oaFetch bounds every client OpenAlex call
@@ -357,6 +358,7 @@ function AppPageInner() {
   // Mobile: the full search form collapses into a one-line pill once there are
   // results; tapping the pill reopens it. Desktop ignores this entirely.
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const isMobile = useMobile();
   const [query, setQuery] = useState("");
   const [queryTags, setQueryTags] = useState<string[]>([]);
   const [university, setUniversity] = useState("");
@@ -1674,7 +1676,7 @@ function AppPageInner() {
             <div className="rm-hero-glow" aria-hidden="true" />
             <h1
               className="rm-hero-title"
-              style={heroExiting ? { filter: "url(#meltFilter)" } : {}}
+              style={heroExiting && !isMobile ? { filter: "url(#meltFilter)" } : {}}
             >
               <span className="rm-hero-title-black" style={{ display: "block" }}>Find your</span>
               <span className="rm-hero-title-green" style={{ display: "block", whiteSpace: "nowrap" }}>research professor.</span>
@@ -1747,12 +1749,12 @@ function AppPageInner() {
               </div>
             ) : (
               <div className="glass-search rm-search rm-hero-search">
-                <div className="rm-search-input-wrap" style={{ flex: 1 }}>
+                <div className="rm-search-input-wrap">
                   <label className="rm-search-label">Professor Name</label>
                   <input value={profName} onChange={(e) => setProfName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && triggerSearchByName()} placeholder="e.g. Geoffrey Hinton, Fei-Fei Li..." className="rm-search-input" />
                 </div>
                 <div className="rm-search-divider" />
-                <div className="rm-search-input-wrap" style={{ flex: 1 }}>
+                <div className="rm-uni-field">
                   <label className="rm-search-label">University (optional)</label>
                   <input value={profUniversity} onChange={(e) => setProfUniversity(e.target.value)} onKeyDown={(e) => e.key === "Enter" && triggerSearchByName()} placeholder="Narrows common names" className="rm-search-input" />
                 </div>
@@ -1894,12 +1896,12 @@ function AppPageInner() {
                         <line x1="64" y1="80" x2="96" y2="80" stroke="#c9ad77" strokeWidth="5" strokeLinecap="round"/>
                         <line x1="64" y1="96" x2="96" y2="96" stroke="#c9ad77" strokeWidth="5" strokeLinecap="round"/>
                       </svg>
-                      <div className="rm-search-input-wrap" style={{ flex: 1 }}>
+                      <div className="rm-search-input-wrap">
                         <label className="rm-search-label">Professor Name</label>
                         <input value={profName} onChange={(e) => setProfName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && searchByName()} placeholder="e.g. Geoffrey Hinton, Fei-Fei Li..." className="rm-search-input" />
                       </div>
                       <div className="rm-search-divider" />
-                      <div className="rm-search-input-wrap" style={{ flex: 1 }}>
+                      <div className="rm-uni-field">
                         <label className="rm-search-label">University (optional)</label>
                         <input value={profUniversity} onChange={(e) => setProfUniversity(e.target.value)} onKeyDown={(e) => e.key === "Enter" && searchByName()} placeholder="Narrows common names" className="rm-search-input" />
                       </div>

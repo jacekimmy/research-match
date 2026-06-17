@@ -4822,6 +4822,22 @@ body::after {
     margin-top: 12px;
   }
 
+  /* Smooth, GPU-friendly hero exit on phones. The desktop version uses an SVG
+     displacement filter (skipped in JS on mobile) plus animated blur
+     (controlsLiquidFall / titleMelt), which janks hard on mobile GPUs. Here we
+     animate opacity + transform only, so the search boxes fade out cleanly and the
+     results glide in. */
+  .rm-hero-exit .rm-hero-title,
+  .rm-hero-exit .mode-toggle,
+  .rm-hero-exit .rm-hero-search {
+    animation: heroExitMobile 0.4s cubic-bezier(0.4, 0, 1, 1) forwards;
+    filter: none !important;
+  }
+  @keyframes heroExitMobile {
+    from { opacity: 1; transform: translateY(0); }
+    to   { opacity: 0; transform: translateY(10px); }
+  }
+
   .rm-app-body {
     padding-top: 104px !important;
     padding-left: 20px !important;
