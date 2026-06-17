@@ -801,7 +801,10 @@ function AppPageInner() {
     const allTopics = [...queryTags, ...query.split(",").map(s => s.trim()).filter(Boolean)];
     const allUnis = [...uniTags, ...university.split(",").map(s => s.trim()).filter(Boolean)];
     if (allTopics.length === 0) return;
-    searchRunIdRef.current++;
+    // Each search claims a run id. If the user fires another search while this one's
+    // awaits are still in flight, runId goes stale and every terminal write below
+    // bails — so an older, slower search can never overwrite newer results/state.
+    const runId = ++searchRunIdRef.current;
     setMobileSearchOpen(false);
     setLoading(true);
     setError("");
@@ -823,6 +826,7 @@ function AppPageInner() {
         signal: AbortSignal.timeout(20000),
       });
       const resolved = await resolveRes.json();
+      if (runId !== searchRunIdRef.current) return; // a newer search superseded this one
       if (!resolveRes.ok) { setError(resolved.error || "Failed to resolve search terms."); setLoading(false); return; }
       const { topicIds, topicNames, institutionIds, institutionNames } = resolved;
       setResolvedTopic(topicNames.join(", ") || allTopics.join(", "));
@@ -864,7 +868,7 @@ function AppPageInner() {
 
         const shortIds = Array.from(authorIdsToFetch.keys());
         if (shortIds.length > 0) {
-          const fetches = shortIds.map(id => oaFetch(`https://api.openalex.org/authors/${id}?select=id,display_name,orcid,last_known_institutions,affiliations,works_count,cited_by_count,topics,geo`).then(r => r.ok ? r.json() : null).catch(() => null));
+          const fetches = shortIds.map(id => oaFetch(`https://api.openalex.org/authors/${id}?select=id,display_name,orcid,last_known_institutions,affiliations,works_count,cited_by_count,topics`).then(r => r.ok ? r.json() : null).catch(() => null));
           const results = await Promise.all(fetches);
           
           const authorMap = new Map<string, Author>();
@@ -909,7 +913,7 @@ function AppPageInner() {
 
             const shortIds = Array.from(authorIdsToFetch.keys());
             if (shortIds.length > 0) {
-              const fetches = shortIds.map(id => oaFetch(`https://api.openalex.org/authors/${id}?select=id,display_name,orcid,last_known_institutions,affiliations,works_count,cited_by_count,topics,geo`).then(r => r.ok ? r.json() : null).catch(() => null));
+              const fetches = shortIds.map(id => oaFetch(`https://api.openalex.org/authors/${id}?select=id,display_name,orcid,last_known_institutions,affiliations,works_count,cited_by_count,topics`).then(r => r.ok ? r.json() : null).catch(() => null));
               const results = await Promise.all(fetches);
               
               const authorMap = new Map<string, Author>();
@@ -1002,6 +1006,7 @@ function AppPageInner() {
           authors = authors.slice(0, 15).filter((a) => a.works_count >= 10);
         }
       }
+      if (runId !== searchRunIdRef.current) return; // results arrived stale — a newer search is active
       if (authors.length === 0) setError(`No professors found for "${topicNames.join(", ") || allTopics.join(", ")}"${institutionNames.length > 0 ? ` at ${institutionNames.join(", ")}` : ""}. Try a more specific topic like "machine learning" or "quantum computing".`);
       setResults(authors);
       // Fetch responsiveness badges in background
@@ -1021,8 +1026,8 @@ function AppPageInner() {
       } else {
         setNearbyProfs([]);
       }
-    } catch { setError("Something went wrong. Please try again."); }
-    finally { setLoading(false); }
+    } catch { if (runId === searchRunIdRef.current) setError("Something went wrong. Please try again."); }
+    finally { if (runId === searchRunIdRef.current) setLoading(false); }
   }
 
   async function fetchNearby(topicId: string, institutionName: string, excludeIds: string[]) {
@@ -1145,7 +1150,7 @@ function AppPageInner() {
 
   async function searchByName() {
     if (!profName.trim()) return;
-    searchRunIdRef.current++;
+    const runId = ++searchRunIdRef.current;
     setMobileSearchOpen(false);
     setLoading(true);
     setError("");
@@ -1173,12 +1178,13 @@ function AppPageInner() {
         } catch { /* fall back to an unfiltered name search */ }
       }
       const authors = await lookupAuthorsByName(profName, fullInstIds);
+      if (runId !== searchRunIdRef.current) return; // a newer search superseded this one
       if (authors.length === 0) setError(`No professors found matching "${profName}"${profUniversity ? ` at ${profUniversity}` : ""}.`);
       // searches are now unlimited
       setResults(authors);
       if (authors.length > 0) fetchResponsiveness(authors);
-    } catch { setError("Something went wrong. Please try again."); }
-    finally { setLoading(false); }
+    } catch { if (runId === searchRunIdRef.current) setError("Something went wrong. Please try again."); }
+    finally { if (runId === searchRunIdRef.current) setLoading(false); }
   }
 
   async function loadSummary(author: Author, retry = false) {
@@ -1380,6 +1386,12 @@ function AppPageInner() {
         }),
       });
       const data = await res.json();
+      // Normalize: a non-OK or malformed response must not be stored raw, because the
+      // renderer reads lookup.emails.length / lookup.searchUrls.google unconditionally.
+      if (!res.ok || !Array.isArray(data?.emails) || !data?.searchUrls) {
+        setEmailLookup(prev => ({ ...prev, [id]: { emails: [], searchUrls: { google: "", scholar: "", directory: null }, homepageUrl: null, orcidUrl: null } }));
+        return;
+      }
       setEmailLookup(prev => ({ ...prev, [id]: data }));
     } catch {
       setEmailLookup(prev => ({ ...prev, [id]: { emails: [], searchUrls: { google: "", scholar: "", directory: null }, homepageUrl: null, orcidUrl: null } }));
@@ -2634,6 +2646,25 @@ function AppPageInner() {
           const targetId = emailTarget.id.split("/").pop()!;
           const targetSummary = summaries[targetId];
           const isLoadingTargetSummary = loadingSummary[targetId];
+          // Same gating as the results card: free users see one paper + one question;
+          // the rest stay behind the paywall. Without this the modal leaked the full
+          // paywalled set that the card carefully blurs.
+          const refHighlight = (h: { paper: string; doi?: string | null; detail: string; authorPosition?: string }, i: number) => (
+            <div key={i} style={{ marginBottom: "14px" }}>
+              <p style={{ fontSize: "0.85rem", fontWeight: 700, color: "#2d5a47" }}>
+                {h.paper}
+                {h.doi && (
+                  <a href={h.doi} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 400, fontSize: "0.75rem", marginLeft: "8px", color: "#2d5a47" }}>
+                    Read &rarr;
+                  </a>
+                )}
+              </p>
+              <p style={{ fontSize: "0.8rem", color: "#6b7280", marginTop: "3px" }}>{h.detail}</p>
+            </div>
+          );
+          const refQuestion = (q: string, i: number) => (
+            <p key={i} style={{ fontSize: "0.8rem", color: "#6b7280", paddingLeft: "14px", borderLeft: "2px solid #9dbfb1", marginBottom: "12px", lineHeight: 1.6 }}>{q}</p>
+          );
           return (
             <div className="modal-bg rm-modal-overlay">
               <div className="modal-glass rm-modal">
@@ -2889,27 +2920,35 @@ function AppPageInner() {
                       {targetSummary.highlights.length > 0 && (
                         <div style={{ marginBottom: "24px" }}>
                           <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "#2d5a47", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "14px" }}>Papers to Mention</p>
-                          {targetSummary.highlights.map((h, i) => (
-                            <div key={i} style={{ marginBottom: "14px" }}>
-                              <p style={{ fontSize: "0.85rem", fontWeight: 700, color: "#2d5a47" }}>
-                                {h.paper}
-                                {h.doi && (
-                                  <a href={h.doi} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 400, fontSize: "0.75rem", marginLeft: "8px", color: "#2d5a47" }}>
-                                    Read →
-                                  </a>
-                                )}
-                              </p>
-                              <p style={{ fontSize: "0.8rem", color: "#6b7280", marginTop: "3px" }}>{h.detail}</p>
+                          {(isFree ? targetSummary.highlights.slice(0, 1) : targetSummary.highlights).map((h, i) => refHighlight(h, i))}
+                          {isFree && targetSummary.highlights.length > 1 && (
+                            <div className="rm-locked-wrap">
+                              <div className="rm-locked-blur" aria-hidden="true">
+                                {targetSummary.highlights.slice(1).map((h, i) => refHighlight(h, i + 1))}
+                              </div>
+                              <button type="button" className="rm-locked-overlay" onClick={openSummaryPaywall}>
+                                See the other {targetSummary.highlights.length - 1} paper{targetSummary.highlights.length - 1 === 1 ? "" : "s"}
+                                <span className="rm-locked-overlay-sub">Unlock with any plan</span>
+                              </button>
                             </div>
-                          ))}
+                          )}
                         </div>
                       )}
                       {targetSummary.questions.length > 0 && (
                         <div>
                           <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "#2d5a47", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "14px" }}>Questions to Ask</p>
-                          {targetSummary.questions.map((q, i) => (
-                            <p key={i} style={{ fontSize: "0.8rem", color: "#6b7280", paddingLeft: "14px", borderLeft: "2px solid #9dbfb1", marginBottom: "12px", lineHeight: 1.6 }}>{q}</p>
-                          ))}
+                          {(isFree ? targetSummary.questions.slice(0, 1) : targetSummary.questions).map((q, i) => refQuestion(q, i))}
+                          {isFree && targetSummary.questions.length > 1 && (
+                            <div className="rm-locked-wrap">
+                              <div className="rm-locked-blur" aria-hidden="true">
+                                {targetSummary.questions.slice(1).map((q, i) => refQuestion(q, i + 1))}
+                              </div>
+                              <button type="button" className="rm-locked-overlay" onClick={openSummaryPaywall}>
+                                See all {targetSummary.questions.length} questions
+                                <span className="rm-locked-overlay-sub">Unlock with any plan</span>
+                              </button>
+                            </div>
+                          )}
                         </div>
                       )}
                     </>

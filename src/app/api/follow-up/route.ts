@@ -8,16 +8,7 @@ export async function POST(req: NextRequest) {
     const { email } = await req.json();
     if (!email?.trim()) return NextResponse.json({ error: "Email is required." }, { status: 400 });
 
-    const chat = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
-      messages: [
-        {
-          role: "system",
-          content: "You write short, genuine follow-up emails for students reaching out to professors. Return only valid JSON. No extra text.",
-        },
-        {
-          role: "user",
-          content: `A student sent this cold email to a professor:
+    const userContent = `A student sent this cold email to a professor:
 
 ---
 ${email}
@@ -41,21 +32,40 @@ Return JSON exactly like this:
 {
   "followUp1": "full email text here",
   "followUp2": "full email text here"
-}`,
-        },
-      ],
-      max_tokens: 700,
-      temperature: 0.65,
-      response_format: { type: "json_object" },
-    });
+}`;
 
-    const raw = chat.choices[0]?.message?.content ?? "{}";
-    let parsed: { followUp1?: string; followUp2?: string } = {};
-    try { parsed = JSON.parse(raw); } catch {
-      const m = raw.match(/\{[\s\S]*\}/);
-      if (m) { try { parsed = JSON.parse(m[0]); } catch { /* leave empty */ } }
+    const extract = (s: string | null | undefined): { followUp1?: string; followUp2?: string } | null => {
+      if (!s) return null;
+      try { return JSON.parse(s); } catch { /* not clean JSON */ }
+      const m = s.match(/\{[\s\S]*\}/);
+      if (m) { try { return JSON.parse(m[0]); } catch { /* still bad */ } }
+      return null;
+    };
+
+    // Retry + salvage on Groq's occasional json_validate_failed, like summarize/email.
+    let parsed: { followUp1?: string; followUp2?: string } | null = null;
+    for (let attempt = 0; attempt < 2 && !parsed; attempt++) {
+      try {
+        const chat = await groq.chat.completions.create({
+          model: "llama-3.3-70b-versatile",
+          messages: [
+            { role: "system", content: "You write short, genuine follow-up emails for students reaching out to professors. Return only valid JSON. No extra text." },
+            { role: "user", content: userContent },
+          ],
+          max_tokens: 700,
+          temperature: attempt === 0 ? 0.65 : 0.5,
+          response_format: { type: "json_object" },
+        });
+        parsed = extract(chat.choices[0]?.message?.content);
+      } catch (err) {
+        const e = err as { error?: { failed_generation?: string }; failed_generation?: string };
+        parsed = extract(e.error?.failed_generation ?? e.failed_generation);
+      }
     }
 
+    if (!parsed) {
+      return NextResponse.json({ error: "Couldn't generate follow-ups right now. Please try again." }, { status: 503 });
+    }
     return NextResponse.json({
       followUp1: parsed.followUp1 ?? "",
       followUp2: parsed.followUp2 ?? "",

@@ -47,7 +47,7 @@ for (let i = 0; i < argv.length; i++) {
 
 const name = args.name;
 const code = (args.code || "").trim().toUpperCase();
-const email = args.email || null;
+const email = (args.email || "").trim().toLowerCase() || null;
 const payoutEmail = args["payout-email"] || email;
 const rate = args.rate ? Number(args.rate) : 0.3;
 const percent = args.percent ? Number(args.percent) : 20;
@@ -56,8 +56,15 @@ const maxRedemptions = args["max-redemptions"] ? Number(args["max-redemptions"])
 if (!name || !code) {
   console.error(
     'Usage: node scripts/create-affiliate.mjs --name "Creator Name" --code CODE ' +
-      "[--email x] [--payout-email x] [--rate 0.30] [--percent 20] [--max-redemptions 0]"
+      "--email x [--payout-email x] [--rate 0.30] [--percent 20] [--max-redemptions 0]"
   );
+  process.exit(1);
+}
+// The webhook's self-referral guard blocks a creator from earning commission on
+// their own purchase by matching the buyer's email against this one. Without it,
+// that protection silently does nothing, so the email is required.
+if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+  console.error("--email is required and must be a valid email (used for the self-referral guard and payouts).");
   process.exit(1);
 }
 if (!(rate > 0 && rate < 1)) {

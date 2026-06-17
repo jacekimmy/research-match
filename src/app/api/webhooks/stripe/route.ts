@@ -183,10 +183,12 @@ async function recordRenewalCommission(invoice: any, subscriptionId: string): Pr
 }
 
 // Void any pending commissions tied to a reversed payment (refund or lost dispute),
-// so the creator is never paid on money the business gave back.
-async function voidCommissionsForRefs(refs: (string | null | undefined)[], reason: string) {
+// so the creator is never paid on money the business gave back. Returns true if the
+// void FAILED transiently (caller should set needsRetry so Stripe redelivers — without
+// this, a failed void would be acked and the creator stays paid on reversed money).
+async function voidCommissionsForRefs(refs: (string | null | undefined)[], reason: string): Promise<boolean> {
   const ids = [...new Set(refs.filter((r): r is string => !!r))];
-  if (ids.length === 0) return;
+  if (ids.length === 0) return false;
   const { data: voided, error } = await supabaseAdmin
     .from("commissions")
     .update({ status: "void" })
@@ -195,7 +197,7 @@ async function voidCommissionsForRefs(refs: (string | null | undefined)[], reaso
     .select("id");
   if (error) {
     console.error("Commission void failed:", error);
-    return;
+    return true;
   }
   if (voided && voided.length > 0) {
     console.log(`↩️  Voided ${voided.length} commission(s) (${reason}) for ${ids.join(", ")}`);
@@ -209,6 +211,7 @@ async function voidCommissionsForRefs(refs: (string | null | undefined)[], reaso
   for (const p of paid ?? []) {
     console.warn(`⚠️  MANUAL CLAWBACK: paid commission ${p.id} (affiliate ${p.affiliate_id}, ${p.amount_cents}c) was reversed (${reason}).`);
   }
+  return false;
 }
 
 // Map a refunded/disputed payment_intent back to its invoice id(s). Subscription
@@ -424,21 +427,18 @@ export async function POST(req: NextRequest) {
   // past_due dunning window), and catch cancel_at_period_end being newly set.
   if (event.type === "customer.subscription.updated") {
     const sub = event.data.object as Stripe.Subscription;
-    const prevSub = event.data.previous_attributes as Partial<Stripe.Subscription> | undefined;
     const downgradeStatuses = ["unpaid", "canceled", "incomplete_expired"];
 
-    const justScheduledCancel =
-      sub.cancel_at_period_end === true && prevSub?.cancel_at_period_end === false;
-
-    if (downgradeStatuses.includes(sub.status) || justScheduledCancel) {
+    // Only downgrade on TERMINAL statuses. A scheduled cancel (cancel_at_period_end)
+    // keeps the subscription active and paid through the current period — do NOT strip
+    // access then; the downgrade happens at period end via customer.subscription.deleted.
+    // (This also means reactivating before period end keeps access, since it was never
+    // downgraded.)
+    if (downgradeStatuses.includes(sub.status)) {
       const userId = await userIdFromSubscription(sub.id);
       if (userId) {
         await supabaseAdmin.from("profiles").update({ plan_type: "free" }).eq("id", userId);
-        console.log(
-          justScheduledCancel
-            ? `⬇️  Subscription cancellation scheduled → downgraded userId: ${userId} to free`
-            : `⬇️  Subscription status "${sub.status}" → downgraded userId: ${userId} to free`
-        );
+        console.log(`⬇️  Subscription status "${sub.status}" → downgraded userId: ${userId} to free`);
       }
     }
   }
@@ -504,7 +504,7 @@ export async function POST(req: NextRequest) {
       // payment_intent covers one-time commissions; resolve the invoice id for
       // subscription commissions (charge.invoice is not populated on this API version).
       const refs = [stripeId(charge.invoice), pi, ...(await invoiceRefsForPaymentIntent(pi))];
-      await voidCommissionsForRefs(refs, "refund");
+      needsRetry = (await voidCommissionsForRefs(refs, "refund")) || needsRetry;
     }
   }
 
@@ -525,7 +525,7 @@ export async function POST(req: NextRequest) {
         console.error("Could not retrieve disputed charge:", err);
       }
     }
-    await voidCommissionsForRefs(refs, "dispute");
+    needsRetry = (await voidCommissionsForRefs(refs, "dispute")) || needsRetry;
   }
 
   // Finalize. If a money-write failed transiently, un-mark the event and return 500

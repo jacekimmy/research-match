@@ -71,53 +71,6 @@ async function authenticatedUserId(req: NextRequest) {
   return data.user?.id ?? null;
 }
 
-function invoiceSubscriptionId(invoice: Stripe.Invoice) {
-  const invoiceWithSubscription = invoice as Stripe.Invoice & {
-    subscription?: string | Stripe.Subscription | null;
-    parent?: {
-      type?: string;
-      subscription_details?: { subscription?: string | null };
-    } | null;
-  };
-
-  const subscription = invoiceWithSubscription.subscription;
-  if (typeof subscription === "string") return subscription;
-  if (subscription?.id) return subscription.id;
-  if (invoiceWithSubscription.parent?.type === "subscription_details") {
-    return invoiceWithSubscription.parent.subscription_details?.subscription ?? null;
-  }
-  return null;
-}
-
-async function voidOpenInvoicesForSubscription(subscription: Stripe.Subscription) {
-  const customer =
-    typeof subscription.customer === "string"
-      ? subscription.customer
-      : subscription.customer.id;
-
-  const openInvoices = await stripe.invoices.list({
-    customer,
-    status: "open",
-    limit: 100,
-  });
-
-  const subscriptionInvoices = openInvoices.data.filter(
-    (invoice) => invoiceSubscriptionId(invoice) === subscription.id
-  );
-
-  const voidedInvoices: string[] = [];
-  for (const invoice of subscriptionInvoices) {
-    try {
-      const voided = await stripe.invoices.voidInvoice(invoice.id);
-      voidedInvoices.push(voided.id);
-    } catch (err) {
-      console.warn(`Could not void invoice ${invoice.id} for subscription ${subscription.id}:`, err);
-    }
-  }
-
-  return voidedInvoices;
-}
-
 export async function POST(req: NextRequest) {
   try {
     const userId = await authenticatedUserId(req);
@@ -155,33 +108,23 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const canceled: Stripe.Subscription[] = [];
-    const voidedInvoices: string[] = [];
-
+    const scheduled: string[] = [];
     for (const subscription of cancelableSubscriptions) {
-      const canceledSubscription = await stripe.subscriptions.cancel(subscription.id, {
-        invoice_now: false,
-        prorate: false,
+      // Cancel at period end so the user keeps the access they already paid for. The
+      // webhook downgrades to free when the subscription actually ends
+      // (customer.subscription.deleted at period end), not now.
+      const updated = await stripe.subscriptions.update(subscription.id, {
+        cancel_at_period_end: true,
       });
-      canceled.push(canceledSubscription);
-      voidedInvoices.push(...await voidOpenInvoicesForSubscription(canceledSubscription));
+      scheduled.push(updated.id);
     }
 
-    await supabaseAdmin
-      .from("profiles")
-      .update({ plan_type: "free" })
-      .eq("id", userId);
-
-    return NextResponse.json({
-      canceled: canceled.map((subscription) => subscription.id),
-      voidedInvoices,
-    });
+    return NextResponse.json({ canceled: scheduled, scheduledCancel: true });
   } catch (err) {
     console.error("Cancel subscription error:", err);
-    const message =
-      err instanceof Stripe.errors.StripeError
-        ? `Could not cancel: ${err.message}`
-        : "Could not cancel subscription. Please contact support.";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json(
+      { error: "Could not cancel your subscription right now. Please try again or contact support." },
+      { status: 500 }
+    );
   }
 }

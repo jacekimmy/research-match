@@ -102,3 +102,17 @@ CREATE INDEX IF NOT EXISTS referrals_affiliate_customer_idx
   ON public.referrals (affiliate_id, stripe_customer_id);
 CREATE INDEX IF NOT EXISTS commissions_affiliate_status_idx
   ON public.commissions (affiliate_id, status);
+
+-- Row Level Security: these tables hold money + payout data and must NEVER be
+-- reachable from the browser (the anon / authenticated PostgREST roles). The only
+-- writer/reader is the Stripe webhook + admin scripts, which use the service-role
+-- key and bypass RLS entirely. Enabling RLS with NO policies means the public roles
+-- get zero rows and zero writes, while the service role is unaffected.
+--
+-- Production already has RLS enabled on these; this documents and enforces it so a
+-- fresh database can never come up with these tables world-readable. Idempotent.
+ALTER TABLE public.affiliates              ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.referrals               ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.commissions             ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.payouts                 ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.processed_stripe_events ENABLE ROW LEVEL SECURITY;

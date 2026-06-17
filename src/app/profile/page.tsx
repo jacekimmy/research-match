@@ -50,11 +50,6 @@ function daysSince(date?: string) {
   return Math.max(1, Math.floor((Date.now() - created) / (1000 * 60 * 60 * 24)));
 }
 
-function resetDate(date?: string | null) {
-  if (!date) return "soon";
-  return new Date(date).toLocaleDateString("en-US", { month: "short", day: "numeric" });
-}
-
 export default function ProfilePage() {
   const { user, profile, signOut, refreshProfile } = useAuth();
   const [savedCount, setSavedCount] = useState(0);
@@ -70,7 +65,7 @@ export default function ProfilePage() {
   const planLabel = planLabelFor(profile);
   const initial = user?.email?.charAt(0).toUpperCase() || "?";
   const summariesUsed = profile?.summaries_used ?? 0;
-  const summariesLeft = isPaid ? "∞" : `${Math.max(0, 1 - summariesUsed)}/1`;
+  const summariesLeft = isPaid ? "∞" : `${Math.max(0, 2 - summariesUsed)}/2`;
 
   const memberSince = useMemo(() => formatMemberSince(profile?.created_at), [profile?.created_at]);
   const activeDays   = useMemo(() => daysSince(profile?.created_at),        [profile?.created_at]);
@@ -249,7 +244,7 @@ export default function ProfilePage() {
             <span className="pro-stat-label">Summaries</span>
             <strong className="pro-stat-value">{summariesLeft}</strong>
             <p className="pro-stat-note">
-              {isPaid ? "Unlimited while active" : `Resets ${resetDate(profile?.summaries_reset_at)}`}
+              {isPaid ? "Unlimited while active" : "2 free total"}
             </p>
           </div>
           <div className="pro-stat glass">
@@ -439,7 +434,7 @@ export default function ProfilePage() {
                   <span className="pro-action-arrow" aria-hidden="true">→</span>
                 </Link>
 
-                {profile?.plan_type !== "lifetime" && (
+                {isPaid && profile?.plan_type !== "lifetime" && (
                   <button
                     id="cancel-subscription-btn"
                     type="button"

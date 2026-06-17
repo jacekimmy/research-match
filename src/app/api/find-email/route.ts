@@ -315,7 +315,8 @@ export async function POST(req: NextRequest) {
     });
   } catch (err) {
     console.error("find-email error:", err);
-    return NextResponse.json({ error: String(err) }, { status: 500 });
+    // Return the contract shape (not a raw error) so the client renderer never crashes.
+    return NextResponse.json({ emails: [], searchUrls: { google: "", scholar: "", directory: null }, homepageUrl: null, orcidUrl: null });
   }
 }
 
