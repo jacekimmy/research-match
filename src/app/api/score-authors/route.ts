@@ -91,6 +91,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ scored });
   } catch (err) {
     console.error("score-authors error:", err);
-    return NextResponse.json({ error: String(err) }, { status: 500 });
+    // Return an empty list (not a 500) so the client keeps its candidates and
+    // falls back to a light filter, instead of showing zero professors.
+    return NextResponse.json({ scored: [] });
   }
 }

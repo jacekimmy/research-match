@@ -338,6 +338,27 @@ function dedupeAuthors(authors: Author[]): Author[] {
   return Array.from(byKey.values());
 }
 
+// Rank a candidate by how CENTRAL the searched topic is to them, not by lifetime
+// citations. Without this, a "DNA methylation at Oxford" search ranks by career
+// citations and the top-15 slice fills up with GWAS/genetics giants who merely
+// touch methylation, truncating away the actual specialists (Klose, Song,
+// Kriaučionis) whose #1 topic IS DNA methylation. Lower is better.
+//   - Anyone with the PRIMARY (exact) searched topic ranks by its position in
+//     their own topic list (0 = it's their #1 topic), strictly above
+//   - people who only match a broader expansion topic (100+), above
+//   - people who match nothing (1000; shouldn't happen post-filter).
+function topicRelevanceRank(a: Author, topicIds: string[]): number {
+  const authorTopicIds = (a.topics ?? []).map((t) => t.id?.split("/").pop());
+  const primaryPos = authorTopicIds.indexOf(topicIds[0]);
+  if (primaryPos >= 0) return primaryPos;
+  let best = Infinity;
+  for (let i = 1; i < topicIds.length; i++) {
+    const pos = authorTopicIds.indexOf(topicIds[i]);
+    if (pos >= 0) best = Math.min(best, pos);
+  }
+  return best === Infinity ? 1000 : 100 + best;
+}
+
 // Look up authors by personal name (used by By-Name mode and by the interest
 // search when a typed query turns out to be a person, not a topic). Trusts
 // OpenAlex's name ranking, drops unrelated namesakes and ghost fragments, and —
@@ -976,6 +997,15 @@ function AppPageInner() {
           }
           // else keep all — topic too niche to enforce
         }
+        // Re-rank by topic centrality so the actual specialists in the searched
+        // topic rise to the top, instead of career-citation giants who merely
+        // touch it. Critical: scoring below only keeps the top 15, so without
+        // this the real experts get truncated away before they're ever shown.
+        authors = [...authors].sort(
+          (a, b) =>
+            topicRelevanceRank(a, topicIds) - topicRelevanceRank(b, topicIds) ||
+            b.cited_by_count - a.cited_by_count
+        );
       }
       // Score authors to filter out non-professors
       if (authors.length > 0) {
@@ -995,14 +1025,25 @@ function AppPageInner() {
             }),
             signal: AbortSignal.timeout(15000),
           });
-          const scoreData = await scoreRes.json();
-          const scoreMap = new Map<string, number>();
-          for (const s of scoreData.scored ?? []) scoreMap.set(s.id, s.score);
-          authors = authorsToScore
-            .filter((a) => (scoreMap.get(a.id) ?? 0) >= 1)
-            .sort((a, b) => (scoreMap.get(b.id) ?? 0) - (scoreMap.get(a.id) ?? 0));
+          const scoreData = await scoreRes.json().catch(() => ({}));
+          const scored = Array.isArray(scoreData?.scored) ? scoreData.scored : [];
+          if (!scoreRes.ok || scored.length === 0) {
+            // Scoring failed or returned nothing usable (e.g. score-authors hit an
+            // OpenAlex rate limit). DO NOT empty the results: keep the
+            // relevance-ranked candidates, lightly filtered. Emptying here is what
+            // made every professor "disappear" on a transient scoring hiccup.
+            authors = authorsToScore.filter((a) => a.works_count >= 10);
+          } else {
+            const scoreMap = new Map<string, number>();
+            for (const s of scored) scoreMap.set(s.id, s.score);
+            const kept = authorsToScore
+              .filter((a) => (scoreMap.get(a.id) ?? 0) >= 1)
+              .sort((a, b) => (scoreMap.get(b.id) ?? 0) - (scoreMap.get(a.id) ?? 0));
+            // If scoring would drop everyone, fall back rather than show nothing.
+            authors = kept.length > 0 ? kept : authorsToScore.filter((a) => a.works_count >= 10);
+          }
         } catch {
-          // Fallback: simple filter if scoring fails
+          // Fallback: simple filter if scoring throws (network error / timeout)
           authors = authors.slice(0, 15).filter((a) => a.works_count >= 10);
         }
       }
