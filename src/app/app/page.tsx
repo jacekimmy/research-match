@@ -1751,6 +1751,7 @@ function AppPageInner() {
                   <label className="rm-search-label">Professor Name</label>
                   <input value={profName} onChange={(e) => setProfName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && triggerSearchByName()} placeholder="e.g. Geoffrey Hinton, Fei-Fei Li..." className="rm-search-input" />
                 </div>
+                <div className="rm-search-divider" />
                 <div className="rm-search-input-wrap" style={{ flex: 1 }}>
                   <label className="rm-search-label">University (optional)</label>
                   <input value={profUniversity} onChange={(e) => setProfUniversity(e.target.value)} onKeyDown={(e) => e.key === "Enter" && triggerSearchByName()} placeholder="Narrows common names" className="rm-search-input" />
@@ -1897,6 +1898,7 @@ function AppPageInner() {
                         <label className="rm-search-label">Professor Name</label>
                         <input value={profName} onChange={(e) => setProfName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && searchByName()} placeholder="e.g. Geoffrey Hinton, Fei-Fei Li..." className="rm-search-input" />
                       </div>
+                      <div className="rm-search-divider" />
                       <div className="rm-search-input-wrap" style={{ flex: 1 }}>
                         <label className="rm-search-label">University (optional)</label>
                         <input value={profUniversity} onChange={(e) => setProfUniversity(e.target.value)} onKeyDown={(e) => e.key === "Enter" && searchByName()} placeholder="Narrows common names" className="rm-search-input" />
