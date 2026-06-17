@@ -54,7 +54,7 @@ async function pickBestIndices(
     messages: [
       {
         role: "system",
-        content: `You pick the best matching items from a list. Reply with only comma-separated numbers (e.g. "0,2,4") — no explanation, no punctuation besides commas. Pick up to ${maxPick} items that are good matches. If none are a good match, return -1.`,
+        content: `You pick the best matching items from a list. Reply with only comma-separated numbers (e.g. "0,2,4"); no explanation, no punctuation besides commas. Pick up to ${maxPick} items that are good matches. If none are a good match, return -1.`,
       },
       {
         role: "user",

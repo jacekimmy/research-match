@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
 ${email}
 ---
 
-Write two follow-up emails. Each one should be 3-4 sentences max. Respectful, specific, not desperate. Extract the professor's name from the email if present, otherwise use "[Professor's name]". Extract the student's name/sign-off if present, otherwise use "[Your name]".
+Write two follow-up emails. Each one should be 3-4 sentences max. Respectful, specific, not desperate. Never use em dashes; use commas or periods instead. Extract the professor's name from the email if present, otherwise use "[Professor's name]". Extract the student's name/sign-off if present, otherwise use "[Your name]".
 
 Follow-Up 1 (sent 7 days after the original):
 - Open: "Hi Professor [name], just wanted to follow up on my email from last week."
@@ -33,7 +33,7 @@ Follow-Up 1 (sent 7 days after the original):
 
 Follow-Up 2 (sent 14 days after the original):
 - Open: "Hi Professor [name], I know this is a busy time of year."
-- One sentence that adds a new angle or a new question — do NOT just repeat follow-up 1
+- One sentence that adds a new angle or a new question; do NOT just repeat follow-up 1
 - Clear close: "If the timing isn't right, no worries at all. I appreciate your time either way."
 - Sign-off with student's name
 

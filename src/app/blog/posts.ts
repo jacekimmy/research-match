@@ -53,7 +53,7 @@ export const posts: BlogPost[] = [
 <div class="blog-cta">
 <h2>Find Your Professor Match</h2>
 <p>Research Match helps you find the right professor in 5 minutes. Search by interest, read their papers in plain English, and check your email before sending.</p>
-<a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
+<a href="/app" class="btn-cta rm-search-btn">Try Research Match for free</a>
 </div>`,
     relatedSlugs: ["cold-email-mistakes", "cold-email-professor-template", "do-professors-respond-to-cold-emails"],
     datePublished: "2026-03-01",
@@ -101,7 +101,7 @@ export const posts: BlogPost[] = [
 <div class="blog-cta">
 <h2>Find Your Professor Match</h2>
 <p>Research Match helps you find the right professor in 5 minutes. Search by interest, read their papers in plain English, and check your email before sending.</p>
-<a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
+<a href="/app" class="btn-cta rm-search-btn">Try Research Match for free</a>
 </div>`,
     relatedSlugs: ["how-to-cold-email-a-professor", "research-opportunities-for-early-stage-students", "summer-research-opportunities"],
     datePublished: "2026-03-01",
@@ -154,7 +154,7 @@ export const posts: BlogPost[] = [
 <div class="blog-cta">
 <h2>Find Your Professor Match</h2>
 <p>Research Match helps you find the right professor in 5 minutes. Search by interest, read their papers in plain English, and check your email before sending.</p>
-<a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
+<a href="/app" class="btn-cta rm-search-btn">Try Research Match for free</a>
 </div>`,
     relatedSlugs: ["how-to-cold-email-a-professor", "cold-email-professor-template", "what-professors-look-for-in-research-students"],
     datePublished: "2026-03-01",
@@ -203,7 +203,7 @@ export const posts: BlogPost[] = [
 <div class="blog-cta">
 <h2>Find Your Professor Match</h2>
 <p>Research Match helps you find the right professor in 5 minutes. Search by interest, read their papers in plain English, and check your email before sending.</p>
-<a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
+<a href="/app" class="btn-cta rm-search-btn">Try Research Match for free</a>
 </div>`,
     relatedSlugs: ["cold-email-mistakes", "how-to-cold-email-a-professor", "how-to-email-a-professor-about-research"],
     datePublished: "2026-03-01",
@@ -256,7 +256,7 @@ export const posts: BlogPost[] = [
 <div class="blog-cta">
 <h2>Find Your Professor Match</h2>
 <p>Research Match helps you find the right professor in 5 minutes. Search by interest, read their papers in plain English, and check your email before sending.</p>
-<a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
+<a href="/app" class="btn-cta rm-search-btn">Try Research Match for free</a>
 </div>`,
     relatedSlugs: ["undergraduate-research-benefits", "how-to-find-research-opportunities", "how-to-find-a-research-mentor"],
     datePublished: "2026-03-01",
@@ -305,7 +305,7 @@ export const posts: BlogPost[] = [
 <div class="blog-cta">
 <h2>Find Your Professor Match</h2>
 <p>Research Match helps you find the right professor in 5 minutes. Search by interest, read their papers in plain English, and check your email before sending.</p>
-<a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
+<a href="/app" class="btn-cta rm-search-btn">Try Research Match for free</a>
 </div>`,
     relatedSlugs: ["how-to-get-research-experience-undergrad", "how-to-cold-email-a-professor", "undergraduate-research-benefits"],
     datePublished: "2026-03-01",
@@ -356,7 +356,7 @@ export const posts: BlogPost[] = [
 <div class="blog-cta">
 <h2>Find Your Professor Match</h2>
 <p>Research Match helps you find the right professor in 5 minutes. Search by interest, read their papers in plain English, and check your email before sending.</p>
-<a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
+<a href="/app" class="btn-cta rm-search-btn">Try Research Match for free</a>
 </div>`,
     relatedSlugs: ["how-to-cold-email-a-professor", "what-professors-look-for-in-research-students", "how-to-get-research-experience-undergrad"],
     datePublished: "2026-03-01",
@@ -404,7 +404,7 @@ export const posts: BlogPost[] = [
 <div class="blog-cta">
 <h2>Find Your Professor Match</h2>
 <p>Research Match helps you find the right professor in 5 minutes. Search by interest, read their papers in plain English, and check your email before sending.</p>
-<a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
+<a href="/app" class="btn-cta rm-search-btn">Try Research Match for free</a>
 </div>`,
     relatedSlugs: ["how-to-cold-email-a-professor", "cold-email-mistakes", "how-to-follow-up-with-a-professor"],
     datePublished: "2026-03-01",
@@ -454,7 +454,7 @@ export const posts: BlogPost[] = [
 <div class="blog-cta">
 <h2>Find Your Professor Match</h2>
 <p>Research Match helps you find the right professor in 5 minutes. Search by interest, read their papers in plain English, and check your email before sending.</p>
-<a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
+<a href="/app" class="btn-cta rm-search-btn">Try Research Match for free</a>
 </div>`,
     relatedSlugs: ["how-to-cold-email-a-professor", "how-to-find-research-opportunities", "summer-research-opportunities"],
     datePublished: "2026-03-01",
@@ -507,7 +507,7 @@ export const posts: BlogPost[] = [
 <div class="blog-cta">
 <h2>Find Your Professor Match</h2>
 <p>Research Match helps you find the right professor in 5 minutes. Search by interest, read their papers in plain English, and check your email before sending.</p>
-<a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
+<a href="/app" class="btn-cta rm-search-btn">Try Research Match for free</a>
 </div>`,
     relatedSlugs: ["cold-email-professor-template", "cold-email-mistakes", "how-to-follow-up-with-a-professor"],
     datePublished: "2026-03-01",
@@ -556,7 +556,7 @@ export const posts: BlogPost[] = [
 <div class="blog-cta">
 <h2>Find Your Professor Match</h2>
 <p>Research Match helps you find the right professor in 5 minutes. Search by interest, read their papers in plain English, and check your email before sending.</p>
-<a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
+<a href="/app" class="btn-cta rm-search-btn">Try Research Match for free</a>
 </div>`,
     relatedSlugs: ["how-to-get-research-experience-undergrad", "how-to-find-a-research-mentor", "how-to-find-research-opportunities"],
     datePublished: "2026-03-01",
@@ -611,7 +611,7 @@ export const posts: BlogPost[] = [
 <div class="blog-cta">
 <h2>Find Your Professor Match</h2>
 <p>Research Match helps you find the right professor in 5 minutes. Search by interest, read their papers in plain English, and check your email before sending.</p>
-<a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
+<a href="/app" class="btn-cta rm-search-btn">Try Research Match for free</a>
 </div>`,
     relatedSlugs: ["how-to-cold-email-a-professor", "do-professors-respond-to-cold-emails", "how-to-email-a-professor-about-research"],
     datePublished: "2026-03-01",
@@ -664,7 +664,7 @@ export const posts: BlogPost[] = [
 <div class="blog-cta">
 <h2>Find Your Professor Match</h2>
 <p>Research Match helps you find the right professor in 5 minutes. Search by interest, read their papers in plain English, and check your email before sending.</p>
-<a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
+<a href="/app" class="btn-cta rm-search-btn">Try Research Match for free</a>
 </div>`,
     relatedSlugs: ["how-to-cold-email-a-professor", "how-to-find-a-research-mentor", "cold-email-professor-template"],
     datePublished: "2026-03-01",
@@ -719,7 +719,7 @@ export const posts: BlogPost[] = [
 <div class="blog-cta">
 <h2>Find Your Professor Match</h2>
 <p>Research Match helps you find the right professor in 5 minutes. Search by interest, read their papers in plain English, and check your email before sending.</p>
-<a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
+<a href="/app" class="btn-cta rm-search-btn">Try Research Match for free</a>
 </div>`,
     relatedSlugs: ["how-to-find-research-opportunities", "research-opportunities-for-early-stage-students", "how-to-get-research-experience-undergrad"],
     datePublished: "2026-03-01",
@@ -775,7 +775,7 @@ export const posts: BlogPost[] = [
 <div class="blog-cta">
 <h2>Find Your Professor Match</h2>
 <p>Research Match helps you find the right professor in 5 minutes. Search by interest, read their papers in plain English, and check your email before sending.</p>
-<a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
+<a href="/app" class="btn-cta rm-search-btn">Try Research Match for free</a>
 </div>`,
     relatedSlugs: ["how-to-get-research-experience-undergrad", "undergraduate-research-benefits", "how-to-find-a-research-mentor"],
     datePublished: "2026-03-01",
@@ -823,7 +823,7 @@ export const posts: BlogPost[] = [
 <div class="blog-cta">
 <h2>Find Your Professor Match</h2>
 <p>Research Match helps you find the right professor in 5 minutes. Search by interest, read their papers in plain English, and check your email before sending.</p>
-<a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
+<a href="/app" class="btn-cta rm-search-btn">Try Research Match for free</a>
 </div>`,
     relatedSlugs: ["how-to-cold-email-a-professor", "cold-email-professor-template", "what-professors-look-for-in-research-students"],
     datePublished: "2026-04-01",
@@ -877,7 +877,7 @@ export const posts: BlogPost[] = [
 <div class="blog-cta">
 <h2>Find Your Professor Match</h2>
 <p>Research Match helps you find the right professor in 5 minutes. Search by interest, read their papers in plain English, and check your email before sending.</p>
-<a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
+<a href="/app" class="btn-cta rm-search-btn">Try Research Match for free</a>
 </div>`,
     relatedSlugs: ["how-to-cold-email-a-professor", "how-to-follow-up-with-a-professor", "cold-email-mistakes"],
     datePublished: "2026-04-01",
@@ -928,7 +928,7 @@ export const posts: BlogPost[] = [
 <div class="blog-cta">
 <h2>Find Your Professor Match</h2>
 <p>Research Match helps you find the right professor in 5 minutes. Search by interest, read their papers in plain English, and check your email before sending.</p>
-<a href="/app" class="btn-cta rm-search-btn">Try Research Match — free</a>
+<a href="/app" class="btn-cta rm-search-btn">Try Research Match for free</a>
 </div>`,
     relatedSlugs: ["how-to-cold-email-a-professor", "how-to-find-a-research-mentor", "how-to-find-research-opportunities"],
     datePublished: "2026-04-01",

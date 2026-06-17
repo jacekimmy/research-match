@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/auth-context";
 import { supabase } from "@/lib/supabase";
 import { hasPaidAccess, normalizeReferralCode, planLabelFor } from "@/lib/buddy-pass";
 import { track } from "@/lib/analytics";
+import { foldName, looksLikePersonName, nameMatches } from "@/lib/author-normalize";
 
 // OpenAlex can occasionally hang; without a timeout a single stalled request
 // freezes the search spinner forever. oaFetch bounds every client OpenAlex call
@@ -216,6 +217,7 @@ const RESEARCH_SUGGESTIONS = [
 interface Author {
   id: string;
   display_name: string;
+  orcid?: string | null;
   last_known_institutions: { id: string; display_name: string; country_code: string; geo?: { city?: string; region?: string; country?: string } }[];
   works_count: number;
   cited_by_count: number;
@@ -265,6 +267,73 @@ function formatInstitutionLocation(inst: Author["last_known_institutions"][0] | 
   return city && country ? `${name}, ${city}, ${country}` : name;
 }
 
+// Does this author have ANY affiliation with one of the searched institutions?
+// OpenAlex lists multiple last_known_institutions; the searched one is often NOT
+// the most recent (e.g. Anna Schuh's primary is Muhimbili, with Oxford third), so
+// checking only [0] silently drops real faculty. When found, the matched
+// institution is promoted to the front so the result card displays it.
+function promoteMatchedInstitution(a: Author, fullInstIds: string[]): boolean {
+  const arr = a.last_known_institutions ?? [];
+  const idx = arr.findIndex((inst) => inst?.id && fullInstIds.includes(inst.id));
+  if (idx < 0) return false;
+  if (idx > 0) {
+    const [matched] = arr.splice(idx, 1);
+    arr.unshift(matched);
+  }
+  return true;
+}
+
+// OpenAlex disambiguation fragments: a real person split into ghost entities with
+// a couple of works and no ORCID. We never want to show one in place of the
+// canonical record (the "2 papers / 0 citations" Benjamin bug).
+function isGhostAuthor(a: Author): boolean {
+  return !a.orcid && (a.works_count ?? 0) < 5;
+}
+
+// Collapse fragments of the same person: key by folded name, keep the richest
+// record (ORCID-backed, then most works). Never merges two distinct ORCID
+// identities that happen to share a name.
+function dedupeAuthors(authors: Author[]): Author[] {
+  const cleaned = authors.filter((a) => !isGhostAuthor(a));
+  const byKey = new Map<string, Author>();
+  for (const a of cleaned) {
+    let key = foldName(a.display_name);
+    if (!key) key = a.id;
+    const existing = byKey.get(key);
+    if (!existing) { byKey.set(key, a); continue; }
+    if (a.orcid && existing.orcid && a.orcid !== existing.orcid) {
+      byKey.set(`${key}#${a.orcid}`, a); // distinct people, same name — keep both
+      continue;
+    }
+    const better =
+      (Number(!!a.orcid) - Number(!!existing.orcid)) ||
+      (a.works_count - existing.works_count) ||
+      (a.cited_by_count - existing.cited_by_count);
+    if (better > 0) byKey.set(key, a);
+  }
+  return Array.from(byKey.values());
+}
+
+// Look up authors by personal name (used by By-Name mode and by the interest
+// search when a typed query turns out to be a person, not a topic). Trusts
+// OpenAlex's name ranking, drops unrelated namesakes and ghost fragments, and —
+// when a university was typed — surfaces those affiliated with it first.
+async function lookupAuthorsByName(name: string, fullInstIds: string[]): Promise<Author[]> {
+  const res = await oaFetch(
+    `https://api.openalex.org/authors?search=${encodeURIComponent(name.trim())}&per_page=25&sort=cited_by_count:desc&select=id,display_name,orcid,last_known_institutions,works_count,cited_by_count,topics`
+  );
+  const data = await res.json();
+  let authors = ((data.results ?? []) as Author[]).filter((a) => nameMatches(name, a.display_name));
+  authors = dedupeAuthors(authors);
+  if (fullInstIds.length > 0) {
+    const atInst = authors.filter((a) => promoteMatchedInstitution(a, fullInstIds));
+    if (atInst.length > 0) authors = atInst;
+  }
+  return authors.sort(
+    (a, b) => (Number(!!b.orcid) - Number(!!a.orcid)) || (b.cited_by_count - a.cited_by_count)
+  );
+}
+
 interface SummaryData {
   summary: string;
   highlights: { paper: string; detail: string; authorPosition?: string; doi?: string | null }[];
@@ -293,6 +362,7 @@ function AppPageInner() {
   const [university, setUniversity] = useState("");
   const [uniTags, setUniTags] = useState<string[]>([]);
   const [profName, setProfName] = useState("");
+  const [profUniversity, setProfUniversity] = useState("");
   const [results, setResults] = useState<Author[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -733,12 +803,20 @@ function AppPageInner() {
       if (institutionNames.length > 0) setResolvedInstitution(institutionNames.join(", "));
       // If universities were typed but none resolved, note it in the institution display
       if (allUnis.length > 0 && institutionIds.length === 0) {
-        setResolvedInstitution(`"${allUnis.join(", ")}" not found — searching all universities`);
+        setResolvedInstitution(`"${allUnis.join(", ")}" not found. Searching all universities`);
       }
 
       let authors: Author[] = [];
 
       if (topicIds.length === 0) {
+        const fullInstIds = institutionIds.map((id: string) => `https://openalex.org/${id}`);
+        // If the typed query is actually a person's name (OpenAlex found no matching
+        // topic), look the professor up by name instead of text-searching paper
+        // bodies — works?search= matches abstract words, not author names.
+        if (looksLikePersonName(allTopics[0])) {
+          authors = await lookupAuthorsByName(allTopics[0], fullInstIds);
+        }
+        if (authors.length === 0) {
         // Text search fallback — use first topic
         const instFilter = institutionIds.length > 0 ? `&filter=authorships.institutions.id:${institutionIds[0]}` : "";
         const worksRes = await oaFetch(`https://api.openalex.org/works?search=${encodeURIComponent(allTopics[0])}${instFilter}&sort=publication_date:desc&per_page=20&select=authorships`);
@@ -751,7 +829,7 @@ function AppPageInner() {
             const authorId = authorship.author?.id;
             if (!authorId) continue;
             const shortId = authorId.split("/").pop()!;
-            if (institutionIds.length > 0 && !institutionIds.some((id: string) => authorship.institutions?.[0]?.id === `https://openalex.org/${id}`)) continue;
+            if (fullInstIds.length > 0 && !authorship.institutions?.some((inst: OpenAlexInstitutionRef) => inst.id ? fullInstIds.includes(inst.id) : false)) continue;
             if (!authorIdsToFetch.has(shortId)) authorIdsToFetch.set(shortId, authorId);
             if (authorIdsToFetch.size >= 20) break;
           }
@@ -760,17 +838,18 @@ function AppPageInner() {
 
         const shortIds = Array.from(authorIdsToFetch.keys());
         if (shortIds.length > 0) {
-          const fetches = shortIds.map(id => oaFetch(`https://api.openalex.org/authors/${id}?select=id,display_name,last_known_institutions,works_count,cited_by_count,topics,geo`).then(r => r.ok ? r.json() : null).catch(() => null));
+          const fetches = shortIds.map(id => oaFetch(`https://api.openalex.org/authors/${id}?select=id,display_name,orcid,last_known_institutions,works_count,cited_by_count,topics,geo`).then(r => r.ok ? r.json() : null).catch(() => null));
           const results = await Promise.all(fetches);
           
           const authorMap = new Map<string, Author>();
           for (const authorData of results) {
             if (authorData && authorData.id) {
-               if (institutionIds.length > 0 && !institutionIds.some((id: string) => authorData.last_known_institutions?.[0]?.id === `https://openalex.org/${id}`)) continue;
+               if (fullInstIds.length > 0 && !promoteMatchedInstitution(authorData, fullInstIds)) continue;
                authorMap.set(authorData.id, authorData);
             }
           }
           authors = Array.from(authorMap.values()).sort((a, b) => b.cited_by_count - a.cited_by_count);
+        }
         }
       } else {
         // OR filter across all resolved topic IDs (now up to 4 per query = broad synonym coverage)
@@ -780,9 +859,9 @@ function AppPageInner() {
         if (institutionIds.length > 0) {
           // Search WITH institution filter first
           const instFilter = `last_known_institutions.id:${institutionIds.join("|")}`;
-          const res = await oaFetch(`https://api.openalex.org/authors?filter=topics.id:${topicFilter},${instFilter}&per_page=50&sort=cited_by_count:desc`);
+          const res = await oaFetch(`https://api.openalex.org/authors?filter=topics.id:${topicFilter},${instFilter}&per_page=200&sort=cited_by_count:desc`);
           const data = await res.json();
-          authors = (data.results || []).filter((a: Author) => fullInstIds.includes(a.last_known_institutions?.[0]?.id));
+          authors = (data.results || []).filter((a: Author) => promoteMatchedInstitution(a, fullInstIds));
 
           // If still no results, try a text-based works search at that institution
           if (authors.length === 0) {
@@ -804,13 +883,13 @@ function AppPageInner() {
 
             const shortIds = Array.from(authorIdsToFetch.keys());
             if (shortIds.length > 0) {
-              const fetches = shortIds.map(id => oaFetch(`https://api.openalex.org/authors/${id}?select=id,display_name,last_known_institutions,works_count,cited_by_count,topics,geo`).then(r => r.ok ? r.json() : null).catch(() => null));
+              const fetches = shortIds.map(id => oaFetch(`https://api.openalex.org/authors/${id}?select=id,display_name,orcid,last_known_institutions,works_count,cited_by_count,topics,geo`).then(r => r.ok ? r.json() : null).catch(() => null));
               const results = await Promise.all(fetches);
               
               const authorMap = new Map<string, Author>();
               for (const authorData of results) {
                 if (authorData && authorData.id) {
-                  if (fullInstIds.includes(authorData.last_known_institutions?.[0]?.id)) {
+                  if (promoteMatchedInstitution(authorData, fullInstIds)) {
                     authorMap.set(authorData.id, authorData);
                   }
                 }
@@ -825,7 +904,7 @@ function AppPageInner() {
             const globalData = await globalRes.json();
             authors = globalData.results || [];
             if (authors.length > 0) {
-              setResolvedInstitution(`No professors found at ${institutionNames.join(", ")} for this topic — showing top professors at other universities`);
+              setResolvedInstitution(`No professors found at ${institutionNames.join(", ")} for this topic. Showing top professors at other universities`);
             }
           }
         } else {
@@ -835,6 +914,10 @@ function AppPageInner() {
           authors = data.results || [];
         }
       }
+      // Collapse OpenAlex author fragments (one person split across entities) and drop
+      // ghost records, so a real professor never surfaces as a "2 papers / 0 citations"
+      // stub in place of their canonical, ORCID-backed profile.
+      authors = dedupeAuthors(authors);
       // Specificity filter: keep professors where the searched topic appears in their top topics.
       // Be more lenient when searching a specific university (smaller faculty pool).
       // With multiple topic IDs (synonyms), this is already much broader than before.
@@ -846,9 +929,9 @@ function AppPageInner() {
           });
         // When searching a university, use a wider window since faculty at smaller
         // schools may have the topic further down their list
-        const topNStrict = institutionIds.length > 0 ? 5 : 3;
-        const topNMedium = institutionIds.length > 0 ? 10 : 5;
-        const minStrict = institutionIds.length > 0 ? 2 : 3;
+        const topNStrict = institutionIds.length > 0 ? 8 : 3;
+        const topNMedium = institutionIds.length > 0 ? 25 : 5;
+        const minStrict = institutionIds.length > 0 ? 1 : 3;
         const strict = filterByTopN(topNStrict);
         if (strict.length >= minStrict) {
           authors = strict;
@@ -943,7 +1026,7 @@ function AppPageInner() {
         const works = (worksData.results ?? []) as OpenAlexWork[];
 
         if (works.length === 0) {
-          setResponsiveness(prev => ({ ...prev, [authorId]: { level: "red", label: "Inactive lab", tooltip: "No papers found in the last 3 years — this lab may be inactive or retired" } }));
+          setResponsiveness(prev => ({ ...prev, [authorId]: { level: "red", label: "Inactive lab", tooltip: "No papers found in the last 3 years. This lab may be inactive or retired" } }));
           continue;
         }
 
@@ -956,7 +1039,7 @@ function AppPageInner() {
         if (last2YearWorks.length === 0) {
           const lastYear = Math.max(...works.map((w) => w.publication_year ?? 0));
           const yearsAgo = currentYear - lastYear;
-          setResponsiveness(prev => ({ ...prev, [authorId]: { level: "red", label: "Inactive lab", tooltip: `Last published in ${lastYear} (${yearsAgo} year${yearsAgo !== 1 ? "s" : ""} ago) — lab appears to be winding down` } }));
+          setResponsiveness(prev => ({ ...prev, [authorId]: { level: "red", label: "Inactive lab", tooltip: `Last published in ${lastYear} (${yearsAgo} year${yearsAgo !== 1 ? "s" : ""} ago). Lab appears to be winding down` } }));
           continue;
         }
 
@@ -1007,19 +1090,19 @@ function AppPageInner() {
           // Close to threshold — probably still recruiting
           level = "green";
           label = "Probably takes students";
-          tooltip = `Published recently but only 1 apparent student co-author found — likely still has capacity, worth reaching out`;
+          tooltip = `Published recently but only 1 apparent student co-author found. Likely still has capacity, worth reaching out`;
         } else if (!publishedRecently) {
           level = "yellow";
           label = "May not take students";
           const lastYear = Math.max(...works.map((w) => w.publication_year ?? 0));
           const yearsAgo = currentYear - lastYear;
           tooltip = yearsAgo >= 2
-            ? `Last published ${yearsAgo} years ago — lab may not be actively recruiting`
-            : `Hasn't published in the last year — may not be actively recruiting right now`;
+            ? `Last published ${yearsAgo} years ago. Lab may not be actively recruiting`
+            : `Hasn't published in the last year. May not be actively recruiting right now`;
         } else {
           level = "yellow";
           label = "May not take students";
-          tooltip = `No apparent student co-authors found in recent papers — lab may not have open positions`;
+          tooltip = `No apparent student co-authors found in recent papers. Lab may not have open positions`;
         }
 
         if (runId !== searchRunIdRef.current) return; // results changed during the awaits above
@@ -1041,12 +1124,26 @@ function AppPageInner() {
     setResolvedTopic("");
     setResolvedInstitution("");
     setShowSaved(false);
-    fetch("/api/log-search", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ research_interest: profName, university: null, is_authenticated: !!user }) }).catch(() => {});
+    fetch("/api/log-search", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ research_interest: profName, university: profUniversity || null, is_authenticated: !!user }) }).catch(() => {});
     try {
-      const res = await oaFetch(`https://api.openalex.org/authors?search=${encodeURIComponent(profName.trim())}&per_page=10&sort=cited_by_count:desc`);
-      const data = await res.json();
-      const authors: Author[] = data.results || [];
-      if (authors.length === 0) setError(`No professors found matching "${profName}".`);
+      // Optional university narrows common-name collisions and surfaces the right
+      // affiliation (when OpenAlex's record for that person actually has it).
+      let fullInstIds: string[] = [];
+      if (profUniversity.trim()) {
+        try {
+          const r = await fetch("/api/resolve", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ universities: [profUniversity] }),
+            signal: AbortSignal.timeout(15000),
+          });
+          const d = await r.json();
+          fullInstIds = (d.institutionIds ?? []).map((id: string) => `https://openalex.org/${id}`);
+          if (d.institutionNames?.length) setResolvedInstitution(d.institutionNames.join(", "));
+        } catch { /* fall back to an unfiltered name search */ }
+      }
+      const authors = await lookupAuthorsByName(profName, fullInstIds);
+      if (authors.length === 0) setError(`No professors found matching "${profName}"${profUniversity ? ` at ${profUniversity}` : ""}.`);
       // searches are now unlimited
       setResults(authors);
       if (authors.length > 0) fetchResponsiveness(authors);
@@ -1654,6 +1751,10 @@ function AppPageInner() {
                   <label className="rm-search-label">Professor Name</label>
                   <input value={profName} onChange={(e) => setProfName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && triggerSearchByName()} placeholder="e.g. Geoffrey Hinton, Fei-Fei Li..." className="rm-search-input" />
                 </div>
+                <div className="rm-search-input-wrap" style={{ flex: 1 }}>
+                  <label className="rm-search-label">University (optional)</label>
+                  <input value={profUniversity} onChange={(e) => setProfUniversity(e.target.value)} onKeyDown={(e) => e.key === "Enter" && triggerSearchByName()} placeholder="Narrows common names" className="rm-search-input" />
+                </div>
                 <button onClick={triggerSearchByName} className="btn-cta rm-search-btn">Search</button>
               </div>
             )}
@@ -1795,6 +1896,10 @@ function AppPageInner() {
                       <div className="rm-search-input-wrap" style={{ flex: 1 }}>
                         <label className="rm-search-label">Professor Name</label>
                         <input value={profName} onChange={(e) => setProfName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && searchByName()} placeholder="e.g. Geoffrey Hinton, Fei-Fei Li..." className="rm-search-input" />
+                      </div>
+                      <div className="rm-search-input-wrap" style={{ flex: 1 }}>
+                        <label className="rm-search-label">University (optional)</label>
+                        <input value={profUniversity} onChange={(e) => setProfUniversity(e.target.value)} onKeyDown={(e) => e.key === "Enter" && searchByName()} placeholder="Narrows common names" className="rm-search-input" />
                       </div>
                       <button onClick={searchByName} className="btn-cta rm-search-btn">Search</button>
                     </div>
@@ -2167,7 +2272,7 @@ function AppPageInner() {
                             style={{ fontSize: "0.7rem", fontWeight: 700, color: "#6b7280", cursor: "pointer", background: "rgba(101, 153, 131,0.15)", border: "1px solid #8aaa9d", borderRadius: "999px", width: "18px", height: "18px", display: "inline-flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-playfair), Georgia, serif", transition: "all 0.2s ease" }}
                           >?</button>
                           <div style={{ display: "none", padding: "14px 18px", background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)", border: "1px solid rgba(101, 153, 131,0.3)", borderRadius: "12px", fontSize: "0.85rem", color: "#6b7280", lineHeight: 1.6, marginTop: "4px", marginBottom: "8px" }}>
-                            In most lab sciences (biology, chemistry, medicine, etc.), <strong>1st author</strong> did the hands-on work and <strong>last author</strong> runs the lab. In many other fields (math, CS, economics, humanities), author order is often alphabetical and doesn&apos;t indicate contribution level. When in doubt, check if the professor lists the paper prominently on their own website — that usually means it&apos;s important to them.
+                            In most lab sciences (biology, chemistry, medicine, etc.), <strong>1st author</strong> did the hands-on work and <strong>last author</strong> runs the lab. In many other fields (math, CS, economics, humanities), author order is often alphabetical and doesn&apos;t indicate contribution level. When in doubt, check if the professor lists the paper prominently on their own website. That usually means it&apos;s important to them.
                           </div>
                         </div>
                         {(isFree ? summary.highlights.slice(0, 1) : summary.highlights).map((h, i) => renderFinding(h, i))}
@@ -2178,7 +2283,7 @@ function AppPageInner() {
                             </div>
                             <button type="button" className="rm-locked-overlay" onClick={openSummaryPaywall}>
                               See the other {summary.highlights.length - 1} finding{summary.highlights.length - 1 === 1 ? "" : "s"}
-                              <span className="rm-locked-overlay-sub">Free account to unlock</span>
+                              <span className="rm-locked-overlay-sub">Unlock with any plan</span>
                             </button>
                           </div>
                         )}
@@ -2196,7 +2301,7 @@ function AppPageInner() {
                             </div>
                             <button type="button" className="rm-locked-overlay" onClick={openSummaryPaywall}>
                               See all {summary.questions.length} questions
-                              <span className="rm-locked-overlay-sub">Free account to unlock</span>
+                              <span className="rm-locked-overlay-sub">Unlock with any plan</span>
                             </button>
                           </div>
                         )}
@@ -2252,7 +2357,7 @@ function AppPageInner() {
                         </span>
                         <span className="rm-email-cta-text">
                           <span className="rm-email-cta-title">Check your email before you send</span>
-                          <span className="rm-email-cta-sub">Free to try — no account needed</span>
+                          <span className="rm-email-cta-sub">Free to try. No account needed</span>
                         </span>
                         <span className="rm-email-cta-arrow" aria-hidden="true">&rarr;</span>
                       </button>
@@ -2316,7 +2421,7 @@ function AppPageInner() {
                       </button>
                       {!isPaid && !isLoadingSummary && (
                         <span className="rm-free-hint">
-                          {getSummariesRemaining()} free {getSummariesRemaining() === 1 ? "use" : "uses"} remaining {"\u2014"} unlocks all features for this professor
+                          {getSummariesRemaining()} free {getSummariesRemaining() === 1 ? "use" : "uses"} remaining. Each unlocks all features for this professor
                         </span>
                       )}
                       {isPaid && !isLoadingSummary && (
@@ -2514,7 +2619,7 @@ function AppPageInner() {
                 <div className={`rm-modal-left${mobileEmailTab === "reference" ? " rm-modal-panel-hidden" : ""}`}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
                     <h2 className="rm-modal-title">Email to {emailTarget.display_name}</h2>
-                    <button onClick={() => { setEmailTarget(null); setEmailDraft(""); setEmailFlags([]); setHasChecked(false); }} style={{ fontSize: "1.5rem", color: "#6b7280", background: "none", border: "none", cursor: "pointer", transition: "transform 0.2s" }} onMouseEnter={e => (e.currentTarget.style.transform = "rotate(90deg)")} onMouseLeave={e => (e.currentTarget.style.transform = "rotate(0deg)")}>&times;</button>
+                    <button onClick={() => { setEmailTarget(null); setEmailDraft(""); setEmailFlags([]); setHasChecked(false); }} aria-label="Close" style={{ flexShrink: 0, width: "36px", height: "36px", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "1.5rem", lineHeight: 1, color: "#6b7280", background: "none", border: "none", borderRadius: "999px", cursor: "pointer", transition: "background 0.15s ease, color 0.15s ease" }} onMouseEnter={e => { e.currentTarget.style.background = "rgba(101,153,131,0.12)"; e.currentTarget.style.color = "#2d5a47"; }} onMouseLeave={e => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = "#6b7280"; }}>&times;</button>
                   </div>
 
                   {/* Check their website banner */}
@@ -2613,13 +2718,13 @@ function AppPageInner() {
                   {!user && !hasChecked && (
                     <div style={{ margin: "12px 0 4px", padding: "10px 14px", background: "rgba(101, 153, 131,0.055)", border: "1px solid rgba(101, 153, 131,0.13)", borderRadius: "10px", display: "flex", alignItems: "center", gap: "8px" }}>
                       <span style={{ fontSize: "0.82rem", color: "#2d5a47", opacity: 0.6, flexShrink: 0 }}>ℹ</span>
-                      <span style={{ fontSize: "0.8rem", color: "#2d5a47" }}>Free to try — no account needed.</span>
+                      <span style={{ fontSize: "0.8rem", color: "#2d5a47" }}>Free to try. No account needed.</span>
                     </div>
                   )}
                   {!isPaid && !freeEmailCheckUsed && !!user && (
                     <div style={{ margin: "12px 0 4px", padding: "10px 14px", background: "rgba(101, 153, 131,0.055)", border: "1px solid rgba(101, 153, 131,0.13)", borderRadius: "10px", display: "flex", alignItems: "center", gap: "8px" }}>
                       <span style={{ fontSize: "0.82rem", color: "#2d5a47", opacity: 0.6, flexShrink: 0 }}>ℹ</span>
-                      <span style={{ fontSize: "0.8rem", color: "#2d5a47" }}>You have 1 free email check — use it on your best draft.</span>
+                      <span style={{ fontSize: "0.8rem", color: "#2d5a47" }}>You have 1 free email check. Use it on your best draft.</span>
                     </div>
                   )}
                   <div className="rm-modal-actions rm-modal-sticky-footer">
@@ -2942,7 +3047,7 @@ function AppPageInner() {
                 const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_WEEKLY || "price_1TMxDSFINW44xCyFWrm6ZTOo";
                 await startCheckout(priceId);
               }} className="btn-cta rm-search-btn" style={{ width: "100%", padding: "13px", fontSize: "0.95rem", background: "linear-gradient(135deg, #659983, #557f6c)", boxShadow: "0 8px 24px rgba(101, 153, 131,0.3)", textShadow: "0 1px 2px rgba(18, 54, 39,0.24)" }}>
-                Start Weekly — $7
+                Start Weekly for $7
               </button>
               <p style={{ fontSize: "0.74rem", color: "#9b7d40", textAlign: "center", marginTop: "8px", fontWeight: 600 }}>No professor reply in 30 days, full refund.</p>
             </div>
@@ -2960,14 +3065,14 @@ function AppPageInner() {
                 const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_SEMESTER || "price_1TIuAlFINW44xCyFcxqgQpeV";
                 await startCheckout(priceId);
               }} className="btn-cta" style={{ padding: "10px 22px", fontSize: "0.85rem", background: "rgba(101, 153, 131, 0.1)", color: "#2d5a47", border: "none", whiteSpace: "nowrap" }}>
-                Get Semester — $29
+                Get Semester for $29
               </button>
             </div>
 
             {/* Lifetime — de-emphasized one-time option */}
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", padding: "11px 16px", borderRadius: "12px", border: "1px solid rgba(101, 153, 131,0.1)", background: "rgba(255,255,255,0.45)", flexWrap: "wrap", marginBottom: "12px" }}>
               <span style={{ fontSize: "0.8rem", color: "#6b7280" }}>
-                Prefer to pay once? <strong style={{ color: "#2d5a47", fontWeight: 700 }}>Lifetime — $59</strong>, never pay again.
+                Prefer to pay once? <strong style={{ color: "#2d5a47", fontWeight: 700 }}>Lifetime for $59</strong>, never pay again.
               </span>
               <button onClick={async () => {
                 const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_LIFETIME || "price_1TIuBBFINW44xCyFoSCtUpFN";

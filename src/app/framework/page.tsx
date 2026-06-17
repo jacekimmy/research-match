@@ -18,7 +18,7 @@ const TEMPLATE_PARTS = [
 
 const HINTS: Record<string, string> = {
   "SPECIFIC TOPIC": "Name the actual subject they study, not just their field. Good: 'memory consolidation during REM sleep in elderly patients'. Bad: 'your neuroscience research'.",
-  "SPECIFIC FINDING OR QUOTE FROM PAPER": "Pick one concrete result from their work — a number, a comparison, a technique. Good: 'your finding that theta oscillations increased recall by 34%'. Bad: 'your interesting results'.",
+  "SPECIFIC FINDING OR QUOTE FROM PAPER": "Pick one concrete result from their work, a number, a comparison, a technique. Good: 'your finding that theta oscillations increased recall by 34%'. Bad: 'your interesting results'.",
   "YOUR RESEARCH ANGLE": "State your specific angle or question, not just your major. Good: 'the role of oscillatory dynamics in memory disorders'. Bad: 'neuroscience'.",
   "ONE GENUINE PERSONAL REASON": "Connect it to something you've actually done or experienced. Good: 'I've been analyzing EEG datasets from the OpenNeuro repository'. Bad: 'I have always been passionate about this field'.",
   "INTELLIGENT QUESTION": "Ask something that shows you read the paper. Good: 'whether the same oscillatory patterns appear in younger populations with sleep disorders'. Bad: 'what projects you're working on'.",

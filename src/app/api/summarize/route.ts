@@ -128,10 +128,10 @@ export async function POST(req: NextRequest) {
 ${papers.join("\n\n---\n\n")}
 
 Return a JSON object with two fields:
-1. "summary": 3-4 sentences describing what this professor actually works on. Be specific — name the real topics, methods, or problems they study. Write like you're explaining to a smart undergrad. Use plain, direct language. No jargon, no filler phrases like "significant contributions" or "robust frameworks". Do not start with "This professor".
+1. "summary": 3-4 sentences describing what this professor actually works on. Be specific: name the real topics, methods, or problems they study. Write like you're explaining to a smart undergrad. Use plain, direct language. No jargon, no filler phrases like "significant contributions" or "robust frameworks". Do not start with "This professor".
 2. "highlights": an array of 3 objects, each with:
    - "paper": the exact paper title
-   - "detail": one specific finding, method, or result from that paper. Focus on what they actually discovered or built — a number, a comparison, a technique. Never just restate the title or topic. Explain the concrete outcome in one sentence, plain English.
+   - "detail": one specific finding, method, or result from that paper. Focus on what they actually discovered or built, a number, a comparison, a technique. Never just restate the title or topic. Explain the concrete outcome in one sentence, plain English.
 3. "questions": an array of 3 strings. Generate 3 questions a curious student might naturally ask over coffee. Reference something specific from the abstracts but make it conversational. Start questions with "I noticed", "I was wondering", "What made you decide to" instead of "How do you plan to" or "Can you discuss". Never compliment the research. Never use phrases like "I found your work fascinating." Should sound like genuine curiosity, not an interview.
 
 Return only valid JSON, no markdown, no explanation.`;
@@ -141,7 +141,7 @@ Return only valid JSON, no markdown, no explanation.`;
       messages: [
         {
           role: "system",
-          content: "You explain research in plain, specific language. You never use academic filler words. You always return valid JSON.",
+          content: "You explain research in plain, specific language. You never use academic filler words. You never use em dashes; use commas or periods instead. You always return valid JSON.",
         },
         { role: "user", content: prompt },
       ],

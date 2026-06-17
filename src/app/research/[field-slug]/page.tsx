@@ -165,8 +165,8 @@ export default async function ResearchFieldPage({ params }: Props) {
                           p.professor_name
                         )}
                       </td>
-                      <td>{p.institution ?? "—"}</td>
-                      <td>{p.recent_topic ?? "—"}</td>
+                      <td>{p.institution ?? "-"}</td>
+                      <td>{p.recent_topic ?? "-"}</td>
                     </tr>
                   );
                 })}

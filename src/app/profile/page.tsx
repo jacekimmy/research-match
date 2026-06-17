@@ -264,7 +264,7 @@ export default function ProfilePage() {
           </div>
           <div className="pro-stat glass">
             <span className="pro-stat-label">Buddy weeks</span>
-            <strong className="pro-stat-value">{buddyLoading ? "—" : buddyPass.weeksAvailable}</strong>
+            <strong className="pro-stat-value">{buddyLoading ? "-" : buddyPass.weeksAvailable}</strong>
             <p className="pro-stat-note">
               {buddyActive
                 ? `Active until ${formatBuddyPassDate(buddyPass.activeUntil || profile?.buddy_pass_active_until)}`
@@ -288,7 +288,7 @@ export default function ProfilePage() {
               </div>
 
               <p className="pro-desc">
-                Share your code — friends get 25% off any plan. You earn one free week per successful referral. Weeks never expire.
+                Share your code, friends get 25% off any plan. You earn one free week per successful referral. Weeks never expire.
               </p>
 
               {/* Share card — code + link */}

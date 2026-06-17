@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
       messages: [
         {
           role: "system",
-          content: "You return a JSON array of university names — nothing else. No explanation, no markdown, no extra text.",
+          content: "You return a JSON array of university names; nothing else. No explanation, no markdown, no extra text.",
         },
         {
           role: "user",

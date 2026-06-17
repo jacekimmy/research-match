@@ -51,7 +51,7 @@ export default function LandingPage() {
   const [checkoutError, setCheckoutError] = useState("");
   const pricingOptions = ["free", "weekly", "semester", "lifetime"] as const;
   const paidPricingOptions = [
-    { key: "weekly", label: "Weekly", detail: "$7", price: "$7", period: "1 week access", cta: "Start 1-Week Sprint — $7", badge: null },
+    { key: "weekly", label: "Weekly", detail: "$7", price: "$7", period: "1 week access", cta: "Start 1-Week Sprint for $7", badge: null },
     { key: "semester", label: "Semester", detail: "$29", price: "$29", period: "4 months access", cta: "Get Semester Access for $29", badge: "Best value" },
     { key: "lifetime", label: "Lifetime", detail: "$59", price: "$59", period: "Yours forever.", cta: "Claim your spot for $59", badge: null },
   ] as const;
@@ -520,7 +520,7 @@ export default function LandingPage() {
         {[
           { num: "250M+", label: "papers indexed" },
           { num: "1,000+", label: "universities" },
-          { num: searchCount !== null ? searchCount.toLocaleString() : "—", label: "searches run" },
+          { num: searchCount !== null ? searchCount.toLocaleString() : "-", label: "searches run" },
           { num: "< 24h", label: "first professor response" },
         ].map((s, i) => (
           <div key={i} className="lp-proof-item">
@@ -1007,7 +1007,7 @@ export default function LandingPage() {
                   className="lp-price-btn"
                   style={{ background: "rgba(101, 153, 131, 0.08)", color: "#2d5a47", border: "1px solid rgba(101, 153, 131, 0.2)", cursor: "pointer", width: "100%" }}
                 >
-                  {checkoutLoading === "weekly" ? "Loading…" : "Start 1-Week Sprint — $7"}
+                  {checkoutLoading === "weekly" ? "Loading…" : "Start 1-Week Sprint for $7"}
                 </button>
               </div>
             </div>

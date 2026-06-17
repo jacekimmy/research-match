@@ -669,8 +669,8 @@ export default function MobileLanding() {
             <div style={{ borderTop: "1px solid rgba(168, 133, 62,0.2)", paddingTop: "12px", marginBottom: "20px" }}>
               <p style={{ fontSize: "0.68rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#a8853e", marginBottom: "8px" }}>Free Bonuses Included:</p>
               {[
-                "Emails That Worked — 2 real emails that got replies, fully annotated",
-                "Email Template — the paragraph professors actually read",
+                "Emails That Worked: 2 real emails that got replies, fully annotated",
+                "Email Template: the paragraph professors actually read",
                 "Follow-Up Guide (coming soon)",
               ].map((f) => (
                 <p key={f} style={{ fontSize: "0.82rem", color: "#6b7280", padding: "4px 0", display: "flex", gap: "8px", alignItems: "flex-start" }}>
@@ -697,7 +697,7 @@ export default function MobileLanding() {
                 boxShadow: "0 4px 16px rgba(201, 173, 119, 0.3)",
                 minHeight: "48px", lineHeight: "48px", paddingTop: 0, paddingBottom: 0,
               }}>
-                Claim Lifetime Access — $59
+                Claim Lifetime Access for $59
               </Link>
             )}
             <p style={{ fontSize: "0.72rem", color: "#9b7d40", fontStyle: "italic", textAlign: "center", marginTop: "10px" }}>Not satisfied in 30 days? Full refund. No questions asked.</p>
@@ -737,8 +737,8 @@ export default function MobileLanding() {
             <div style={{ borderTop: "1px solid rgba(157, 191, 177,0.25)", paddingTop: "12px", marginBottom: "20px" }}>
               <p style={{ fontSize: "0.68rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#9dbfb1", marginBottom: "8px" }}>Free Bonuses Included:</p>
               {[
-                "Emails That Worked — 2 real emails that got replies, fully annotated",
-                "Email Template — the paragraph professors actually read",
+                "Emails That Worked: 2 real emails that got replies, fully annotated",
+                "Email Template: the paragraph professors actually read",
                 "Follow-Up Guide (coming soon)",
               ].map((f) => (
                 <p key={f} style={{ fontSize: "0.82rem", color: "rgba(245,240,230,0.7)", padding: "4px 0", display: "flex", gap: "8px", alignItems: "flex-start" }}>
@@ -751,7 +751,7 @@ export default function MobileLanding() {
               background: "#f4f0ea", color: "#2d5a47", borderRadius: "14px", fontWeight: 700,
               fontFamily: "var(--font-playfair), Georgia, serif",
             }}>
-              Get Semester Access — $29
+              Get Semester Access for $29
             </Link>
             <p style={{ fontSize: "0.72rem", color: "rgba(245,240,230,0.4)", fontStyle: "italic", textAlign: "center", marginTop: "10px" }}>Not satisfied in 30 days? Full refund. No questions asked.</p>
           </div>

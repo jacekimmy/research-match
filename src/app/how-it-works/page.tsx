@@ -41,7 +41,7 @@ export default function HowItWorksPage() {
       <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "96px 24px 80px" }}>
         <div className="sp-hero">
           <h1 className="sp-heading">How <em>Research Match</em> Works</h1>
-          <p className="sp-subheading">Three steps from topic to personalized email — in minutes.</p>
+          <p className="sp-subheading">Three steps from topic to personalized email, in minutes.</p>
         </div>
 
         {/* Step cards */}
