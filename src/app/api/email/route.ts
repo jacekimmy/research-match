@@ -106,34 +106,42 @@ For each check below, first look for evidence in the email, then decide whether 
 Return JSON: { "flags": [ { "type": "error" or "warning", "issue": "FLAG_NAME", "suggestion": "one sentence explanation" } ] }
 Only flag real problems. If the email is solid, return { "flags": [] }. Max 4 flags.`;
 
-    const chat = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are a strict but fair cold email reviewer. Before flagging any issue, you MUST quote the specific part of the email that proves the problem exists. If you cannot quote evidence of the problem, do NOT flag it. Write each suggestion without em dashes; use commas or periods instead. You return valid JSON only.",
-        },
-        { role: "user", content: prompt },
-      ],
-      max_tokens: 500,
-      temperature: 0.2,
-      response_format: { type: "json_object" },
-    });
-
-    const raw = chat.choices[0]?.message?.content?.trim() ?? "{}";
-    let parsed: {
-      flags?: { type: string; issue: string; suggestion: string }[];
+    const SYSTEM = "You are a strict but fair cold email reviewer. Before flagging any issue, you MUST quote the specific part of the email that proves the problem exists. If you cannot quote evidence of the problem, do NOT flag it. Write each suggestion without em dashes; use commas or periods instead. You return valid JSON only.";
+    const extract = (s: string | null | undefined) => {
+      if (!s) return null;
+      try { return JSON.parse(s); } catch { /* not clean JSON */ }
+      const m = s.match(/\{[\s\S]*\}/);
+      if (m) { try { return JSON.parse(m[0]); } catch { /* still bad */ } }
+      return null;
     };
-    try {
-      parsed = JSON.parse(raw);
-    } catch {
-      parsed = { flags: [] };
+
+    // Groq's json_object mode occasionally returns json_validate_failed (invalid JSON);
+    // retry with different sampling, salvage the raw generation if present, and never
+    // surface a raw API error to the user.
+    let parsed: { flags?: { type: string; issue: string; suggestion: string }[] } | null = null;
+    for (let attempt = 0; attempt < 2 && !parsed; attempt++) {
+      try {
+        const chat = await groq.chat.completions.create({
+          model: "llama-3.3-70b-versatile",
+          messages: [{ role: "system", content: SYSTEM }, { role: "user", content: prompt }],
+          max_tokens: 500,
+          temperature: attempt === 0 ? 0.2 : 0.45,
+          response_format: { type: "json_object" },
+        });
+        parsed = extract(chat.choices[0]?.message?.content);
+      } catch (err) {
+        const e = err as { error?: { failed_generation?: string }; failed_generation?: string };
+        parsed = extract(e.error?.failed_generation ?? e.failed_generation);
+        if (!parsed) console.warn(`email check attempt ${attempt + 1} failed:`, (err as Error)?.message);
+      }
     }
 
+    if (!parsed) {
+      return NextResponse.json({ error: "Couldn't check your email right now. Please try again." }, { status: 503 });
+    }
     return NextResponse.json({ flags: parsed.flags ?? [] });
   } catch (err) {
     console.error("email check error:", err);
-    return NextResponse.json({ error: String(err) }, { status: 500 });
+    return NextResponse.json({ error: "Couldn't check your email right now. Please try again." }, { status: 500 });
   }
 }

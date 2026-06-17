@@ -50,7 +50,11 @@ Return JSON exactly like this:
     });
 
     const raw = chat.choices[0]?.message?.content ?? "{}";
-    const parsed = JSON.parse(raw);
+    let parsed: { followUp1?: string; followUp2?: string } = {};
+    try { parsed = JSON.parse(raw); } catch {
+      const m = raw.match(/\{[\s\S]*\}/);
+      if (m) { try { parsed = JSON.parse(m[0]); } catch { /* leave empty */ } }
+    }
 
     return NextResponse.json({
       followUp1: parsed.followUp1 ?? "",
@@ -58,6 +62,6 @@ Return JSON exactly like this:
     });
   } catch (err) {
     console.error("follow-up error:", err);
-    return NextResponse.json({ error: String(err) }, { status: 500 });
+    return NextResponse.json({ error: "Couldn't generate follow-ups right now. Please try again." }, { status: 500 });
   }
 }
