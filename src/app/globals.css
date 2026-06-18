@@ -3022,10 +3022,16 @@ body::after {
     line-height: 1.5 !important;
   }
 
-  /* Textarea — kept tall on mobile, then grows to fill remaining space */
-  .modal-textarea {
-    min-height: 240px;
-    flex: 1;
+  /* Email-sheet textarea — a clean fixed-height box on mobile. NOT flex:1 here:
+     letting it grow made it expand under the sticky "Check email" footer, which
+     clipped its bottom and read as a cut-off shape. Scoped to .rm-modal-left so the
+     feedback page's textarea (same class, its own inline height) is untouched. */
+  .rm-modal-left .modal-textarea {
+    flex: none !important; /* override the email sheet's inline flex:1 on mobile only */
+    height: 240px;
+    min-height: 0;
+    resize: none;
+    width: 100%;
   }
 
   /* Sticky action bar at bottom of compose panel. Solid fill — NOT a

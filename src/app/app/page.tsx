@@ -1510,22 +1510,44 @@ function AppPageInner() {
   const closeEmailModal = () => { setEmailTarget(null); setEmailDraft(""); setEmailFlags([]); setHasChecked(false); };
   const emailSheetRef = useRef<HTMLDivElement | null>(null);
   const emailDragStartY = useRef<number | null>(null);
-  const onSheetDragStart = (e: React.TouchEvent) => { emailDragStartY.current = e.touches[0].clientY; };
-  const onSheetDragMove = (e: React.TouchEvent) => {
-    if (emailDragStartY.current == null || !emailSheetRef.current) return;
-    const dy = e.touches[0].clientY - emailDragStartY.current;
-    emailSheetRef.current.style.transition = "none";
-    emailSheetRef.current.style.transform = dy > 0 ? `translateY(${dy}px)` : "";
+  const emailDragDY = useRef(0);
+  const emailDragRaf = useRef<number | null>(null);
+  const onSheetDragStart = (e: React.TouchEvent) => {
+    emailDragStartY.current = e.touches[0].clientY;
+    emailDragDY.current = 0;
+    const el = emailSheetRef.current;
+    if (el) { el.style.transition = "none"; el.style.willChange = "transform"; } // promote to a GPU layer up front
   };
-  const onSheetDragEnd = (e: React.TouchEvent) => {
+  const onSheetDragMove = (e: React.TouchEvent) => {
     if (emailDragStartY.current == null) return;
-    const dy = (e.changedTouches[0]?.clientY ?? emailDragStartY.current) - emailDragStartY.current;
-    if (emailSheetRef.current) {
-      emailSheetRef.current.style.transition = "transform 0.25s ease";
-      emailSheetRef.current.style.transform = "";
+    emailDragDY.current = Math.max(0, e.touches[0].clientY - emailDragStartY.current);
+    // Coalesce to one paint per frame and use translate3d so the move is composited, not repainted.
+    if (emailDragRaf.current == null) {
+      emailDragRaf.current = requestAnimationFrame(() => {
+        emailDragRaf.current = null;
+        const el = emailSheetRef.current;
+        if (el) el.style.transform = `translate3d(0, ${emailDragDY.current}px, 0)`;
+      });
     }
+  };
+  const onSheetDragEnd = () => {
+    if (emailDragStartY.current == null) return;
+    if (emailDragRaf.current != null) { cancelAnimationFrame(emailDragRaf.current); emailDragRaf.current = null; }
+    const el = emailSheetRef.current;
+    const dy = emailDragDY.current;
     emailDragStartY.current = null;
-    if (dy > 90) closeEmailModal(); // pulled down far enough — back to the list
+    if (!el) { if (dy > 90) closeEmailModal(); return; }
+    if (dy > 90) {
+      // Pulled far enough — slide the rest of the way down, then unmount (real sheet dismiss).
+      el.style.transition = "transform 0.22s cubic-bezier(0.4, 0, 1, 1)";
+      el.style.transform = `translate3d(0, ${el.offsetHeight}px, 0)`;
+      window.setTimeout(closeEmailModal, 200);
+    } else {
+      // Spring back to rest.
+      el.style.transition = "transform 0.34s cubic-bezier(0.22, 1, 0.36, 1)";
+      el.style.transform = "translate3d(0, 0, 0)";
+      el.style.willChange = "";
+    }
   };
 
   // ── Hero transition ──────────────────────────────────────────────────────
