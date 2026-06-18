@@ -343,20 +343,23 @@ function dedupeAuthors(authors: Author[]): Author[] {
 // citations and the top-15 slice fills up with GWAS/genetics giants who merely
 // touch methylation, truncating away the actual specialists (Klose, Song,
 // Kriaučionis) whose #1 topic IS DNA methylation. Lower is better.
-//   - Anyone with the PRIMARY (exact) searched topic ranks by its position in
-//     their own topic list (0 = it's their #1 topic), strictly above
-//   - people who only match a broader expansion topic (100+), above
-//   - people who match nothing (1000; shouldn't happen post-filter).
+//
+// We rank by the MINIMUM position of any resolved topic in the author's own
+// (involvement-ordered) topic list: position 0 = that topic is their #1, so they
+// are a true specialist. OpenAlex has no single canonical topic for broad fields
+// ("organic chemistry" is split into Fluorine / Synthetic Methods / Cycloaddition,
+// etc.), so resolve returns several sub-topics; matching ANY of them at position 0
+// must rank a specialist to the top. The searched-topic index (i) is only a light
+// tiebreak (×10 keeps position dominant), so we don't over-privilege whichever
+// sub-topic the resolver happened to list first.
 function topicRelevanceRank(a: Author, topicIds: string[]): number {
   const authorTopicIds = (a.topics ?? []).map((t) => t.id?.split("/").pop());
-  const primaryPos = authorTopicIds.indexOf(topicIds[0]);
-  if (primaryPos >= 0) return primaryPos;
   let best = Infinity;
-  for (let i = 1; i < topicIds.length; i++) {
+  for (let i = 0; i < topicIds.length; i++) {
     const pos = authorTopicIds.indexOf(topicIds[i]);
-    if (pos >= 0) best = Math.min(best, pos);
+    if (pos >= 0) best = Math.min(best, pos * 10 + i);
   }
-  return best === Infinity ? 1000 : 100 + best;
+  return best === Infinity ? 9999 : best;
 }
 
 // Look up authors by personal name (used by By-Name mode and by the interest
