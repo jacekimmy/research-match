@@ -1852,6 +1852,11 @@ body::after {
   display: none;
 }
 
+/* Drag handle (bottom-sheet grabber) hidden on desktop */
+.rm-modal-grab {
+  display: none;
+}
+
 /* ===== SUGGESTIONS DROPDOWN ===== */
 
 .suggestions-dropdown {
@@ -2960,16 +2965,21 @@ body::after {
     -webkit-backdrop-filter: none;
   }
 
-  /* Drag handle indicator at top of sheet */
-  .rm-modal::before {
-    content: "";
-    display: block;
+  /* Drag handle at top of sheet — a real element so it can capture the pull gesture */
+  .rm-modal-grab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 28px;
+    flex-shrink: 0;
+    touch-action: none; /* own the gesture so the browser can't pull-to-refresh */
+    cursor: grab;
+  }
+  .rm-modal-grab-bar {
     width: 40px;
     height: 4px;
-    background: rgba(101, 153, 131, 0.2);
+    background: rgba(101, 153, 131, 0.25);
     border-radius: 2px;
-    margin: 12px auto 0;
-    flex-shrink: 0;
   }
 
   .rm-modal-left {
@@ -2979,6 +2989,7 @@ body::after {
     flex: none;
     max-height: none;
     overflow-y: auto;
+    overscroll-behavior: contain; /* don't chain scroll to the page (pull-to-refresh) */
     display: flex;
     flex-direction: column;
   }
@@ -2993,6 +3004,7 @@ body::after {
     border-top: 1px solid rgba(101, 153, 131, 0.3);
     border-radius: 0;
     overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
   /* Hide volunteer tip on mobile — too cramped */
@@ -3010,9 +3022,9 @@ body::after {
     line-height: 1.5 !important;
   }
 
-  /* Textarea — let it grow to fill remaining space */
+  /* Textarea — kept tall on mobile, then grows to fill remaining space */
   .modal-textarea {
-    min-height: 140px;
+    min-height: 240px;
     flex: 1;
   }
 

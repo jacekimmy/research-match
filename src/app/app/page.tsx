@@ -1504,6 +1504,30 @@ function AppPageInner() {
   ), [isPaid, showSaved, filteredList, currentPage]);
   const wordCount = useMemo(() => emailDraft.trim().split(/\s+/).filter(Boolean).length, [emailDraft]);
 
+  // ── Email sheet: close + pull-down-to-dismiss (mobile bottom sheet) ──────────
+  // Closing just unmounts the overlay, so the professor list underneath is revealed
+  // exactly where it was left.
+  const closeEmailModal = () => { setEmailTarget(null); setEmailDraft(""); setEmailFlags([]); setHasChecked(false); };
+  const emailSheetRef = useRef<HTMLDivElement | null>(null);
+  const emailDragStartY = useRef<number | null>(null);
+  const onSheetDragStart = (e: React.TouchEvent) => { emailDragStartY.current = e.touches[0].clientY; };
+  const onSheetDragMove = (e: React.TouchEvent) => {
+    if (emailDragStartY.current == null || !emailSheetRef.current) return;
+    const dy = e.touches[0].clientY - emailDragStartY.current;
+    emailSheetRef.current.style.transition = "none";
+    emailSheetRef.current.style.transform = dy > 0 ? `translateY(${dy}px)` : "";
+  };
+  const onSheetDragEnd = (e: React.TouchEvent) => {
+    if (emailDragStartY.current == null) return;
+    const dy = (e.changedTouches[0]?.clientY ?? emailDragStartY.current) - emailDragStartY.current;
+    if (emailSheetRef.current) {
+      emailSheetRef.current.style.transition = "transform 0.25s ease";
+      emailSheetRef.current.style.transform = "";
+    }
+    emailDragStartY.current = null;
+    if (dy > 90) closeEmailModal(); // pulled down far enough — back to the list
+  };
+
   // ── Hero transition ──────────────────────────────────────────────────────
   const [heroExiting, setHeroExiting] = useState(false);
 
@@ -2743,7 +2767,11 @@ function AppPageInner() {
           );
           return (
             <div className="modal-bg rm-modal-overlay">
-              <div className="modal-glass rm-modal">
+              <div className="modal-glass rm-modal" ref={emailSheetRef}>
+                {/* Drag handle — pull down to dismiss (mobile bottom sheet) */}
+                <div className="rm-modal-grab" aria-hidden="true" onTouchStart={onSheetDragStart} onTouchMove={onSheetDragMove} onTouchEnd={onSheetDragEnd}>
+                  <span className="rm-modal-grab-bar" />
+                </div>
                 {/* Mobile-only tab bar */}
                 <div className="rm-modal-tabs">
                   <button
@@ -2758,7 +2786,7 @@ function AppPageInner() {
                 <div className={`rm-modal-left${mobileEmailTab === "reference" ? " rm-modal-panel-hidden" : ""}`}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
                     <h2 className="rm-modal-title">Email to {emailTarget.display_name}</h2>
-                    <button onClick={() => { setEmailTarget(null); setEmailDraft(""); setEmailFlags([]); setHasChecked(false); }} aria-label="Close" style={{ flexShrink: 0, width: "36px", height: "36px", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "1.5rem", lineHeight: 1, color: "#6b7280", background: "none", border: "none", borderRadius: "999px", cursor: "pointer", transition: "background 0.15s ease, color 0.15s ease" }} onMouseEnter={e => { e.currentTarget.style.background = "rgba(101,153,131,0.12)"; e.currentTarget.style.color = "#2d5a47"; }} onMouseLeave={e => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = "#6b7280"; }}>&times;</button>
+                    <button onClick={closeEmailModal} aria-label="Close" style={{ flexShrink: 0, width: "36px", height: "36px", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "1.5rem", lineHeight: 1, color: "#6b7280", background: "none", border: "none", borderRadius: "999px", cursor: "pointer", transition: "background 0.15s ease, color 0.15s ease" }} onMouseEnter={e => { e.currentTarget.style.background = "rgba(101,153,131,0.12)"; e.currentTarget.style.color = "#2d5a47"; }} onMouseLeave={e => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = "#6b7280"; }}>&times;</button>
                   </div>
 
                   {/* Check their website banner */}
@@ -2967,10 +2995,6 @@ function AppPageInner() {
                       </div>
                     );
                   })()}
-                  {/* "Ready to check" hint — only shown to paid users (free users see the pre-check notice instead) */}
-                  {!hasChecked && emailDraft.trim().length > 0 && !checkingEmail && hasEmailChecker && (
-                    <p style={{ marginTop: "16px", fontSize: "0.85rem", color: "#6b7280" }}>Hit &quot;Check my email&quot; when you&apos;re ready for feedback.</p>
-                  )}
                 </div>
                 <div className={`modal-sidebar rm-modal-right${mobileEmailTab === "compose" ? " rm-modal-panel-hidden" : ""}`}>
                   <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "#2d5a47", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "24px" }}>Reference</p>
