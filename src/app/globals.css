@@ -8719,6 +8719,26 @@ body.lp-tab-hidden .lp-quotes-track {
   margin-top: 0 !important;
 }
 
+/* Mobile: keep the 3-column professor table inside the viewport so the page can't
+   scroll sideways (which shifts everything and reads as uneven padding). Fixed
+   layout + wrapping shares the width across columns instead of letting long names
+   and topics expand the table past the screen. */
+@media (max-width: 600px) {
+  .rm-research-table {
+    table-layout: fixed;
+    font-size: 0.8rem;
+  }
+  .rm-research-table th,
+  .rm-research-table td {
+    padding: 10px 9px;
+    overflow-wrap: anywhere;
+  }
+  .rm-research-table th:nth-child(1),
+  .rm-research-table td:nth-child(1) { width: 30%; }
+  .rm-research-table th:nth-child(3),
+  .rm-research-table td:nth-child(3) { width: 42%; }
+}
+
 /* Secondary (text) CTA next to the green button in the conversion panel */
 .rm-research-secondary-cta {
   display: inline-block;
