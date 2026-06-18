@@ -301,7 +301,12 @@ function promoteMatchedInstitution(a: Author, fullInstIds: string[]): boolean {
   const arr = a.last_known_institutions ?? [];
   const idx = arr.findIndex((inst) => inst?.id && fullInstIds.includes(inst.id));
   if (idx < 0) return false;
-  if (matchedAffiliationYears(a, fullInstIds) >= GENUINE_AFFILIATION_MIN_YEARS) {
+  // With no per-year affiliation data we can't tell a genuine tenure from a stray
+  // collaboration, so default to showing the searched institution (the original
+  // behaviour). Only when we DO have year data do we require a real 3+ year match
+  // before promoting it; a thin recent match shows the professor's real home instead.
+  const hasYearData = (a.affiliations?.length ?? 0) > 0;
+  if (!hasYearData || matchedAffiliationYears(a, fullInstIds) >= GENUINE_AFFILIATION_MIN_YEARS) {
     if (idx > 0) {
       const [matched] = arr.splice(idx, 1);
       arr.unshift(matched);
@@ -933,7 +938,7 @@ function AppPageInner() {
         }
         }
       } else {
-        // OR filter across all resolved topic IDs (now up to 4 per query = broad synonym coverage)
+        // OR filter across all resolved topic IDs (now up to 6 per query = broad synonym coverage)
         const topicFilter = topicIds.join("|");
         const fullInstIds = institutionIds.map((id: string) => `https://openalex.org/${id}`);
 
@@ -1029,7 +1034,7 @@ function AppPageInner() {
         }
         // Re-rank by topic centrality so the actual specialists in the searched
         // topic rise to the top, instead of career-citation giants who merely
-        // touch it. Critical: scoring below only keeps the top 15, so without
+        // touch it. Critical: scoring below only keeps the top 20, so without
         // this the real experts get truncated away before they're ever shown.
         authors = [...authors].sort(
           (a, b) =>
@@ -1040,8 +1045,8 @@ function AppPageInner() {
       // Score authors to filter out non-professors
       if (authors.length > 0) {
         try {
-          // Drastically reduce OpenAlex API bottleneck by only scoring top 15 candidates
-          const authorsToScore = authors.slice(0, 15);
+          // Drastically reduce OpenAlex API bottleneck by only scoring top 20 candidates
+          const authorsToScore = authors.slice(0, 20);
           const scoreRes = await fetch("/api/score-authors", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -1074,7 +1079,7 @@ function AppPageInner() {
           }
         } catch {
           // Fallback: simple filter if scoring throws (network error / timeout)
-          authors = authors.slice(0, 15).filter((a) => a.works_count >= 10);
+          authors = authors.slice(0, 20).filter((a) => a.works_count >= 10);
         }
       }
       if (runId !== searchRunIdRef.current) return; // results arrived stale — a newer search is active
