@@ -13,21 +13,28 @@ async function expandToSearchTerms(topic: string): Promise<string[]> {
       messages: [
         {
           role: "system",
-          content: `You convert informal research topic queries into 3-5 formal academic search terms that would appear in an academic paper database taxonomy. Return only a JSON array of strings. No explanation. Examples:
-- "applied math" → ["mathematics", "mathematical modeling", "numerical analysis", "computational mathematics"]
-- "bio" → ["biology", "biochemistry", "biomedical engineering", "molecular biology"]
-- "CS" → ["computer science", "software engineering", "algorithms", "computing"]
-- "econ" → ["economics", "econometrics", "economic policy"]
-- "ML" → ["machine learning", "deep learning", "artificial intelligence"]
-- "physics" → ["physics", "applied physics", "theoretical physics"]
-Use full formal names, not abbreviations.`,
+          content: `You convert an informal research-topic query into formal academic search terms that match an academic paper database's topic taxonomy. Return only a JSON array of strings. No explanation.
+
+Decide first whether the query is BROAD or SPECIFIC:
+- BROAD field with many distinct sub-areas (e.g. "materials science", "chemistry", "biology", "physics", "climate science", "economics"): return 6-8 terms naming the MAJOR DISTINCT SUB-FIELDS that together span the field — NOT near-synonyms of the umbrella term. Naming real sub-fields is what surfaces specialists across the whole field instead of one narrow corner of it.
+- SPECIFIC topic (e.g. "DNA methylation", "CRISPR", "gravitational waves", "natural language processing"): return 3-4 close synonyms or formal variants ONLY. Do NOT broaden a specific topic into its parent field.
+
+Use full formal names, not abbreviations. Examples:
+- "applied math" → ["mathematical modeling", "numerical analysis", "computational mathematics", "optimization", "differential equations"]
+- "materials science" → ["nanomaterials", "semiconductor materials", "battery materials and energy storage", "polymer science", "metallurgy and alloys", "ceramics", "two-dimensional materials and graphene", "computational materials science"]
+- "organic chemistry" → ["organic synthesis", "catalysis", "medicinal chemistry", "polymer chemistry", "organometallic chemistry", "total synthesis of natural products"]
+- "climate science" → ["climate change", "atmospheric science", "oceanography", "climate modeling", "paleoclimatology", "carbon cycle and biogeochemistry"]
+- "bio" → ["molecular biology", "biochemistry", "genetics", "cell biology", "microbiology", "neuroscience"]
+- "DNA methylation" → ["DNA methylation", "epigenetics", "epigenetic regulation", "chromatin modification"]
+- "CRISPR" → ["CRISPR", "gene editing", "genome engineering", "Cas9 nuclease"]
+- "ML" → ["machine learning", "deep learning", "artificial intelligence", "neural networks"]`,
         },
         {
           role: "user",
           content: `Research topic query: "${topic}"\n\nReturn 3-5 formal academic search terms as a JSON array.`,
         },
       ],
-      max_tokens: 100,
+      max_tokens: 220,
       temperature: 0,
       response_format: { type: "json_object" },
     });
@@ -35,7 +42,7 @@ Use full formal names, not abbreviations.`,
     const parsed = JSON.parse(raw);
     // Accept array at root or under any key
     const arr = Array.isArray(parsed) ? parsed : Object.values(parsed).find(Array.isArray) as string[] ?? [];
-    return arr.filter((s): s is string => typeof s === "string").slice(0, 5);
+    return arr.filter((s): s is string => typeof s === "string").slice(0, 8);
   } catch {
     // Fallback: just return the original query
     return [topic];
@@ -98,8 +105,11 @@ async function resolveTopic(topic: string): Promise<{ ids: string[]; names: stri
 
     if (allCandidates.length === 0) return { ids: [], names: [] };
 
-    // Let LLM pick the best 4 from all candidates
-    const indices = await pickBestIndices(topic, allCandidates, "research topic", 4);
+    // Let the LLM pick the best matches from all candidates. Up to 6 so a BROAD
+    // query (materials science, organic chemistry) can span several real sub-fields
+    // instead of collapsing to one narrow corner; a SPECIFIC query naturally yields
+    // fewer good matches, so this doesn't over-broaden it.
+    const indices = await pickBestIndices(topic, allCandidates, "research topic", 6);
     if (indices.length === 0) return { ids: [], names: [] };
 
     return {

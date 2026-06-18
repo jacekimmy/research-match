@@ -379,21 +379,31 @@ export async function POST(req: NextRequest) {
         // redelivery (which re-runs this handler) can't inflate the count. The
         // insert-first guard makes the success path run exactly once.
         if (planType === "lifetime" && !needsRetry && guardWritten) {
-          const { data: setting } = await supabaseAdmin
-            .from("settings")
-            .select("value")
-            .eq("key", "lifetime_spots_claimed")
-            .single();
-          const currentClaimed = setting ? parseInt(setting.value, 10) : 0;
-          if (setting) {
-            await supabaseAdmin
+          // Optimistic-concurrency increment: re-read and conditionally write so two
+          // distinct lifetime purchases settling at the same instant can't lose an
+          // increment (which would under-count claimed spots and oversell the cap).
+          for (let attempt = 0; attempt < 5; attempt++) {
+            const { data: setting } = await supabaseAdmin
               .from("settings")
-              .update({ value: String(currentClaimed + 1) })
-              .eq("key", "lifetime_spots_claimed");
-          } else {
-            await supabaseAdmin
+              .select("value")
+              .eq("key", "lifetime_spots_claimed")
+              .single();
+            if (!setting) {
+              const { error: insertErr } = await supabaseAdmin
+                .from("settings")
+                .insert({ key: "lifetime_spots_claimed", value: "1" });
+              if (!insertErr) break;        // first claim recorded
+              continue;                      // lost the insert race — re-read and update
+            }
+            const current = parseInt(setting.value, 10) || 0;
+            const { data: bumped } = await supabaseAdmin
               .from("settings")
-              .insert({ key: "lifetime_spots_claimed", value: "1" });
+              .update({ value: String(current + 1) })
+              .eq("key", "lifetime_spots_claimed")
+              .eq("value", setting.value)    // only if unchanged since we read it
+              .select("value");
+            if (bumped && bumped.length > 0) break;   // our increment landed
+            // else another event bumped it first — loop and retry on a fresh read
           }
         }
       }

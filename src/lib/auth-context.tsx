@@ -121,10 +121,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       let promoApplied = false;
       if (promoCode?.trim()) {
         try {
+          const token = data.session?.access_token;
           const res = await fetch("/api/promo", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ code: promoCode.trim(), userId: data.user.id }),
+            headers: {
+              "Content-Type": "application/json",
+              ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
+            body: JSON.stringify({ code: promoCode.trim() }),
           });
           const promoData = await res.json();
           if (promoData.success) promoApplied = true;

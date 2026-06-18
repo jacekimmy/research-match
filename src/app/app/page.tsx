@@ -269,18 +269,45 @@ function formatInstitutionLocation(inst: Author["last_known_institutions"][0] | 
   return city && country ? `${name}, ${city}, ${country}` : name;
 }
 
+// How many distinct years the author actually published under one of the searched
+// institutions. A genuine home shows many years (Anna Schuh / Oxford = 17); a
+// collaboration or stale artifact shows 1-2 (E.L. Wright / Caltech = 2, R. Wald /
+// Caltech = 1). On OpenAlex data this year COUNT is the signal that separates the
+// two — the year SPAN does not (Wright's Caltech span is 2007-2026 but only 2 years).
+function matchedAffiliationYears(a: Author, fullInstIds: string[]): number {
+  let years = 0;
+  for (const af of a.affiliations ?? []) {
+    if (af.institution?.id && fullInstIds.includes(af.institution.id)) {
+      years = Math.max(years, (af.years ?? []).length);
+    }
+  }
+  return years;
+}
+
+// A searched institution must appear in at least this many distinct publication
+// years before we display it as the professor's institution on the card. Below it,
+// the match is most likely a co-authorship/collaboration artifact.
+const GENUINE_AFFILIATION_MIN_YEARS = 3;
+
 // Does this author have ANY affiliation with one of the searched institutions?
-// OpenAlex lists multiple last_known_institutions; the searched one is often NOT
-// the most recent (e.g. Anna Schuh's primary is Muhimbili, with Oxford third), so
-// checking only [0] silently drops real faculty. When found, the matched
-// institution is promoted to the front so the result card displays it.
+// OpenAlex lists multiple last_known_institutions; the searched one is often NOT the
+// most recent (e.g. Anna Schuh's primary is Muhimbili, with Oxford third), so
+// checking only [0] silently drops real faculty. Returns true if matched at all, so
+// the professor stays findable. The matched institution is shown on the card ONLY
+// when it's a genuine multi-year affiliation; for a thin 1-2 year match we keep them
+// in results but display their real home (via homeInstitutionFirst) so a stray
+// collaboration doesn't mislabel where they work (E.L. Wright is UCLA, not Caltech).
 function promoteMatchedInstitution(a: Author, fullInstIds: string[]): boolean {
   const arr = a.last_known_institutions ?? [];
   const idx = arr.findIndex((inst) => inst?.id && fullInstIds.includes(inst.id));
   if (idx < 0) return false;
-  if (idx > 0) {
-    const [matched] = arr.splice(idx, 1);
-    arr.unshift(matched);
+  if (matchedAffiliationYears(a, fullInstIds) >= GENUINE_AFFILIATION_MIN_YEARS) {
+    if (idx > 0) {
+      const [matched] = arr.splice(idx, 1);
+      arr.unshift(matched);
+    }
+  } else {
+    homeInstitutionFirst(a); // thin match — show their real home, not the artifact
   }
   return true;
 }
