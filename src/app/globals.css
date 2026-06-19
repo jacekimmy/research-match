@@ -2953,6 +2953,7 @@ body::after {
     max-width: 100%;
     border-radius: 24px 24px 0 0;
     width: 100%;
+    touch-action: none; /* sheet chrome never scrolls/pulls — only .rm-modal-left does */
   }
 
   .modal-glass.rm-modal {
@@ -2990,6 +2991,7 @@ body::after {
     max-height: none;
     overflow-y: auto;
     overscroll-behavior: contain; /* don't chain scroll to the page (pull-to-refresh) */
+    touch-action: pan-y; /* the one place a vertical swipe is allowed (content scroll) */
     display: flex;
     flex-direction: column;
   }
@@ -3067,6 +3069,7 @@ body::after {
     flex-shrink: 0;
     border-bottom: 1px solid rgba(101, 153, 131, 0.15);
     background: rgba(255, 255, 255, 0.6);
+    touch-action: none; /* swiping the tab strip dismisses, never pulls-to-refresh */
   }
 
   .rm-modal-tab {

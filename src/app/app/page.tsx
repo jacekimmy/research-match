@@ -765,12 +765,17 @@ function AppPageInner() {
     // Pin the body with position: fixed at the current offset and restore on close.
     const scrollY = window.scrollY;
     const b = document.body;
+    const html = document.documentElement;
     b.style.position = "fixed";
     b.style.top = `-${scrollY}px`;
     b.style.left = "0";
     b.style.right = "0";
     b.style.width = "100%";
     b.style.overflow = "hidden";
+    // Disable the browser's pull-to-refresh at the root so a slightly-off dismiss
+    // drag can't accidentally reload the page.
+    b.style.overscrollBehavior = "none";
+    html.style.overscrollBehavior = "none";
     b.classList.add("rm-email-open");
     return () => {
       b.style.position = "";
@@ -779,6 +784,8 @@ function AppPageInner() {
       b.style.right = "";
       b.style.width = "";
       b.style.overflow = "";
+      b.style.overscrollBehavior = "";
+      html.style.overscrollBehavior = "";
       b.classList.remove("rm-email-open");
       window.scrollTo(0, scrollY);
     };
@@ -2800,8 +2807,8 @@ function AppPageInner() {
                 <div className="rm-modal-grab" aria-hidden="true" onTouchStart={onSheetDragStart} onTouchMove={onSheetDragMove} onTouchEnd={onSheetDragEnd}>
                   <span className="rm-modal-grab-bar" />
                 </div>
-                {/* Mobile-only tab bar */}
-                <div className="rm-modal-tabs">
+                {/* Mobile-only tab bar — also a drag-to-dismiss zone so a near-miss still dismisses */}
+                <div className="rm-modal-tabs" onTouchStart={onSheetDragStart} onTouchMove={onSheetDragMove} onTouchEnd={onSheetDragEnd}>
                   <button
                     className={`rm-modal-tab${mobileEmailTab === "compose" ? " rm-modal-tab-active" : ""}`}
                     onClick={() => setMobileEmailTab("compose")}
