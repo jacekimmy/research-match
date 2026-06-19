@@ -1516,7 +1516,13 @@ function AppPageInner() {
     emailDragStartY.current = e.touches[0].clientY;
     emailDragDY.current = 0;
     const el = emailSheetRef.current;
-    if (el) { el.style.transition = "none"; el.style.willChange = "transform"; } // promote to a GPU layer up front
+    if (el) {
+      // The open animation (modalSlideUp, fill: forwards) pins `transform`, which
+      // overrides anything we set inline — clearing it is what lets the drag move at all.
+      el.style.animation = "none";
+      el.style.transition = "none";
+      el.style.willChange = "transform"; // promote to a GPU layer up front
+    }
   };
   const onSheetDragMove = (e: React.TouchEvent) => {
     if (emailDragStartY.current == null) return;
