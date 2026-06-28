@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { oaUrl } from "@/lib/openalex";
 
 interface Authorship {
   author: {
@@ -43,7 +44,7 @@ export async function POST(req: NextRequest) {
     const threeYearsAgoStr = threeYearsAgo.toISOString().split("T")[0];
 
     const worksRes = await fetch(
-      `https://api.openalex.org/works?filter=author.id:${cleanId},from_publication_date:${threeYearsAgoStr}&per_page=100&select=id,publication_date,authorships&mailto=jace@researchmatch.net`,
+      oaUrl(`https://api.openalex.org/works?filter=author.id:${cleanId},from_publication_date:${threeYearsAgoStr}&per_page=100&select=id,publication_date,authorships`),
       { signal: AbortSignal.timeout(8000) }
     );
 

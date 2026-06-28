@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
+import { oaUrl } from "@/lib/openalex";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
@@ -54,7 +55,7 @@ export async function POST(req: NextRequest) {
       nearbyNames.slice(0, 8).map(async (name) => {
         try {
           const r = await fetch(
-            `https://api.openalex.org/institutions?search=${encodeURIComponent(name)}&per_page=1`,
+            oaUrl(`https://api.openalex.org/institutions?search=${encodeURIComponent(name)}&per_page=1`),
             { signal: AbortSignal.timeout(4000) }
           );
           const d = await r.json();
@@ -76,7 +77,7 @@ export async function POST(req: NextRequest) {
       resolvedInstIds.map(async (instId) => {
         try {
           const r = await fetch(
-            `https://api.openalex.org/authors?filter=topics.id:${topicId},last_known_institutions.id:${instId}&per_page=3&sort=cited_by_count:desc`,
+            oaUrl(`https://api.openalex.org/authors?filter=topics.id:${topicId},last_known_institutions.id:${instId}&per_page=3&sort=cited_by_count:desc`),
             { signal: AbortSignal.timeout(5000) }
           );
           const d = await r.json();

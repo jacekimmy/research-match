@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
+import { oaUrl } from "@/lib/openalex";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
@@ -77,7 +78,42 @@ async function pickBestIndices(
   return [...new Set(indices)].slice(0, maxPick);
 }
 
+// --- In-memory resolution cache ----------------------------------------------
+// Topic/university resolution is effectively static but runs on every search and is
+// the heaviest user of Groq + OpenAlex calls. Caching it sharply cuts that load and
+// is a main lever for staying under daily rate limits. Per-serverless-instance and
+// ephemeral, but a warm instance serves many requests. Only successful (non-empty)
+// results are cached, so a transient upstream failure never becomes sticky.
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+const topicCache = new Map<string, { at: number; value: { ids: string[]; names: string[] } }>();
+const uniCache = new Map<string, { at: number; value: { id: string; name: string } }>();
+
+function cacheGet<T>(cache: Map<string, { at: number; value: T }>, key: string): T | undefined {
+  const hit = cache.get(key);
+  if (hit && Date.now() - hit.at < CACHE_TTL_MS) return hit.value;
+  if (hit) cache.delete(key);
+  return undefined;
+}
+
 async function resolveTopic(topic: string): Promise<{ ids: string[]; names: string[] }> {
+  const key = topic.trim().toLowerCase();
+  const cached = cacheGet(topicCache, key);
+  if (cached) return cached;
+  const result = await resolveTopicUncached(topic);
+  if (result.ids.length > 0) topicCache.set(key, { at: Date.now(), value: result });
+  return result;
+}
+
+async function resolveUniversity(university: string): Promise<{ id: string; name: string } | null> {
+  const key = university.trim().toLowerCase();
+  const cached = cacheGet(uniCache, key);
+  if (cached) return cached;
+  const result = await resolveUniversityUncached(university);
+  if (result) uniCache.set(key, { at: Date.now(), value: result });
+  return result;
+}
+
+async function resolveTopicUncached(topic: string): Promise<{ ids: string[]; names: string[] }> {
   try {
     // First expand to formal academic terms so OpenAlex can actually find them
     const searchTerms = await expandToSearchTerms(topic);
@@ -88,7 +124,7 @@ async function resolveTopic(topic: string): Promise<{ ids: string[]; names: stri
 
     const termResults = await Promise.all(
       searchTerms.map(term =>
-        fetch(`https://api.openalex.org/topics?search=${encodeURIComponent(term)}&per_page=5`)
+        fetch(oaUrl(`https://api.openalex.org/topics?search=${encodeURIComponent(term)}&per_page=5`))
           .then(r => r.json())
           .catch(() => ({ results: [] }))
       )
@@ -119,9 +155,9 @@ async function resolveTopic(topic: string): Promise<{ ids: string[]; names: stri
   } catch { return { ids: [], names: [] }; }
 }
 
-async function resolveUniversity(university: string): Promise<{ id: string; name: string } | null> {
+async function resolveUniversityUncached(university: string): Promise<{ id: string; name: string } | null> {
   try {
-    const res = await fetch(`https://api.openalex.org/institutions?search=${encodeURIComponent(university)}&per_page=5`);
+    const res = await fetch(oaUrl(`https://api.openalex.org/institutions?search=${encodeURIComponent(university)}&per_page=5`));
     const data = await res.json();
     const candidates: { id: string; display_name: string }[] = data.results ?? [];
     if (candidates.length === 0) return null;

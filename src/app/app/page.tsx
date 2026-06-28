@@ -9,6 +9,7 @@ import { hasPaidAccess, normalizeReferralCode, planLabelFor } from "@/lib/buddy-
 import { track } from "@/lib/analytics";
 import { foldName, looksLikePersonName, nameMatches } from "@/lib/author-normalize";
 import { useMobile } from "@/lib/use-mobile";
+import { oaUrl } from "@/lib/openalex";
 
 // OpenAlex can occasionally hang; without a timeout a single stalled request
 // freezes the search spinner forever. oaFetch bounds every client OpenAlex call
@@ -16,8 +17,17 @@ import { useMobile } from "@/lib/use-mobile";
 // still pass their own init (e.g. a shorter signal) — it overrides the default.
 const OA_TIMEOUT_MS = 15000;
 function oaFetch(url: string, init?: RequestInit): Promise<Response> {
-  return fetch(url, { signal: AbortSignal.timeout(OA_TIMEOUT_MS), ...init });
+  // oaUrl() adds the polite-pool mailto to every client OpenAlex call.
+  return fetch(oaUrl(url), { signal: AbortSignal.timeout(OA_TIMEOUT_MS), ...init });
 }
+
+// Thrown when OpenAlex (or our resolve route) returns a throttle/5xx so search() can
+// show an honest "try again" message instead of a misleading "no professors found" —
+// the symptom users hit when an upstream daily limit was reached.
+class RateLimitError extends Error {}
+const isThrottle = (status: number) => status === 429 || status >= 500;
+const THROTTLE_MSG =
+  "ResearchMatch is getting a lot of searches right now and hit a temporary limit. Give it a moment and try again — your search terms are fine.";
 
 export default function AppPageWrapper() {
   return <Suspense><AppPageInner /></Suspense>;
@@ -890,7 +900,7 @@ function AppPageInner() {
       });
       const resolved = await resolveRes.json();
       if (runId !== searchRunIdRef.current) return; // a newer search superseded this one
-      if (!resolveRes.ok) { setError(resolved.error || "Failed to resolve search terms."); setLoading(false); return; }
+      if (!resolveRes.ok) { setError(isThrottle(resolveRes.status) ? THROTTLE_MSG : (resolved.error || "Failed to resolve search terms.")); setLoading(false); return; }
       const { topicIds, topicNames, institutionIds, institutionNames } = resolved;
       setResolvedTopic(topicNames.join(", ") || allTopics.join(", "));
       if (institutionNames.length > 0) setResolvedInstitution(institutionNames.join(", "));
@@ -913,6 +923,7 @@ function AppPageInner() {
         // Text search fallback — use first topic
         const instFilter = institutionIds.length > 0 ? `&filter=authorships.institutions.id:${institutionIds[0]}` : "";
         const worksRes = await oaFetch(`https://api.openalex.org/works?search=${encodeURIComponent(allTopics[0])}${instFilter}&sort=publication_date:desc&per_page=20&select=authorships`);
+        if (isThrottle(worksRes.status)) throw new RateLimitError();
         const worksData = await worksRes.json();
         const works = worksData.results ?? [];
         
@@ -931,8 +942,11 @@ function AppPageInner() {
 
         const shortIds = Array.from(authorIdsToFetch.keys());
         if (shortIds.length > 0) {
-          const fetches = shortIds.map(id => oaFetch(`https://api.openalex.org/authors/${id}?select=id,display_name,orcid,last_known_institutions,affiliations,works_count,cited_by_count,topics`).then(r => r.ok ? r.json() : null).catch(() => null));
-          const results = await Promise.all(fetches);
+          // Batch all author lookups into ONE OpenAlex call (ids.openalex: takes a
+          // pipe-list) instead of one request per author — far fewer calls, far less
+          // chance of tripping the rate limit.
+          const batched = await oaFetch(`https://api.openalex.org/authors?filter=ids.openalex:${shortIds.join("|")}&per_page=${shortIds.length}&select=id,display_name,orcid,last_known_institutions,affiliations,works_count,cited_by_count,topics`).then(r => r.ok ? r.json() : null).catch(() => null);
+          const results = (batched?.results ?? []) as (Author | null)[];
           
           const authorMap = new Map<string, Author>();
           for (const authorData of results) {
@@ -953,6 +967,7 @@ function AppPageInner() {
           // Search WITH institution filter first
           const instFilter = `last_known_institutions.id:${institutionIds.join("|")}`;
           const res = await oaFetch(`https://api.openalex.org/authors?filter=topics.id:${topicFilter},${instFilter}&per_page=200&sort=cited_by_count:desc`);
+          if (isThrottle(res.status)) throw new RateLimitError();
           const data = await res.json();
           authors = (data.results || []).filter((a: Author) => promoteMatchedInstitution(a, fullInstIds));
 
@@ -976,8 +991,8 @@ function AppPageInner() {
 
             const shortIds = Array.from(authorIdsToFetch.keys());
             if (shortIds.length > 0) {
-              const fetches = shortIds.map(id => oaFetch(`https://api.openalex.org/authors/${id}?select=id,display_name,orcid,last_known_institutions,affiliations,works_count,cited_by_count,topics`).then(r => r.ok ? r.json() : null).catch(() => null));
-              const results = await Promise.all(fetches);
+              const batched = await oaFetch(`https://api.openalex.org/authors?filter=ids.openalex:${shortIds.join("|")}&per_page=${shortIds.length}&select=id,display_name,orcid,last_known_institutions,affiliations,works_count,cited_by_count,topics`).then(r => r.ok ? r.json() : null).catch(() => null);
+              const results = (batched?.results ?? []) as (Author | null)[];
               
               const authorMap = new Map<string, Author>();
               for (const authorData of results) {
@@ -1003,6 +1018,7 @@ function AppPageInner() {
         } else {
           // No institution filter — global search
           const res = await oaFetch(`https://api.openalex.org/authors?filter=topics.id:${topicFilter}&per_page=50&sort=cited_by_count:desc`);
+          if (isThrottle(res.status)) throw new RateLimitError();
           const data = await res.json();
           authors = data.results || [];
         }
@@ -1109,7 +1125,7 @@ function AppPageInner() {
       } else {
         setNearbyProfs([]);
       }
-    } catch { if (runId === searchRunIdRef.current) setError("Something went wrong. Please try again."); }
+    } catch (e) { if (runId === searchRunIdRef.current) setError(e instanceof RateLimitError ? THROTTLE_MSG : "Something went wrong. Please try again."); }
     finally { if (runId === searchRunIdRef.current) setLoading(false); }
   }
 
@@ -1137,7 +1153,7 @@ function AppPageInner() {
         const threeYearsAgo = currentYear - 3;
         const twoYearsAgo = currentYear - 2;
 
-        const worksRes = await fetch(
+        const worksRes = await oaFetch(
           `https://api.openalex.org/works?filter=author.id:${authorId},publication_year:>${threeYearsAgo}&per_page=50&select=authorships,publication_year`
         );
         const worksData = await worksRes.json();
@@ -1266,7 +1282,7 @@ function AppPageInner() {
       // searches are now unlimited
       setResults(authors);
       if (authors.length > 0) fetchResponsiveness(authors);
-    } catch { if (runId === searchRunIdRef.current) setError("Something went wrong. Please try again."); }
+    } catch (e) { if (runId === searchRunIdRef.current) setError(e instanceof RateLimitError ? THROTTLE_MSG : "Something went wrong. Please try again."); }
     finally { if (runId === searchRunIdRef.current) setLoading(false); }
   }
 

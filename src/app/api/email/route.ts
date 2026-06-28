@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import Groq from "groq-sdk";
 import { createClient } from "@supabase/supabase-js";
+import { generateJSON } from "@/lib/llm";
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -19,8 +18,32 @@ interface EmailHighlight {
 interface EmailReviewRequest {
   draft?: string;
   professorName?: string;
+  institution?: string;
+  topics?: string[];
   highlights?: EmailHighlight[];
 }
+
+// Structured-output schema for the Haiku path; the Groq fallback relies on the prompt.
+const EMAIL_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    flags: {
+      type: "array",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          type: { type: "string", enum: ["error", "warning"] },
+          issue: { type: "string" },
+          suggestion: { type: "string" },
+        },
+        required: ["type", "issue", "suggestion"],
+      },
+    },
+  },
+  required: ["flags"],
+};
 
 async function authenticatedUserId(req: NextRequest) {
   const token = req.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
@@ -62,7 +85,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Too many email checks. Try again in a minute." }, { status: 429 });
     }
 
-    const { draft, professorName, highlights } = await req.json() as EmailReviewRequest;
+    const { draft, professorName, institution, topics, highlights } = await req.json() as EmailReviewRequest;
 
     if (!draft || draft.trim().length < 10) {
       return NextResponse.json({
@@ -77,14 +100,23 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const paperList = highlights?.length
-      ? highlights.map((h) => `- "${h.paper}"`).join("\n")
-      : "No papers loaded";
+    const hasPapers = !!highlights?.length;
+    const topicList = topics?.length ? topics.join(", ") : "";
 
-    const prompt = `Review this cold email to Professor ${professorName}.
+    // Give the model the professor's papers when we have them. When we DON'T (the
+    // summary hadn't loaded yet when the student hit "Check"), fall back to their
+    // research areas AND explicitly tell the model not to penalize the email for a
+    // missing paper reference. Without this guard the checker flagged "no specific
+    // paper" / "sounds generic" purely because no papers were in the request — the
+    // false positives that made it feel inaccurate even on a well-written email.
+    const contextBlock = hasPapers
+      ? `The professor's recent papers include:\n${highlights!.map((h) => `- "${h.paper}"`).join("\n")}`
+      : `The professor's papers are not available in this request${topicList ? `. Their research areas are: ${topicList}` : ""}.\n` +
+        `Because the papers were not provided, do NOT raise "NO SPECIFIC PAPER" or "SOUNDS GENERIC" on the basis of a missing paper reference. Judge the email on its other merits${topicList ? " and on whether it connects to those research areas" : ""}.`;
 
-The professor's recent papers include:
-${paperList}
+    const prompt = `Review this cold email to Professor ${professorName}${institution ? ` at ${institution}` : ""}.
+
+${contextBlock}
 
 The email:
 """
@@ -107,34 +139,14 @@ Return JSON: { "flags": [ { "type": "error" or "warning", "issue": "FLAG_NAME", 
 Only flag real problems. If the email is solid, return { "flags": [] }. Max 4 flags.`;
 
     const SYSTEM = "You are a strict but fair cold email reviewer. Before flagging any issue, you MUST quote the specific part of the email that proves the problem exists. If you cannot quote evidence of the problem, do NOT flag it. Write each suggestion without em dashes; use commas or periods instead. You return valid JSON only.";
-    const extract = (s: string | null | undefined) => {
-      if (!s) return null;
-      try { return JSON.parse(s); } catch { /* not clean JSON */ }
-      const m = s.match(/\{[\s\S]*\}/);
-      if (m) { try { return JSON.parse(m[0]); } catch { /* still bad */ } }
-      return null;
-    };
 
-    // Groq's json_object mode occasionally returns json_validate_failed (invalid JSON);
-    // retry with different sampling, salvage the raw generation if present, and never
-    // surface a raw API error to the user.
-    let parsed: { flags?: { type: string; issue: string; suggestion: string }[] } | null = null;
-    for (let attempt = 0; attempt < 2 && !parsed; attempt++) {
-      try {
-        const chat = await groq.chat.completions.create({
-          model: "llama-3.3-70b-versatile",
-          messages: [{ role: "system", content: SYSTEM }, { role: "user", content: prompt }],
-          max_tokens: 500,
-          temperature: attempt === 0 ? 0.2 : 0.45,
-          response_format: { type: "json_object" },
-        });
-        parsed = extract(chat.choices[0]?.message?.content);
-      } catch (err) {
-        const e = err as { error?: { failed_generation?: string }; failed_generation?: string };
-        parsed = extract(e.error?.failed_generation ?? e.failed_generation);
-        if (!parsed) console.warn(`email check attempt ${attempt + 1} failed:`, (err as Error)?.message);
-      }
-    }
+    const parsed = await generateJSON<{ flags?: { type: string; issue: string; suggestion: string }[] }>({
+      system: SYSTEM,
+      prompt,
+      schema: EMAIL_SCHEMA,
+      maxTokens: 500,
+      temperature: 0.2,
+    });
 
     if (!parsed) {
       return NextResponse.json({ error: "Couldn't check your email right now. Please try again." }, { status: 503 });

@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import Groq from "groq-sdk";
 import { createClient } from "@supabase/supabase-js";
 import { hasPaidAccess } from "@/lib/buddy-pass";
+import { oaUrl } from "@/lib/openalex";
+import { generateJSON } from "@/lib/llm";
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -25,6 +25,26 @@ interface OpenAlexWork {
   authorships?: OpenAlexAuthorship[];
   doi?: string | null;
 }
+
+// Structured-output schema for the Haiku path; the Groq fallback relies on the prompt.
+const SUMMARY_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    summary: { type: "string" },
+    highlights: {
+      type: "array",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        properties: { paper: { type: "string" }, detail: { type: "string" } },
+        required: ["paper", "detail"],
+      },
+    },
+    questions: { type: "array", items: { type: "string" } },
+  },
+  required: ["summary", "highlights", "questions"],
+};
 
 export async function POST(req: NextRequest) {
   try {
@@ -80,7 +100,7 @@ export async function POST(req: NextRequest) {
     // --- Fetch recent papers ---
     const fromYear = new Date().getFullYear() - 3;
     const worksRes = await fetch(
-      `https://api.openalex.org/works?filter=author.id:${authorId},publication_year:>${fromYear}&sort=cited_by_count:desc&per_page=20&select=title,abstract_inverted_index,cited_by_count,publication_year,authorships,doi`
+      oaUrl(`https://api.openalex.org/works?filter=author.id:${authorId},publication_year:>${fromYear}&sort=cited_by_count:desc&per_page=20&select=title,abstract_inverted_index,cited_by_count,publication_year,authorships,doi`)
     );
     const worksData = await worksRes.json();
     const allWorks = (worksData.results ?? []) as OpenAlexWork[];
@@ -138,54 +158,13 @@ Return only valid JSON, no markdown, no explanation.`;
 
     const SYSTEM = "You explain research in plain, specific language. You never use academic filler words. You never use em dashes; use commas or periods instead. You always return a single, valid JSON object.";
 
-    // Pull a JSON object out of a model response, tolerating stray prose/markdown.
-    const tryExtractJSON = (s: string | null | undefined) => {
-      if (!s) return null;
-      try { return JSON.parse(s); } catch { /* not clean JSON */ }
-      const m = s.match(/\{[\s\S]*\}/);
-      if (m) { try { return JSON.parse(m[0]); } catch { /* still bad */ } }
-      return null;
-    };
-
-    let parsed: { summary?: string; highlights?: { paper: string; detail: string }[]; questions?: string[] } | null = null;
-
-    // Attempts 1-2: JSON mode. Groq occasionally returns json_validate_failed (the model
-    // emits invalid JSON); retrying with different sampling usually clears it, and the
-    // error body carries the raw generation we can sometimes salvage.
-    for (let attempt = 0; attempt < 2 && !parsed; attempt++) {
-      try {
-        const chat = await groq.chat.completions.create({
-          model: "llama-3.3-70b-versatile",
-          messages: [{ role: "system", content: SYSTEM }, { role: "user", content: prompt }],
-          max_tokens: 700,
-          temperature: attempt === 0 ? 0.3 : 0.5,
-          response_format: { type: "json_object" },
-        });
-        parsed = tryExtractJSON(chat.choices[0]?.message?.content);
-      } catch (err) {
-        const e = err as { error?: { failed_generation?: string }; failed_generation?: string };
-        parsed = tryExtractJSON(e.error?.failed_generation ?? e.failed_generation);
-        if (!parsed) console.warn(`summarize JSON attempt ${attempt + 1} failed:`, (err as Error)?.message);
-      }
-    }
-
-    // Attempt 3: plain mode (no schema enforcement can't 400 us), parse it ourselves.
-    if (!parsed) {
-      try {
-        const chat = await groq.chat.completions.create({
-          model: "llama-3.3-70b-versatile",
-          messages: [
-            { role: "system", content: SYSTEM },
-            { role: "user", content: `${prompt}\n\nReturn ONLY one valid JSON object. Every string value MUST be wrapped in double quotes.` },
-          ],
-          max_tokens: 700,
-          temperature: 0.4,
-        });
-        parsed = tryExtractJSON(chat.choices[0]?.message?.content);
-      } catch (err) {
-        console.error("summarize fallback failed:", err);
-      }
-    }
+    const parsed = await generateJSON<{ summary?: string; highlights?: { paper: string; detail: string }[]; questions?: string[] }>({
+      system: SYSTEM,
+      prompt,
+      schema: SUMMARY_SCHEMA,
+      maxTokens: 700,
+      temperature: 0.3,
+    });
 
     // Never dump a raw error to the user — return a clean, retry-able message.
     if (!parsed) {

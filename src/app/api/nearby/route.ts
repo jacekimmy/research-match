@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const OPENALEX_MAILTO = "mailto:jace@researchmatch.net";
+import { oaUrl } from "@/lib/openalex";
 
 interface NearbyRequest {
   institutionName: string;
@@ -83,10 +82,7 @@ function haversineDistance(
 }
 
 async function oaFetch<T>(url: string): Promise<T> {
-  const separator = url.includes("?") ? "&" : "?";
-  const res = await fetch(`${url}${separator}mailto=${OPENALEX_MAILTO}`, {
-    signal: AbortSignal.timeout(10000),
-  });
+  const res = await fetch(oaUrl(url), { signal: AbortSignal.timeout(10000) });
   if (!res.ok) throw new Error(`OpenAlex ${res.status}: ${url}`);
   return res.json() as Promise<T>;
 }

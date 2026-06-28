@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { oaUrl } from "@/lib/openalex";
 
 interface AuthorInput {
   id: string;
@@ -44,7 +45,7 @@ export async function POST(req: NextRequest) {
         // Fetch recent works to check last-author status and publishing span
         try {
           const worksRes = await fetch(
-            `https://api.openalex.org/works?filter=author.id:${authorId},publication_year:>${fiveYearsAgo}&sort=publication_year:desc&per_page=15&select=authorships,publication_year&mailto=contact@researchmatch.net`,
+            oaUrl(`https://api.openalex.org/works?filter=author.id:${authorId},publication_year:>${fiveYearsAgo}&sort=publication_year:desc&per_page=15&select=authorships,publication_year`),
             { signal: AbortSignal.timeout(5000) }
           );
           const worksData = await worksRes.json();
