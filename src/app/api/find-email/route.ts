@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { foldName } from "@/lib/author-normalize";
+import { withinRateLimit, clientIp } from "@/lib/rate-limit";
+import { isOaAuthorId } from "@/lib/openalex";
 
 // Does an email's local part plausibly belong to this person (not a colleague listed
 // on the same faculty/team page)? Diacritic-aware via foldName (Böckler→boeckler).
@@ -149,8 +151,15 @@ async function fetchPageEmails(url: string): Promise<string[]> {
 
 export async function POST(req: NextRequest) {
   try {
+    // Each call burns paid Serper credits plus several outbound fetches.
+    if (!withinRateLimit(`find-email:${clientIp(req)}`, 6)) {
+      return NextResponse.json({ error: "Too many lookups. Try again in a minute." }, { status: 429 });
+    }
+
     const { authorId, authorName, institution } = await req.json();
-    if (!authorId) {
+    // authorId gets interpolated into OpenAlex URL paths and filters below —
+    // validate the format, don't just check presence.
+    if (!isOaAuthorId(authorId)) {
       return NextResponse.json({ error: "authorId required" }, { status: 400 });
     }
 

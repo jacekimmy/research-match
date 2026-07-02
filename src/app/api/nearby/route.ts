@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { oaUrl } from "@/lib/openalex";
+import { withinRateLimit, clientIp } from "@/lib/rate-limit";
 
 interface NearbyRequest {
   institutionName: string;
@@ -124,7 +125,7 @@ async function findAuthorsAtInstitution(
   if (topicId) {
     // Use topic filter + institution filter
     const data = await oaFetch<OpenAlexList<OpenAlexAuthor>>(
-      `https://api.openalex.org/authors?filter=topics.id:${topicId},last_known_institutions.id:${shortId}&per_page=10&sort=cited_by_count:desc&select=id,display_name,works_count,cited_by_count,topics,last_known_institutions`
+      `https://api.openalex.org/authors?filter=topics.id:${encodeURIComponent(topicId)},last_known_institutions.id:${shortId}&per_page=10&sort=cited_by_count:desc&select=id,display_name,works_count,cited_by_count,topics,last_known_institutions`
     );
     return data.results ?? [];
   }
@@ -274,6 +275,12 @@ async function findNearbyProfessors(
 
 export async function POST(req: NextRequest) {
   try {
+    // Worst case this endpoint fans out to hundreds of OpenAlex calls; unthrottled,
+    // one abuser could exhaust the polite-pool quota for everyone.
+    if (!withinRateLimit(`nearby:${clientIp(req)}`, 5)) {
+      return NextResponse.json({ error: "Too many searches. Try again in a minute." }, { status: 429 });
+    }
+
     const body: NearbyRequest = await req.json();
     const { institutionName, topicId, query, excludeAuthorIds } = body;
 

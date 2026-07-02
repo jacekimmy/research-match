@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
+import { withinRateLimit, clientIp } from "@/lib/rate-limit";
 
 const ADMIN_EMAIL = "thomasjacekim@gmail.com";
 
@@ -33,9 +34,13 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  if (!withinRateLimit(`feedback-post:${clientIp(req)}`, 5)) {
+    return NextResponse.json({ error: "Too many submissions. Try again in a minute." }, { status: 429 });
+  }
+
   const { content, category, author_name } = await req.json();
 
-  if (!content?.trim()) {
+  if (typeof content !== "string" || !content.trim() || content.length > 5000) {
     return NextResponse.json({ error: "Feedback content is required." }, { status: 400 });
   }
 
@@ -55,6 +60,11 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
+  // Upvotes are anonymous by design; the per-IP cap just blunts scripted inflation.
+  if (!withinRateLimit(`feedback-vote:${clientIp(req)}`, 20)) {
+    return NextResponse.json({ error: "Too many votes. Try again in a minute." }, { status: 429 });
+  }
+
   const { id } = await req.json();
 
   if (!id) return NextResponse.json({ error: "ID required." }, { status: 400 });

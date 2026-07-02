@@ -70,8 +70,8 @@ export default function FollowUpPage() {
     else { setCopied2(true); setTimeout(() => setCopied2(false), 2000); }
   }
 
-  const canSubmit = user && (isPaid || !freeUsed);
-  const showUpgradeWall = mounted && user && !isPaid && freeUsed && !result;
+  const canSubmit = mounted && !!user && (isPaid || !freeUsed);
+  const showUpgradeWall = mounted && !!user && !isPaid && freeUsed;
   const showAuthWall = mounted && !user;
 
   return (
@@ -148,7 +148,7 @@ export default function FollowUpPage() {
               <p style={{ fontSize: "0.9rem", color: "#6b7280", marginBottom: 6 }}>You&apos;ve used your free follow-up.</p>
               <p style={{ fontSize: "0.82rem", color: "#9b7d40", marginBottom: 16 }}>Upgrade for unlimited use.</p>
               <Link href="/app?upgrade=true" className="sp-btn-gold">
-                Upgrade to Semester
+                Get unlimited follow-ups
               </Link>
             </div>
           )}
@@ -157,9 +157,9 @@ export default function FollowUpPage() {
           {!showAuthWall && !showUpgradeWall && (
             <button
               onClick={handleSubmit}
-              disabled={loading}
+              disabled={loading || !canSubmit}
               className="sp-btn-primary"
-              style={{ width: "100%", opacity: loading ? 0.75 : 1 }}
+              style={{ width: "100%", opacity: loading || !canSubmit ? 0.75 : 1 }}
             >
               {loading ? (
                 <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>

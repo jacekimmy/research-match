@@ -12,3 +12,10 @@ export function oaUrl(url: string): string {
   if (url.includes("mailto=")) return url;
   return url + (url.includes("?") ? "&" : "?") + `mailto=${OA_MAILTO}`;
 }
+
+// Validate a short OpenAlex author id ("A5023888391"). Untrusted ids get
+// interpolated into OpenAlex filter/path URLs, so every route that accepts one
+// should gate on this instead of inventing its own check.
+export function isOaAuthorId(id: unknown): id is string {
+  return typeof id === "string" && /^A\d+$/i.test(id);
+}

@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { generateJSON } from "@/lib/llm";
+import { withinRateLimit, clientIp } from "@/lib/rate-limit";
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX_CHECKS = 12;
-const emailCheckHits = new Map<string, { count: number; resetAt: number }>();
 
 interface EmailHighlight {
   paper: string;
@@ -54,20 +53,6 @@ async function authenticatedUserId(req: NextRequest) {
   return data.user?.id ?? null;
 }
 
-function withinRateLimit(key: string) {
-  const now = Date.now();
-  const current = emailCheckHits.get(key);
-
-  if (!current || current.resetAt <= now) {
-    emailCheckHits.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
-    return true;
-  }
-
-  if (current.count >= RATE_LIMIT_MAX_CHECKS) return false;
-  current.count += 1;
-  return true;
-}
-
 export async function POST(req: NextRequest) {
   try {
     // Anonymous checks are allowed: the first check is a no-account "taste" (the
@@ -75,13 +60,9 @@ export async function POST(req: NextRequest) {
     // Per-account / per-plan limits are enforced client-side; here we only
     // rate-limit (by user when signed in, by IP when anonymous) to curb abuse.
     const userId = await authenticatedUserId(req);
-    const ip =
-      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-      req.headers.get("x-real-ip") ||
-      "unknown";
-    const rateKey = userId || `anon:${ip}`;
+    const rateKey = userId || `anon:${clientIp(req)}`;
 
-    if (!withinRateLimit(rateKey)) {
+    if (!withinRateLimit(`email:${rateKey}`, RATE_LIMIT_MAX_CHECKS)) {
       return NextResponse.json({ error: "Too many email checks. Try again in a minute." }, { status: 429 });
     }
 

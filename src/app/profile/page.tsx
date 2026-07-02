@@ -88,7 +88,10 @@ export default function ProfilePage() {
   }, [user]);
 
   useEffect(() => {
-    setSavedCount(JSON.parse(localStorage.getItem("research-match-saved") || "[]").length);
+    try {
+      const saved = JSON.parse(localStorage.getItem("research-match-saved") || "[]");
+      setSavedCount(Array.isArray(saved) ? saved.length : 0);
+    } catch { setSavedCount(0); }
     refreshProfile();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 

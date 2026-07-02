@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { hasPaidAccess } from "@/lib/buddy-pass";
-import { oaUrl } from "@/lib/openalex";
+import { oaUrl, isOaAuthorId } from "@/lib/openalex";
 import { generateJSON } from "@/lib/llm";
+import { clientIp } from "@/lib/rate-limit";
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -49,7 +50,7 @@ const SUMMARY_SCHEMA = {
 export async function POST(req: NextRequest) {
   try {
     const { authorId } = await req.json();
-    if (!authorId) {
+    if (!isOaAuthorId(authorId)) {
       return NextResponse.json({ error: "authorId required" }, { status: 400 });
     }
 
@@ -82,15 +83,16 @@ export async function POST(req: NextRequest) {
       }
     } else {
       // Anonymous user: IP-based limiting
-      const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-        req.headers.get("x-real-ip") ||
-        "unknown";
+      const ip = clientIp(req);
 
-      const { data: anonUse } = await supabaseAdmin
+      const { data: anonUse, error: anonReadError } = await supabaseAdmin
         .from("anon_summary_uses")
         .select("count")
         .eq("ip", ip)
-        .single();
+        .maybeSingle();
+      if (anonReadError) {
+        console.error("summarize: anon limit read failed:", anonReadError);
+      }
 
       if ((anonUse?.count ?? 0) >= ANON_LIMIT) {
         return NextResponse.json({ error: "limit_reached" }, { status: 403 });
@@ -100,8 +102,17 @@ export async function POST(req: NextRequest) {
     // --- Fetch recent papers ---
     const fromYear = new Date().getFullYear() - 3;
     const worksRes = await fetch(
-      oaUrl(`https://api.openalex.org/works?filter=author.id:${authorId},publication_year:>${fromYear}&sort=cited_by_count:desc&per_page=20&select=title,abstract_inverted_index,cited_by_count,publication_year,authorships,doi`)
+      oaUrl(`https://api.openalex.org/works?filter=author.id:${encodeURIComponent(authorId)},publication_year:>${fromYear}&sort=cited_by_count:desc&per_page=20&select=title,abstract_inverted_index,cited_by_count,publication_year,authorships,doi`)
     );
+    // A throttled/erroring OpenAlex response must NOT read as "this researcher has
+    // no recent papers" — that's a false claim. Surface a retryable error instead.
+    if (!worksRes.ok) {
+      console.error(`summarize: OpenAlex works fetch failed (${worksRes.status}) for ${authorId}`);
+      return NextResponse.json(
+        { error: "The paper database is busy right now. Please try again in a moment." },
+        { status: 503 }
+      );
+    }
     const worksData = await worksRes.json();
     const allWorks = (worksData.results ?? []) as OpenAlexWork[];
     const works = allWorks.slice(0, 8);
@@ -211,9 +222,7 @@ Return only valid JSON, no markdown, no explanation.`;
         }
       } else {
         // Increment IP counter for anon user
-        const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-          req.headers.get("x-real-ip") ||
-          "unknown";
+        const ip = clientIp(req);
 
         const { data: existing } = await supabaseAdmin
           .from("anon_summary_uses")

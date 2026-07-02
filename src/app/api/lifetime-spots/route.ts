@@ -14,7 +14,8 @@ export async function GET() {
       .eq("key", "lifetime_spots_claimed")
       .single();
 
-    const claimed = data && !error ? parseInt(data.value, 10) : 0;
+    const parsed = data && !error ? parseInt(data.value, 10) : 0;
+    const claimed = Number.isFinite(parsed) ? parsed : 0;
     return NextResponse.json({ remaining: Math.max(0, 200 - claimed) });
   } catch {
     return NextResponse.json({ remaining: 200 });

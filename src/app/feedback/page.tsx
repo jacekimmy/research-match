@@ -59,19 +59,24 @@ export default function FeedbackPage() {
     if (stored) {
       try { setVoted(new Set(JSON.parse(stored))); } catch { /* ignore */ }
     }
-    fetchFeedback();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Sequence counter so a slow, out-of-order response can't clobber a newer one.
+  const fetchSeqRef = useRef(0);
 
   async function fetchFeedback() {
+    const seq = ++fetchSeqRef.current;
     setLoading(true);
     try {
       const res = await fetch(`/api/feedback?sort=${sort}`);
       const data = await res.json();
+      if (seq !== fetchSeqRef.current) return;
       if (Array.isArray(data)) startTransition(() => setItems(data));
     } catch { /* ignore */ }
-    finally { setLoading(false); }
+    finally { if (seq === fetchSeqRef.current) setLoading(false); }
   }
 
+  // Runs on mount and whenever the sort changes (single fetch on first render).
   useEffect(() => { fetchFeedback(); }, [sort]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function handleSubmit(e: React.FormEvent) {
@@ -104,26 +109,41 @@ export default function FeedbackPage() {
     finally { setSubmitting(false); }
   }
 
+  const votesInFlightRef = useRef<Set<string>>(new Set());
+
   async function handleUpvote(id: string) {
-    if (voted.has(id)) return;
-    const newVoted = new Set(voted);
-    newVoted.add(id);
-    setVoted(newVoted);
-    localStorage.setItem("research-match-votes", JSON.stringify([...newVoted]));
+    if (voted.has(id) || votesInFlightRef.current.has(id)) return;
+    votesInFlightRef.current.add(id);
 
     // Bounce animation
     setVoteBounce(id);
     setTimeout(() => setVoteBounce(null), 500);
 
+    // Optimistic count; only commit the vote once the server accepts it.
     setItems((prev) => prev.map((item) => item.id === id ? { ...item, upvotes: item.upvotes + 1 } : item));
 
     try {
-      await fetch("/api/feedback", {
+      const res = await fetch("/api/feedback", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id }),
       });
-    } catch { /* ignore */ }
+      if (!res.ok) throw new Error("Upvote failed");
+      // Functional update: `voted` in this closure is stale after the await, and
+      // two in-flight votes on different items would overwrite each other's commit.
+      setVoted((prev) => {
+        const next = new Set(prev);
+        next.add(id);
+        localStorage.setItem("research-match-votes", JSON.stringify([...next]));
+        return next;
+      });
+    } catch {
+      // Revert the optimistic count and leave the button usable.
+      setItems((prev) => prev.map((item) => item.id === id ? { ...item, upvotes: item.upvotes - 1 } : item));
+      showToast("Couldn't save your vote. Try again.");
+    } finally {
+      votesInFlightRef.current.delete(id);
+    }
   }
 
   async function handleResolve(id: string) {

@@ -248,7 +248,7 @@ function GatedOverlay() {
             color: "#fff",
           }}
         >
-          &#128274;
+          &#9993;
         </div>
         <h3
           style={{
@@ -260,7 +260,7 @@ function GatedOverlay() {
             lineHeight: 1.35,
           }}
         >
-          Premium Content
+          The emails that actually got replies
         </h3>
         <p
           style={{
@@ -270,8 +270,8 @@ function GatedOverlay() {
             marginBottom: "28px",
           }}
         >
-          Upgrade to see full annotated emails that got responses from Princeton
-          and ASU professors.
+          See the full annotated emails that got responses from Princeton
+          and ASU professors, line by line, with what made each one work.
         </p>
         <Link
           href="/app?upgrade=true"
@@ -288,7 +288,7 @@ function GatedOverlay() {
             boxShadow: "0 4px 16px rgba(101, 153, 131,0.3)",
           }}
         >
-          Upgrade Now
+          See the full emails
         </Link>
       </div>
     </div>
@@ -301,7 +301,12 @@ function GatedOverlay() {
 
 export default function ExamplesPage() {
   const { profile, loading } = useAuth();
+  // While auth resolves: keep the content clipped (so free users never see the
+  // full emails flash) but hold back the upsell overlay (so paying customers
+  // never see a paywall pitch for something they already bought).
   const isPaid = hasPaidAccess(profile);
+  const revealed = !loading && isPaid;
+  const showGate = !loading && !isPaid;
 
   return (
     <>
@@ -342,7 +347,7 @@ export default function ExamplesPage() {
             {/* Always render email content, but clip for free users */}
             <div
               style={{
-                ...((!isPaid && !loading)
+                ...(!revealed
                   ? { maxHeight: "420px", overflow: "hidden" }
                   : {}),
               }}
@@ -352,7 +357,7 @@ export default function ExamplesPage() {
               ))}
 
               {/* ---- Key Patterns Section ---- */}
-              {(isPaid || loading) && (
+              {revealed && (
                 <FadeIn delay={300}>
                   <div
                     style={{
@@ -417,7 +422,7 @@ export default function ExamplesPage() {
               )}
 
               {/* ---- Bottom CTA ---- */}
-              {(isPaid || loading) && (
+              {revealed && (
                 <FadeIn delay={500}>
                   <div style={{ textAlign: "center", marginTop: "16px", marginBottom: "48px" }}>
                     <Link href="/app" className="sp-cta-link">Search professors →</Link>
@@ -427,7 +432,7 @@ export default function ExamplesPage() {
             </div>
 
             {/* Gated overlay for free / unauthenticated users */}
-            {!isPaid && !loading && <GatedOverlay />}
+            {showGate && <GatedOverlay />}
           </div>
         </div>
       </div>

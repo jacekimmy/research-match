@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
+import { withinRateLimit, clientIp } from "@/lib/rate-limit";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(req: NextRequest) {
   try {
+    if (!withinRateLimit(`follow-up:${clientIp(req)}`, 4)) {
+      return NextResponse.json({ error: "Too many requests. Try again in a minute." }, { status: 429 });
+    }
+
     const { email } = await req.json();
     if (!email?.trim()) return NextResponse.json({ error: "Email is required." }, { status: 400 });
 

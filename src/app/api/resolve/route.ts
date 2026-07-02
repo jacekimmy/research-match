@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
 import { oaUrl } from "@/lib/openalex";
+import { withinRateLimit, clientIp } from "@/lib/rate-limit";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
@@ -125,7 +126,9 @@ async function resolveTopicUncached(topic: string): Promise<{ ids: string[]; nam
     const termResults = await Promise.all(
       searchTerms.map(term =>
         fetch(oaUrl(`https://api.openalex.org/topics?search=${encodeURIComponent(term)}&per_page=5`))
-          .then(r => r.json())
+          // A throttled response must not read as "no such topic" — treat it like a
+          // network failure so the result isn't cached as a legitimate empty match.
+          .then(r => (r.ok ? r.json() : { results: [] }))
           .catch(() => ({ results: [] }))
       )
     );
@@ -158,6 +161,7 @@ async function resolveTopicUncached(topic: string): Promise<{ ids: string[]; nam
 async function resolveUniversityUncached(university: string): Promise<{ id: string; name: string } | null> {
   try {
     const res = await fetch(oaUrl(`https://api.openalex.org/institutions?search=${encodeURIComponent(university)}&per_page=5`));
+    if (!res.ok) return null;
     const data = await res.json();
     const candidates: { id: string; display_name: string }[] = data.results ?? [];
     if (candidates.length === 0) return null;
@@ -170,10 +174,16 @@ async function resolveUniversityUncached(university: string): Promise<{ id: stri
 
 export async function POST(req: NextRequest) {
   try {
+    if (!withinRateLimit(`resolve:${clientIp(req)}`, 20)) {
+      return NextResponse.json({ error: "Too many searches. Try again in a minute." }, { status: 429 });
+    }
+
     const body = await req.json();
 
-    const topics: string[] = body.topics ?? (body.topic ? [body.topic] : []);
-    const universities: string[] = body.universities ?? (body.university ? [body.university] : []);
+    // Cap is an abuse bound only — 25 comfortably covers any real multi-topic /
+    // comma-separated-university search the client can produce.
+    const topics: string[] = (body.topics ?? (body.topic ? [body.topic] : [])).slice(0, 25);
+    const universities: string[] = (body.universities ?? (body.university ? [body.university] : [])).slice(0, 25);
 
     const [topicResults, uniResults] = await Promise.all([
       Promise.all(topics.map(resolveTopic)),

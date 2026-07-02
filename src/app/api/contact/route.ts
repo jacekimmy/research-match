@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { withinRateLimit, clientIp, isPlausibleEmail } from "@/lib/rate-limit";
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -8,8 +9,16 @@ const supabaseAdmin = createClient(
 
 export async function POST(req: NextRequest) {
   try {
+    if (!withinRateLimit(`contact:${clientIp(req)}`, 5)) {
+      return NextResponse.json({ error: "Too many messages. Try again in a minute." }, { status: 429 });
+    }
+
     const { name, email, message } = await req.json();
-    if (!name || !email || !message) {
+    if (
+      !name || typeof name !== "string" || name.length > 200 ||
+      !isPlausibleEmail(email) ||
+      !message || typeof message !== "string" || message.length > 5000
+    ) {
       return NextResponse.json({ error: "All fields required" }, { status: 400 });
     }
 

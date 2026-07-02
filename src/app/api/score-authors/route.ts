@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { oaUrl } from "@/lib/openalex";
+import { withinRateLimit, clientIp } from "@/lib/rate-limit";
 
 interface AuthorInput {
   id: string;
@@ -25,7 +26,14 @@ interface OpenAlexWork {
 
 export async function POST(req: NextRequest) {
   try {
+    if (!withinRateLimit(`score-authors:${clientIp(req)}`, 20)) {
+      return NextResponse.json({ error: "Too many requests. Try again in a minute." }, { status: 429 });
+    }
+
     const { authors }: { authors: AuthorInput[] } = await req.json();
+    if (!Array.isArray(authors) || authors.length > 50) {
+      return NextResponse.json({ error: "authors must be an array of at most 50" }, { status: 400 });
+    }
     const fiveYearsAgo = new Date().getFullYear() - 5;
 
     const scored: ScoredAuthor[] = await Promise.all(
@@ -45,9 +53,10 @@ export async function POST(req: NextRequest) {
         // Fetch recent works to check last-author status and publishing span
         try {
           const worksRes = await fetch(
-            oaUrl(`https://api.openalex.org/works?filter=author.id:${authorId},publication_year:>${fiveYearsAgo}&sort=publication_year:desc&per_page=15&select=authorships,publication_year`),
+            oaUrl(`https://api.openalex.org/works?filter=author.id:${encodeURIComponent(authorId ?? "")},publication_year:>${fiveYearsAgo}&sort=publication_year:desc&per_page=15&select=authorships,publication_year`),
             { signal: AbortSignal.timeout(5000) }
           );
+          if (!worksRes.ok) throw new Error(`OpenAlex ${worksRes.status}`);
           const worksData = await worksRes.json();
           const works = (worksData.results ?? []) as OpenAlexWork[];
 

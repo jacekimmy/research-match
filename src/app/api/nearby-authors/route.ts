@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
       resolvedInstIds.map(async (instId) => {
         try {
           const r = await fetch(
-            oaUrl(`https://api.openalex.org/authors?filter=topics.id:${topicId},last_known_institutions.id:${instId}&per_page=3&sort=cited_by_count:desc`),
+            oaUrl(`https://api.openalex.org/authors?filter=topics.id:${encodeURIComponent(topicId)},last_known_institutions.id:${instId}&per_page=3&sort=cited_by_count:desc`),
             { signal: AbortSignal.timeout(5000) }
           );
           const d = await r.json();

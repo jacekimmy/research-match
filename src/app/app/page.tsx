@@ -602,6 +602,17 @@ function AppPageInner() {
     }
   }, [authLoading2, user, searchParams]);
 
+  // Handle ?signup=true from other pages (e.g. follow-up auth wall)
+  useEffect(() => {
+    if (authLoading2) return;
+    if (searchParams.get("signup") !== "true") return;
+    if (!user) {
+      setShowAuthModal(true);
+      setAuthMode("signup");
+      setAuthError("");
+    }
+  }, [authLoading2, user, searchParams]);
+
   useEffect(() => {
     if (authLoading2) return;
     const buddyCode = searchParams.get("buddy");
@@ -1312,11 +1323,20 @@ function AppPageInner() {
         return;
       }
       const data = await res.json();
+      // Retryable server failure (e.g. 503 when OpenAlex is throttled): show a
+      // retry state and do NOT count it against the anon allotment — no summary
+      // was generated and the server didn't count it either. The "unavailable"
+      // wording is what triggers the Retry button below.
+      if (!res.ok) {
+        setSummaries((prev) => ({ ...prev, [id]: { summary: "Summary temporarily unavailable. The paper database may be busy. Try again in a moment.", highlights: [], questions: [] } }));
+        return;
+      }
       const summaryText = data.summary || data.error || "Summary unavailable. Try again or visit their faculty page.";
       const highlights = data.highlights || [];
       setSummaries((prev) => ({ ...prev, [id]: { summary: summaryText, highlights, questions: data.questions || [] } }));
-      // Count this anon summary toward their free allotment
-      if (!user) {
+      // Count this anon summary toward their free allotment — only when a real
+      // summary came back, mirroring the server-side counting rule.
+      if (!user && highlights.length > 0 && !data.error) {
         const wasFirstSummary = anonSummariesUsed === 0;
         setAnonSummariesUsed((prev) => {
           const next = prev + 1;
@@ -1324,7 +1344,7 @@ function AppPageInner() {
           return next;
         });
         // After the very first summary, nudge with what's left (no paywall yet).
-        if (wasFirstSummary && highlights.length > 0 && !data.error) {
+        if (wasFirstSummary) {
           showToast("1 free summary + 1 email check left", 5000);
         }
       }
@@ -1484,16 +1504,24 @@ function AppPageInner() {
           institution: author.last_known_institutions?.[0]?.display_name || "",
         }),
       });
+      // A transient failure (429 rate limit, 5xx) must NOT be cached as a result —
+      // the guard above would then present it as "no email found" for the rest of
+      // the session with no way to retry.
+      if (!res.ok) {
+        showToast(res.status === 429 ? "Email lookup is busy — try again in a minute." : "Email lookup failed. Try again.");
+        return;
+      }
       const data = await res.json();
-      // Normalize: a non-OK or malformed response must not be stored raw, because the
+      // Normalize: a malformed response must not be stored raw, because the
       // renderer reads lookup.emails.length / lookup.searchUrls.google unconditionally.
-      if (!res.ok || !Array.isArray(data?.emails) || !data?.searchUrls) {
+      if (!Array.isArray(data?.emails) || !data?.searchUrls) {
         setEmailLookup(prev => ({ ...prev, [id]: { emails: [], searchUrls: { google: "", scholar: "", directory: null }, homepageUrl: null, orcidUrl: null } }));
         return;
       }
       setEmailLookup(prev => ({ ...prev, [id]: data }));
     } catch {
-      setEmailLookup(prev => ({ ...prev, [id]: { emails: [], searchUrls: { google: "", scholar: "", directory: null }, homepageUrl: null, orcidUrl: null } }));
+      // Network error — leave uncached so the user can retry.
+      showToast("Email lookup failed. Try again.");
     } finally {
       setEmailLookupLoading(prev => ({ ...prev, [id]: false }));
     }

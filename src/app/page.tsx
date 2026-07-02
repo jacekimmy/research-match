@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { supabase } from "@/lib/supabase";
 import { normalizeReferralCode } from "@/lib/buddy-pass";
+import { isPlausibleEmail } from "@/lib/rate-limit";
 
 const HERO_PLACEHOLDERS = [
   "e.g. machine learning",
@@ -37,11 +38,9 @@ export default function LandingPage() {
   const [, setBillingMounted] = useState(false);
   const [inlineWaitlistEmail, setInlineWaitlistEmail] = useState("");
   const [inlineWaitlistDone, setInlineWaitlistDone] = useState(false);
+  const [inlineWaitlistLoading, setInlineWaitlistLoading] = useState(false);
+  const [inlineWaitlistError, setInlineWaitlistError] = useState("");
   const [lifetimeSpotsRemaining, setLifetimeSpotsRemaining] = useState<number | null>(null);
-  const [waitlistEmail, setWaitlistEmail] = useState("");
-  const [waitlistTier, setWaitlistTier] = useState<"research_pro" | "pro" | null>(null);
-  const [waitlistDone, setWaitlistDone] = useState(false);
-  const [waitlistLoading, setWaitlistLoading] = useState(false);
   const [searchCount, setSearchCount] = useState<number | null>(null);
   const [activePricingIndex, setActivePricingIndex] = useState(0);
   const [activePricingTab, setActivePricingTab] = useState<string>("free");
@@ -108,7 +107,7 @@ export default function LandingPage() {
   };
 
   const onTouchEnd = () => {
-    if (!touchStart.current || !touchEnd.current) return;
+    if (touchStart.current === null || touchEnd.current === null) return;
     const distance = touchStart.current - touchEnd.current;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
@@ -244,36 +243,36 @@ export default function LandingPage() {
       }
       if (data.url) window.location.href = data.url;
     } catch {
-      router.push(`/app?upgrade=${plan === "semester" ? "true" : plan}`);
+      router.push(`/app?upgrade=${plan === "semester" ? "true" : plan}${cleanReferralCode ? `&buddy=${encodeURIComponent(cleanReferralCode)}` : ""}`);
     } finally {
       setCheckoutLoading(null);
     }
   }
 
   async function joinInlineWaitlist() {
-    if (!inlineWaitlistEmail) return;
+    const email = inlineWaitlistEmail.trim();
+    if (!email || inlineWaitlistLoading) return;
+    // Same validator the /api/waitlist route enforces, so a client-accepted email
+    // can't come back as a server 400 shown as a generic failure.
+    if (!isPlausibleEmail(email)) {
+      setInlineWaitlistError("Enter a valid email address.");
+      return;
+    }
+    setInlineWaitlistError("");
+    setInlineWaitlistLoading(true);
     try {
-      await fetch("/api/waitlist", {
+      const res = await fetch("/api/waitlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: inlineWaitlistEmail, tier: "general" }),
+        body: JSON.stringify({ email, tier: "general" }),
       });
+      if (!res.ok) throw new Error("Waitlist signup failed");
       setInlineWaitlistDone(true);
-    } catch { /* ignore */ }
-  }
-
-  async function joinWaitlist() {
-    if (!waitlistEmail || !waitlistTier) return;
-    setWaitlistLoading(true);
-    try {
-      await fetch("/api/waitlist", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: waitlistEmail, tier: waitlistTier }),
-      });
-      setWaitlistDone(true);
-    } catch { /* ignore */ }
-    finally { setWaitlistLoading(false); }
+    } catch {
+      setInlineWaitlistError("Something went wrong. Try again.");
+    } finally {
+      setInlineWaitlistLoading(false);
+    }
   }
 
   return (
@@ -876,8 +875,8 @@ export default function LandingPage() {
             </div>
             <ul className="lp-price-features lp-price-features-duo">
               {[
-                "3 professor searches",
-                "1 professor summary",
+                "Unlimited professor searches",
+                "2 professor summaries",
                 "1 email check",
                 "Blurred email finder + responsiveness",
               ].map((f) => (
@@ -968,8 +967,8 @@ export default function LandingPage() {
                 <div className="lp-price-period">forever</div>
                 <ul className="lp-price-features">
                   {[
-                    "3 professor searches",
-                    "1 professor summary",
+                    "Unlimited professor searches",
+                    "2 professor summaries",
                     "1 email check",
                     "Blurred email finder + responsiveness",
                   ].map((f) => (
@@ -1213,19 +1212,26 @@ export default function LandingPage() {
           {inlineWaitlistDone ? (
             <p style={{ color: "#2d5a47", fontWeight: 600 }}>You&apos;re on the list.</p>
           ) : (
-            <div className="lp-waitlist-form">
-              <input
-                type="email"
-                placeholder="your@email.com"
-                value={inlineWaitlistEmail}
-                onChange={(e) => setInlineWaitlistEmail(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && joinInlineWaitlist()}
-                className="lp-waitlist-input"
-              />
-              <button onClick={joinInlineWaitlist} style={{ padding: "14px 28px", fontSize: "0.9rem", fontWeight: 700, fontFamily: "var(--font-inter), sans-serif", background: "#659983", color: "#fff", border: "none", borderRadius: "999px", cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.2s ease", boxShadow: "0 4px 16px rgba(101, 153, 131,0.25)" }}>
-                Join waitlist
-              </button>
-            </div>
+            <>
+              <div className="lp-waitlist-form">
+                <input
+                  type="email"
+                  placeholder="your@email.com"
+                  value={inlineWaitlistEmail}
+                  onChange={(e) => { setInlineWaitlistEmail(e.target.value); setInlineWaitlistError(""); }}
+                  onKeyDown={(e) => e.key === "Enter" && joinInlineWaitlist()}
+                  className="lp-waitlist-input"
+                />
+                <button onClick={joinInlineWaitlist} disabled={inlineWaitlistLoading} style={{ padding: "14px 28px", fontSize: "0.9rem", fontWeight: 700, fontFamily: "var(--font-inter), sans-serif", background: "#659983", color: "#fff", border: "none", borderRadius: "999px", cursor: inlineWaitlistLoading ? "wait" : "pointer", opacity: inlineWaitlistLoading ? 0.75 : 1, whiteSpace: "nowrap", transition: "all 0.2s ease", boxShadow: "0 4px 16px rgba(101, 153, 131,0.25)" }}>
+                  {inlineWaitlistLoading ? "Joining…" : "Join waitlist"}
+                </button>
+              </div>
+              {inlineWaitlistError && (
+                <p style={{ color: "#9a4343", fontSize: "0.82rem", fontWeight: 600, marginTop: "10px" }}>
+                  {inlineWaitlistError}
+                </p>
+              )}
+            </>
           )}
         </div>
       </section>
@@ -1274,42 +1280,6 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
-
-
-      {waitlistTier && (
-        <div className="modal-overlay" style={{
-          position: "fixed", inset: 0, zIndex: 100,
-          display: "flex", alignItems: "center", justifyContent: "center",
-          background: "rgba(245,240,230,0.85)", backdropFilter: "blur(12px)",
-        }} onClick={() => setWaitlistTier(null)}>
-          <div className="glass-card modal-card" style={{ padding: "44px", maxWidth: "420px", width: "90%" }} onClick={(e) => e.stopPropagation()}>
-            {waitlistDone ? (
-              <div style={{ textAlign: "center" }}>
-                <p style={{ fontSize: "2.5rem", marginBottom: "16px" }}>🎉</p>
-                <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#2d5a47", marginBottom: "10px" }}>You&apos;re on the list!</h3>
-                <p style={{ fontSize: "0.95rem", color: "#6b7280", lineHeight: 1.6 }}>We&apos;ll email you when it launches.</p>
-                <button onClick={() => setWaitlistTier(null)} className="btn-secondary" style={{ marginTop: "24px", padding: "12px 28px" }}>Close</button>
-              </div>
-            ) : (
-              <>
-                <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#2d5a47", marginBottom: "10px" }}>Join the waitlist</h3>
-                <p style={{ fontSize: "0.9rem", color: "#6b7280", marginBottom: "24px", lineHeight: 1.6 }}>Enter your email to get notified when it launches.</p>
-                <input
-                  type="email"
-                  placeholder="your@email.com"
-                  value={waitlistEmail}
-                  onChange={(e) => setWaitlistEmail(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && joinWaitlist()}
-                  style={{ width: "100%", padding: "14px 18px", fontSize: "1rem", border: "1.5px solid rgba(101, 153, 131,0.4)", borderRadius: "14px", background: "rgba(255,255,255,0.5)", color: "#1a1a1a", fontFamily: "inherit", marginBottom: "16px", outline: "none" }}
-                />
-                <button onClick={joinWaitlist} disabled={waitlistLoading || !waitlistEmail} className="btn-cta landing-cta-primary rm-search-btn" style={{ width: "100%", padding: "14px", fontSize: "1rem" }}>
-                  {waitlistLoading ? "Joining…" : "Join Waitlist"}
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

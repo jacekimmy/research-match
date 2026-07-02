@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { withinRateLimit, clientIp, isPlausibleEmail } from "@/lib/rate-limit";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -9,13 +10,17 @@ const supabase = createClient(
 /* ── POST: save email ────────────────────────────────────── */
 export async function POST(req: NextRequest) {
   try {
+    if (!withinRateLimit(`starter-kit:${clientIp(req)}`, 5)) {
+      return NextResponse.json({ error: "Too many attempts. Try again in a minute." }, { status: 429 });
+    }
+
     const { email } = await req.json();
-    if (!email) {
+    if (!isPlausibleEmail(email)) {
       return NextResponse.json({ error: "Email required" }, { status: 400 });
     }
 
     const { error } = await supabase.from("pdf_downloads").insert({
-      email,
+      email: email.trim().toLowerCase(),
       created_at: new Date().toISOString(),
     });
 
