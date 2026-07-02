@@ -10,6 +10,7 @@ import * as path from "path";
 import { fileURLToPath } from "url";
 import { createClient } from "@supabase/supabase-js";
 import { FIELD_CONTENT } from "./data/field-content.mjs";
+import { FIELDS } from "./lib/research-anchors.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -55,7 +56,15 @@ async function main() {
         `email=${String(wc(c.email_angle)).padStart(3)}w ${c.remote_friendly.padEnd(15)} ${flag}`
     );
   }
-  if (FIELD_CONTENT.length !== 15) { console.log(`\n⚠️  expected 15 fields, got ${FIELD_CONTENT.length}`); ok = false; }
+  // Content must cover exactly the fields defined in research-anchors.mjs —
+  // comparing slug sets (not a hardcoded count) catches both a missing entry
+  // and a typo'd field_slug that would otherwise ship an orphan row.
+  const anchorSlugs = new Set(FIELDS.map((f) => f.slug));
+  const contentSlugs = new Set(FIELD_CONTENT.map((c) => c.field_slug));
+  const missing = [...anchorSlugs].filter((s) => !contentSlugs.has(s));
+  const orphaned = [...contentSlugs].filter((s) => !anchorSlugs.has(s));
+  if (missing.length) { console.log(`\n⚠️  fields with no content: ${missing.join(", ")}`); ok = false; }
+  if (orphaned.length) { console.log(`\n⚠️  content for unknown fields: ${orphaned.join(", ")}`); ok = false; }
 
   if (check) {
     console.log(`\nCHECK ONLY — ${ok ? "all valid" : "issues above"}. Nothing written.`);

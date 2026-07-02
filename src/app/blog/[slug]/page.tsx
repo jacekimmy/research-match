@@ -120,11 +120,25 @@ export default async function BlogPost({ params }: Props) {
     mainEntityOfPage: `https://www.researchmatch.site/blog/${post.slug}`,
   };
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://www.researchmatch.site/" },
+      { "@type": "ListItem", position: 2, name: "Blog", item: "https://www.researchmatch.site/blog" },
+      { "@type": "ListItem", position: 3, name: post.title },
+    ],
+  };
+
   return (
     <div className="blog-shell blog-post-shell">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <div className="blog-post-container">
         {/* Nav */}

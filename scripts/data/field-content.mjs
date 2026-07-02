@@ -277,4 +277,94 @@ export const FIELD_CONTENT = [
       { question: "How is cognitive science different from psychology?", answer: "Cognitive science is broader and more interdisciplinary, drawing on computer science, linguistics, and neuroscience alongside psychology, and it leans toward computational models of the mind. Psychology is one of its parent fields. In practice, what matters for a position is whether the lab runs experiments, builds models, or both." },
     ],
   },
+  {
+    field_slug: "astrophysics",
+    field_name: "Astrophysics",
+    meta_title: "How to Get an Astrophysics Research Position",
+    meta_description:
+      "Find astrophysics professors who are publishing right now, see what they study, and email them a short, specific note that actually gets a reply.",
+    remote_friendly: "remote-friendly",
+    research_overview:
+      "Astrophysics asks how stars, galaxies, black holes, and the universe as a whole form and change. Labs split across a few camps: observational groups that analyze data from telescopes and surveys across radio, optical, and X-ray bands; theory and simulation groups that model gravity, plasma, and cosmic structure on supercomputers; and instrumentation groups that build the detectors and pipelines behind new observatories. Day to day, most of the work is computational. You are writing code to reduce data, fit models, or run simulations, which means a lot of it can be done remotely once you have access to the group's data and cluster. Read a professor's recent papers first to tell whether they are chasing exoplanets, mapping dark matter, or studying the early universe.",
+    email_angle:
+      "Astrophysics is a coding-heavy field, so lead with a real computational skill. Python is the lingua franca (NumPy, Astropy, matplotlib), so say if you know it, and mention any experience with large datasets, statistics, or simulation. Figure out whether the lab is observational, theoretical, or instrument-focused, because your offer should match: offer to help reduce survey data and make plots for an observational group, or to run and analyze simulations for a theory group. Point to one specific recent paper, name the object or question it studied, and ask one concrete question about a method or result. Keep it under 150 words and never call the work groundbreaking.",
+    faq: [
+      { question: "What qualifications do I need for astrophysics research?", answer: "Most labs want physics and math coursework plus programming, since the work is data- and simulation-heavy. Python is the standard tool. Prior research is a plus, not a requirement, for undergraduates. What matters most is showing you can write code and reason about physical problems carefully." },
+      { question: "Can I do astrophysics research remotely?", answer: "Usually, yes. Much of the field is analyzing telescope or survey data and running simulations, which you can do from anywhere once you have access to the group's datasets and computing cluster. Instrument-building work needs you on-site, so check what kind of lab it is first." },
+      { question: "What should I say when emailing an astrophysics professor?", answer: "Name one recent paper, say what specifically interested you, and offer a matching skill. For most groups that means programming and data analysis in Python. Ask one real question about a method or result, and keep the whole email short and specific rather than general praise." },
+      { question: "When should I apply for astrophysics research positions?", answer: "Email six to ten weeks before the term or summer you want to start, since groups plan projects and funding ahead. Spring is the busiest window for summer research. If a professor is full, ask whether a postdoc or graduate student in the group could use help with analysis." },
+    ],
+  },
+  {
+    field_slug: "environmental-science",
+    field_name: "Environmental Science",
+    meta_title: "How to Get an Environmental Science Research Position",
+    meta_description:
+      "Find environmental science professors who are publishing right now, see what they study, and email them a specific note that actually gets a reply.",
+    remote_friendly: "mixed",
+    research_overview:
+      "Environmental science studies how natural systems work and how human activity changes them, spanning climate, water, soil, air, ecosystems, and pollution. Labs split across a few camps: field ecology and biogeochemistry groups that sample sites and measure what is happening on the ground; modeling groups that project climate, hydrology, or contaminant spread with code; and analytical groups that run samples in the lab or process satellite and sensor data. The work is genuinely mixed. Field campaigns and wet-lab analysis need you physically present, while remote sensing, data analysis, and modeling can be done from anywhere. Read a professor's recent papers first to tell whether they spend their time in the field, at the bench, or in code, because that decides how you can help.",
+    email_angle:
+      "Before you email, work out whether the lab is field-based, lab-based, or computational, because your offer should match. For a modeling or remote-sensing group, say you can help analyze data and name a tool: Python, R, GIS, or experience with satellite datasets. For a field or wet-lab group, offer to help with sampling campaigns or sample processing and stress that you are careful and reliable with protocols. Point to one specific recent paper, name the system or question it studied, a watershed, a forest, an air-quality dataset, and ask one concrete question about the method. Keep it under 150 words and skip the adjectives; show you actually read the work.",
+    faq: [
+      { question: "What qualifications do I need for environmental science research?", answer: "It depends on the lab. Field and wet-lab groups want reliability with protocols and basic lab or field skills; computational groups want programming, statistics, or GIS. Coursework in biology, chemistry, earth science, or environmental science helps. Prior research is a plus, not a requirement, for undergraduates." },
+      { question: "Can I do environmental science research remotely?", answer: "Partly. Remote sensing, data analysis, and modeling of climate, hydrology, or pollution can be done from anywhere. Field sampling and wet-lab analysis need you physically present. Many labs mix both, so ask which part of the work you would take on when you email." },
+      { question: "What should I say when emailing an environmental science professor?", answer: "Match your offer to the lab: name analysis tools like Python, R, or GIS for a computational group, or offer field and sampling help for a field group. Reference one recent paper, ask a specific question about the system studied, and note relevant coursework. Keep it short." },
+      { question: "When should I apply for environmental science research positions?", answer: "Email six to ten weeks ahead, and remember field work is seasonal, so summer campaigns fill up in late winter and spring. Ask early if you want to join fieldwork. If a professor is full, a postdoc or graduate student may still need help with data or samples." },
+    ],
+  },
+  {
+    field_slug: "microbiology",
+    field_name: "Microbiology",
+    meta_title: "How to Get a Microbiology Research Position",
+    meta_description:
+      "Find microbiology professors who are publishing right now, see what they study, and email them a short, specific note that actually gets a reply.",
+    remote_friendly: "hands-on",
+    research_overview:
+      "Microbiology studies bacteria, viruses, fungi, and the ways they cause disease, cycle nutrients, and interact with hosts. Labs split across a few camps: molecular and cellular groups that dissect how single microbes grow, signal, and resist drugs; microbiome and ecology groups that study whole communities using sequencing; and pathogenesis groups that work on infection and host defense. Most of this work is hands-on at the bench. You are culturing organisms, running assays, and handling samples under sterile technique, so being on campus and dependable in the lab matters. That said, microbiome and genomics work has a real computational side, analyzing sequencing data, that can be done partly remotely. Read a professor's recent papers first to tell whether they are a wet-lab, sequencing, or mixed group.",
+    email_angle:
+      "Microbiology is mostly a wet-lab field, so for most groups the right offer is to be on-site, learn their techniques, and be careful and reliable with protocols and sterile work. If the lab does microbiome or genomics research, you can also offer to help analyze sequencing data and name a skill: Python, R, or QIIME experience. Figure out which kind of lab it is from their recent papers, then point to one specific paper, name the organism or system it studied, and ask one concrete question about the method or result. Mention any lab coursework or bench experience you have. Keep it under 150 words and never call the work groundbreaking.",
+    faq: [
+      { question: "What qualifications do I need for microbiology research?", answer: "Most labs want coursework in biology or microbiology plus basic lab skills, or a clear willingness to be trained in sterile technique. For microbiome and genomics groups, programming or statistics helps. Prior research is a plus, not a requirement, for undergraduates. Reliability at the bench matters most." },
+      { question: "Can I do microbiology research remotely?", answer: "Mostly no. Culturing microbes, running assays, and handling samples need you physically in the lab. The exception is microbiome and genomics work, where analyzing sequencing data can be done partly remotely. Check a professor's recent papers to see which kind of lab it is before you ask." },
+      { question: "What should I say when emailing a microbiology professor?", answer: "For a wet lab, offer to be on-site and learn techniques, and stress that you are careful with protocols. For a genomics lab, mention data-analysis skills. Reference one recent paper, ask a specific question about the organism or method, and keep the email short." },
+      { question: "When should I apply for microbiology research positions?", answer: "Email six to ten weeks before the term or summer you want to start, since labs plan bench space and training ahead. Spring is the busiest window for summer spots. If a professor is full, ask whether a postdoc or graduate student in the group needs help." },
+    ],
+  },
+  {
+    field_slug: "biochemistry",
+    field_name: "Biochemistry",
+    meta_title: "How to Get a Biochemistry Research Position",
+    meta_description:
+      "Find biochemistry professors who are publishing right now, see what they study, and email them a short, specific note that actually gets a reply.",
+    remote_friendly: "hands-on",
+    research_overview:
+      "Biochemistry studies the molecules of life, proteins, nucleic acids, lipids, and metabolites, and the reactions that keep cells running. Labs split across a few camps: structural biology groups that solve how proteins fold and bind using crystallography or cryo-EM; enzymology and metabolism groups that measure how reactions are catalyzed and regulated; and chemical biology groups that build molecules to probe or control biological systems. Most of the work is hands-on at the bench, purifying proteins, running assays, and setting up reactions, so being on campus and reliable in the lab matters. There is also a growing computational side, structure prediction, molecular modeling, and analyzing large datasets, that can be done partly remotely. Read a professor's recent papers first to tell whether they are a wet-lab, computational, or mixed group.",
+    email_angle:
+      "Biochemistry is mostly a wet-lab field, so for most groups the right offer is to be on-site, learn their techniques, and be careful and reliable with protocols. If the lab does structural or computational work, you can also offer to help with modeling or data analysis and name a skill: Python, PyMOL, or experience with structure tools. Figure out which kind of lab it is from their recent papers, then point to one specific paper, name the protein, pathway, or reaction it studied, and ask one concrete question about the method or result. Mention any lab or chemistry coursework you have. Keep it under 150 words and skip the flattery; show you understood the question they asked.",
+    faq: [
+      { question: "What qualifications do I need for biochemistry research?", answer: "Most labs want coursework in biochemistry, chemistry, or biology plus basic lab skills, or a willingness to be trained. For structural and computational groups, programming or modeling experience helps. Prior research is a plus, not a requirement, for undergraduates. Careful, reliable bench work matters most." },
+      { question: "Can I do biochemistry research remotely?", answer: "Mostly no. Protein purification, assays, and setting up reactions need you physically in the lab. The exception is structural and computational work, molecular modeling and data analysis, which can be done partly remotely. Check a professor's recent papers to see which kind of lab it is before you ask." },
+      { question: "What should I say when emailing a biochemistry professor?", answer: "For a wet lab, offer to be on-site and learn techniques, and stress that you are careful with protocols. For a computational lab, mention modeling or analysis skills. Reference one recent paper, ask a specific question about the protein or reaction, and keep the email short." },
+      { question: "When should I apply for biochemistry research positions?", answer: "Email six to ten weeks before the term or summer you want to start, since labs plan bench space and training ahead. Spring is the busiest window for summer spots. If a professor is full, ask whether a postdoc or graduate student in the group needs help." },
+    ],
+  },
+  {
+    field_slug: "robotics",
+    field_name: "Robotics",
+    meta_title: "How to Get a Robotics Research Position",
+    meta_description:
+      "Find robotics professors who are publishing right now, see what they build, and email them a short, specific note that actually gets a reply.",
+    remote_friendly: "mixed",
+    research_overview:
+      "Robotics builds machines that sense, plan, and act in the physical world, and studies the algorithms that make them work. Labs split across a few camps: perception and learning groups that teach robots to see and improve from data; planning and control groups that work on motion, manipulation, and stability; and hardware groups that design the mechanisms, actuators, and soft or bio-inspired robots themselves. The work is genuinely mixed. Simulation, learning, and algorithm development live in code and can be done partly remotely, while running experiments on real hardware needs you in the lab with the robot. Many projects move between the two. Read a professor's recent papers first to tell whether they focus on learning, control, or hardware, because that decides how you can contribute.",
+    email_angle:
+      "Before you email, figure out whether the lab is learning-focused, control-focused, or hardware-focused, because your offer should match. For a perception or learning group, say you can help with code and name real skills: Python, C++, ROS, PyTorch, or simulation experience. For a hardware group, offer to help build and test in the lab and mention any CAD, electronics, or mechanical experience. Point to one specific recent paper, name the robot or task it studied, manipulation, locomotion, a control method, and ask one concrete question about how it worked. Note any programming or hands-on project experience you have. Keep it under 150 words and never call the work groundbreaking.",
+    faq: [
+      { question: "What qualifications do I need for robotics research?", answer: "It depends on the lab. Learning and control groups want programming (Python, C++), often ROS and math; hardware groups want CAD, electronics, or mechanical skills. Coursework in computer science, mechanical or electrical engineering helps. Prior research is a plus, not a requirement, for undergraduates who can show real projects." },
+      { question: "Can I do robotics research remotely?", answer: "Partly. Simulation, learning, and algorithm development can be done remotely once you have the code and environments. Running experiments on physical robots and building hardware need you in the lab. Many projects mix both, so ask which part of the work you would take on when you email." },
+      { question: "What should I say when emailing a robotics professor?", answer: "Match your offer to the lab: name coding skills like Python, C++, or ROS for a learning or control group, or CAD and electronics for a hardware group. Reference one recent paper, ask a specific question about the robot or method, and note any hands-on projects. Keep it short." },
+      { question: "When should I apply for robotics research positions?", answer: "Email six to ten weeks before the term or summer you want to start, since labs plan projects and hardware access ahead. Spring is the busiest window for summer spots. If a professor is full, ask whether a postdoc or graduate student in the group needs help." },
+    ],
+  },
 ];

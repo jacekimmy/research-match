@@ -52,6 +52,39 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
+const SITE = "https://www.researchmatch.site";
+
+// Sitewide Organization + WebSite schema. The SearchAction mirrors the real
+// search entry point (/app?q=...) so Google can surface a sitelinks search box.
+const siteJsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${SITE}/#organization`,
+      name: "Research Match",
+      url: `${SITE}/`,
+      logo: `${SITE}/apple-touch-icon.png`,
+      founder: { "@type": "Person", name: "Jace" },
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${SITE}/#website`,
+      name: "Research Match",
+      url: `${SITE}/`,
+      publisher: { "@id": `${SITE}/#organization` },
+      potentialAction: {
+        "@type": "SearchAction",
+        target: {
+          "@type": "EntryPoint",
+          urlTemplate: `${SITE}/app?q={search_term_string}`,
+        },
+        "query-input": "required name=search_term_string",
+      },
+    },
+  ],
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -60,6 +93,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
       <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }}
+        />
         <AnalyticsInit />
         <AuthProvider>
           {children}

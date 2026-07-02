@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getResearchField } from "@/lib/research-fields";
+import { getResearchField, fieldHeadline } from "@/lib/research-fields";
 import {
   getFieldContent,
   getFieldProfessors,
@@ -19,14 +19,6 @@ const SITE = "https://www.researchmatch.site";
 
 type Props = { params: Promise<{ "field-slug": string }> };
 
-function indefiniteArticle(name: string) {
-  return /^[aeiou]/i.test(name) ? "an" : "a";
-}
-
-function h1For(name: string) {
-  return `How to Get ${indefiniteArticle(name)} ${name} Research Position`;
-}
-
 export async function generateStaticParams() {
   const slugs = await getPopulatedFieldSlugs();
   return slugs.map((slug) => ({ "field-slug": slug }));
@@ -37,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const content = await getFieldContent(slug);
   const field = getResearchField(slug);
   if (!content || !field) return {};
-  const title = content.meta_title || h1For(field.name);
+  const title = content.meta_title || fieldHeadline(field.name);
   const description =
     content.meta_description ||
     `Find ${field.name} professors who are actively publishing, understand their recent work, and email them with a specific note that gets read.`;
@@ -72,7 +64,7 @@ export default async function ResearchFieldPage({ params }: Props) {
   ]);
   if (!content || professors.length === 0) notFound();
 
-  const heading = h1For(field.name);
+  const heading = fieldHeadline(field.name);
   const remote = content.remote_friendly;
   const remoteLine =
     remote === "remote-friendly"
@@ -111,9 +103,20 @@ export default async function ResearchFieldPage({ params }: Props) {
     about: `${field.name} research`,
   };
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${SITE}/` },
+      { "@type": "ListItem", position: 2, name: "Research Fields", item: `${SITE}/research` },
+      { "@type": "ListItem", position: 3, name: field.name },
+    ],
+  };
+
   return (
     <div className="blog-shell blog-post-shell">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <div className="blog-post-container">
         {/* Nav */}
         <nav className="blog-nav">

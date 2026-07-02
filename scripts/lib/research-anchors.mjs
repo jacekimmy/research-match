@@ -24,6 +24,11 @@ export const FIELDS = [
   { slug: "molecular-biology", name: "Molecular Biology", anchor: { kind: "subfield", id: 1312 } },
   { slug: "biomedical-engineering", name: "Biomedical Engineering", anchor: { kind: "topicsearch", terms: ["biomedical engineering", "tissue engineering", "medical imaging", "biomechanics", "neural engineering"], excludeNames: ["Metal-Organic Frameworks"] } },
   { slug: "cognitive-science", name: "Cognitive Science", anchor: { kind: "subfield", id: 3205 } },
+  { slug: "astrophysics", name: "Astrophysics", anchor: { kind: "subfield", id: 3103 } },
+  { slug: "environmental-science", name: "Environmental Science", anchor: { kind: "field", id: 23 } },
+  { slug: "microbiology", name: "Microbiology", anchor: { kind: "subfield", id: 2404 } },
+  { slug: "biochemistry", name: "Biochemistry", anchor: { kind: "subfield", id: 1303 } },
+  { slug: "robotics", name: "Robotics", anchor: { kind: "topicsearch", terms: ["robotics", "robot manipulation", "human-robot interaction", "soft robotics"] } },
 ];
 
 export const TARGET_MIN = 8;
