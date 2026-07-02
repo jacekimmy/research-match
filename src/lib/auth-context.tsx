@@ -20,6 +20,27 @@ function readAnonSummariesUsed(): number {
   return 0;
 }
 
+// Build the initial profiles row. Shared by signUp and the lazy-create path in
+// fetchProfile, so the row shape can't drift between the two.
+function newProfileRow(userId: string, email: string) {
+  const nextMonth = new Date();
+  nextMonth.setMonth(nextMonth.getMonth() + 1, 1);
+  nextMonth.setHours(0, 0, 0, 0);
+  // Carry over summaries already used while signed out, so the free tier is
+  // FREE_SUMMARY_LIMIT total across anon + account (not both budgets).
+  const carriedSummariesUsed = Math.min(readAnonSummariesUsed(), FREE_SUMMARY_LIMIT);
+  return {
+    id: userId,
+    email,
+    plan_type: "free",
+    referral_code: generateReferralCode(userId),
+    searches_used: 0,
+    searches_reset_at: nextMonth.toISOString(),
+    summaries_used: carriedSummariesUsed,
+    summaries_reset_at: nextMonth.toISOString(),
+  };
+}
+
 interface Profile {
   id: string;
   email: string;
@@ -69,7 +90,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .select("*")
       .eq("id", userId)
       .single();
-    if (data) setProfile(data as Profile);
+    if (data) {
+      setProfile(data as Profile);
+      return;
+    }
+    // No row. The signup insert can be lost (e.g. with email confirmation
+    // enabled it runs before a session exists, so RLS rejects it as anon).
+    // Create it now that we're authenticated, then re-read. A duplicate-key
+    // failure from a racing tab is fine — the re-read picks up the winner's row.
+    const { data: userData } = await supabase.auth.getUser();
+    const authUser = userData?.user;
+    if (!authUser || authUser.id !== userId || !authUser.email) return;
+    await supabase.from("profiles").insert(newProfileRow(userId, authUser.email));
+    const { data: created } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .single();
+    if (created) setProfile(created as Profile);
   }, []);
 
   useEffect(() => {
@@ -96,23 +134,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signUp = async (email: string, password: string, promoCode?: string) => {
     const { data, error } = await supabase.auth.signUp({ email, password });
     if (!error && data.user) {
-      // Create profile row
-      const nextMonth = new Date();
-      nextMonth.setMonth(nextMonth.getMonth() + 1, 1);
-      nextMonth.setHours(0, 0, 0, 0);
-      // Carry over summaries already used while signed out, so the free tier is
-      // 2 total across anon + account (not 2 anon AND 2 after sign-up).
-      const carriedSummariesUsed = Math.min(readAnonSummariesUsed(), FREE_SUMMARY_LIMIT);
-      await supabase.from("profiles").insert({
-        id: data.user.id,
-        email,
-        plan_type: "free",
-        referral_code: generateReferralCode(data.user.id),
-        searches_used: 0,
-        searches_reset_at: nextMonth.toISOString(),
-        summaries_used: carriedSummariesUsed,
-        summaries_reset_at: nextMonth.toISOString(),
-      });
+      // Create profile row. If this insert is rejected (no session yet under
+      // email confirmation), fetchProfile lazily creates the row on first
+      // authenticated sign-in.
+      await supabase.from("profiles").insert(newProfileRow(data.user.id, email));
 
       // Funnel: a free account was created (fires for every signup entry point).
       track("account_created");

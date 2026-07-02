@@ -258,207 +258,284 @@ export async function POST(req: NextRequest) {
   if (guardError?.code === "23505") {
     return NextResponse.json({ received: true, duplicate: true });
   }
-  // guardWritten === the dedup ledger row is durably in place. If the guard insert
-  // failed (transient), we still process best-effort — commission inserts are
-  // independently deduped by their unique invoice id — but NON-idempotent side
-  // effects (the lifetime counter) must be skipped, or a later redelivery (which
-  // would now find no ledger row) could run them a second time.
-  const guardWritten = !guardError;
+  // Any other guard failure: nothing has been processed yet, so bail and let Stripe
+  // redeliver. Processing without a durable dedup row would let a redelivery re-run
+  // non-idempotent side effects (the lifetime counter).
   if (guardError) {
     console.error("Idempotency guard insert error:", guardError);
+    return NextResponse.json({ error: "transient failure, please retry" }, { status: 500 });
   }
 
   let needsRetry = false;
 
-  if (event.type === "checkout.session.completed") {
-    const session = event.data.object as Stripe.Checkout.Session;
-    const lifetimePriceId = process.env.STRIPE_PRICE_LIFETIME || "price_1TIuBBFINW44xCyFoSCtUpFN";
+  // All processing runs under one try/catch: an uncaught error (e.g. a transient
+  // Stripe API failure mid-handler) must flow into the needsRetry path below. If it
+  // escaped instead, the guard row would stay behind, Stripe's redelivery would be
+  // acked as a duplicate, and the event would be dropped forever.
+  try {
 
-    let planType = "semester";
-    let paidPriceIdForReferral: string | null = null;
+    if (event.type === "checkout.session.completed") {
+      const session = event.data.object as Stripe.Checkout.Session;
+      const lifetimePriceId = process.env.STRIPE_PRICE_LIFETIME || "price_1TIuBBFINW44xCyFoSCtUpFN";
 
-    if (session.mode === "payment") {
-      const lineItems = await stripe.checkout.sessions.listLineItems(session.id, { limit: 1 });
-      const paidPriceId = lineItems.data[0]?.price?.id;
-      paidPriceIdForReferral = paidPriceId ?? null;
-      planType = paidPriceId === lifetimePriceId ? "lifetime" : "semester";
-    } else if (session.mode === "subscription" && session.subscription) {
-      const sub = await stripe.subscriptions.retrieve(session.subscription as string);
-      const priceId = sub.items.data[0]?.price.id;
-      paidPriceIdForReferral = priceId ?? null;
-      planType = planTypeFromPrice(priceId);
-    }
+      let planType = "semester";
+      let paidPriceIdForReferral: string | null = null;
 
-    // (A) Affiliate attribution — runs regardless of our profile bookkeeping. The
-    // customer paid and the creator earned even if our profiles row never resolves,
-    // so this must not be coupled to the plan-provisioning success/failure below.
-    try {
-      needsRetry = (await recordAffiliateAttribution(session)) || needsRetry;
-    } catch (err) {
-      console.error("Affiliate attribution error:", err);
-    }
+      if (session.mode === "payment") {
+        const lineItems = await stripe.checkout.sessions.listLineItems(session.id, { limit: 1 });
+        const paidPriceId = lineItems.data[0]?.price?.id;
+        paidPriceIdForReferral = paidPriceId ?? null;
+        planType = paidPriceId === lifetimePriceId ? "lifetime" : "semester";
+      } else if (session.mode === "subscription" && session.subscription) {
+        const sub = await stripe.subscriptions.retrieve(session.subscription as string);
+        const priceId = sub.items.data[0]?.price.id;
+        paidPriceIdForReferral = priceId ?? null;
+        planType = planTypeFromPrice(priceId);
+      }
 
-    // (B) Provision the plan. A missing userId / profile is logged but NOT retried
-    // forever (it's deterministic); a real DB error IS retried.
-    const userId = session.metadata?.userId;
-    if (!userId) {
-      console.error("checkout.session.completed has no metadata.userId — plan not provisioned");
-    } else {
-      const { error: updateError, data: updatedRows } = await supabaseAdmin
-        .from("profiles")
-        .update({ plan_type: planType })
-        .eq("id", userId)
-        .select("id");
-
-      if (updateError) {
-        console.error("Supabase update error:", updateError);
+      // (A) Affiliate attribution — runs regardless of our profile bookkeeping. The
+      // customer paid and the creator earned even if our profiles row never resolves,
+      // so this must not be coupled to the plan-provisioning success/failure below.
+      try {
+        needsRetry = (await recordAffiliateAttribution(session)) || needsRetry;
+      } catch (err) {
+        // e.g. a transient Stripe failure re-fetching the session — redeliver rather
+        // than silently losing the creator's commission.
+        console.error("Affiliate attribution error:", err);
         needsRetry = true;
-      } else if (!updatedRows || updatedRows.length === 0) {
-        console.error(`No profile found for userId: ${userId}`);
+      }
+
+      // (B) Provision the plan. A missing userId / profile is logged but NOT retried
+      // forever (it's deterministic); a real DB error IS retried.
+      const userId = session.metadata?.userId;
+      if (!userId) {
+        console.error("checkout.session.completed has no metadata.userId — plan not provisioned");
       } else {
-        console.log(`✅ Plan updated to "${planType}" for userId: ${userId}`);
+        // A purchase never lowers an existing lifetime plan (e.g. a lifetime owner
+        // completing a weekly checkout keeps lifetime).
+        let provision = supabaseAdmin
+          .from("profiles")
+          .update({ plan_type: planType })
+          .eq("id", userId);
+        if (planType !== "lifetime") provision = provision.neq("plan_type", "lifetime");
+        const { error: updateError, data: updatedRows } = await provision.select("id");
 
-        // Buddy Pass referral reward (peer-to-peer; separate from the affiliate program).
-        if (
-          session.metadata?.referrerId &&
-          session.metadata?.referralCode &&
-          session.metadata?.referredUserId === userId &&
-          session.metadata.referrerId !== userId
-        ) {
-          try {
-            const referrerId = session.metadata.referrerId;
-            const referralCode = session.metadata.referralCode;
+        if (updateError) {
+          console.error("Supabase update error:", updateError);
+          needsRetry = true;
+        } else if (!updatedRows || updatedRows.length === 0) {
+          console.error(`No profile updated for userId: ${userId} (missing row, or plan is lifetime and was kept)`);
+        } else {
+          console.log(`✅ Plan updated to "${planType}" for userId: ${userId}`);
 
-            const { data: existingSessionReward } = await supabaseAdmin
-              .from("buddy_pass_referrals")
-              .select("id")
-              .eq("checkout_session_id", session.id)
-              .maybeSingle();
+          // Buddy Pass referral reward (peer-to-peer; separate from the affiliate program).
+          if (
+            session.metadata?.referrerId &&
+            session.metadata?.referralCode &&
+            session.metadata?.referredUserId === userId &&
+            session.metadata.referrerId !== userId
+          ) {
+            try {
+              const referrerId = session.metadata.referrerId;
+              const referralCode = session.metadata.referralCode;
 
-            const { data: existingUserReward } = await supabaseAdmin
-              .from("buddy_pass_referrals")
-              .select("id")
-              .eq("referred_user_id", userId)
-              .eq("status", "rewarded")
-              .limit(1)
-              .maybeSingle();
-
-            if (!existingSessionReward && !existingUserReward) {
-              const { error: insertError } = await supabaseAdmin
+              const { data: existingSessionReward } = await supabaseAdmin
                 .from("buddy_pass_referrals")
-                .insert({
-                  referrer_id: referrerId,
-                  referred_user_id: userId,
-                  referral_code: referralCode,
-                  checkout_session_id: session.id,
-                  stripe_customer_id: stripeId(session.customer),
-                  price_id: paidPriceIdForReferral,
-                  status: "rewarded",
-                  discount_percent: 25,
-                  reward_weeks: 1,
-                  rewarded_at: new Date().toISOString(),
-                });
+                .select("id")
+                .eq("checkout_session_id", session.id)
+                .maybeSingle();
 
-              if (insertError) {
-                console.error("Buddy Pass referral insert failed:", insertError);
-              } else {
-                const { error: grantError } = await supabaseAdmin.rpc("grant_buddy_pass_week", {
-                  p_referrer_id: referrerId,
-                  p_weeks: 1,
-                });
-                if (grantError) console.error("Buddy Pass reward grant failed:", grantError);
-                else console.log(`✅ Buddy Pass reward granted to referrerId: ${referrerId}`);
+              const { data: existingUserReward } = await supabaseAdmin
+                .from("buddy_pass_referrals")
+                .select("id")
+                .eq("referred_user_id", userId)
+                .eq("status", "rewarded")
+                .limit(1)
+                .maybeSingle();
+
+              if (!existingSessionReward && !existingUserReward) {
+                const { error: insertError } = await supabaseAdmin
+                  .from("buddy_pass_referrals")
+                  .insert({
+                    referrer_id: referrerId,
+                    referred_user_id: userId,
+                    referral_code: referralCode,
+                    checkout_session_id: session.id,
+                    stripe_customer_id: stripeId(session.customer),
+                    price_id: paidPriceIdForReferral,
+                    status: "rewarded",
+                    discount_percent: 25,
+                    reward_weeks: 1,
+                    rewarded_at: new Date().toISOString(),
+                  });
+
+                if (insertError) {
+                  console.error("Buddy Pass referral insert failed:", insertError);
+                } else {
+                  const { error: grantError } = await supabaseAdmin.rpc("grant_buddy_pass_week", {
+                    p_referrer_id: referrerId,
+                    p_weeks: 1,
+                  });
+                  if (grantError) console.error("Buddy Pass reward grant failed:", grantError);
+                  else console.log(`✅ Buddy Pass reward granted to referrerId: ${referrerId}`);
+                }
               }
+            } catch (err) {
+              console.error("Buddy Pass reward error:", err);
             }
-          } catch (err) {
-            console.error("Buddy Pass reward error:", err);
           }
-        }
 
-        // Increment lifetime-spots counter — only when we're NOT about to retry, so a
-        // redelivery (which re-runs this handler) can't inflate the count. The
-        // insert-first guard makes the success path run exactly once.
-        if (planType === "lifetime" && !needsRetry && guardWritten) {
-          // Optimistic-concurrency increment: re-read and conditionally write so two
-          // distinct lifetime purchases settling at the same instant can't lose an
-          // increment (which would under-count claimed spots and oversell the cap).
-          for (let attempt = 0; attempt < 5; attempt++) {
-            const { data: setting } = await supabaseAdmin
-              .from("settings")
-              .select("value")
-              .eq("key", "lifetime_spots_claimed")
-              .single();
-            if (!setting) {
-              const { error: insertErr } = await supabaseAdmin
+          // Increment lifetime-spots counter — only when we're NOT about to retry, so a
+          // redelivery (which re-runs this handler) can't inflate the count. The
+          // insert-first guard makes the success path run exactly once.
+          if (planType === "lifetime" && !needsRetry) {
+            // Optimistic-concurrency increment: re-read and conditionally write so two
+            // distinct lifetime purchases settling at the same instant can't lose an
+            // increment (which would under-count claimed spots and oversell the cap).
+            for (let attempt = 0; attempt < 5; attempt++) {
+              const { data: setting } = await supabaseAdmin
                 .from("settings")
-                .insert({ key: "lifetime_spots_claimed", value: "1" });
-              if (!insertErr) break;        // first claim recorded
-              continue;                      // lost the insert race — re-read and update
+                .select("value")
+                .eq("key", "lifetime_spots_claimed")
+                .single();
+              if (!setting) {
+                const { error: insertErr } = await supabaseAdmin
+                  .from("settings")
+                  .insert({ key: "lifetime_spots_claimed", value: "1" });
+                if (!insertErr) break;        // first claim recorded
+                continue;                      // lost the insert race — re-read and update
+              }
+              const current = parseInt(setting.value, 10) || 0;
+              const { data: bumped } = await supabaseAdmin
+                .from("settings")
+                .update({ value: String(current + 1) })
+                .eq("key", "lifetime_spots_claimed")
+                .eq("value", setting.value)    // only if unchanged since we read it
+                .select("value");
+              if (bumped && bumped.length > 0) break;   // our increment landed
+              // else another event bumped it first — loop and retry on a fresh read
             }
-            const current = parseInt(setting.value, 10) || 0;
-            const { data: bumped } = await supabaseAdmin
-              .from("settings")
-              .update({ value: String(current + 1) })
-              .eq("key", "lifetime_spots_claimed")
-              .eq("value", setting.value)    // only if unchanged since we read it
-              .select("value");
-            if (bumped && bumped.length > 0) break;   // our increment landed
-            // else another event bumped it first — loop and retry on a fresh read
           }
         }
       }
     }
-  }
 
-  // Helper: look up userId from subscription metadata first, then checkout metadata.
-  async function userIdFromSubscription(subscriptionId: string): Promise<string | null> {
-    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-    if (subscription.metadata?.userId) {
-      return subscription.metadata.userId;
+    // Helper: look up userId from subscription metadata first, then checkout metadata.
+    async function userIdFromSubscription(subscriptionId: string): Promise<string | null> {
+      const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+      if (subscription.metadata?.userId) {
+        return subscription.metadata.userId;
+      }
+      const sessions = await stripe.checkout.sessions.list({
+        subscription: subscriptionId,
+        limit: 1,
+      });
+      return sessions.data[0]?.metadata?.userId ?? null;
     }
-    const sessions = await stripe.checkout.sessions.list({
-      subscription: subscriptionId,
-      limit: 1,
-    });
-    return sessions.data[0]?.metadata?.userId ?? null;
-  }
 
-  // Subscription deleted (cancelled / reached end of billing period)
-  if (event.type === "customer.subscription.deleted") {
-    const sub = event.data.object as Stripe.Subscription;
-    const userId = await userIdFromSubscription(sub.id);
-    if (userId) {
-      await supabaseAdmin.from("profiles").update({ plan_type: "free" }).eq("id", userId);
-      console.log(`⬇️  Subscription deleted → downgraded userId: ${userId} to free`);
+    // Downgrade a user when a subscription ends — but ONLY the plan this subscription
+    // granted. A lifetime purchase, or a promo-granted semester, must survive an old
+    // weekly sub expiring. Grant and downgrade both label the sub via
+    // planTypeFromPrice, so exact-match is consistent even for unmapped price ids.
+    // The .eq guard makes it a single atomic statement, so there's no read/write race.
+    async function downgradeToFree(userId: string, endedPlan: string, reason: string) {
+      const { error, data } = await supabaseAdmin
+        .from("profiles")
+        .update({ plan_type: "free" })
+        .eq("id", userId)
+        .eq("plan_type", endedPlan)
+        .select("id");
+      if (error) {
+        console.error(`Downgrade failed (${reason}) for userId ${userId}:`, error);
+        needsRetry = true;
+      } else if (!data || data.length === 0) {
+        console.log(`↔️  ${reason} for userId ${userId} — current plan isn't "${endedPlan}" (kept) or profile missing`);
+      } else {
+        console.log(`⬇️  ${reason} → downgraded userId: ${userId} to free`);
+      }
     }
-  }
 
-  // Subscription updated — downgrade only on TERMINAL states (keep access through the
-  // past_due dunning window), and catch cancel_at_period_end being newly set.
-  if (event.type === "customer.subscription.updated") {
-    const sub = event.data.object as Stripe.Subscription;
-    const downgradeStatuses = ["unpaid", "canceled", "incomplete_expired"];
-
-    // Only downgrade on TERMINAL statuses. A scheduled cancel (cancel_at_period_end)
-    // keeps the subscription active and paid through the current period — do NOT strip
-    // access then; the downgrade happens at period end via customer.subscription.deleted.
-    // (This also means reactivating before period end keeps access, since it was never
-    // downgraded.)
-    if (downgradeStatuses.includes(sub.status)) {
+    // Subscription deleted (cancelled / reached end of billing period)
+    if (event.type === "customer.subscription.deleted") {
+      const sub = event.data.object as Stripe.Subscription;
       const userId = await userIdFromSubscription(sub.id);
       if (userId) {
-        await supabaseAdmin.from("profiles").update({ plan_type: "free" }).eq("id", userId);
-        console.log(`⬇️  Subscription status "${sub.status}" → downgraded userId: ${userId} to free`);
+        await downgradeToFree(userId, planTypeFromPrice(sub.items?.data?.[0]?.price?.id), "Subscription deleted");
       }
     }
-  }
 
-  // Invoice payment succeeded — re-grant plan on renewal + record the recurring
-  // affiliate commission for this cycle.
-  if (event.type === "invoice.paid") {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const invoice = event.data.object as any;
-    if (invoice.billing_reason === "subscription_cycle") {
+    // Subscription updated — downgrade only on TERMINAL states (keep access through the
+    // past_due dunning window), and catch cancel_at_period_end being newly set.
+    if (event.type === "customer.subscription.updated") {
+      const sub = event.data.object as Stripe.Subscription;
+      const downgradeStatuses = ["unpaid", "canceled", "incomplete_expired"];
+
+      // Only downgrade on TERMINAL statuses. A scheduled cancel (cancel_at_period_end)
+      // keeps the subscription active and paid through the current period — do NOT strip
+      // access then; the downgrade happens at period end via customer.subscription.deleted.
+      // (This also means reactivating before period end keeps access, since it was never
+      // downgraded.)
+      if (downgradeStatuses.includes(sub.status)) {
+        const userId = await userIdFromSubscription(sub.id);
+        if (userId) {
+          await downgradeToFree(userId, planTypeFromPrice(sub.items?.data?.[0]?.price?.id), `Subscription status "${sub.status}"`);
+        }
+      }
+    }
+
+    // Invoice payment succeeded — re-grant plan on renewal + record the recurring
+    // affiliate commission for this cycle.
+    if (event.type === "invoice.paid") {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const invoice = event.data.object as any;
+      if (invoice.billing_reason === "subscription_cycle") {
+        const subscriptionId: string | undefined =
+          typeof invoice.subscription === "string"
+            ? invoice.subscription
+            : invoice.subscription?.id ??
+              (invoice.parent?.type === "subscription_details"
+                ? invoice.parent?.subscription_details?.subscription
+                : undefined);
+        if (subscriptionId) {
+          const sub = await stripe.subscriptions.retrieve(subscriptionId);
+          if (!sub.cancel_at_period_end) {
+            const userId = await userIdFromSubscription(subscriptionId);
+            if (userId) {
+              const priceId = sub.items.data[0]?.price.id;
+              const planType = planTypeFromPrice(priceId);
+              // A renewal must never lower the plan: a weekly renewal can't overwrite
+              // a (promo-granted) semester or a lifetime; a semester renewal can't
+              // overwrite a lifetime.
+              const outranking = planType === "weekly" ? '("lifetime","semester")' : '("lifetime")';
+              const { error: renewError } = await supabaseAdmin
+                .from("profiles")
+                .update({ plan_type: planType })
+                .eq("id", userId)
+                .not("plan_type", "in", outranking);
+              if (renewError) {
+                console.error(`Renewal re-grant failed for userId ${userId}:`, renewError);
+                needsRetry = true;
+              } else {
+                console.log(`🔄  Renewal succeeded → kept userId: ${userId} on "${planType}"`);
+              }
+            }
+          }
+
+          // Recurring commission — independent of cancel state (the payment was made).
+          try {
+            needsRetry = (await recordRenewalCommission(invoice, subscriptionId)) || needsRetry;
+          } catch (err) {
+            console.error("Affiliate renewal commission error:", err);
+            needsRetry = true;
+          }
+        }
+      }
+    }
+
+    // Invoice payment failed — keep access through the grace window; just log.
+    if (event.type === "invoice.payment_failed") {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const invoice = event.data.object as any;
       const subscriptionId: string | undefined =
         typeof invoice.subscription === "string"
           ? invoice.subscription
@@ -467,75 +544,47 @@ export async function POST(req: NextRequest) {
               ? invoice.parent?.subscription_details?.subscription
               : undefined);
       if (subscriptionId) {
-        const sub = await stripe.subscriptions.retrieve(subscriptionId);
-        if (!sub.cancel_at_period_end) {
-          const userId = await userIdFromSubscription(subscriptionId);
-          if (userId) {
-            const priceId = sub.items.data[0]?.price.id;
-            const planType = planTypeFromPrice(priceId);
-            await supabaseAdmin.from("profiles").update({ plan_type: planType }).eq("id", userId);
-            console.log(`🔄  Renewal succeeded → kept userId: ${userId} on "${planType}"`);
-          }
-        }
+        const userId = await userIdFromSubscription(subscriptionId);
+        console.log(`⏳  Payment failed (grace period — access kept) userId: ${userId ?? "unknown"} sub: ${subscriptionId}`);
+      }
+    }
 
-        // Recurring commission — independent of cancel state (the payment was made).
+    // Refund — void the commission so the creator isn't paid on returned money. Only
+    // act on a FULL refund; partial refunds are left for manual review.
+    if (event.type === "charge.refunded") {
+      const charge = event.data.object as Stripe.Charge & { invoice?: string | Stripe.Invoice | null };
+      if (charge.amount_refunded >= charge.amount) {
+        const pi = stripeId(charge.payment_intent);
+        // payment_intent covers one-time commissions; resolve the invoice id for
+        // subscription commissions (charge.invoice is not populated on this API version).
+        const refs = [stripeId(charge.invoice), pi, ...(await invoiceRefsForPaymentIntent(pi))];
+        needsRetry = (await voidCommissionsForRefs(refs, "refund")) || needsRetry;
+      }
+    }
+
+    // Chargeback opened — the business will likely lose the funds; void the commission.
+    if (event.type === "charge.dispute.created") {
+      const dispute = event.data.object as Stripe.Dispute;
+      const pi = stripeId(dispute.payment_intent);
+      const refs: (string | null)[] = [pi, ...(await invoiceRefsForPaymentIntent(pi))];
+      const chargeId = stripeId(dispute.charge);
+      if (chargeId) {
         try {
-          needsRetry = (await recordRenewalCommission(invoice, subscriptionId)) || needsRetry;
+          const charge = (await stripe.charges.retrieve(chargeId)) as Stripe.Charge & {
+            invoice?: string | Stripe.Invoice | null;
+          };
+          const chPi = stripeId(charge.payment_intent);
+          refs.push(stripeId(charge.invoice), chPi, ...(await invoiceRefsForPaymentIntent(chPi)));
         } catch (err) {
-          console.error("Affiliate renewal commission error:", err);
+          console.error("Could not retrieve disputed charge:", err);
         }
       }
+      needsRetry = (await voidCommissionsForRefs(refs, "dispute")) || needsRetry;
     }
-  }
 
-  // Invoice payment failed — keep access through the grace window; just log.
-  if (event.type === "invoice.payment_failed") {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const invoice = event.data.object as any;
-    const subscriptionId: string | undefined =
-      typeof invoice.subscription === "string"
-        ? invoice.subscription
-        : invoice.subscription?.id ??
-          (invoice.parent?.type === "subscription_details"
-            ? invoice.parent?.subscription_details?.subscription
-            : undefined);
-    if (subscriptionId) {
-      const userId = await userIdFromSubscription(subscriptionId);
-      console.log(`⏳  Payment failed (grace period — access kept) userId: ${userId ?? "unknown"} sub: ${subscriptionId}`);
-    }
-  }
-
-  // Refund — void the commission so the creator isn't paid on returned money. Only
-  // act on a FULL refund; partial refunds are left for manual review.
-  if (event.type === "charge.refunded") {
-    const charge = event.data.object as Stripe.Charge & { invoice?: string | Stripe.Invoice | null };
-    if (charge.amount_refunded >= charge.amount) {
-      const pi = stripeId(charge.payment_intent);
-      // payment_intent covers one-time commissions; resolve the invoice id for
-      // subscription commissions (charge.invoice is not populated on this API version).
-      const refs = [stripeId(charge.invoice), pi, ...(await invoiceRefsForPaymentIntent(pi))];
-      needsRetry = (await voidCommissionsForRefs(refs, "refund")) || needsRetry;
-    }
-  }
-
-  // Chargeback opened — the business will likely lose the funds; void the commission.
-  if (event.type === "charge.dispute.created") {
-    const dispute = event.data.object as Stripe.Dispute;
-    const pi = stripeId(dispute.payment_intent);
-    const refs: (string | null)[] = [pi, ...(await invoiceRefsForPaymentIntent(pi))];
-    const chargeId = stripeId(dispute.charge);
-    if (chargeId) {
-      try {
-        const charge = (await stripe.charges.retrieve(chargeId)) as Stripe.Charge & {
-          invoice?: string | Stripe.Invoice | null;
-        };
-        const chPi = stripeId(charge.payment_intent);
-        refs.push(stripeId(charge.invoice), chPi, ...(await invoiceRefsForPaymentIntent(chPi)));
-      } catch (err) {
-        console.error("Could not retrieve disputed charge:", err);
-      }
-    }
-    needsRetry = (await voidCommissionsForRefs(refs, "dispute")) || needsRetry;
+  } catch (err) {
+    console.error(`Unhandled webhook error for ${event.type} (${event.id}):`, err);
+    needsRetry = true;
   }
 
   // Finalize. If a money-write failed transiently, un-mark the event and return 500

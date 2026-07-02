@@ -57,20 +57,55 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "This promo code is no longer available" }, { status: 409 });
     }
 
+    // Grant guard doubles as the one-redemption-per-account rule: a user already on
+    // semester/lifetime gains nothing, so the update matches 0 rows and the use is
+    // refunded below. The or() keeps legacy NULL plan_type rows grantable (SQL
+    // three-valued logic would otherwise exclude them from NOT IN).
     const { data: granted, error: updateError } = await supabaseAdmin
       .from("profiles")
       .update({ plan_type: "semester" })
       .eq("id", userId)
+      .or('plan_type.is.null,plan_type.not.in.("semester","lifetime")')
       .select("id");
 
     if (updateError || !granted || granted.length === 0) {
       // Grant failed (or matched no profile row) after claiming a use — give it back.
-      const { error: refundError } = await supabaseAdmin
-        .from("promo_codes")
-        .update({ uses_remaining: promo.uses_remaining })
-        .eq("code", normalizedCode);
-      if (refundError) {
-        console.error("promo refund failed (use may be lost):", normalizedCode, refundError);
+      // Refund is a RELATIVE +1 with the same optimistic-concurrency pattern as the
+      // claim: writing back the absolute value we read earlier would un-claim uses
+      // consumed concurrently by other redeemers.
+      let refunded = false;
+      for (let attempt = 0; attempt < 5 && !refunded; attempt++) {
+        const { data: fresh } = await supabaseAdmin
+          .from("promo_codes")
+          .select("uses_remaining")
+          .eq("code", normalizedCode)
+          .single();
+        if (!fresh) break;
+        const { data: bumped } = await supabaseAdmin
+          .from("promo_codes")
+          .update({ uses_remaining: fresh.uses_remaining + 1 })
+          .eq("code", normalizedCode)
+          .eq("uses_remaining", fresh.uses_remaining)
+          .select("code");
+        refunded = !!bumped && bumped.length > 0;
+      }
+      if (!refunded) {
+        console.error("promo refund failed (use may be lost):", normalizedCode);
+      }
+      // Distinguish "already has the plan" (friendly 400) from a real failure —
+      // read the profile only on this failure path, not on every redemption.
+      if (!updateError) {
+        const { data: currentProfile } = await supabaseAdmin
+          .from("profiles")
+          .select("plan_type")
+          .eq("id", userId)
+          .maybeSingle();
+        if (currentProfile && ["semester", "lifetime"].includes(currentProfile.plan_type)) {
+          return NextResponse.json(
+            { error: "Your account already has this plan or better" },
+            { status: 400 }
+          );
+        }
       }
       return NextResponse.json({ error: "Failed to apply promo code" }, { status: 500 });
     }
